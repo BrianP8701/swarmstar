@@ -2,6 +2,12 @@
 __pycache__/
 *.py[cod]
 *$py.class
+private.txt
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.DS_Store
 
 # C extensions
 *.so
