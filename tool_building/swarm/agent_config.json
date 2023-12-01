@@ -1,0 +1,27 @@
+{
+    "head_agent": {
+        "instructions": "You are in charge of a swarm of agents. Given the goal, current progress and context command the swarm to pursue the goal.",
+        "tools": [
+            {
+                "type": "function",
+                "function": {
+                    "name": "break_into_subtasks",
+                    "description": "Break down current task into immediate subtasks that can be done in parralel without reliance on each other",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "subtasks": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string",
+                                    "description": "Describe the subtask concisely & comprehensively"
+                                },
+                                "description": "List of subtasks to be done in parralel"
+                            }
+                        }
+                    }
+                }
+            }
+        ]
+    }
+}

@@ -1,6 +1,6 @@
-from openai import OpenAI
+from shared.openai_config import get_openai_client
 
-client = OpenAI(api_key='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')
+client = get_openai_client()
 
 '''
 Create assistant with no tools
@@ -91,7 +91,7 @@ valid_tool_example = {
 '''
     Delete assistant by ID
 '''
-# response = client.beta.assistants.delete("asst_jOGFhaPALF8QpxpyuZjPSYqe")
+# response = client.beta.assistants.delete("asst_l9tUmlor4UUFzWeQBJ5oOEqm")
 # print(response)
 
 
