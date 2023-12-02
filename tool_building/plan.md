@@ -40,3 +40,20 @@ It checks if the
 
 
 All of the above initialization will happen in what is called a 'toolkit'
+
+
+
+okay fuck scrap the toolkit.
+
+## Swarm flow in my head 1
+Create head agent
+Pass goal to head agent through chat()
+Take output of chat(). Spawn a new standard agent with the output of chat() as the instructions
+
+In order to write functions that interact with other functions, an agent needs to:
+    1. be aware of the other functions
+    2. be able to call the other functions
+
+To be aware of other functions we need to include in the context all the function names, descriptions and parameters
+
+There are some flows that are concrete, like the one aforementioned. But how can the swarm autonomously create and access new flows?

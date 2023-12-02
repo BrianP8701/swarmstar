@@ -18,9 +18,9 @@ class Agent:
         func = partial(create_sync, "gpt-4-1106-preview", messages, self.tools, tool_choice, 0.0)
         
         completion = await loop.run_in_executor(None, func)
-        return self.prettify_completion(completion)
+        return self.get_tool_outputs(completion)
 
-    def prettify_completion(self, completion):
+    def get_tool_outputs(self, completion):
         tools_dict = {}
         for tool_call in completion.choices[0].message.tool_calls:
             tools_dict[tool_call.function.name] = tool_call.function.arguments

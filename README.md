@@ -8,7 +8,9 @@ In the rest of this file I will describe the motivation and takeaways of each ex
 
 ## Experiments
 
-In theory - or my imagination at least - there ought to be an inflection point where the swarm becomes self sufficient.
+In theory - or my imagination at least - there ought to be an inflection point where the swarm becomes self sufficient. 
+
+The swarm needs to be self aware that it is a swarm. The top agents need to know about the system they operate in. They need sufficient context. Lower agents who gain more and more specific tasks will need less context.
 
 ### Tool Building Experiment
 Goal: Have agents autonomously make new python functions that can be used by the swarm

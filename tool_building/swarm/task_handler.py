@@ -11,22 +11,26 @@ class TaskHandler:
             with open(self.functions_file, 'r') as file:
                 self.functions_as_strings = json.load(file)
         except FileNotFoundError:
+            print(f"Functions file {self.functions_file} not found.")
             self.functions_as_strings = {}
 
-    def activate_function(self, function_name):
+    async def activate_function(self, function_name):
         if function_name in self.functions_as_strings:
             exec(self.functions_as_strings[function_name], globals())
             self.activated_functions[function_name] = globals()[function_name]
 
-    def handle_task(self, task):
+    async def handle_task(self, task):
         function_name = task.task_type
+        print('got here gang')
         if function_name not in self.activated_functions:
-            self.activate_function(function_name)
+            await self.activate_function(function_name)
 
         if function_name in self.activated_functions:
             try:
                 # Unpacking the dictionary 'data' as keyword arguments
-                return self.activated_functions[function_name](**task.data)
+                print('got here too')
+                result =  await self.activated_functions[function_name](**task.data)
+                return result
             except TypeError as e:
                 print(f"Error calling function {function_name}: {e}")
         else:
@@ -36,3 +40,7 @@ class TaskHandler:
         self.functions_as_strings[function_name] = function_str
         with open(self.functions_file, 'w') as file:
             json.dump(self.functions_as_strings, file, indent=4)
+    
+    async def enqueue_items(self, tasks):
+        for task in tasks:
+            await self.task_queue.put(task)

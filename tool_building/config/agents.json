@@ -1,0 +1,96 @@
+{
+    "head_agent": {
+        "instructions": "You are in charge of a swarm of agents. Given the goal, current progress and context command the swarm to pursue the goal.",
+        "tools": [
+            {
+                "type": "function",
+                "function": {
+                    "name": "break_into_subtasks",
+                    "description": "Break down current task into immediate subtasks that can be done in parralel without reliance on each other",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "subtasks": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string",
+                                    "description": "Describe the subtask concisely & comprehensively"
+                                },
+                                "description": "List of subtasks to be done in parralel"
+                            },
+                            "context": {
+                                "type": "string",
+                                "description": "Include comprehensive information so subagents understand and can complete subtasks"
+                            }
+                        }
+                    },
+                    "required": ["subtasks", "context"]
+                }
+            }
+        ]
+    },
+    "standard_agent": {
+        "instructions": "You are an agent in a swarm. Given the goal, current progress and context, either work on the goal or break it down into subtasks and assign them to other agents",
+        "tools": [
+            {
+                "type": "function",
+                "function": {
+                    "name": "break_into_subtasks",
+                    "description": "Break down current task into immediate subtasks that can be done in parralel without reliance on each other",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "subtasks": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string",
+                                    "description": "Describe the subtask concisely & comprehensively"
+                                },
+                                "description": "List of subtasks to be done in parralel"
+                            },
+                            "context": {
+                                "type": "string",
+                                "description": "Include comprehensive information so subagents understand and can complete subtasks"
+                            }
+                        }
+                    },
+                    "required": ["subtasks", "context"]
+                }
+            },
+            {
+                "type": "function",
+                "function": {
+                    "name": "write_python_function",
+                    "description": "If your goal is simple enough, write a python function to complete it",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "python_function": {
+                                "type": "string",
+                                "description": "Python function to be executed"
+                            }
+                        }
+                    },
+                    "required": ["python_function"]
+                }
+            },
+            {
+                "type": "function",
+                "function": {
+                    "name": "fail",
+                    "description": "The goal is too simple to be broken down further, but it can't be completed by a python function. Fail the goal",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "reason": {
+                                "type": "string",
+                                "description": "Explain why the goal can't be completed"
+                            }
+                        }
+                    },
+                    "required": ["reason"]
+                }
+            }
+        ]
+    }
+}
