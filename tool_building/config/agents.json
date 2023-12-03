@@ -1,11 +1,11 @@
 {
     "head_agent": {
-        "instructions": "You are in charge of a swarm of agents. Given the goal, current progress and context command the swarm to pursue the goal.",
+        "instructions": "You are in charge of a swarm of agents. Given the goal, current progress and context command the swarm to pursue the goal. Your goal is to break the goal into smaller pieces, pieces small enough that you can accomplish them. Do not write code. Make a plan, but only of the next most immediate few tasks that can be done side by side. When does tasks are done we will report back to you with our work, and you instruct us on the next steps.",
         "tools": [
             {
                 "type": "function",
                 "function": {
-                    "name": "break_into_subtasks",
+                    "name": "break_down_goal",
                     "description": "Break down current task into immediate subtasks that can be done in parralel without reliance on each other",
                     "parameters": {
                         "type": "object",
@@ -21,6 +21,10 @@
                             "context": {
                                 "type": "string",
                                 "description": "Include comprehensive information so subagents understand and can complete subtasks"
+                            },
+                            "parralel_or_steps": {
+                                "type": "boolean",
+                                "description": "True if the subtasks are meant to be done in parralel, false if they are meant to be done in sequence"
                             }
                         }
                     },
@@ -30,38 +34,35 @@
         ]
     },
     "standard_agent": {
-        "instructions": "You are an agent in a swarm. Given the goal, current progress and context, either work on the goal or break it down into subtasks and assign them to other agents",
+        "instructions": "You are an agent in a swarm. Given the goal, current progress and context, decide whether the goal is simple enough to be completed by a python function, or if we need to break it down further into smaller tasks.",
         "tools": [
             {
                 "type": "function",
                 "function": {
-                    "name": "break_into_subtasks",
-                    "description": "Break down current task into immediate subtasks that can be done in parralel without reliance on each other",
+                    "name": "decide_next_action",
+                    "description": "Only output one of the following integers:\n0: Break down the goal into subtasks\n1: Write a python function to complete the goal\n2: The goal is too simple to be broken down further, but it can't be completed by a python function. Fail the goal",
                     "parameters": {
                         "type": "object",
                         "properties": {
-                            "subtasks": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string",
-                                    "description": "Describe the subtask concisely & comprehensively"
-                                },
-                                "description": "List of subtasks to be done in parralel"
-                            },
-                            "context": {
-                                "type": "string",
-                                "description": "Include comprehensive information so subagents understand and can complete subtasks"
+                            "selection": {
+                                "type": "integer",
+                                "description": "Number representing the next action to take"
                             }
                         }
                     },
                     "required": ["subtasks", "context"]
                 }
-            },
+            }
+        ]
+    },
+    "python_function_writing_agent": {
+        "instructions": "You are an agent in a swarm. Given the goal and context, write a python function to complete the goal.",
+        "tools": [
             {
                 "type": "function",
                 "function": {
                     "name": "write_python_function",
-                    "description": "If your goal is simple enough, write a python function to complete it",
+                    "description": "If your goal is simple enough, write a python function to complete it. Only write code",
                     "parameters": {
                         "type": "object",
                         "properties": {
@@ -72,23 +73,6 @@
                         }
                     },
                     "required": ["python_function"]
-                }
-            },
-            {
-                "type": "function",
-                "function": {
-                    "name": "fail",
-                    "description": "The goal is too simple to be broken down further, but it can't be completed by a python function. Fail the goal",
-                    "parameters": {
-                        "type": "object",
-                        "properties": {
-                            "reason": {
-                                "type": "string",
-                                "description": "Explain why the goal can't be completed"
-                            }
-                        }
-                    },
-                    "required": ["reason"]
                 }
             }
         ]

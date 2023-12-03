@@ -6,4 +6,4 @@ from swarm.swarm import Swarm
 
 
 swarm = Swarm('')
-print(asyncio.run(swarm.start('Create a new revolutionary CRM for real estate agents that takes advantage of chatgpt')))
+print(asyncio.run(swarm.start('Create a class called GithubWrapper that has all the necessary functions to interact with and modify a Github repository.')))

@@ -1,6 +1,6 @@
 from settings import Settings
-from openai import OpenAI
+from openai import AsyncOpenAI
 
 def get_openai_client():
     settings = Settings()
-    return OpenAI(api_key=settings.OPENAI_API_KEY)
+    return AsyncOpenAI(api_key=settings.OPENAI_API_KEY)

@@ -13,7 +13,7 @@ class Swarm:
         with open('tool_building/config/agents.json') as f:
             self.agent_schemas = json.load(f)
         self.agents = {}
-        self.agents['head_agent'] = Agent(self.agent_schemas['head_agent']['instructions'], self.agent_schemas['head_agent']['tools'])
+        self.agents['head_agent'] = Agent(self.agent_schemas['head_agent']['instructions'], self.agent_schemas['head_agent']['tools'], 'break_down_goal')
         
     async def start(self, goal):
         initialize_swarm = Task('break_down_goal', {'goal': goal, 'swarm': self})
@@ -23,7 +23,6 @@ class Swarm:
             task = await self.task_queue.get()
             try:
                 # Process the task (API call, database operation, etc.)
-                print('got here')
                 result = await self.task_handler.handle_task(task)
                 print(result)
                 # Handle the result (save to database, further processing, etc.)
@@ -42,3 +41,6 @@ class Swarm:
 #     swarm.agents['head_agent'] = Agent(swarm.agent_schemas['head_agent']['instructions'], swarm.agent_schemas['head_agent']['tools'])
 #     subtasks = swarm.agents['head_agent'].chat(goal)
 #     return subtasks
+
+def spawn_subagents_for_tasks(subtasks, context, is_parallel):
+    pass # TODO

@@ -1,27 +1,22 @@
 from openai_config import get_openai_client
-import asyncio
-from functools import partial
+import json
 
 client = get_openai_client()
 
 class Agent:
-    def __init__(self, instructions, tools):
+    def __init__(self, instructions, tools, tool_choice="auto"):
         self.instructions = instructions
         self.tools = tools
+        self.tool_choice = tool_choice
         
-    async def chat(self, message, tool_choice="auto"):
-        loop = asyncio.get_running_loop()
+    async def chat(self, message):
         messages = [{"role": "system","content": self.instructions},{"role": "user","content": message}]
-        
-        def create_sync(model, messages, tools, tool_choice, temperature):
-            return client.chat.completions.create(model=model, messages=messages, tools=tools, tool_choice=tool_choice, temperature=temperature)
-        func = partial(create_sync, "gpt-4-1106-preview", messages, self.tools, tool_choice, 0.0)
-        
-        completion = await loop.run_in_executor(None, func)
-        return self.get_tool_outputs(completion)
+        completion = await client.chat.completions.create(model="gpt-4-1106-preview", messages=messages, tools=self.tools, tool_choice=self.tool_choice, temperature=0.0)
+        return self.get_tool_output(completion)
 
-    def get_tool_outputs(self, completion):
-        tools_dict = {}
+    def get_tool_output(self, completion):
+        tool_output = {}
         for tool_call in completion.choices[0].message.tool_calls:
-            tools_dict[tool_call.function.name] = tool_call.function.arguments
-        return tools_dict
+            tool_output['function_name'] = tool_call.function.name
+            tool_output['arguments'] = json.loads(tool_call.function.arguments)
+        return tool_output

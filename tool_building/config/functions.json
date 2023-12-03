@@ -1,3 +1,7 @@
 {
+    "map": { 
+        "break_down_goal": "spawn_subagents_for_tasks"
+    },
     "break_down_goal": "from swarm.agent import Agent\nasync def break_down_goal(goal, swarm):\n\tswarm.agents['head_agent'] = Agent(swarm.agent_schemas['head_agent']['instructions'], swarm.agent_schemas['head_agent']['tools'])\n\tsubtasks = await swarm.agents['head_agent'].chat(goal)\n\treturn subtasks"
 }
+

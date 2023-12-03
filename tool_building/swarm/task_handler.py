@@ -1,17 +1,20 @@
 import json
+from task import Task
 
 class TaskHandler:
-    def __init__(self, functions_file):
+    '''This class handles the execution of tasks. It loads functions from a file and executes them when needed.'''
+    def __init__(self, functions_file, swarm):
         self.activated_functions = {}
-        self.functions_file = functions_file
-        self.load_functions()
+        self.load_functions(functions_file)
+        self.swarm = swarm
+        self.map = self.functions_as_strings['map']
 
-    def load_functions(self):
+    def load_functions(self, functions_file):
         try:
-            with open(self.functions_file, 'r') as file:
+            with open(functions_file, 'r') as file:
                 self.functions_as_strings = json.load(file)
         except FileNotFoundError:
-            print(f"Functions file {self.functions_file} not found.")
+            print(f"Functions file {functions_file} not found.")
             self.functions_as_strings = {}
 
     async def activate_function(self, function_name):
@@ -21,16 +24,14 @@ class TaskHandler:
 
     async def handle_task(self, task):
         function_name = task.task_type
-        print('got here gang')
         if function_name not in self.activated_functions:
             await self.activate_function(function_name)
 
         if function_name in self.activated_functions:
             try:
-                # Unpacking the dictionary 'data' as keyword arguments
-                print('got here too')
-                result =  await self.activated_functions[function_name](**task.data)
-                return result
+                tool_output =  await self.activated_functions[function_name](**task.data)
+                self.map_to_next_task(tool_output)
+                return tool_output
             except TypeError as e:
                 print(f"Error calling function {function_name}: {e}")
         else:
@@ -41,6 +42,6 @@ class TaskHandler:
         with open(self.functions_file, 'w') as file:
             json.dump(self.functions_as_strings, file, indent=4)
     
-    async def enqueue_items(self, tasks):
-        for task in tasks:
-            await self.task_queue.put(task)
+    def map_to_next_task(self, tool_output):
+        next_task = Task(tool_output['function_name'], tool_output['arguments'])
+        self.task_queue.put_nowait(next_task)
