@@ -7,7 +7,7 @@ class TaskHandler:
         self.activated_functions = {}
         self.load_functions(functions_file)
         self.swarm = swarm
-        self.map = self.functions_as_strings['map']
+        self.task_queue = swarm.task_queue
 
     def load_functions(self, functions_file):
         try:
@@ -30,7 +30,6 @@ class TaskHandler:
         if function_name in self.activated_functions:
             try:
                 tool_output =  await self.activated_functions[function_name](**task.data)
-                self.map_to_next_task(tool_output)
                 return tool_output
             except TypeError as e:
                 print(f"Error calling function {function_name}: {e}")
@@ -41,7 +40,3 @@ class TaskHandler:
         self.functions_as_strings[function_name] = function_str
         with open(self.functions_file, 'w') as file:
             json.dump(self.functions_as_strings, file, indent=4)
-    
-    def map_to_next_task(self, tool_output):
-        next_task = Task(tool_output['function_name'], tool_output['arguments'])
-        self.task_queue.put_nowait(next_task)

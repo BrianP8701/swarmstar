@@ -1,11 +1,7 @@
 class Task:
-    def __init__(self, task_type, data):
+    def __init__(self, task_type: str, data: dict):
         self.task_type = task_type
         self.data = data
         
-    ''' 
-    task_types:
-    
-    - create_agent
-        > {instructions, name, tools}
-    '''
+    def __str__(self):
+        return f"\n\n{self.task_type}\n{self.data}\n\n"
