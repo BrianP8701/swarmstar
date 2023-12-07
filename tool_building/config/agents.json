@@ -30,7 +30,8 @@
 					},
 					"required": [
 						"subtasks",
-						"context"
+						"context",
+                        "is_parallel"
 					]
 				}
 			}
@@ -86,25 +87,27 @@
 		]
 	},
 	"subtask_router_agent": {
-		"instructions": "You are an agent in a swarm of other agents, GPTs just like you. You need to decide which action the swarm takes next. Output a number representing the next action to take:\n1. Break down the goal into subtasks\n2. Write python code to complete the goal\n3. Retrieve more information to make a better decision.\n4. None of the above/Idk what to do",
-		"tools": {
-			"type": "function",
-			"function": {
-				"name": "route_subtask",
-				"description": "",
-				"parameters": {
-					"type": "object",
-					"properties": {
-						"next_action": {
-							"type": "integer",
-							"description": "Number (1-4) representing the next action to take as described above"
-						}
-					}
-				},
-				"required": [
-					"next_action"
-				]
-			}
-		}
+		"instructions": "You are an agent in a swarm of other agents, GPTs just like you. Given a goal, you need to decide which action the swarm takes next. Output a number representing the next action to take:\n1. Break down the goal into subtasks if the goal is too big for you to handle\n2. Write text to complete te goal. \n3.Write python code to complete the goal\n4. Retrieve more information to make a better decision.\n5. None of the above/Idk what to do",
+		"tools": [
+                {
+                "type": "function",
+                "function": {
+                    "name": "route_subtask",
+                    "description": "",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "next_action": {
+                                "type": "integer",
+                                "description": "Number (1-5) representing the next action to take as described above"
+                            }
+                        }
+                    },
+                    "required": [
+                        "next_action"
+                    ]
+                }
+            }
+        ]
 	}
 }

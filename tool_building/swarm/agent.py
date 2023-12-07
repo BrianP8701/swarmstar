@@ -11,7 +11,13 @@ class Agent:
         
     async def chat(self, message):
         messages = [{"role": "system","content": self.instructions},{"role": "user","content": message}]
-        completion = await client.chat.completions.create(model="gpt-4-1106-preview", messages=messages, tools=self.tools, tool_choice=self.tool_choice, temperature=0.0)
+        try:
+            print(message)
+            completion = await client.chat.completions.create(model="gpt-4-1106-preview", messages=messages, tools=self.tools, tool_choice=self.tool_choice, temperature=0.0)
+            print(f'\n\n{completion}')
+        except Exception as e:
+            print(f"Exception occurred: {e}")
+            return
         return self.get_tool_output(completion)
 
     def get_tool_output(self, completion):
@@ -19,4 +25,5 @@ class Agent:
         for tool_call in completion.choices[0].message.tool_calls:
             tool_output['function_name'] = tool_call.function.name
             tool_output['arguments'] = json.loads(tool_call.function.arguments)
+        print(tool_output)
         return tool_output
