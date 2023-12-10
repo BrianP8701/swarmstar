@@ -2,7 +2,7 @@
 Making experiments locally to contribute to AGI
 
 ## Usage
-Create a .env file at the project root and set your OPENAI_API_KEY's value in there. Each subfolder contains an idea or experiment (RAG/agent swarm related). Each experiment contains a plan.md file for my personal use, and a docs.md file for you.
+First, configure the .env file. Each subfolder contains an idea or experiment (RAG/agent swarm related). Each experiment contains a plan.md file for my personal use (likely not of any use to you), and a docs.md which you should read. The docs.md will contain usage instructions, architecture details etc.
 
 In the rest of this file I will describe the motivation and takeaways of each experiment.
 

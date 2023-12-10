@@ -62,31 +62,55 @@
 			}
 		]
 	},
-	"python_function_writing_agent": {
-		"instructions": "You are an agent in a swarm. Given the goal and context, write a python function to complete the goal.",
+	"write_python_agent": {
+		"instructions": "You are an agent in a swarm. Given the goal and context, write python (function, class, script etc) to complete the goal. Write the code in full and only output complete python code satisfying the goal.",
 		"tools": [
 			{
 				"type": "function",
 				"function": {
-					"name": "write_python_function",
-					"description": "If your goal is simple enough, write a python function to complete it. Only write code",
+					"name": "write_python",
+					"description": "Write python code to complete the goal. Only output python",
 					"parameters": {
 						"type": "object",
 						"properties": {
-							"python_function": {
+							"python_code": {
 								"type": "string",
-								"description": "Python function to be executed"
+								"description": "Python code to complete the goal"
 							}
 						}
 					},
 					"required": [
-						"python_function"
+						"python_code"
 					]
 				}
 			}
 		]
 	},
-	"subtask_router_agent": {
+	"python_test_cases_agent": {
+		"instructions": "You are an agent in a swarm. Given the goal, context, and python code write test cases",
+		"tools": [
+			{
+				"type": "function",
+				"function": {
+					"name": "write_python",
+					"description": "Write python code to complete the goal. Only output python",
+					"parameters": {
+						"type": "object",
+						"properties": {
+							"python_code": {
+								"type": "string",
+								"description": "Python code to complete the goal"
+							}
+						}
+					},
+					"required": [
+						"python_code"
+					]
+				}
+			}
+		]
+	},
+	"router_agent": {
 		"instructions": "You are an agent in a swarm of other agents, GPTs just like you. Given a goal, you need to decide which action the swarm takes next. Output a number representing the next action to take:\n1. Break down the goal into subtasks if the goal is too big for you to handle\n2. Write text to complete te goal. \n3.Write python code to complete the goal\n4. Retrieve more information to make a better decision.\n5. None of the above/Idk what to do",
 		"tools": [
                 {

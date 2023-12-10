@@ -34,6 +34,23 @@ def save_python_file_to_json(file_path, json_path, key, start_line):
     except IOError as e:
         print(f"Error writing to JSON file {json_path}: {e}")
 
-save_python_file_to_json('tool_building/swarm/write_functions.py', 'tool_building/config/functions.json', 'route_subtasks', 40)
+save_python_file_to_json('tool_building/swarm/write_functions.py', 'tool_building/config/functions.json', 'write_python', 40)
 
 # Write function below:
+from swarm.swarm import Swarm
+from swarm.agent import Agent
+import json
+async def write_python(goal):
+    swarm = Swarm()
+    task_handler = swarm.task_handler
+    python_agent: Agent = swarm.agents['write_python_agent']
+    python_test_cases_agent: Agent = swarm.agents['python_test_cases_agent']
+    
+    tool_output = await python_agent.chat(goal)
+    python_code = tool_output['arguments']['python_code']
+    
+    test_cases = 
+    
+    # Create test cases for function
+    with open('tool_building/config/test_cases.json', 'r') as file:
+        test_cases = json.load(file)

@@ -1,5 +1,4 @@
 import json
-from task import Task
 
 class TaskHandler:
     '''This class handles the execution of tasks. It loads functions from a file and executes them when needed.'''
