@@ -24,8 +24,8 @@ async def route_task(subtasks, context, is_parallel):
     task_list = ['break_down_goal', 'write_text', 'write_python', 'retrieve_info', 'ask_user_for_help']
     
     def route_to_task_from_action_index(action_index, subtask):
-        data = {'context': context, 'task': subtask}
-        next_task = Task(task_list[action_index], data)
+        goal = {'goal': f'Context to understand the task: {context}\n\n\n The task: {subtask}'}
+        next_task = Task(task_list[action_index], goal)
         swarm.task_queue.put_nowait(next_task)
         save_message = f'We will call {task_list[action_index]} to accomplish: {subtask}'
         swarm.save(swarm.save_path, save_message)

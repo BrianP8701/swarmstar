@@ -34,31 +34,23 @@ def save_python_file_to_json(file_path, json_path, key, start_line):
     except IOError as e:
         print(f"Error writing to JSON file {json_path}: {e}")
 
-save_python_file_to_json('tool_building/write_functions.py', 'tool_building/config/functions.json', 'route_task', 40)
+save_python_file_to_json('tool_building/write_functions.py', 'tool_building/config/functions.json', 'write_python', 40)
 
 # Write function below:
 from swarm.swarm import Swarm
+from swarm.agent import Agent
 from task import Task
-async def route_task(subtasks, context, is_parallel):
+async def write_python(goal):
+    print(f'\n\n{goal}\n\n')
     swarm = Swarm()
-    task_list = ['break_down_goal', 'write_text', 'write_python', 'retrieve_info', 'ask_user_for_help']
+    python_agent: Agent = swarm.agents['write_python_agent']
     
-    def route_to_task_from_action_index(action_index, subtask):
-        data = {'context': context, 'task': subtask}
-        next_task = Task(task_list[action_index], data)
-        swarm.task_queue.put_nowait(next_task)
-        save_message = f'We will call {task_list[action_index]} to accomplish: {subtask}'
-        swarm.save(swarm.save_path, save_message)
-        
-    def messagify(subtask):
-        return f"Context to understand the task: {context}\n\n\n The task. Decide what we should do next to accomplish this: {subtask}"
+    tool_output = await python_agent.chat(goal)
+    print('bitch ass md here')
+    print(f'\n\n{tool_output}\n\n')
+    python_code = tool_output['arguments']['python_code']
     
-    if not is_parallel:
-        action_index = await swarm.agents['subtask_router_agent'].chat(messagify(subtasks[0]))
-        action_index = action_index['arguments']['next_action']
-        route_to_task_from_action_index(action_index-1, subtasks[0])
-    else:
-        for subtask in subtasks:
-            action_index = await swarm.agents['router_agent'].chat(messagify(subtask))
-            action_index = action_index['arguments']['next_action']
-            route_to_task_from_action_index(action_index-1, subtask)
+    next_task = Task('save_python_code', tool_output['arguments'])
+    swarm.task_queue.put_nowait(next_task)
+    save_message = f'The code we wrote to solve: {goal} \n\n{python_code}'
+    swarm.save(swarm.save_path, save_message)

@@ -1,5 +1,5 @@
 {
-    "len": 5,
+    "len": 17,
     "0": "Create a class called GithubWrapper that has all the necessary functions to interact with and modify a Github repository.",
     "1": {
         "subtasks": [
@@ -12,5 +12,17 @@
     },
     "2": "We will call break_down_goal to accomplish: Define the scope and functionalities required for the GithubWrapper class.",
     "3": "We will call retrieve_info to accomplish: Research the GitHub API documentation to understand the endpoints needed for the functionalities.",
-    "4": "We will call break_down_goal to accomplish: Set up the authentication process to securely interact with the GitHub API."
+    "4": "We will call break_down_goal to accomplish: Set up the authentication process to securely interact with the GitHub API.",
+    "5": "We will call break_down_goal to accomplish: Define the scope and functionalities required for the GithubWrapper class.",
+    "6": "We will call retrieve_info to accomplish: Research the GitHub API documentation to understand the endpoints needed for the functionalities.",
+    "7": "We will call write_python to accomplish: Set up the authentication process to securely interact with the GitHub API.",
+    "8": "We will call write_text to accomplish: Define the scope and functionalities required for the GithubWrapper class.",
+    "9": "We will call retrieve_info to accomplish: Research the GitHub API documentation to understand the endpoints needed for the functionalities.",
+    "10": "We will call write_python to accomplish: Set up the authentication process to securely interact with the GitHub API.",
+    "11": "We will call break_down_goal to accomplish: Define the scope and functionalities required for the GithubWrapper class.",
+    "12": "We will call retrieve_info to accomplish: Research the GitHub API documentation to understand the endpoints needed for the functionalities.",
+    "13": "We will call write_python to accomplish: Set up the authentication process to securely interact with the GitHub API.",
+    "14": "We will call write_text to accomplish: Define the scope and functionalities required for the GithubWrapper class.",
+    "15": "We will call retrieve_info to accomplish: Research the GitHub API documentation to understand the endpoints needed for the functionalities.",
+    "16": "We will call write_python to accomplish: Set up the authentication process to securely interact with the GitHub API."
 }

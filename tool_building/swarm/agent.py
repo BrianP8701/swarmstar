@@ -16,7 +16,8 @@ class Agent:
         except Exception as e:
             print(f"Exception occurred: {e}")
             return
-        return self.get_tool_output(completion)
+        extracted_tool_output = self.get_tool_output(completion)
+        return extracted_tool_output
 
     def get_tool_output(self, completion):
         tool_output = {}
