@@ -123,3 +123,20 @@ so now i talked to myself a bit more. i kinda ranted abt my concerns.... whats t
 theres rlly quite a lot of things the swarm needs to be capable of doing before becoming self sufficient. And it can become sel sufficient but be extremely sub optimal. I reckon... we gotta hack shit and optimize as we go. ahh back to the same old adage.
 
 so we start simple. just write the python and save it. we'll assume the code will get written correctly. for now, dont worry about making test cases, debugging or complex retrieval. we'll start with a simple goal that wont need that then scale up.
+
+_________________________________________________________________________________________________________
+
+so first we try to have the swarm build a github class. 
+then have it save and make it available to itself.
+
+Add web scraping tools, pdf scrapers
+save data locally and to database. Have a global VIEW of all data, and function describing how to get it if its local or on cloud
+Add all of the above as functions
+
+have the swarm create new functions to write code in different languages.
+try to find ways to make the system more robust when it makes wrong decisions or errors in code
+create a better user interface to allow the user to provide input while the swarm is running
+Then try to have the swarm construct a web app (real estate autogen CMA's, chat, leads, zapier routing etc)
+Try to have the swarm go over its own code and generate documentation describing itself, upgrade itself, add typing hints etc
+
+As our database for the swarm grows we're going to need to create multiple different rag implementaions. one with embeddings-chunking strat, one with knowledge graph/folders, and more etc.

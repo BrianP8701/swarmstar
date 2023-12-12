@@ -4,7 +4,10 @@ from task import Task
 import json
 import os
 from swarm.agent import Agent
- 
+from settings import Settings
+
+settings = Settings() # For config paths
+
 class Swarm:
     '''
     
@@ -22,9 +25,9 @@ class Swarm:
         if not hasattr(self, 'is_initialized'):
             self.tools = {}
             self.task_queue = asyncio.Queue()
-            self.task_handler = TaskHandler('tool_building/config/functions.json', self)
+            self.task_handler = TaskHandler(settings.FUNCTIONS_PATH, self)
             self.save_path = save_path
-            with open('tool_building/config/agents.json') as f:
+            with open(settings.AGENTS_PATH) as f:
                 self.agent_schemas = json.load(f)
             self.agents = {}
             for agent in self.agent_schemas:

@@ -73,38 +73,26 @@
 					"parameters": {
 						"type": "object",
 						"properties": {
+							"code_type": {
+								"type": "integer",
+								"description": "Number representing the type of python code to write. 0: Function, 1: Class, 2: Script"
+							},
 							"python_code": {
 								"type": "string",
 								"description": "Python code to complete the goal"
+							},
+							"name": {
+								"type": "string",
+								"description": "Name of the python code (Name of the function, class, script etc)"
+							},
+							"description": {
+								"type": "string",
+								"description": "A concise and comprehensive description of the python code for anyone who may use it."
 							}
 						}
 					},
 					"required": [
-						"python_code"
-					]
-				}
-			}
-		]
-	},
-	"python_test_cases_agent": {
-		"instructions": "You are an agent in a swarm. Given the goal, context, and python code write test cases",
-		"tools": [
-			{
-				"type": "function",
-				"function": {
-					"name": "write_python",
-					"description": "Write python code to complete the goal. Only output python",
-					"parameters": {
-						"type": "object",
-						"properties": {
-							"python_code": {
-								"type": "string",
-								"description": "Python code to complete the goal"
-							}
-						}
-					},
-					"required": [
-						"python_code"
+						"code_type", "python_code", "description"
 					]
 				}
 			}

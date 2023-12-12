@@ -54,10 +54,15 @@ async def write_python(goal):
     python_agent: Agent = swarm.agents['write_python_agent']
     
     tool_output = await python_agent.chat(goal)
+    code_type = tool_output['arguments']['code_type']
     python_code = tool_output['arguments']['python_code']
-
-    next_task = Task('save_python_code', python_code['arguments'])
+    name = tool_output['arguments']['name']
+    description = tool_output['arguments']['description']
+    
+    next_task = Task('save_python_code', tool_output['arguments'])
     swarm.task_queue.put_nowait(next_task)
+    save_message = f'The code we wrote to solve: {goal} \n{name}\nCode Type (0: Function, 1: Class, 2: Script) - {code_type}\n{python_code}\n{description}'
+    swarm.save(swarm.save_path, save_message)
             
             
             

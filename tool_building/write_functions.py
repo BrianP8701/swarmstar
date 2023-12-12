@@ -3,8 +3,20 @@ Temporary file to write and add functions to the functions.json file manually. W
 '''
 
 import json
+from settings import Settings
 
-def save_python_file_to_json(file_path, json_path, key, start_line):
+settings = Settings()
+
+def save_python_file_to_json(file_path, json_path, name, description, start_line):
+    """
+    Save a Python file to a JSON file with an additional description.
+
+    :param file_path: Path to the Python file.
+    :param json_path: Path to the JSON file.
+    :param name: The key to add to the JSON dictionary.
+    :param description: The description to add under the key.
+    :param start_line: The line number from which to start reading the Python file.
+    """
     # Read the Python file from a specific line number to the end
     try:
         with open(file_path, 'r') as file:
@@ -25,7 +37,10 @@ def save_python_file_to_json(file_path, json_path, key, start_line):
         data = {}
 
     # Update the dictionary with the new key-value pair
-    data[key] = file_content
+    data[name] = {
+        'code': file_content,
+        'description': description
+    }
 
     # Write the updated dictionary back to the JSON file
     try:
@@ -34,23 +49,10 @@ def save_python_file_to_json(file_path, json_path, key, start_line):
     except IOError as e:
         print(f"Error writing to JSON file {json_path}: {e}")
 
-save_python_file_to_json('tool_building/write_functions.py', 'tool_building/config/functions.json', 'write_python', 40)
+description = ''
+save_python_file_to_json('tool_building/write_functions.py', settings.FUNCTIONS_PATH, 'save_python_code', description, 56)
 
-# Write function below:
-from swarm.swarm import Swarm
-from swarm.agent import Agent
-from task import Task
-async def write_python(goal):
-    print(f'\n\n{goal}\n\n')
-    swarm = Swarm()
-    python_agent: Agent = swarm.agents['write_python_agent']
-    
-    tool_output = await python_agent.chat(goal)
-    print('bitch ass md here')
-    print(f'\n\n{tool_output}\n\n')
-    python_code = tool_output['arguments']['python_code']
-    
-    next_task = Task('save_python_code', tool_output['arguments'])
-    swarm.task_queue.put_nowait(next_task)
-    save_message = f'The code we wrote to solve: {goal} \n\n{python_code}'
-    swarm.save(swarm.save_path, save_message)
+# Write function below: 
+from swarm.memory.save_code import save_python_code 
+async def save_python_code(code_type, python_code, name, description):
+    save_python_code(code_type, python_code, name, description)
