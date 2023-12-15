@@ -35,9 +35,9 @@ class Swarm:
                 self.agents[agent] = Agent(self.agent_schemas[agent]['instructions'], self.agent_schemas[agent]['tools'], tool_choice)
             self.is_initialized = True
 
-    async def start(self, goal):
-        self.task_queue.put_nowait(Task('break_down_goal', {'goal': goal}))
-        self.save(self.save_path, f'Goal: {goal}')
+    async def start(self, goal, context):
+        self.task_queue.put_nowait(Task('route_task', {'subtasks': [goal], 'context': context, 'is_parallel': False}))
+        self.save(self.save_path, f'Goal: {goal}\nContext: {context}')
         while True:
             task = await self.task_queue.get()
             print(task)
@@ -63,7 +63,7 @@ class Swarm:
             finally:
                 self.task_queue.task_done()
                 
-    def save(self, json_path, value):
+    def save(self, json_path, value, task_name):
         if not os.path.exists(json_path):
             data = {}
         else:
@@ -73,7 +73,8 @@ class Swarm:
         if 'len' not in data:
             data['len'] = 0
         
-        data[data['len']] = value
+        key = f'{len} {task_name}'
+        data[key] = value
         data['len'] += 1
         
         with open(json_path, 'w') as file:

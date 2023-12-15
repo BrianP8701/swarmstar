@@ -106,7 +106,7 @@ async def write_python(goal):
 okay. calm down. recollect.
 The assumption im making is that if the problem has been broken down enough, and we gather all the relevant context and information to solve the problem chatgpt should be able to solve it.
 
-"Solving it." Ultimately, tasks get broken down into one of the following: [Write code, retrieval, run code]
+"Solving it." Ultimately, tasks get broken down into one of the following: [Write code, retrieval, run code] (for now)
 
 First lets focus on the task of "writing code"
 
@@ -140,3 +140,37 @@ Then try to have the swarm construct a web app (real estate autogen CMA's, chat,
 Try to have the swarm go over its own code and generate documentation describing itself, upgrade itself, add typing hints etc
 
 As our database for the swarm grows we're going to need to create multiple different rag implementaions. one with embeddings-chunking strat, one with knowledge graph/folders, and more etc.
+
+
+_________________________________________________________________________________________________________
+
+# Tree structure
+There are 3 concerns i have now:
+
+1. Should i do the tree spawn-terminate method? Is that all encompassing? Is it too rigid and introducess too much complexity?
+2. There needs to be places for user input. I have an answer to this. Now initially, i can make it so that we have user input and verification at every step. I know, the point is that i want to automate the process, but initially this will make it easier, and it will also be easy to take this away later
+3. This current task, i could definitely step in and choose what the correct answer is. in the future, i imagine in great big complex tasks i will want to be very involved. but for now, i really am just trying my best automate stuff.
+
+The question is first and foremost how do we implement tree architecture?
+
+Tasks are nodes. Tasks can spawn other tasks. 
+
+TaskNode - we'll call them tasknodes. 
+
+TaskNodes:
+    - type (str)
+    - children (List[TaskNode])
+    - parent (TaskNode)
+
+    - spawn new TaskNodes
+    - terminate themselves and report to parent
+
+
+Now, before we introduce these changes, lets review the current abstractions in place for tasks
+
+We have a task type which holds the function name to be called in functions config and the corresponding parameters to be passed. Its a one time use thing.
+Then we have the TaskHandler object which takes a task and runs it. very simple rn.
+
+What i see now is that the forward pass and backwards pass through that Node will likely require us to call different functions. On the way down, we'll need to perform and decide what to do next. On the way up we'll be reviewing reports and seeing if our task is done and if we can terminate, or if we need to try again.
+
+So the question is, at each Node is it as simple as having two functions, one for forward and one for backwards pass? Remember the age old adage - we want it to be as simple as possible to avoid complexity, but the swarm needs to be universally applicable and infinitely scalable.

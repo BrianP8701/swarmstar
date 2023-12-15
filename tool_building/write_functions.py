@@ -49,10 +49,35 @@ def save_python_file_to_json(file_path, json_path, name, description, start_line
     except IOError as e:
         print(f"Error writing to JSON file {json_path}: {e}")
 
-description = ''
-save_python_file_to_json('tool_building/write_functions.py', settings.FUNCTIONS_PATH, 'save_python_code', description, 56)
+description = "Routes a task to the appropriate next action.\n\tInput: A list of subtasks (list), a string describing the context of the goal (str), and a boolean indicating whether the subtasks should be executed in parallel or sequentially (bool)\n\tReturns: None\nCalls the subtask_router_agent to route a subtask to the appropriate next action. Schedules tasks in swarm correspondingly:\nA dictionary with the following keys:\n\t'next_action': An integer indicating the next action to take (1: break_down_goal, 2: write_text, 3: write_python, 4: retrieve_info, 5: ask_user_for_help)"
+save_python_file_to_json('tool_building/write_functions.py', settings.FUNCTIONS_PATH, 'route_task', description, 56)
 
 # Write function below: 
-from swarm.memory.save_code import save_python_code 
-async def save_python_code(code_type, python_code, name, description):
-    save_python_code(code_type, python_code, name, description)
+from swarm.swarm import Swarm
+from task import Task
+async def route_task(subtasks, context, is_parallel):
+    swarm = Swarm()
+    router_agent = swarm.agents['router_agent']
+    task_list = ['break_down_goal', 'write_text', 'write_python', 'retrieve_info', 'ask_user_for_help']
+    save_message = {}
+    
+    def route_to_task_from_action_index(action_index, subtask):
+        goal = {'goal': f'Context to understand the task: {context}\n\n\n The task: {subtask}'}
+        next_task = Task(task_list[action_index], goal)
+        swarm.task_queue.put_nowait(next_task)
+        save_message[subtask] = task_list[action_index]
+        
+    def messagify(subtask):
+        return f"Context to understand the task: {context}\n\n\n The task. Decide what we should do next to accomplish this: {subtask}"
+    
+    if not is_parallel:
+        action_index = await router_agent.chat(messagify(subtasks[0]))
+        action_index = action_index['arguments']['next_action']
+        route_to_task_from_action_index(action_index-1, subtasks[0])
+    else:
+        for subtask in subtasks:
+            action_index = await router_agent.chat(messagify(subtask))
+            action_index = action_index['arguments']['next_action']
+            route_to_task_from_action_index(action_index-1, subtask)
+            
+    swarm.save(swarm.save_path, save_message)
