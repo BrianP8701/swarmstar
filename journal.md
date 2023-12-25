@@ -255,7 +255,7 @@ All the nodes
 The reason we have history and state is because the current state of the swarm doesent show us how we got there as the swarm will delete nodes. So for history, to see how we got to the current state we need more.
 We need all instances of node creation, execution and deletion
 
-So that answers our question. We 
+So that answers our question. We will have a queue in the swarm responsible for three tasks creation, execution and termination of nodes. this queue shall be called: node_lifecycle_queue
 # Swarm coding Challenge
 
 Okay I've identified a big challenge in the RAG portion of this project. When i have the swarm write code its going to need to write code to interact with the rest of the swarm and *squeeze* itself in. Okay lol i just thought of the solution.
@@ -293,3 +293,18 @@ Okay... so what do we need to include in the internal swarm api for self suffici
 - execute code
 - retrieve context from memory
 
+
+
+
+_____________________________________________________________________________________________
+
+create node -> execute node -> create node, create node, create node -> execute node, execute node, execute node -> ... -> terminate node, terminate node, terminate node
+
+okay the crucial thing is when a node terminates, it terminates itself and signals its parent to execute. a parent cant execute unless all of its children have given it the go. then it terminates itself and the process continues.
+
+When we spawn a node, we spawn it and execute the node. That node is responsible for internally deciding whether to terminate or spawn children. 
+
+so if we have the lifecycle queue in the swarm be responsible for two things:
+
+- spawning nodes
+- terminating nodes

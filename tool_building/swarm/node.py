@@ -1,25 +1,24 @@
-from settings import Settings
-from task import Task
-settings = Settings() # For config paths
+from pydantic import BaseModel
+from typing import Optional, List
 
-class Node:
-    def __init__(self, id: int, task_type: str, data: dict, parent):
-        self.id = id
-        self.task_type = task_type
-        self.parent = parent
-        self.children = []
-        self.data = data
-        self.output = None
-        
-    def execute(self):
-        task = Task(self.forward_task_name, self.data)
-        self.swarm.task_queue.put_nowait(self, task)
-        
+class Node(BaseModel):
+    id: int
+    task_type: str
+    data: dict
+    parent: Optional['Node'] = None
+    children: List['Node'] = []
+    output: Optional[dict] = None
+
+    class Config:
+        arbitrary_types_allowed = True
+        validate_assignment = True
+        allow_population_by_field_name = True
+          
     def jsonify(self):
         return {
             "task_type": self.task_type,
             "parent": self.parent,
             "children": self.children,
-            "input_data": self.input_data,
-            "output_data": self.output_data
+            "input_data": self.data,
+            "output_data": self.output
         }
