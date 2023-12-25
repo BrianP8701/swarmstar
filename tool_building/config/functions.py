@@ -6,14 +6,16 @@ Same functions as in functions.json, but just easier to read here.
 +----------------- break_down_goal -----------------+
 '''
 from swarm.swarm import Swarm
-from task import Task
+from swarm.node import Node
 async def break_down_goal(goal):
     swarm = Swarm()
-    head_agent = swarm.agents['head_agent']
+    manager = swarm.agents['manager']
     
-    broken_down_goal = await head_agent.chat(goal)
-    next_task = Task('route_task', broken_down_goal['arguments'])
-    swarm.task_queue.put_nowait(next_task)
+    broken_down_goal = await manager.chat(goal)
+    
+    
+    next_node = Node(swarm.population, 'route', broken_down_goal['arguments'])
+    swarm.task_queue.put_nowait(next_node)
     swarm.save(swarm.save_path, broken_down_goal['arguments'])
 
 '''

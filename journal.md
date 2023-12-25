@@ -1,3 +1,5 @@
+Okay lol this is a preface i added later. this is just like a place for me to jot down my thoughts as i code the swarm. there is no cohesiveness, this is not meant to be read by anyone. but i like keeping it up
+
 We want functions that can:
     Take text describing a function
     Return a function
@@ -148,8 +150,8 @@ ________________________________________________________________________________
 There are 3 concerns i have now:
 
 1. Should i do the tree spawn-terminate method? Is that all encompassing? Is it too rigid and introducess too much complexity?
-2. There needs to be places for user input. I have an answer to this. Now initially, i can make it so that we have user input and verification at every step. I know, the point is that i want to automate the process, but initially this will make it easier, and it will also be easy to take this away later
-3. This current task, i could definitely step in and choose what the correct answer is. in the future, i imagine in great big complex tasks i will want to be very involved. but for now, i really am just trying my best automate stuff.
+2. There needs to be places for user input. I have a temporary answer to this. Now initially, i can make it so that we have user input and verification at every step. I know, the point is that i want to automate the process, but initially this will make it easier, and it will also be easy to take this away later
+3. This current task is very easy for a human. Im spending more effort getting the swarm to do it than itd take me alone. but - the key is that im automating this whole level of difficulty and type of task
 
 The question is first and foremost how do we implement tree architecture?
 
@@ -174,3 +176,120 @@ Then we have the TaskHandler object which takes a task and runs it. very simple 
 What i see now is that the forward pass and backwards pass through that Node will likely require us to call different functions. On the way down, we'll need to perform and decide what to do next. On the way up we'll be reviewing reports and seeing if our task is done and if we can terminate, or if we need to try again.
 
 So the question is, at each Node is it as simple as having two functions, one for forward and one for backwards pass? Remember the age old adage - we want it to be as simple as possible to avoid complexity, but the swarm needs to be universally applicable and infinitely scalable.
+
+
+________________
+
+
+
+# Tree Implementation for Swarm
+
+Fundamental unit is the node which consists of:
+- TaskType
+- Unique data
+- Parent
+- Children
+
+What this means for simplicities sake is that each node cannot do internal review, rather it must spawn a new node to do so
+
+Additionally the swarm must now maintain two more things:
+- The curresnt state of the tree
+- The history of the tree
+
+Schema for swarm history (JSON):
+
+create node
+run node
+delete node
+
+[
+    {
+        action: "create_node",
+        node: Node
+    },
+    {
+        action: "run_node",
+        node: Node
+    },
+    {
+        action: "delete_node",
+        node: Node
+    },
+    ...
+]
+
+
+When the swarm ends its run we must save a snapshot of the current state of the swamrm that is recreatable
+
+Schema for swarm snapshot (JSON):
+{
+    population: x,
+    nodes: {0: root_node, 1: node1, 2: node2...},
+    task_queue: [(task, queue), (task, queue)...]
+}
+
+Now one challenge with taking the snapshot is at the time of deletion the task being performed at that moment will not be included in the snapshot
+
+
+So now, when we implement this we'll be able to pick up where we left off with snapshot and get a good visualization with history
+
+
+each node must now:
+perform their task
+save their output within themselves
+save state and history
+create children or terminate
+
+OKAY I GOT IT. The functions in functions.py should not contain the logic related to nodes at all. 
+Where does the loop go? What does the loop handle? Execution of tasks? Creation, deletion and activation of nodes?
+Now the thing is functionally it doesent matter. Why does this decision matter? Because it affects the way we think about the swarm. 
+If we think about the swarm as a loop that executes tasks, then we have to think about the swarm as a loop that executes tasks.
+If we think about the swarm as a loop that creates, deletes and activates nodes, then we have to think about the swarm as a loop that creates, deletes and activates nodes.
+The second way of thinking about it is more general. The first way of thinking about it is more specific.
+The loop defines the level of granularity that will be easy for us to visualize and 
+Oh shit i got it. At what granularity do we want to save state? Thats what matters for the swarm. 
+
+To save state we need:
+All the nodes
+
+The reason we have history and state is because the current state of the swarm doesent show us how we got there as the swarm will delete nodes. So for history, to see how we got to the current state we need more.
+We need all instances of node creation, execution and deletion
+
+So that answers our question. We 
+# Swarm coding Challenge
+
+Okay I've identified a big challenge in the RAG portion of this project. When i have the swarm write code its going to need to write code to interact with the rest of the swarm and *squeeze* itself in. Okay lol i just thought of the solution.
+
+Create an internal swarm api. And make good documentation on usage and functionality and just pass that to thw swarm whenever it is necessary. 
+
+Now, when the swarm then needs to interact with other libraries or apis, its going to need to retrieve that documentation or code. in fact, we need to somehow do retrieval over the docs to find the relevant portion of the docs/code to add to context. Effective autonomous RAG is crucial for self sufficient swarm capabilities.
+
+# Refactor structure plan for the future #TODO
+So now i kinda have better thoughts.... ima need a big refactor but ima push features for a little longer because the complexity rn is still managable for my brain. But when I do refactor heres a rough structure:
+
+- Swarm (Tree structure, nodes, state, history)
+- TaskMaster is responsible for execution of all functions (task_queue)
+- Internal Swarm API (minimal functionality for self sufficiency. This is some theoretical bound)
+- Memory (Storing data, documentation and also code, classes etc to be used by the swarm)
+
+Okay. so this actually helped clear up my head a lot. We get the swarm and taskmaster done once and for all, and then there should be no further iteration added there.
+
+The internal swarm api will take time and lots of iteration to get right. But once its right, the swarm will be able to do anything.
+
+The memory will be iterated on for all eternity. 
+
+The key thing is that the internal swarm api needs to contain the rag functionally to effectively navigate the memory. thats what it all comes down to.
+
+
+
+# Theoretical non rigorous thinking abt the internal swarm api
+
+Okay... so what do we need to include in the internal swarm api for self sufficiency? specific fucntions:
+
+- break down goal
+- route goal
+- write code/text
+- save code/text so it can be used
+- execute code
+- retrieve context from memory
+

@@ -2,11 +2,9 @@ import json
 
 class TaskHandler:
     '''This class handles the execution of tasks. It loads functions from a file and executes them when needed.'''
-    def __init__(self, functions_file, swarm):
+    def __init__(self, functions_file):
         self.activated_functions = {}
         self.load_functions(functions_file)
-        self.swarm = swarm
-        self.task_queue = swarm.task_queue
 
     def load_functions(self, functions_file):
         try:
@@ -21,14 +19,14 @@ class TaskHandler:
             exec(self.functions_as_strings[function_name], globals())
             self.activated_functions[function_name] = globals()[function_name]
 
-    async def handle_task(self, task):
-        function_name = task.task_type
+    async def handle_task(self, node):
+        function_name = node.task_type
         if function_name not in self.activated_functions:
             await self.activate_function(function_name)
 
         if function_name in self.activated_functions:
             try:
-                tool_output =  await self.activated_functions[function_name](**task.data)
+                tool_output =  await self.activated_functions[function_name](**node.data)
                 return tool_output
             except TypeError as e:
                 print(f"Error calling function {function_name}: {e}")
