@@ -3,7 +3,7 @@ from typing import Optional, List
 
 class Node(BaseModel):
     id: int
-    task_type: str
+    type: str
     data: dict
     parent: Optional['Node'] = None
     children: List['Node'] = []
@@ -16,7 +16,7 @@ class Node(BaseModel):
           
     def jsonify(self):
         return {
-            "task_type": self.task_type,
+            "task_type": self.type,
             "parent": self.parent,
             "children": self.children,
             "input_data": self.data,

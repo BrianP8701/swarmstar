@@ -10,10 +10,9 @@ from typing import Optional, List
 
 settings = Settings() # For config paths
 
-class Swarm(BaseModel):
+class Swarm:
     '''
     Create swarm. 
-    Call initialize() to align swarm state with snapshot. If snapshot is empty, create a root node with the given goal
     The only inputs to swarm are snapshot and history path
     You have two choices:
         - Create a new swarm with a goal and context
@@ -36,59 +35,43 @@ class Swarm(BaseModel):
     def __init__(self, snapshot_path=None, history_path=None):
         if not hasattr(self, 'is_initialized'):
             self.lifecycle_queue = asyncio.Queue()
-            self.population = 1
+            self.population = 0
             self.snapshot_path = snapshot_path
             self.history_path = history_path
-            self.load()
+            self._load()
             self.is_initialized = True
-
-    def load(self):
-        '''
-        Load swarm state, history, and agents
-        '''
-        # Load history from file or initialize to empty list if file doesn't exist
-        self.history = self._load_json_file(self.history_path, [])
-
-        # Load state from file or initialize to empty dict if file doesn't exist
-        self.state = self._load_json_file(self.snapshot_path, {})
-
-        # Update population and task_queue if state is not empty
-        if self.state:
-            self.population = self.state.get('population', 0)
-            self.task_queue = self.state.get('task_queue', [])
-
-        # Load agents
-        self.agents = self._load_agents(settings.AGENTS_PATH)
 
     def load_goal(self, goal: str, context=None):
         '''
-        Align swarm state with snapshot. If starting from scratch, provide a goal to initiate the swarm
+        If your starting a new swarm with an empty snapshot you need to select a goal and context
         '''
-        if not self.state == {}:
-            raise ValueError('Cannot initiate a swarm when snapshot is not empty. Create a new swarm instead.')
+        if not self.state['population'] == 0:
+            raise ValueError('Create a new swarm to load a new goal')
         if context == None: context = ''
-        root_node = Node(0, 'route', {'subtasks': [goal], 'context': context, 'is_parallel': False})
-        self.lifecycle_queue.put_nowait(('create_node', root_node))
-        
-        # TODO MOVE THIS TO THE LOOP THAT HANDLES LIFECYCLE QUEUE
-        self.state['nodes'][0] = root_node
-        self.save('create_node', root_node)
+        root_node = Node(id=0, type='route', data={'subtasks': [goal], 'context': context, 'is_parallel': False}, parent=None)
+        self.lifecycle_queue.put_nowait(('create', root_node))
 
-    
     async def run(self):
         '''
             This is the main function that loops until the swarm completes its goal
         '''
         while True:
-            action, node = await self.lifecycle_queue.get()
+            action, node = await self.lifecycle_queue.get() # action can be 'create' or 'terminate'
             try:
+                if action == 'create':
+                    pass
+                elif action == 'terminate':
+                    pass
+                else:
+                    raise ValueError(f'Invalid action passed to lifecycle queue: {action}')
+                
                 result = await self.task_handler.handle_task(node)
             except Exception as error:
                 print(error)
             finally:
                 self.task_queue.task_done()     
                 
-    def save(self, action_type, node: Node):
+    async def save(self, action_type, node: Node):
         self.history.append({
             "action": action_type,
             "node": node.jsonify()
@@ -97,6 +80,57 @@ class Swarm(BaseModel):
         with open(self.history_path, 'w') as file:
             json.dump(self.history, file, indent=4)
             
+    '''
+    +------------------------ Private methods ------------------------+
+    '''        
+
+    async def _create_node(self, node):
+        '''
+        Now you need to save to history the fact that this node was created.
+        Save to state the node prior to execution
+        Then execute the task
+        Then save to state the node after execution
+        And save to history the fact that the node was executed
+        '''
+        creation_checkpoint = {
+            'action': 'create',
+            'node': node.jsonify()
+        }
+        self._save_checkpoint(creation_checkpoint)
+        self._update_state('create', node)
+        
+        output = await node.execute()
+        
+        # TODO TODO TODO TODO TODO TODO WE ARE WORKING HERE!!!!! TODO TODO TODO TODO TODO TODO
+        # first u need to set up the thing that executes the script inside the node
+        # Then that node should return the necessary info back here to create or terminate nodes next which happens right here, below.
+        pass
+    
+    def _save_checkpoint(self, checkpoint):
+        self.history.append(checkpoint)
+        json.dump(self.history, self.history_path, indent=4)
+        
+    def _update_state(self, action_type: str, node: Node):
+        if action_type == 'create':
+            self.state['nodes'][self.population] = node
+            self.population += 1
+        elif action_type == 'terminate':
+            pass
+        else:
+            raise ValueError(f'Invalid action type: {action_type}')
+        
+    def _load(self):
+        '''
+        Load swarm state, history, and agents
+        '''
+        self.history = self._load_json_file(self.history_path, [])
+        self.state = self._load_json_file(self.snapshot_path, {})
+
+        self.population = self.state.get('population', 0)
+        self.task_queue = self.state.get('task_queue', [])
+
+        self.agents = self._load_agents(settings.AGENTS_PATH)        
+
     def _load_json_file(self, file_path, default_value):
         if os.path.exists(file_path):
             with open(file_path, 'r') as file:

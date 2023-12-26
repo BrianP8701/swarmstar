@@ -1,5 +1,36 @@
 Okay lol this is a preface i added later. this is just like a place for me to jot down my thoughts as i code the swarm. there is no cohesiveness, this is not meant to be read by anyone. but i like keeping it up
 
+Okay so often i copy and paste the whole of this file into chatgpt when im stuck and have it help me pick up with my thoughts where i left off. so im gonna include the main doc page in between these underscored lines for that purpose:
+
+____________________________________________________________________________________________
+# Agent_Swarm_Experiments
+Making experiments locally to contribute to AGI. Documenting my journey on YouTube @ [AI Agent Swarm Playlist](https://youtube.com/playlist?list=PLO8gVow6df_Rh7DEJ10_WAdnkGnIRCh-K&si=eYdyBu7NShKckilS)
+
+# Principles
+    1. Make everything as simple as possible
+    2. Make swarm universally applicable/infinitely scalable to any goal
+    3. Strategically build to take advantage of SOTA models
+    4. Prepare for new modalities and robotics
+
+## Usage
+First, configure the .env file. Each subfolder contains an idea or experiment (RAG/agent swarm related). Each experiment contains a plan.md file for my personal use (likely not of any use to you), and a docs.md which you should read. The docs.md will contain usage instructions, architecture details etc.
+
+In the rest of this file I will describe the motivation and takeaways of each experiment.
+
+## Experiments
+
+In theory - or my imagination at least - there ought to be an inflection point where the swarm becomes self sufficient. 
+
+The swarm needs to be self aware that it is a swarm. The top agents need to know about the system they operate in. They need sufficient context. Lower agents who gain more and more specific tasks will need less context.
+
+
+
+### Tool Building Experiment
+Goal: Have agents autonomously make new python functions that can be used by the swarm
+____________________________________________________________________________________________
+
+
+
 We want functions that can:
     Take text describing a function
     Return a function
@@ -271,6 +302,7 @@ So now i kinda have better thoughts.... ima need a big refactor but ima push fea
 - TaskMaster is responsible for execution of all functions (task_queue)
 - Internal Swarm API (minimal functionality for self sufficiency. This is some theoretical bound)
 - Memory (Storing data, documentation and also code, classes etc to be used by the swarm)
+- Human Interface (Terminal for now, but later a web app including visualization with easy access to communicate and interact with the swarm as it works)
 
 Okay. so this actually helped clear up my head a lot. We get the swarm and taskmaster done once and for all, and then there should be no further iteration added there.
 
@@ -308,3 +340,80 @@ so if we have the lifecycle queue in the swarm be responsible for two things:
 
 - spawning nodes
 - terminating nodes
+
+
+
+
+## Creating/spawning nodes
+
+This is my thought process writing the _create_node() function in swarm:
+
+Well the node is actually already created. it has the task type, data and a pointer to its parent.
+Now you need to save to history the fact that this node was created.
+Save to state the node prior to execution
+Then execute the task
+Then save to state the node after execution
+And save to history the fact that the node was executed
+
+Now the question is, do we create/terminate nodes inside the task run, or seperate but inside the node?
+
+Will every node use an LLM? Or will some just execute code?
+Okay, not all nodes will use an LLM. Some will just execute code.
+
+So lets clear up.... we need the node to be very general. lets think of all the things we want a node to be able to do:
+
+- break down goals
+- route goals to appropriate next tasks
+- write text
+- write code
+- execute code
+- read terminal output
+- go back up and retrieve outputs from previous nodes
+- browse the web
+- interact with internal swarm api
+... and many more
+
+now that im looking at this... i take back what i said earlier. it does seem every node task is coupled with an llm interaction. cuz we can combine write & execute code, and etc.... Hmmmm.... lets see can i think of a node that would not involve the use of an llm...
+
+okay so i talked to chatgpt... he complimented me and i let it feed my ego for how "complex" my project is. but anyway i came to the conclusion that i want each node to call an llm with this reasoning:
+
+"I mean i think for my feel the swarm will take predefined routes and paths of logic, and the llm reasoning engine helps you know... automate my knowledge work and that should be what defines the granularity of a node. every node is one llm call."
+
+So now we decided every node has:
+type, data, parent, children, output
+
+Each node will execute its predefined logic, and do an LLM call to automate a piece of knowledge work, and will then either execute some more logic then create a new node or just create a new node. So this means every node is associated with an agent + predefined logic. Now, how should we implement the flow of the node?
+
+So the node has its type attribute which should link us to the logic and agent used in this node. It could be:
+
+-> agent ->
+-> logic -> agent ->
+-> agen -> logic
+-> logic -> agent -> logic
+
+Okay each node is associated with a script. The script is stored as a string in one of the configuration files. executing the node is just executing the script. output is simply the output of that script. Included in the output is all the data needed to spawn the next set of nodes or to terminate self. We want to decouple swarm interaction from the script for simplicity purposes
+
+all scripts will be run from the same place so import statements wont fuck up. all scripts are seperate and meant to run on their own
+
+now the question is, actually 3 questions:
+- are all scripts in python?
+- where should i store the scripts?
+- what metadata should i store alongside each script?
+
+well lets just put language as metadata
+store the scripts as strings in json file in config folder... but potentially in new folder later. thing is we'll probably have thousands and just more and more scripts in the future. this is where rag file system/tree comes in to organize navigation 
+
+
+node_scripts.json:
+
+{
+    node_type: {
+        language: str,
+        description: str,
+        script: str
+    },
+    ...
+}
+
+can add more metadata later as needed
+most importantly, later on we're going to have to find better ways to organize and navigate the scripts and tools available to the swarm as it grows bigger
