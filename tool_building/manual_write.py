@@ -4,32 +4,19 @@ Write and add scripts to node_scripts.json
 
 # <-- Script start -->
 from swarm.swarm import Swarm
-async def route_task(subtasks, context, is_parallel):
+from swarm.agent import Agent
+async def write_python(goal):
     swarm = Swarm()
-    router_agent = swarm.agents['router_agent']
-    task_list = ['break_down_goal', 'write_text', 'write_python', 'retrieve_info', 'ask_user_for_help']
-    save_message = {}
+    python_agent: Agent = swarm.agents['write_python_agent']
     
-    def route_to_task_from_action_index(action_index, subtask):
-        goal = {'goal': f'Context to understand the task: {context}\n\n\n The task: {subtask}'}
-        next_task = Task(task_list[action_index], goal)
-        swarm.task_queue.put_nowait(next_task)
-        save_message[subtask] = task_list[action_index]
-        
-    def messagify(subtask):
-        return f"Context to understand the task: {context}\n\n\n The task. Decide what we should do next to accomplish this: {subtask}"
+    tool_output = await python_agent.chat(goal)
+    code_type = tool_output['arguments']['code_type']
+    python_code = tool_output['arguments']['python_code']
+    name = tool_output['arguments']['name']
+    description = tool_output['arguments']['description']
     
-    if not is_parallel:
-        action_index = await router_agent.chat(messagify(subtasks[0]))
-        action_index = action_index['arguments']['next_action']
-        route_to_task_from_action_index(action_index-1, subtasks[0])
-    else:
-        for subtask in subtasks:
-            action_index = await router_agent.chat(messagify(subtask))
-            action_index = action_index['arguments']['next_action']
-            route_to_task_from_action_index(action_index-1, subtask)
-            
-    swarm.save(swarm.save_path, save_message)
+    # TODO TODO TODO TODO TODO TODO WE ARE WORKING HERE!!!!! TODO TODO TODO TODO TODO TODO
+    # save python code, then idk.....
 # <-- Script end -->
 
 
@@ -101,4 +88,4 @@ def save_python_file_to_json(file_path, json_path, name, description=None, langu
     except IOError as e:
         print(f"Error writing to JSON file {json_path}: {e}")
 
-save_python_file_to_json('tool_building/write_functions.py', settings.NODE_SCRIPTS_PATH, 'route')
+save_python_file_to_json('tool_building/manual_write.py', settings.NODE_SCRIPTS_PATH, 'write_python')

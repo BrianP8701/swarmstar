@@ -417,3 +417,17 @@ node_scripts.json:
 
 can add more metadata later as needed
 most importantly, later on we're going to have to find better ways to organize and navigate the scripts and tools available to the swarm as it grows bigger
+
+
+
+# Router
+
+A question im saving for later, is rn the router has the choices:
+['break_down_goal', 'write_text', 'write_python', 'retrieve_info', 'ask_user_for_help']
+
+But how do we 'route' when we have many hundreds of options to route to?
+
+
+
+
+Remember when we terminate a node we dont just go up to the most recent fork in the tree. some managers didnt do inparralel at break but had a plan with steps so u need to pass back to them

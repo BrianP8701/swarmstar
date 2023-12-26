@@ -3,73 +3,43 @@ Same functions as in functions.json, but just easier to read here.
 '''
 
 '''
-+----------------- break_down_goal -----------------+
++----------------- manager -----------------+
 '''
 from swarm.swarm import Swarm
-from swarm.node import Node
-async def break_down_goal(goal):
+async def break_down_goal(goal, context):
     swarm = Swarm()
     manager = swarm.agents['manager']
-    
-    broken_down_goal = await manager.chat(goal)
-    
-    
-    next_node = Node(swarm.population, 'route', broken_down_goal['arguments'])
-    swarm.task_queue.put_nowait(next_node)
-    swarm.save(swarm.save_path, broken_down_goal['arguments'])
+    broken_down_goal = await manager.chat(f'Context to understand the goal: {context}\n\n\n The goal: {goal}')
 
+    node_blueprints = []
+    for subgoal in broken_down_goal['arguments']['subtasks']:
+        data = {
+            'goal': subgoal,
+            'context': broken_down_goal['arguments']['context']
+        }
+        node_blueprints.append({'type': 'route', 'data': data})
+        if broken_down_goal['arguments']['is_parallel']:
+            break
+    return node_blueprints
 '''
-+----------------- route_task -----------------+
++----------------- router -----------------+
 '''
 from swarm.swarm import Swarm
-from task import Task
-async def route_task(subtasks, context, is_parallel):
+async def route(goal):
     swarm = Swarm()
-    router_agent = swarm.agents['router_agent']
-    task_list = ['break_down_goal', 'write_text', 'write_python', 'retrieve_info', 'ask_user_for_help']
-    save_message = {}
+    router_agent = swarm.agents['router']
+    options = ['break_down_goal', 'write_text', 'write_python', 'retrieve_info', 'ask_user_for_help']
     
-    def route_to_task_from_action_index(action_index, subtask):
-        goal = {'goal': f'Context to understand the task: {context}\n\n\n The task: {subtask}'}
-        next_task = Task(task_list[action_index], goal)
-        swarm.task_queue.put_nowait(next_task)
-        save_message[subtask] = task_list[action_index]
-        
-    def messagify(subtask):
-        return f"Context to understand the task: {context}\n\n\n The task. Decide what we should do next to accomplish this: {subtask}"
-    
-    if not is_parallel:
-        action_index = await router_agent.chat(messagify(subtasks[0]))
-        action_index = action_index['arguments']['next_action']
-        route_to_task_from_action_index(action_index-1, subtasks[0])
-    else:
-        for subtask in subtasks:
-            action_index = await router_agent.chat(messagify(subtask))
-            action_index = action_index['arguments']['next_action']
-            route_to_task_from_action_index(action_index-1, subtask)
+    action_index = await router_agent.chat(goal)
+    action_index = action_index['arguments']['next_action']
+    node_blueprints = [{'type': options[action_index-1], 'data': {'goal': goal}}]
             
-    swarm.save(swarm.save_path, save_message)
+    return {'action': 'create', 'node_blueprints': node_blueprints}
 
 '''
 +----------------- write_python -----------------+
 '''
-from swarm.swarm import Swarm
-from swarm.agent import Agent
-from task import Task
-async def write_python(goal):
-    swarm = Swarm()
-    python_agent: Agent = swarm.agents['write_python_agent']
-    
-    tool_output = await python_agent.chat(goal)
-    code_type = tool_output['arguments']['code_type']
-    python_code = tool_output['arguments']['python_code']
-    name = tool_output['arguments']['name']
-    description = tool_output['arguments']['description']
-    
-    next_task = Task('save_python_code', tool_output['arguments'])
-    swarm.task_queue.put_nowait(next_task)
-    save_message = f'The code we wrote to solve: {goal} \n{name}\nCode Type (0: Function, 1: Class, 2: Script) - {code_type}\n{python_code}\n{description}'
-    swarm.save(swarm.save_path, save_message)
+
             
 '''
 +----------------- save_python_code -----------------+

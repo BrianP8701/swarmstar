@@ -21,3 +21,15 @@ swarm/
 agents.json essentially contains premade agent definitions for the swarm. In my project agents simply contain one tool and a description. 
 and then obv agent.py is just the agent object with a chat function to use the tool
 functions.json just contains code written as strings. this is because we want the
+
+
+
+
+
+# ACtual shit here
+
+Every node contains a script
+
+Script takes input
+Script outputs a list of node blueprints or terminate command
+

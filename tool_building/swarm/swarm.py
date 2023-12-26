@@ -49,7 +49,8 @@ class Swarm:
             raise ValueError('Create a new swarm to load a new goal')
         if context == None: context = ''
         root_node = Node(id=0, type='route', data={'subtasks': [goal], 'context': context, 'is_parallel': False}, parent=None)
-        self.lifecycle_queue.put_nowait(('create', root_node))
+        self.population += 1
+        self.lifecycle_queue.put_nowait(('spawn', root_node))
 
     async def run(self):
         '''
@@ -58,7 +59,7 @@ class Swarm:
         while True:
             action, node = await self.lifecycle_queue.get() # action can be 'create' or 'terminate'
             try:
-                if action == 'create':
+                if action == 'spawn':
                     pass
                 elif action == 'terminate':
                     pass
@@ -84,7 +85,7 @@ class Swarm:
     +------------------------ Private methods ------------------------+
     '''        
 
-    async def _create_node(self, node):
+    async def _spawn_node(self, node):
         '''
         Now you need to save to history the fact that this node was created.
         Save to state the node prior to execution
@@ -92,14 +93,30 @@ class Swarm:
         Then save to state the node after execution
         And save to history the fact that the node was executed
         '''
+        
+        # A question is, should we bother checkpointing here? Its redundant to have a checkpoint for creation and execution. Just execution is enough. 
         creation_checkpoint = {
-            'action': 'create',
+            'action': 'spawn',
             'node': node.jsonify()
         }
         self._save_checkpoint(creation_checkpoint)
-        self._update_state('create', node)
+        self._update_state('spawn', node)
         
         output = await node.execute()
+        
+        '''
+        Output should be:
+        {
+            'action': 'spawn',
+            'node_blueprints': [[type, data]...]
+        }
+        
+        or 
+        
+        {
+            'action': 'terminate'
+        }
+        '''
         
         # TODO TODO TODO TODO TODO TODO WE ARE WORKING HERE!!!!! TODO TODO TODO TODO TODO TODO
         # first u need to set up the thing that executes the script inside the node
@@ -111,7 +128,7 @@ class Swarm:
         json.dump(self.history, self.history_path, indent=4)
         
     def _update_state(self, action_type: str, node: Node):
-        if action_type == 'create':
+        if action_type == 'spawn':
             self.state['nodes'][self.population] = node
             self.population += 1
         elif action_type == 'terminate':
