@@ -1,5 +1,8 @@
 from pydantic import BaseModel
 from typing import Optional, List
+from settings import Settings
+
+settings = Settings() # For config paths
 
 class Node(BaseModel):
     id: int
@@ -13,7 +16,7 @@ class Node(BaseModel):
         arbitrary_types_allowed = True
         validate_assignment = True
         populate_by_name = True
-          
+        
     def jsonify(self):
         return {
             "task_type": self.type,

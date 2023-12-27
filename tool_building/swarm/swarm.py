@@ -1,27 +1,21 @@
-from swarm.task_handler import TaskHandler
 import asyncio
 from swarm.node import Node
 import json
 import os
 from swarm.agent import Agent
 from settings import Settings
+from swarm.task_handler import TaskHandler
 from pydantic import BaseModel
 from typing import Optional, List
 
 settings = Settings() # For config paths
+task_handler = TaskHandler(settings.NODE_SCRIPTS_PATH)
 
 class Swarm:
     '''
-    Create swarm. 
-    The only inputs to swarm are snapshot and history path
-    You have two choices:
-        - Create a new swarm with a goal and context
-        - Resume a swarm from a snapshot
-    
-    Lifecycle queue is the asyncio queue that handles creation and termination of nodes
-    It takes in a tuple of (action, node) with actions being 'create_node' or 'terminate_node'
-    
-    If a node is created execute it. If a node is being terminated, the swarm will terminate it
+        If you are creating a new swarm you need to initialize it with a goal by calling load_goal()
+        
+        To run the swarm call run() 
     '''
     _instance = None
 
@@ -34,8 +28,6 @@ class Swarm:
 
     def __init__(self, snapshot_path=None, history_path=None):
         if not hasattr(self, 'is_initialized'):
-            self.lifecycle_queue = asyncio.Queue()
-            self.population = 0
             self.snapshot_path = snapshot_path
             self.history_path = history_path
             self._load()
@@ -43,7 +35,7 @@ class Swarm:
 
     def load_goal(self, goal: str, context=None):
         '''
-        If your starting a new swarm with an empty snapshot you need to select a goal and context
+            If your starting a new swarm with an empty snapshot you need to initialize the swarm with a goal
         '''
         if not self.state['population'] == 0:
             raise ValueError('Create a new swarm to load a new goal')
@@ -53,98 +45,104 @@ class Swarm:
         self.lifecycle_queue.put_nowait(('spawn', root_node))
 
     async def run(self):
+        try:
+            self.is_running = True
+            await self.main()
+        except KeyboardInterrupt:
+            self._stop()
+            await self.main()
+            
+    async def main(self):
         '''
-            This is the main function that loops until the swarm completes its goal
+        This is the main function that loops until the swarm completes its goal.
         '''
-        while True:
-            action, node = await self.lifecycle_queue.get() # action can be 'create' or 'terminate'
+        self.running_tasks = set()
+
+        while self.is_running:
+            action, node = await self.lifecycle_queue.get() # action can be 'spawn' or 'terminate'
             try:
                 if action == 'spawn':
-                    pass
+                    # Create a task for spawn_node and add it to running_tasks
+                    task = asyncio.create_task(self._spawn_node(node))
+                    self.running_tasks.add(task)
+                    # Optionally, add a callback to remove the task from running_tasks when it's done
+                    task.add_done_callback(self.running_tasks.discard)
                 elif action == 'terminate':
+                    # Handle termination
                     pass
                 else:
                     raise ValueError(f'Invalid action passed to lifecycle queue: {action}')
-                
-                result = await self.task_handler.handle_task(node)
+
             except Exception as error:
                 print(error)
             finally:
-                self.task_queue.task_done()     
-                
-    async def save(self, action_type, node: Node):
-        self.history.append({
-            "action": action_type,
-            "node": node.jsonify()
-        })
+                self.lifecycle_queue.task_done()  
         
-        with open(self.history_path, 'w') as file:
-            json.dump(self.history, file, indent=4)
-            
+        # When the swarm is stopped, wait for all running tasks to finish
+        if self.running_tasks:
+            await asyncio.gather(*self.running_tasks) 
+
     '''
     +------------------------ Private methods ------------------------+
     '''        
 
-    async def _spawn_node(self, node):
+    def _stop(self):
         '''
-        Now you need to save to history the fact that this node was created.
-        Save to state the node prior to execution
-        Then execute the task
-        Then save to state the node after execution
-        And save to history the fact that the node was executed
+            This is called when the user presses ctrl+c
+        '''
+        self.is_running = False
+        
+    async def _spawn_node(self, node: Node):
+        '''
+        Execute node
+        If node returns spawn, spawn and add children to lifecycle queue
+        If node returns terminate, inititate termination process
         '''
         
-        # A question is, should we bother checkpointing here? Its redundant to have a checkpoint for creation and execution. Just execution is enough. 
-        creation_checkpoint = {
+        output = await task_handler.execute_node(node)
+        node.output = output
+        
+        if output['action'] == 'create children': # Create and add children to lifecycle queue
+            for node_blueprint in output['node_blueprints']:
+                child = Node(id=self.population, type=node_blueprint[0], data=node_blueprint[1], parent=node)
+                self.population += 1
+                node.children.append(child)
+                self.lifecycle_queue.put_nowait(('spawn', child))
+                self._update_state('add', child)
+        elif output['action'] == 'terminate':
+            pass
+        else:
+            raise ValueError(f'Invalid action type from executing node: {output["action"]}')
+        
+        checkpoint = {
             'action': 'spawn',
             'node': node.jsonify()
         }
-        self._save_checkpoint(creation_checkpoint)
-        self._update_state('spawn', node)
-        
-        output = await node.execute()
-        
-        '''
-        Output should be:
-        {
-            'action': 'spawn',
-            'node_blueprints': [[type, data]...]
-        }
-        
-        or 
-        
-        {
-            'action': 'terminate'
-        }
-        '''
-        
-        # TODO TODO TODO TODO TODO TODO WE ARE WORKING HERE!!!!! TODO TODO TODO TODO TODO TODO
-        # first u need to set up the thing that executes the script inside the node
-        # Then that node should return the necessary info back here to create or terminate nodes next which happens right here, below.
-        pass
+        self._save_checkpoint(checkpoint)
     
     def _save_checkpoint(self, checkpoint):
         self.history.append(checkpoint)
         json.dump(self.history, self.history_path, indent=4)
         
     def _update_state(self, action_type: str, node: Node):
-        if action_type == 'spawn':
-            self.state['nodes'][self.population] = node
-            self.population += 1
-        elif action_type == 'terminate':
+        if action_type == 'add':
+            self.state['nodes'][node.id] = node
+            self.state['population'] += 1
+        elif action_type == 'delete':
             pass
         else:
             raise ValueError(f'Invalid action type: {action_type}')
+        json.dump(self.state, self.snapshot_path, indent=4)
         
     def _load(self):
         '''
-        Load swarm state, history, and agents
+        Initialize swarm from snapshot or create new swarm
         '''
         self.history = self._load_json_file(self.history_path, [])
-        self.state = self._load_json_file(self.snapshot_path, {})
+        self.state = self._load_json_file(self.snapshot_path, {'population': 0, 'nodes': {}, 'lifecycle_queue': asyncio.Queue()})
 
-        self.population = self.state.get('population', 0)
-        self.task_queue = self.state.get('task_queue', [])
+        self.population = self.state.get('population')
+        self.lifecycle_queue = self.state.get('lifecycle_queue')
 
         self.agents = self._load_agents(settings.AGENTS_PATH)        
 

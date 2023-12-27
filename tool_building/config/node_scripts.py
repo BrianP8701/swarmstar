@@ -1,5 +1,9 @@
 '''
-Same functions as in functions.json, but just easier to read here.
+Every script should output a dictionary with one of the following structure:
+{
+    'action': 'create children' or 'terminate',
+    'node_blueprints': list of node blueprints to be created
+}   
 '''
 
 '''
@@ -20,7 +24,7 @@ async def break_down_goal(goal, context):
         node_blueprints.append({'type': 'route', 'data': data})
         if broken_down_goal['arguments']['is_parallel']:
             break
-    return node_blueprints
+    return {'action': 'create children', 'node_blueprints': node_blueprints}
 '''
 +----------------- router -----------------+
 '''
@@ -34,7 +38,7 @@ async def route(goal):
     action_index = action_index['arguments']['next_action']
     node_blueprints = [{'type': options[action_index-1], 'data': {'goal': goal}}]
             
-    return {'action': 'create', 'node_blueprints': node_blueprints}
+    return {'action': 'create children', 'node_blueprints': node_blueprints}
 
 '''
 +----------------- write_python -----------------+
