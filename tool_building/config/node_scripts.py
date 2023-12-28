@@ -17,11 +17,7 @@ async def break_down_goal(goal, context):
 
     node_blueprints = []
     for subgoal in broken_down_goal['arguments']['subtasks']:
-        data = {
-            'goal': subgoal,
-            'context': broken_down_goal['arguments']['context']
-        }
-        node_blueprints.append({'type': 'route', 'data': data})
+        node_blueprints.append({'type': 'router', 'data': subgoal})
         if broken_down_goal['arguments']['is_parallel']:
             break
     return {'action': 'create children', 'node_blueprints': node_blueprints}
@@ -29,7 +25,7 @@ async def break_down_goal(goal, context):
 +----------------- router -----------------+
 '''
 from swarm.swarm import Swarm
-async def route(goal):
+async def router(goal):
     swarm = Swarm()
     router_agent = swarm.agents['router']
     options = ['break_down_goal', 'write_text', 'write_python', 'retrieve_info', 'ask_user_for_help']

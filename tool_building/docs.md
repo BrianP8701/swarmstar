@@ -29,7 +29,12 @@ functions.json just contains code written as strings. this is because we want th
 # ACtual shit here
 
 Every node contains a script
-
 Script takes input
-Script outputs a list of node blueprints or terminate command
+Script outputs 'create children' or 'terminate' with a list of node blueprints which is empty if terminate
 
+
+        state schema:
+        
+            population: int
+            nodes: dict of jsonified nodes
+            lifecycle_queue: list of tuples of the form (action, node_id)

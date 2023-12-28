@@ -40,9 +40,8 @@ class Swarm:
         if not self.state['population'] == 0:
             raise ValueError('Create a new swarm to load a new goal')
         if context == None: context = ''
-        root_node = Node(id=0, type='route', data={'subtasks': [goal], 'context': context, 'is_parallel': False}, parent=None)
-        self.population += 1
-        self.lifecycle_queue.put_nowait(('spawn', root_node))
+        node_blueprint = {'type': 'router', 'data': {'goal': f'Context to understand the goal: {context}\n\n\n The goal: {goal}'}}
+        self._create_node(node_blueprint)
 
     async def run(self):
         try:
@@ -78,9 +77,11 @@ class Swarm:
             finally:
                 self.lifecycle_queue.task_done()  
         
-        # When the swarm is stopped, wait for all running tasks to finish
+        # When the swarm is stopped, wait for all running tasks to finish and save state
         if self.running_tasks:
             await asyncio.gather(*self.running_tasks) 
+        self._save_state()
+            
 
     '''
     +------------------------ Private methods ------------------------+
@@ -98,17 +99,13 @@ class Swarm:
         If node returns spawn, spawn and add children to lifecycle queue
         If node returns terminate, inititate termination process
         '''
-        
-        output = await task_handler.execute_node(node)
+        output = await task_handler.execute(node)
         node.output = output
         
         if output['action'] == 'create children': # Create and add children to lifecycle queue
             for node_blueprint in output['node_blueprints']:
-                child = Node(id=self.population, type=node_blueprint[0], data=node_blueprint[1], parent=node)
-                self.population += 1
+                child = self._create_node(node_blueprint)
                 node.children.append(child)
-                self.lifecycle_queue.put_nowait(('spawn', child))
-                self._update_state('add', child)
         elif output['action'] == 'terminate':
             pass
         else:
@@ -120,32 +117,58 @@ class Swarm:
         }
         self._save_checkpoint(checkpoint)
     
+    def _create_node(self, node_blueprint):
+        node = Node(id=self.state['population'], type=node_blueprint['type'], data=node_blueprint['data'])
+        self.state['population'] += 1
+        self.nodes[node.id] = node
+        self.lifecycle_queue.put_nowait(('spawn', node))
+        return node
+    
     def _save_checkpoint(self, checkpoint):
         self.history.append(checkpoint)
-        json.dump(self.history, self.history_path, indent=4)
+        with open(self.history_path, 'w') as history:
+            json.dump(self.history, history, indent=4)
         
-    def _update_state(self, action_type: str, node: Node):
-        if action_type == 'add':
-            self.state['nodes'][node.id] = node
-            self.state['population'] += 1
-        elif action_type == 'delete':
-            pass
-        else:
-            raise ValueError(f'Invalid action type: {action_type}')
-        json.dump(self.state, self.snapshot_path, indent=4)
-        
+    def _save_state(self):
+        self.state['lifecycle_queue'] = self.lifecycle_queue_to_list()
+        for node in self.nodes:
+            self.state['nodes'][node.id] = node.jsonify()
+        with open(self.snapshot_path, 'w') as snapshot:
+            json.dump(self.state, snapshot, indent=4)
+
     def _load(self):
         '''
         Initialize swarm from snapshot or create new swarm
         '''
         self.history = self._load_json_file(self.history_path, [])
-        self.state = self._load_json_file(self.snapshot_path, {'population': 0, 'nodes': {}, 'lifecycle_queue': asyncio.Queue()})
-
-        self.population = self.state.get('population')
-        self.lifecycle_queue = self.state.get('lifecycle_queue')
-
+        self.state = self._load_json_file(self.snapshot_path, {'population': 0, 'nodes': {}, 'lifecycle_queue': []})
+        
+        if self.state['population'] == 0: # initialize swarm with empty state
+            self.lifecycle_queue = asyncio.Queue()
+            self.nodes = {}
+        else:
+            self._load_swarm_from_snapshot()
+            
         self.agents = self._load_agents(settings.AGENTS_PATH)        
 
+    def _load_swarm_from_snapshot(self):
+        # Load nodes
+        for node_id in self.state['nodes']: # Create all nodes without parent or children relationships
+            jsonified_node = self.state['nodes'][node_id]
+            self.nodes[node_id] = Node(node_id, jsonified_node['task_type'], jsonified_node['input_data'])
+        for node_id in self.state['nodes']: # Create parent and children relationships
+            jsonified_node = self.state['nodes'][node_id]
+            node = self.nodes[node_id]
+            parent_id = jsonified_node['parent_id']
+            node.parent = self.nodes[parent_id] if parent_id is not None else None
+            for child_id in jsonified_node['children_ids']:
+                node.children.append(self.nodes[child_id])
+        
+        # Load lifecycle queue
+        for action, node_id in self.state['lifecycle_queue']: # Create lifecycle queue
+            node = self.nodes[node_id]
+            self.lifecycle_queue.put_nowait((action, node))
+    
     def _load_json_file(self, file_path, default_value):
         if os.path.exists(file_path):
             with open(file_path, 'r') as file:
@@ -160,3 +183,14 @@ class Swarm:
             tool_choice = {"type": "function", "function": {"name": agent_schemas[agent]['tools'][0]['function']['name']}}
             agents[agent] = Agent(agent_schemas[agent]['instructions'], agent_schemas[agent]['tools'], tool_choice)
         return agents
+    
+    async def lifecycle_queue_to_list(self):
+        '''
+            Returns a list of tuples of the form (action, node_id). This will clear the lifecycle queue. Only used when the swarm is stopped to save lifecycle queue to snapshot
+        '''
+        result = []
+        queue = self.lifecycle_queue
+        while not queue.empty():
+            action, node = await queue.get()
+            result.append([action, node.id])
+        return result

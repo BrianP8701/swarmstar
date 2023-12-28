@@ -1,0 +1,26 @@
+[
+    {
+        "action": "spawn",
+        "node": {
+            "task_type": "router",
+            "parent_id": null,
+            "children_ids": [
+                1
+            ],
+            "input_data": {
+                "goal": "Context to understand the goal: \n\n\n The goal: Create a class called GithubWrapper that has all the necessary functions to interact with and modify a Github repository."
+            },
+            "output_data": {
+                "action": "create children",
+                "node_blueprints": [
+                    {
+                        "type": "write_python",
+                        "data": {
+                            "goal": "Context to understand the goal: \n\n\n The goal: Create a class called GithubWrapper that has all the necessary functions to interact with and modify a Github repository."
+                        }
+                    }
+                ]
+            }
+        }
+    }
+]

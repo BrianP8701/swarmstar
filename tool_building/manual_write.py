@@ -4,6 +4,23 @@ Write and add scripts to node_scripts.json
 
 # <-- Script start -->
 from swarm.swarm import Swarm
+async def break_down_goal(goal, context):
+    swarm = Swarm()
+    manager = swarm.agents['manager']
+    broken_down_goal = await manager.chat(f'Context to understand the goal: {context}\n\n\n The goal: {goal}')
+
+    node_blueprints = []
+    for subgoal in broken_down_goal['arguments']['subtasks']:
+        node_blueprints.append({'type': 'router', 'data': subgoal})
+        if broken_down_goal['arguments']['is_parallel']:
+            break
+    return {'action': 'create children', 'node_blueprints': node_blueprints}
+# <-- Script end -->
+
+
+
+
+from swarm.swarm import Swarm
 from swarm.agent import Agent
 async def write_python(goal):
     swarm = Swarm()
@@ -17,12 +34,6 @@ async def write_python(goal):
     
     # TODO TODO TODO TODO TODO TODO WE ARE WORKING HERE!!!!! TODO TODO TODO TODO TODO TODO
     # save python code, then idk.....
-# <-- Script end -->
-
-
-
-
-
 
 
 
@@ -88,4 +99,4 @@ def save_python_file_to_json(file_path, json_path, name, description=None, langu
     except IOError as e:
         print(f"Error writing to JSON file {json_path}: {e}")
 
-save_python_file_to_json('tool_building/manual_write.py', settings.NODE_SCRIPTS_PATH, 'write_python')
+save_python_file_to_json('tool_building/manual_write.py', settings.NODE_SCRIPTS_PATH, 'manager')
