@@ -431,3 +431,36 @@ But how do we 'route' when we have many hundreds of options to route to?
 
 
 Remember when we terminate a node we dont just go up to the most recent fork in the tree. some managers didnt do inparralel at break but had a plan with steps so u need to pass back to them
+
+
+
+# Incorrect abstraction
+
+Some abstraction is wrong. specifically, a naming issue. It doesent seem intuitive.
+
+Primarily, the part where we "spawn" a node in the main loop, when it is already spawned and we really are just executing it.
+
+So here is the actual flow of what is going on:
+
+1. We have a node blueprint without output data
+2. We then instantiate the node object and add it to the lifecycle queue
+3. The lifecycle queue will receive the node and execute it.
+4. Based off the output of the node we will either:
+    - receive node blueprints for children and go back to step 1
+    - begin termination process for node
+
+Here are the current naming conventions i have for each step:
+1. 
+2. create_node()
+3. spawn, terminate
+4. 
+    - create children
+    - terminate
+
+i think better naming is just one small change:
+1. 
+2. spawn_node()
+3. execute, terminate
+4. 
+    - spawn
+    - terminate

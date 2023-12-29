@@ -41,7 +41,7 @@ class Swarm:
             raise ValueError('Create a new swarm to load a new goal')
         if context == None: context = ''
         node_blueprint = {'type': 'router', 'data': {'goal': f'Context to understand the goal: {context}\n\n\n The goal: {goal}'}}
-        self._create_node(node_blueprint)
+        self._spawn_node(node_blueprint)
 
     async def run(self):
         try:
@@ -60,9 +60,9 @@ class Swarm:
         while self.is_running:
             action, node = await self.lifecycle_queue.get() # action can be 'spawn' or 'terminate'
             try:
-                if action == 'spawn':
+                if action == 'execute':
                     # Create a task for spawn_node and add it to running_tasks
-                    task = asyncio.create_task(self._spawn_node(node))
+                    task = asyncio.create_task(self._execute_node(node))
                     self.running_tasks.add(task)
                     # Optionally, add a callback to remove the task from running_tasks when it's done
                     task.add_done_callback(self.running_tasks.discard)
@@ -93,7 +93,7 @@ class Swarm:
         '''
         self.is_running = False
         
-    async def _spawn_node(self, node: Node):
+    async def _execute_node(self, node: Node):
         '''
         Execute node
         If node returns spawn, spawn and add children to lifecycle queue
@@ -102,9 +102,9 @@ class Swarm:
         output = await task_handler.execute(node)
         node.output = output
         
-        if output['action'] == 'create children': # Create and add children to lifecycle queue
+        if output['action'] == 'spawn': # Create and add children to lifecycle queue
             for node_blueprint in output['node_blueprints']:
-                child = self._create_node(node_blueprint)
+                child = self._spawn_node(node_blueprint)
                 node.children.append(child)
         elif output['action'] == 'terminate':
             pass
@@ -117,11 +117,11 @@ class Swarm:
         }
         self._save_checkpoint(checkpoint)
     
-    def _create_node(self, node_blueprint):
+    def _spawn_node(self, node_blueprint):
         node = Node(id=self.state['population'], type=node_blueprint['type'], data=node_blueprint['data'])
         self.state['population'] += 1
         self.nodes[node.id] = node
-        self.lifecycle_queue.put_nowait(('spawn', node))
+        self.lifecycle_queue.put_nowait(('execute', node))
         return node
     
     def _save_checkpoint(self, checkpoint):
