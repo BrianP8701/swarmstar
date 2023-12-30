@@ -19,6 +19,7 @@ class Node(BaseModel):
         
     def jsonify(self):
         return {
+            "id": self.id,
             "task_type": self.type,
             "parent_id": self.parent.id if self.parent is not None else None,
             "children_ids": [child.id for child in self.children],

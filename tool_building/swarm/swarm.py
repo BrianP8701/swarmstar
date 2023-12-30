@@ -102,10 +102,12 @@ class Swarm:
         output = await task_handler.execute(node)
         node.output = output
         
+
         if output['action'] == 'spawn': # Create and add children to lifecycle queue
             for node_blueprint in output['node_blueprints']:
                 child = self._spawn_node(node_blueprint)
                 node.children.append(child)
+                child.parent = node
         elif output['action'] == 'terminate':
             pass
         else:
@@ -126,6 +128,7 @@ class Swarm:
     
     def _save_checkpoint(self, checkpoint):
         self.history.append(checkpoint)
+        os.makedirs(os.path.dirname(self.history_path), exist_ok=True)
         with open(self.history_path, 'w') as history:
             json.dump(self.history, history, indent=4)
         
@@ -133,6 +136,7 @@ class Swarm:
         self.state['lifecycle_queue'] = self.lifecycle_queue_to_list()
         for node in self.nodes:
             self.state['nodes'][node.id] = node.jsonify()
+        os.makedirs(os.path.dirname(self.snapshot_path), exist_ok=True)
         with open(self.snapshot_path, 'w') as snapshot:
             json.dump(self.state, snapshot, indent=4)
 
@@ -194,3 +198,11 @@ class Swarm:
             action, node = await queue.get()
             result.append([action, node.id])
         return result
+    
+    
+    '''
+    +------------------------ Testing methods ------------------------+
+    '''       
+    
+    def offline_testing(self):
+        pass

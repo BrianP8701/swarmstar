@@ -464,3 +464,56 @@ i think better naming is just one small change:
 4. 
     - spawn
     - terminate
+
+
+
+# Testing offline
+
+So i am currently on a plane and have no internet so im gonna add testing without api calls to test the terminate spawning flows of the tree.
+
+So to do offline testing i essentially need to mimic and make up the openai output as thats the only use of network, everything else is offline local
+
+So lets just make up our own fake scenario:
+
+goal: determine the root cause of aging
+routed to : break_down_goal
+parralel -> retrieve_info, write text
+
+We will need to retrieve: Most recent and well peer reviewed research on causes and solutions to aging and what are the primary unanswered questions/ bottlenecks
+
+We will need to write text detailing a plan to do x
+
+
+goal > router
+goal > manager > retrieval, write_text
+retrieval
+write_text
+
+so an offline_test method in swarm
+
+
+
+
+# THinking about when we have more tools
+
+Okay fukc it lets just listy off all the potential tools we might add:
+
+router
+manager
+write_python, write_java, write_javascript, write_english...
+browse_web
+save_code
+run_code (return output of code in terminal, error or any print statement)
+retrieval (Links u to the option of browse_web, search through swarm database)
+
+
+Fundamentally this becomes a retrieval and memory management problem
+
+# Swarm
+
+Fundamentally what is the purpose of the swarm? Specifically, i mean the way im building this out, this architecture with a tree? Why do i have asynchronous stuff? What im doing could easily be done synchronously, sequentially.
+
+Im doing this for efficiency and dare i say scalability? Efficiency obviously because we'll have llm calls running in parralel, more and more the deeper we go down the tree. And scalability.... well tbh we already discussed this part. so far our 'swarm' system we are building locally is very fast and efficient with the only bottleneck being the llm calls.
+
+bruh, okay but this could be horizontally distributed need be. idk i just wanted to think about how this might grow with scale now but i guess thats a problem for another time. I just finished reading alex xu's system design interview book a couple days ago in iceland.
+

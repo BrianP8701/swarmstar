@@ -4,17 +4,17 @@ Write and add scripts to node_scripts.json
 
 # <-- Script start -->
 from swarm.swarm import Swarm
-async def break_down_goal(goal, context):
+async def manager(goal):
     swarm = Swarm()
     manager = swarm.agents['manager']
-    broken_down_goal = await manager.chat(f'Context to understand the goal: {context}\n\n\n The goal: {goal}')
+    broken_down_goal = await manager.chat(goal)
 
     node_blueprints = []
     for subgoal in broken_down_goal['arguments']['subtasks']:
-        node_blueprints.append({'type': 'router', 'data': subgoal})
-        if broken_down_goal['arguments']['is_parallel']:
+        node_blueprints.append({'type': 'router', 'data': {'goal': subgoal}})
+        if not broken_down_goal['arguments']['is_parallel']:
             break
-    return {'action': 'create children', 'node_blueprints': node_blueprints}
+    return {'action': 'spawn', 'node_blueprints': node_blueprints}
 # <-- Script end -->
 
 
