@@ -37,7 +37,7 @@
 			}
 		]
 	},
-	"write_python": {
+	"python_coder": {
 		"instructions": "You are an agent in a swarm. Given the goal and context, write python (function, class, script etc) to complete the goal. Write the code in full and only output complete python code satisfying the goal.",
 		"tools": [
 			{
@@ -54,7 +54,7 @@
 							},
 							"python_code": {
 								"type": "string",
-								"description": "Python code to complete the goal"
+								"description": "Valid python code to complete the goal"
 							},
 							"name": {
 								"type": "string",
@@ -63,6 +63,14 @@
 							"description": {
 								"type": "string",
 								"description": "A concise and comprehensive description of the python code for anyone who may use it."
+							},
+							"dependencies": {
+								"type": "array",
+								"items": {
+									"type": "string",
+									"description": "Package name"
+								},
+								"description": "List of dependencies needed to run the python code"
 							}
 						}
 					},

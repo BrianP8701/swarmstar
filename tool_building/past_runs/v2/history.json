@@ -1,0 +1,98 @@
+[
+    {
+        "action": "spawn",
+        "node": {
+            "id": 0,
+            "task_type": "router",
+            "parent_id": null,
+            "children_ids": [
+                1
+            ],
+            "input_data": {
+                "goal": "Context to understand the goal: \n\n\n The goal: Create a class called GithubWrapper that has all the necessary functions to interact with and modify a Github repository."
+            },
+            "output_data": {
+                "action": "spawn",
+                "node_blueprints": [
+                    {
+                        "type": "manager",
+                        "data": {
+                            "goal": "Context to understand the goal: \n\n\n The goal: Create a class called GithubWrapper that has all the necessary functions to interact with and modify a Github repository."
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "action": "spawn",
+        "node": {
+            "id": 1,
+            "task_type": "manager",
+            "parent_id": 0,
+            "children_ids": [
+                2,
+                3,
+                4,
+                5
+            ],
+            "input_data": {
+                "goal": "Context to understand the goal: \n\n\n The goal: Create a class called GithubWrapper that has all the necessary functions to interact with and modify a Github repository."
+            },
+            "output_data": {
+                "action": "spawn",
+                "node_blueprints": [
+                    {
+                        "type": "router",
+                        "data": {
+                            "goal": "Define the scope of the GithubWrapper class"
+                        }
+                    },
+                    {
+                        "type": "router",
+                        "data": {
+                            "goal": "Identify the key functionalities required for interacting with a Github repository"
+                        }
+                    },
+                    {
+                        "type": "router",
+                        "data": {
+                            "goal": "Research the GitHub API documentation for necessary endpoints"
+                        }
+                    },
+                    {
+                        "type": "router",
+                        "data": {
+                            "goal": "Set up the development environment for coding the GithubWrapper class"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "action": "spawn",
+        "node": {
+            "id": 2,
+            "task_type": "router",
+            "parent_id": 1,
+            "children_ids": [
+                6
+            ],
+            "input_data": {
+                "goal": "Define the scope of the GithubWrapper class"
+            },
+            "output_data": {
+                "action": "spawn",
+                "node_blueprints": [
+                    {
+                        "type": "retrieve_info",
+                        "data": {
+                            "goal": "Define the scope of the GithubWrapper class"
+                        }
+                    }
+                ]
+            }
+        }
+    }
+]

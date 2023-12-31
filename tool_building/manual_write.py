@@ -4,38 +4,17 @@ Write and add scripts to node_scripts.json
 
 # <-- Script start -->
 from swarm.swarm import Swarm
-async def manager(goal):
+async def router(goal):
     swarm = Swarm()
-    manager = swarm.agents['manager']
-    broken_down_goal = await manager.chat(goal)
-
-    node_blueprints = []
-    for subgoal in broken_down_goal['arguments']['subtasks']:
-        node_blueprints.append({'type': 'router', 'data': {'goal': subgoal}})
-        if not broken_down_goal['arguments']['is_parallel']:
-            break
-    return {'action': 'spawn', 'node_blueprints': node_blueprints}
+    router_agent = swarm.agents['router']
+    options = ['manager', 'write_text', 'python_coder', 'retrieve_info', 'ask_user_for_help']
+    
+    action_index = await router_agent.chat(goal)
+    action_index = action_index['arguments']['next_action']
+    node_blueprints = [{'type': options[action_index-1], 'data': {'goal': goal}}]
+            
+    return {'action': 'spawn', 'node_blueprints': node_blueprints} 
 # <-- Script end -->
-
-
-
-
-from swarm.swarm import Swarm
-from swarm.agent import Agent
-async def write_python(goal):
-    swarm = Swarm()
-    python_agent: Agent = swarm.agents['write_python_agent']
-    
-    tool_output = await python_agent.chat(goal)
-    code_type = tool_output['arguments']['code_type']
-    python_code = tool_output['arguments']['python_code']
-    name = tool_output['arguments']['name']
-    description = tool_output['arguments']['description']
-    
-    # TODO TODO TODO TODO TODO TODO WE ARE WORKING HERE!!!!! TODO TODO TODO TODO TODO TODO
-    # save python code, then idk.....
-
-
 
 
 
@@ -99,4 +78,4 @@ def save_python_file_to_json(file_path, json_path, name, description=None, langu
     except IOError as e:
         print(f"Error writing to JSON file {json_path}: {e}")
 
-save_python_file_to_json('tool_building/manual_write.py', settings.NODE_SCRIPTS_PATH, 'manager')
+save_python_file_to_json('tool_building/manual_write.py', settings.NODE_SCRIPTS_PATH, 'router')

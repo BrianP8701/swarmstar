@@ -1,6 +1,6 @@
 {
     "router": {
-        "script": "from swarm.swarm import Swarm\nasync def router(goal):\n    swarm = Swarm()\n    router_agent = swarm.agents['router']\n    options = ['manager', 'write_text', 'write_python', 'retrieve_info', 'ask_user_for_help']\n    \n    action_index = await router_agent.chat(goal)\n    action_index = action_index['arguments']['next_action']\n    node_blueprints = [{'type': options[action_index-1], 'data': {'goal': goal}}]\n            \n    return {'action': 'spawn', 'node_blueprints': node_blueprints}\n",
+        "script": "from swarm.swarm import Swarm\nasync def router(goal):\n    swarm = Swarm()\n    router_agent = swarm.agents['router']\n    options = ['manager', 'write_text', 'python_coder', 'retrieve_info', 'ask_user_for_help']\n    \n    action_index = await router_agent.chat(goal)\n    action_index = action_index['arguments']['next_action']\n    node_blueprints = [{'type': options[action_index-1], 'data': {'goal': goal}}]\n            \n    return {'action': 'spawn', 'node_blueprints': node_blueprints} \n",
         "description": "Routes a task to the appropriate next action.\n\tInput: A list of subtasks (list), a string describing the context of the goal (str), and a boolean indicating whether the subtasks should be executed in parallel or sequentially (bool)\n\tReturns: None\nCalls the subtask_router_agent to route a subtask to the appropriate next action. Schedules tasks in swarm correspondingly:\nA dictionary with the following keys:\n\t'next_action': An integer indicating the next action to take (1: break_down_goal, 2: write_text, 3: write_python, 4: retrieve_info, 5: ask_user_for_help)",
         "language": "python"
     },
@@ -18,5 +18,10 @@
         "script": "from swarm.swarm import Swarm\nasync def manager(goal):\n    swarm = Swarm()\n    manager = swarm.agents['manager']\n    broken_down_goal = await manager.chat(goal)\n\n    node_blueprints = []\n    for subgoal in broken_down_goal['arguments']['subtasks']:\n        node_blueprints.append({'type': 'router', 'data': {'goal': subgoal}})\n        if not broken_down_goal['arguments']['is_parallel']:\n            break\n    return {'action': 'spawn', 'node_blueprints': node_blueprints}\n",
         "description": "Breaks down a goal into subtasks.\n\tInput: Any arbitray goal (str)\n\tReturns: None\nCalls the head_agent to break down the goal. Then, calls the router_agent to route subtasks to the appropriate next action. Passes this to router from head_agent:\nA dictionary with the following keys:\n\t'subtasks': A list of subtasks (str)\n\t'context': A string describing the context of the goal\n\t'is_parallel': A boolean indicating whether the subtasks should be executed in parallel or sequentially",
         "language": "python"
+    },
+    "python_coder": {
+        "script": "from swarm.swarm import Swarm\nfrom settings import Settings\nimport json\nsettings = Settings() # For config paths\n\nasync def python_coder(goal):\n    swarm = Swarm()\n    python_agent = swarm.agents['python_coder']\n    code = await python_agent.chat(goal)\n    \n    packet = {\n        'language': 'python',\n        'code_type': code['arguments']['code_type'],\n        'code': code['arguments']['python_code'],\n        'description': code['arguments']['description']\n    }\n\n    file_name = settings.SYNTHETIC_CODE_PATH\n    with open(file_name, 'r') as file:\n        data = json.load(file)\n    data[code['arguments']['name']] = packet\n    with open(file_name, 'w') as file:\n        json.dump(data, file, indent=4)\n\n    return {'action': 'terminate', 'node_blueprints': []}    \n",
+        "description": "",
+        "language": ""
     }
 }

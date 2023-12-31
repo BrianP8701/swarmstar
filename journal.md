@@ -494,6 +494,7 @@ so an offline_test method in swarm
 
 
 
+
 # THinking about when we have more tools
 
 Okay fukc it lets just listy off all the potential tools we might add:
@@ -509,6 +510,10 @@ retrieval (Links u to the option of browse_web, search through swarm database)
 
 Fundamentally this becomes a retrieval and memory management problem
 
+
+
+
+
 # Swarm
 
 Fundamentally what is the purpose of the swarm? Specifically, i mean the way im building this out, this architecture with a tree? Why do i have asynchronous stuff? What im doing could easily be done synchronously, sequentially.
@@ -517,3 +522,38 @@ Im doing this for efficiency and dare i say scalability? Efficiency obviously be
 
 bruh, okay but this could be horizontally distributed need be. idk i just wanted to think about how this might grow with scale now but i guess thats a problem for another time. I just finished reading alex xu's system design interview book a couple days ago in iceland.
 
+
+
+
+# Github api class
+
+goal: create a class that has all the functionality to interact with github repositories
+mapped to write_python
+got the code, the class string
+save the code
+generate test cases for the code and run it
+take the output
+
+
+
+
+# logging
+
+Well the thing ise we definitely want to integrate python logging into the swarm, not only for the purposes of debugging the swarm, but also for the purposes of debugging the code that the swarm writes.
+
+The question, as always is how do i implement this? One of the clear problems that arise now is that im noticing that im spending lots of time overthinking how to implement this stuff, what is the best way, trying to predict into the future... i should just move faster and aim for action and code writing.
+
+Okay so how i ought to implement logging?
+
+We already have the functionality written to save state and history in json format. this allows us to resume running the swarm from where it left off previously and to retrace the swarms every step. thats good. tbh the only place to add python logging in the swarm is for debugging when it fucks up
+
+The second place i need logging is to test the code that the swarm writes. I need to be able to see the output of the code and the output of the test cases. Now these definitely do ought to be seperate. 
+
+Now here is the question. i dont want the code written by the swarm to contain logging... but i might have no other choice. What i might have to do is have the swarm write the code 
+
+# Potential conflicts with the swarm writing code 
+
+- Testing
+    Testing can vary very widely. It might be a singular unit. Or it might be more tightly coupled with the rest of the system. It might require further user input, like a key or url. How do we actually test it, see the errors or if it did well? We might need to use logging, we might need to save output to somewhere else and check if it did whatr it was supposed to afterwards. We might have to generate test cases. Essentially, we'll have to after writing the code pass the code to a tester who will consider all these possibilities and act accordingly.
+- Naming conflicts. As the scale of the swarm grows we might reach a point where we have naming conflicts.
+- Saving the code. As scale grows and we have lots of code we will need to organize everything in a file system/tree that the swarm can navigate to find the code it needs to work.   
