@@ -10,7 +10,7 @@ class Agent:
         self.tool_choice = tool_choice
         
     async def chat(self, message):
-        messages = [{"role": "system","content": self.instructions},{"role": "user","content": message}]
+        messages = [{"role": "system", "content": self.instructions},{"role": "user", "content": message}]
         try:
             completion = await client.chat.completions.create(model="gpt-4-1106-preview", messages=messages, tools=self.tools, tool_choice=self.tool_choice, temperature=0.0)
         except Exception as e:

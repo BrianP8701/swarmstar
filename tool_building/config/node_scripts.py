@@ -65,10 +65,3 @@ async def python_coder(goal):
         json.dump(data, file, indent=4)
 
     return {'action': 'terminate', 'node_blueprints': []}    
-            
-'''
-+----------------- save_python_code -----------------+
-'''      
-from swarm.memory.save_code import save_python_code 
-async def save_python_code(code_type, python_code, name, description):
-    save_python_code(code_type, python_code, name, description)

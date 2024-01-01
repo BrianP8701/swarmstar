@@ -295,6 +295,16 @@ Create an internal swarm api. And make good documentation on usage and functiona
 
 Now, when the swarm then needs to interact with other libraries or apis, its going to need to retrieve that documentation or code. in fact, we need to somehow do retrieval over the docs to find the relevant portion of the docs/code to add to context. Effective autonomous RAG is crucial for self sufficient swarm capabilities.
 
+
+
+
+
+
+
+
+
+
+
 # Refactor structure plan for the future #TODO
 So now i kinda have better thoughts.... ima need a big refactor but ima push features for a little longer because the complexity rn is still managable for my brain. But when I do refactor heres a rough structure:
 
@@ -311,6 +321,17 @@ The internal swarm api will take time and lots of iteration to get right. But on
 The memory will be iterated on for all eternity. 
 
 The key thing is that the internal swarm api needs to contain the rag functionally to effectively navigate the memory. thats what it all comes down to.
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -388,7 +409,7 @@ So the node has its type attribute which should link us to the logic and agent u
 
 -> agent ->
 -> logic -> agent ->
--> agen -> logic
+-> agent -> logic
 -> logic -> agent -> logic
 
 Okay each node is associated with a script. The script is stored as a string in one of the configuration files. executing the node is just executing the script. output is simply the output of that script. Included in the output is all the data needed to spawn the next set of nodes or to terminate self. We want to decouple swarm interaction from the script for simplicity purposes
@@ -557,3 +578,19 @@ Now here is the question. i dont want the code written by the swarm to contain l
     Testing can vary very widely. It might be a singular unit. Or it might be more tightly coupled with the rest of the system. It might require further user input, like a key or url. How do we actually test it, see the errors or if it did well? We might need to use logging, we might need to save output to somewhere else and check if it did whatr it was supposed to afterwards. We might have to generate test cases. Essentially, we'll have to after writing the code pass the code to a tester who will consider all these possibilities and act accordingly.
 - Naming conflicts. As the scale of the swarm grows we might reach a point where we have naming conflicts.
 - Saving the code. As scale grows and we have lots of code we will need to organize everything in a file system/tree that the swarm can navigate to find the code it needs to work.   
+
+
+
+____________________________________________________________________________________________________________________________
+
+# On where to add user input, retrieval etc
+
+we can add an option to every agent to opt out of performing its task and to ask for user input or more context, and to not just check a box asking for it but to output a string asking its actual question. This way we can have a more dynamic system where the swarm can ask for more context or user input when it needs it.
+
+OOOHHH another cool detail while writing a much more in depth prompt for the agents and adding a place for user input, i can have the agents in the swarm identify inefficienciues or improvements in the swarm if i give each of them enough detail abt the swarm and what role they play/where they are. for example at the bottom of the managers prompt i say: "Your insights and further questions are welcome as we refine and optimize this swarm system. Let’s discuss any aspect of the plan where you think improvements or clarifications are needed."
+
+
+Okay im adjusting my agent prompts and changing them to give them options to retrieve context or ask for user input and im reaching a few questions. So ive already concluded that each agent should be able to ask the user or retrieval agent questions. Im confused about:
+
+- Do i give the manager agent an is_parrallel choice or just have it output a list of immediate goals?
+    This depends. In the code do we come back to this agent to review and make the next decision or does it get terminated and another agent does review and next decision? Where does review happen is the question? Do we have a seperate review agent or have review happen within the agent? review within the agent fosho. review within the agent fosho. SOoooo like... hmm. Itll be aware of what it wanted accomplished. And then its children will pass it a report. and then it will decide to terminate or create new children. so no in parralel. just output immediate goals to be done now.
