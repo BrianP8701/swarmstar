@@ -67,7 +67,7 @@ class Swarm:
                     # Optionally, add a callback to remove the task from running_tasks when it's done
                     task.add_done_callback(self.running_tasks.discard)
                 elif action == 'terminate':
-                    # Handle termination
+                    # TODO TODO TODO TODO Handle termination TODO TODO TODO TODO
                     pass
                 else:
                     raise ValueError(f'Invalid action passed to lifecycle queue: {action}')

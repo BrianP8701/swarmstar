@@ -1,7 +1,7 @@
 # TODO List
 
 - [x] have swarm write github wrapper
-- [ ] Add user input
+- [ ] Create user assistance agent and integrate with python coder and manger (router is simpler, just has user choose next action instead of the complex interaction with the user assistance agent)
 - [ ] Add web scraper
 - [ ] Add place to hold documentation
 - [ ] Get v2 run to work in all components
