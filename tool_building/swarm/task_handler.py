@@ -46,7 +46,6 @@ class TaskHandler:
     def _activate_script(self, script_name):
         if script_name in self.scripts_as_strings:
             exec(self.scripts_as_strings[script_name]['script'], globals())
-            print(globals())
             self.activated_scripts[script_name] = globals()[script_name]
 
     def _save_script(self, script_name, script_as_string, description, language):

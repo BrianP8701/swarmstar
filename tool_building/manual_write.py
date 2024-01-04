@@ -4,32 +4,47 @@ Write and add scripts to node_scripts.json
 
 # <-- Script start -->
 from swarm.swarm import Swarm
-async def router(goal):
-    swarm = Swarm()
-    router_agent = swarm.agents['router']
-    options = ['user_assistance', 'python_coder', 'manager', 'writer', 'retrieval']
-    
-    action_index = await router_agent.chat(goal)
-    action_index = action_index['arguments']['next_action']
-    
-    if action_index == 0: # User assistance
-        while True:
-            user_input = input(f"The router agent needs assistance routing this goal:\n\n{goal}\n\nPlease choose the index of the agent this goal should be routed to: {options}")
-            if user_input.isdigit():
-                user_number = int(user_input)
-                if 0 <= user_number <= len(options):
-                    print(f"You chose the number: {user_number}")
-                    action_index = user_number
-                    break
-                else:
-                    print("Number out of range. Please try again.")
-            else:
-                print("Invalid input. Please enter a number.")
-                
-    node_blueprints = [{'type': options[action_index], 'data': {'goal': goal}}]
-    return {'action': 'spawn', 'node_blueprints': node_blueprints}
-# <-- Script end -->
+from settings import Settings
+import json
+settings = Settings() # For config paths
 
+async def python_coder(goal):
+    swarm = Swarm()
+    
+    # Gather all relevant context
+    code_analyst = swarm.agents['code_analyst']
+    while True:
+        questions = await code_analyst.chat(goal)
+        analyst_has_questions = questions['arguments']['do_you_have_questions']
+        
+        if analyst_has_questions:
+            questions = questions['arguments']['questions']
+            user_input = input(f"\n\nGoal: {goal}\n\nQuestions: {questions}\n")
+            goal = f'{goal}\n\nQuestions: {questions} \n\nUser answer: {user_input}'
+        else: 
+            break
+
+    # Write code
+    python_coder = swarm.agents['python_coder']
+    code = await python_coder.chat(goal)
+    code_type = ['function', 'class', 'script', 'other']
+    packet = {
+        'language': 'python',
+        'code_type': code_type[code['arguments']['code_type']],
+        'code': code['arguments']['python_code'],
+        'description': code['arguments']['description'],
+        'dependencies': code['arguments']['dependencies']
+    }
+
+    file_name = settings.SYNTHETIC_CODE_PATH
+    with open(file_name, 'r') as file:
+        data = json.load(file)
+    data[code['arguments']['name']] = packet
+    with open(file_name, 'w') as file:
+        json.dump(data, file, indent=4)
+
+    return {'action': 'terminate', 'node_blueprints': []}    
+# <-- Script end -->
 
 
 
@@ -92,4 +107,4 @@ def save_python_file_to_json(file_path, json_path, name, description=None, langu
     except IOError as e:
         print(f"Error writing to JSON file {json_path}: {e}")
 
-save_python_file_to_json('tool_building/manual_write.py', settings.NODE_SCRIPTS_PATH, 'router')
+save_python_file_to_json('tool_building/manual_write.py', settings.NODE_SCRIPTS_PATH, 'python_coder')

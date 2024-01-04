@@ -13,13 +13,23 @@ from swarm.swarm import Swarm
 async def manager(goal):
     swarm = Swarm()
     manager = swarm.agents['manager']
-    broken_down_goal = await manager.chat(goal)
+    
+    while True:
+        broken_down_goal = await manager.chat(goal)
+        agent_has_questions = broken_down_goal['arguments']['do_you_have_questions']
+        question = broken_down_goal['arguments']['question']
 
-    node_blueprints = []
-    for subgoal in broken_down_goal['arguments']['subtasks']:
-        node_blueprints.append({'type': 'router', 'data': {'goal': subgoal}})
-        if not broken_down_goal['arguments']['is_parallel']:
+        if agent_has_questions:
+            user_input = input(f"Questions: {question}\n\nGoal: {goal}\n\n")
+            goal = f'{goal}\n\nQuestion: {question} \n\nUser answer: {user_input}'
+        else:
+            subgoals = broken_down_goal['arguments']['subgoals']
             break
+            
+    node_blueprints = []
+    for subgoal in subgoals:
+        node_blueprints.append({'type': 'router', 'data': {'goal': subgoal}})
+
     return {'action': 'spawn', 'node_blueprints': node_blueprints}
 '''
 +----------------- router -----------------+
@@ -30,24 +40,24 @@ async def router(goal):
     router_agent = swarm.agents['router']
     options = ['user_assistance', 'python_coder', 'manager', 'writer', 'retrieval']
     
-    action_index = await router_agent.chat(goal)
-    action_index = action_index['arguments']['next_action']
+    agent_index = await router_agent.chat(goal)
+    agent_index = agent_index['arguments']['agent_index']
     
-    if action_index == 0: # User assistance
+    if agent_index == 0: # User assistance
         while True:
             user_input = input(f"The router agent needs assistance routing this goal:\n\n{goal}\n\nPlease choose the index of the agent this goal should be routed to: {options}")
             if user_input.isdigit():
                 user_number = int(user_input)
-                if 0 <= user_number <= len(options):
+                if 1 <= user_number <= len(options):
                     print(f"You chose the number: {user_number}")
+                    agent_index = user_number
                     break
                 else:
-                    print("Number out of range. Please try again.")
+                    print("Number out of range. Please try again. Don't select user_assistance again.")
             else:
                 print("Invalid input. Please enter a number.")
                 
-    node_blueprints = [{'type': options[action_index-1], 'data': {'goal': goal}}]
-            
+    node_blueprints = [{'type': options[agent_index], 'data': {'goal': goal}}]
     return {'action': 'spawn', 'node_blueprints': node_blueprints}
 
 '''
@@ -60,15 +70,30 @@ settings = Settings() # For config paths
 
 async def python_coder(goal):
     swarm = Swarm()
-    python_agent = swarm.agents['python_coder']
-    code = await python_agent.chat(goal)
     
-    code_type = ['function', 'class', 'script']
+    # Gather all relevant context
+    code_analyst = swarm.agents['code_analyst']
+    while True:
+        questions = await code_analyst.chat(goal)
+        analyst_has_questions = questions['arguments']['do_you_have_questions']
+        questions = questions['arguments']['questions']
+
+        if analyst_has_questions:
+            user_input = input(f"\n\nGoal: {goal}\n\nQuestions: {questions}\n")
+            goal = f'{goal}\n\nQuestions: {questions} \n\nUser answer: {user_input}'
+        else: 
+            break
+
+    # Write code
+    python_coder = swarm.agents['python_coder']
+    code = await python_coder.chat(goal)
+    code_type = ['function', 'class', 'script', 'other']
     packet = {
         'language': 'python',
         'code_type': code_type[code['arguments']['code_type']],
         'code': code['arguments']['python_code'],
-        'description': code['arguments']['description']
+        'description': code['arguments']['description'],
+        'dependencies': code['arguments']['dependencies']
     }
 
     file_name = settings.SYNTHETIC_CODE_PATH

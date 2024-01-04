@@ -594,3 +594,36 @@ Okay im adjusting my agent prompts and changing them to give them options to ret
 
 - Do i give the manager agent an is_parrallel choice or just have it output a list of immediate goals?
     This depends. In the code do we come back to this agent to review and make the next decision or does it get terminated and another agent does review and next decision? Where does review happen is the question? Do we have a seperate review agent or have review happen within the agent? review within the agent fosho. review within the agent fosho. SOoooo like... hmm. Itll be aware of what it wanted accomplished. And then its children will pass it a report. and then it will decide to terminate or create new children. so no in parralel. just output immediate goals to be done now.
+
+
+
+Okay this is 2 days later still working on where to have the agents stop and ask questions. What type of questions might arise?
+- Question might need to be directed to user
+- Question might require searching the web
+- Question might requiring searching through the swarm internally
+
+So questions can get mapped to many different places. For now let's not concern ourselves with that. Just where do we have the agents ask questions and how? 
+
+For some reason im having a really big problem now. My first instance of the model failing to output my defined json schema. The python coder is outputting all parameters expect the python_code, despite the fact that its in the required section. I wanted to have one api call giving it the option to either: ask question output no code OR output code and ask no questions. But the model failed to ask questions or output code. So i thought, okay maybe this is to much for the model to handle.... maybe i need to break it up so now i have an agent to ask questions and one to write code, but now no code is getting written!!!! wtf!!
+
+router - no questions, just ask user to choose it if cant decide
+manager - ask questions
+code analyst - ask questions
+
+# JSON Mode Issues
+well this is good news and bad news. What we see is that json mode is not reliable. i tried looking online but cant find anything in particular to help increase reliability. Obv there are methods like finetuning and giving examples but that for later down the line. (btw fine tuning is not abt fine tuning. SOTA model will always change its abt having data for my system. then i can just refinetune whatever SOTA model is on that) So what are some things i can do to increase reliability? THere is no science to this, just intuition but here i go:
+- Less complex requirements
+- Smaller tasks
+- Use enums
+- set required json mode 
+
+The thing is i wanted to pass my data in one time 
+Data -> questions or answer
+but this might be too much for the model to handle. it might be better to:
+data -> questions -> data -> ... until no more questions
+data -> answer
+This is more costly.... but might be more reliable? Should be more reliable. dumbass ai cant do shit(im joking i was just mad spent hours yesterday fucking with this problem)
+
+okay. well now why is this good? Cuz everyone else is dealing with this problem... and while this problem exists theres no way u can have huge autonomous ai systems... which is the reason we dont see them today. 
+
+Bro lmao this thing man. it.... nvrm.. this llm just did some shit that was dumb but smart at the same time. like its breaking the rules but in a good way 

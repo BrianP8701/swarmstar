@@ -11,8 +11,10 @@ class Agent:
         
     async def chat(self, message):
         messages = [{"role": "system", "content": self.instructions},{"role": "user", "content": message}]
+        print(f"\n\nMessages: {messages}")
         try:
-            completion = await client.chat.completions.create(model="gpt-4-1106-preview", messages=messages, tools=self.tools, tool_choice=self.tool_choice, temperature=0.0)
+            completion = await client.chat.completions.create(model="gpt-4-1106-preview", messages=messages, tools=self.tools, tool_choice=self.tool_choice, temperature=0.0, response_format={ "type": "json_object" }, seed=69) # hahaha 69 funny number
+            print(f"\nCompletion: {completion}")
         except Exception as e:
             print(f"Exception occurred: {e}")
             return

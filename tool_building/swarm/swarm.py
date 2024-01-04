@@ -40,7 +40,7 @@ class Swarm:
         if not self.state['population'] == 0:
             raise ValueError('Create a new swarm to load a new goal')
         if context == None: context = ''
-        node_blueprint = {'type': 'router', 'data': {'goal': f'Context to understand the goal: {context}\n\n\n The goal: {goal}'}}
+        node_blueprint = {'type': 'router', 'data': {'goal': f'Context to understand the goal: {context}\n The goal: {goal}'}}
         self._spawn_node(node_blueprint)
 
     async def run(self):
