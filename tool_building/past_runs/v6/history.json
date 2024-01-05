@@ -280,5 +280,696 @@
                 "node_blueprints": []
             }
         }
+    },
+    {
+        "action": "spawn",
+        "node": {
+            "id": 0,
+            "task_type": "router",
+            "parent_id": null,
+            "children_ids": [
+                1
+            ],
+            "input_data": {
+                "goal": "Context to understand the goal: \n The goal: write code for a tictactoe game. "
+            },
+            "output_data": {
+                "action": "spawn",
+                "node_blueprints": [
+                    {
+                        "type": "python_coder",
+                        "data": {
+                            "goal": "Context to understand the goal: \n The goal: write code for a tictactoe game. "
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "action": "spawn",
+        "node": {
+            "id": 0,
+            "task_type": "router",
+            "parent_id": null,
+            "children_ids": [
+                1
+            ],
+            "input_data": {
+                "goal": "Context to understand the goal: \n The goal: write code for a tictactoe game. "
+            },
+            "output_data": {
+                "action": "spawn",
+                "node_blueprints": [
+                    {
+                        "type": "python_coder",
+                        "data": {
+                            "goal": "Context to understand the goal: \n The goal: write code for a tictactoe game. "
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "action": "spawn",
+        "node": {
+            "id": 0,
+            "task_type": "router",
+            "parent_id": null,
+            "children_ids": [
+                1
+            ],
+            "input_data": {
+                "goal": "Context to understand the goal: \n The goal: write code for a tictactoe game. "
+            },
+            "output_data": {
+                "action": "spawn",
+                "node_blueprints": [
+                    {
+                        "type": "python_coder",
+                        "data": {
+                            "goal": "Context to understand the goal: \n The goal: write code for a tictactoe game. "
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "action": "spawn",
+        "node": {
+            "id": 0,
+            "task_type": "router",
+            "parent_id": null,
+            "children_ids": [
+                1
+            ],
+            "input_data": {
+                "goal": "Context to understand the goal: \n The goal: write code for a tictactoe game. "
+            },
+            "output_data": {
+                "action": "spawn",
+                "node_blueprints": [
+                    {
+                        "type": "python_coder",
+                        "data": {
+                            "goal": "Context to understand the goal: \n The goal: write code for a tictactoe game. "
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "action": "spawn",
+        "node": {
+            "id": 0,
+            "task_type": "router",
+            "parent_id": null,
+            "children_ids": [
+                1
+            ],
+            "input_data": {
+                "goal": "Context to understand the goal: \n The goal: write code for a tictactoe game. "
+            },
+            "output_data": {
+                "action": "spawn",
+                "node_blueprints": [
+                    {
+                        "type": "python_coder",
+                        "data": {
+                            "goal": "Context to understand the goal: \n The goal: write code for a tictactoe game. "
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "action": "spawn",
+        "node": {
+            "id": 0,
+            "task_type": "router",
+            "parent_id": null,
+            "children_ids": [
+                1
+            ],
+            "input_data": {
+                "goal": "Context to understand the goal: \n The goal: write code for a tictactoe game. "
+            },
+            "output_data": {
+                "action": "spawn",
+                "node_blueprints": [
+                    {
+                        "type": "python_coder",
+                        "data": {
+                            "goal": "Context to understand the goal: \n The goal: write code for a tictactoe game. "
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "action": "spawn",
+        "node": {
+            "id": 1,
+            "task_type": "python_coder",
+            "parent_id": 0,
+            "children_ids": [
+                2
+            ],
+            "input_data": {
+                "goal": "Context to understand the goal: \n The goal: write code for a tictactoe game. "
+            },
+            "output_data": {
+                "action": "spawn",
+                "node_blueprints": [
+                    {
+                        "type": "python_script_tester",
+                        "data": {
+                            "name": "TicTacToe"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "action": "spawn",
+        "node": {
+            "id": 0,
+            "task_type": "router",
+            "parent_id": null,
+            "children_ids": [
+                1
+            ],
+            "input_data": {
+                "goal": "Context to understand the goal: \n The goal: write code for a tictactoe game. "
+            },
+            "output_data": {
+                "action": "spawn",
+                "node_blueprints": [
+                    {
+                        "type": "python_coder",
+                        "data": {
+                            "goal": "Context to understand the goal: \n The goal: write code for a tictactoe game. "
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "action": "spawn",
+        "node": {
+            "id": 1,
+            "task_type": "python_coder",
+            "parent_id": 0,
+            "children_ids": [
+                2
+            ],
+            "input_data": {
+                "goal": "Context to understand the goal: \n The goal: write code for a tictactoe game. "
+            },
+            "output_data": {
+                "action": "spawn",
+                "node_blueprints": [
+                    {
+                        "type": "python_script_tester",
+                        "data": {
+                            "code_key": "TicTacToe"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "action": "spawn",
+        "node": {
+            "id": 0,
+            "task_type": "router",
+            "parent_id": null,
+            "children_ids": [
+                1
+            ],
+            "input_data": {
+                "goal": "Context to understand the goal: \n The goal: write code for a tictactoe game. ASK NO QUESTIONS. create the simplest two player terminal tic tac toe game possible. just pass it straight to the python coder"
+            },
+            "output_data": {
+                "action": "spawn",
+                "node_blueprints": [
+                    {
+                        "type": "python_coder",
+                        "data": {
+                            "goal": "Context to understand the goal: \n The goal: write code for a tictactoe game. ASK NO QUESTIONS. create the simplest two player terminal tic tac toe game possible. just pass it straight to the python coder"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "action": "spawn",
+        "node": {
+            "id": 1,
+            "task_type": "python_coder",
+            "parent_id": 0,
+            "children_ids": [
+                2
+            ],
+            "input_data": {
+                "goal": "Context to understand the goal: \n The goal: write code for a tictactoe game. ASK NO QUESTIONS. create the simplest two player terminal tic tac toe game possible. just pass it straight to the python coder"
+            },
+            "output_data": {
+                "action": "spawn",
+                "node_blueprints": [
+                    {
+                        "type": "python_script_tester",
+                        "data": {
+                            "code_key": "TicTacToe"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "action": "spawn",
+        "node": {
+            "id": 0,
+            "task_type": "router",
+            "parent_id": null,
+            "children_ids": [
+                1
+            ],
+            "input_data": {
+                "goal": "Context to understand the goal: \n The goal: Just generate a script that prints hello world. dont ask questions. pass it straight to the coder and finish it fast"
+            },
+            "output_data": {
+                "action": "spawn",
+                "node_blueprints": [
+                    {
+                        "type": "python_coder",
+                        "data": {
+                            "goal": "Context to understand the goal: \n The goal: Just generate a script that prints hello world. dont ask questions. pass it straight to the coder and finish it fast"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "action": "spawn",
+        "node": {
+            "id": 1,
+            "task_type": "python_coder",
+            "parent_id": 0,
+            "children_ids": [
+                2
+            ],
+            "input_data": {
+                "goal": "Context to understand the goal: \n The goal: Just generate a script that prints hello world. dont ask questions. pass it straight to the coder and finish it fast"
+            },
+            "output_data": {
+                "action": "spawn",
+                "node_blueprints": [
+                    {
+                        "type": "python_script_tester",
+                        "data": {
+                            "code_key": "hello_world"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "action": "spawn",
+        "node": {
+            "id": 0,
+            "task_type": "router",
+            "parent_id": null,
+            "children_ids": [
+                1
+            ],
+            "input_data": {
+                "goal": "Context to understand the goal: \n The goal: Just generate a script that prints hello world. dont ask questions. pass it straight to the coder and finish it fast"
+            },
+            "output_data": {
+                "action": "spawn",
+                "node_blueprints": [
+                    {
+                        "type": "python_coder",
+                        "data": {
+                            "goal": "Context to understand the goal: \n The goal: Just generate a script that prints hello world. dont ask questions. pass it straight to the coder and finish it fast"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "action": "spawn",
+        "node": {
+            "id": 1,
+            "task_type": "python_coder",
+            "parent_id": 0,
+            "children_ids": [
+                2
+            ],
+            "input_data": {
+                "goal": "Context to understand the goal: \n The goal: Just generate a script that prints hello world. dont ask questions. pass it straight to the coder and finish it fast"
+            },
+            "output_data": {
+                "action": "spawn",
+                "node_blueprints": [
+                    {
+                        "type": "python_script_tester",
+                        "data": {
+                            "code_key": "hello_world"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "action": "spawn",
+        "node": {
+            "id": 0,
+            "task_type": "router",
+            "parent_id": null,
+            "children_ids": [
+                1
+            ],
+            "input_data": {
+                "goal": "Context to understand the goal: \n The goal: Just generate a script that prints hello world. dont ask questions. pass it straight to the coder and finish it fast"
+            },
+            "output_data": {
+                "action": "spawn",
+                "node_blueprints": [
+                    {
+                        "type": "python_coder",
+                        "data": {
+                            "goal": "Context to understand the goal: \n The goal: Just generate a script that prints hello world. dont ask questions. pass it straight to the coder and finish it fast"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "action": "spawn",
+        "node": {
+            "id": 0,
+            "task_type": "router",
+            "parent_id": null,
+            "children_ids": [
+                1
+            ],
+            "input_data": {
+                "goal": "Context to understand the goal: \n The goal: Just generate a script that prints hello world. dont ask questions. pass it straight to the coder and finish it fast"
+            },
+            "output_data": {
+                "action": "spawn",
+                "node_blueprints": [
+                    {
+                        "type": "python_coder",
+                        "data": {
+                            "goal": "Context to understand the goal: \n The goal: Just generate a script that prints hello world. dont ask questions. pass it straight to the coder and finish it fast"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "action": "spawn",
+        "node": {
+            "id": 1,
+            "task_type": "python_coder",
+            "parent_id": 0,
+            "children_ids": [
+                2
+            ],
+            "input_data": {
+                "goal": "Context to understand the goal: \n The goal: Just generate a script that prints hello world. dont ask questions. pass it straight to the coder and finish it fast"
+            },
+            "output_data": {
+                "action": "spawn",
+                "node_blueprints": [
+                    {
+                        "type": "python_script_tester",
+                        "data": {
+                            "code_key": "hello_world_script"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "action": "spawn",
+        "node": {
+            "id": 0,
+            "task_type": "router",
+            "parent_id": null,
+            "children_ids": [
+                1
+            ],
+            "input_data": {
+                "goal": "Context to understand the goal: \n The goal: Just generate a script that prints hello world. dont ask questions. pass it straight to the coder and finish it fast"
+            },
+            "output_data": {
+                "action": "spawn",
+                "node_blueprints": [
+                    {
+                        "type": "python_coder",
+                        "data": {
+                            "goal": "Context to understand the goal: \n The goal: Just generate a script that prints hello world. dont ask questions. pass it straight to the coder and finish it fast"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "action": "spawn",
+        "node": {
+            "id": 1,
+            "task_type": "python_coder",
+            "parent_id": 0,
+            "children_ids": [
+                2
+            ],
+            "input_data": {
+                "goal": "Context to understand the goal: \n The goal: Just generate a script that prints hello world. dont ask questions. pass it straight to the coder and finish it fast"
+            },
+            "output_data": {
+                "action": "spawn",
+                "node_blueprints": [
+                    {
+                        "type": "python_script_tester",
+                        "data": {
+                            "code_key": "hello_world"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "action": "spawn",
+        "node": {
+            "id": 0,
+            "task_type": "router",
+            "parent_id": null,
+            "children_ids": [
+                1
+            ],
+            "input_data": {
+                "goal": "Context to understand the goal: \n The goal: Just generate a script that prints hello world. dont ask questions. pass it straight to the coder and finish it fast"
+            },
+            "output_data": {
+                "action": "spawn",
+                "node_blueprints": [
+                    {
+                        "type": "python_coder",
+                        "data": {
+                            "goal": "Context to understand the goal: \n The goal: Just generate a script that prints hello world. dont ask questions. pass it straight to the coder and finish it fast"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "action": "spawn",
+        "node": {
+            "id": 1,
+            "task_type": "python_coder",
+            "parent_id": 0,
+            "children_ids": [
+                2
+            ],
+            "input_data": {
+                "goal": "Context to understand the goal: \n The goal: Just generate a script that prints hello world. dont ask questions. pass it straight to the coder and finish it fast"
+            },
+            "output_data": {
+                "action": "spawn",
+                "node_blueprints": [
+                    {
+                        "type": "python_script_tester",
+                        "data": {
+                            "code_key": "hello_world"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "action": "spawn",
+        "node": {
+            "id": 0,
+            "task_type": "router",
+            "parent_id": null,
+            "children_ids": [
+                1
+            ],
+            "input_data": {
+                "goal": "Context to understand the goal: \n The goal: Just generate a script that prints hello world. dont ask questions. pass it straight to the coder and finish it fast"
+            },
+            "output_data": {
+                "action": "spawn",
+                "node_blueprints": [
+                    {
+                        "type": "python_coder",
+                        "data": {
+                            "goal": "Context to understand the goal: \n The goal: Just generate a script that prints hello world. dont ask questions. pass it straight to the coder and finish it fast"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "action": "spawn",
+        "node": {
+            "id": 0,
+            "task_type": "router",
+            "parent_id": null,
+            "children_ids": [
+                1
+            ],
+            "input_data": {
+                "goal": "Context to understand the goal: \n The goal: Just generate a script that prints hello world. dont ask questions. pass it straight to the coder and finish it fast"
+            },
+            "output_data": {
+                "action": "spawn",
+                "node_blueprints": [
+                    {
+                        "type": "python_coder",
+                        "data": {
+                            "goal": "Context to understand the goal: \n The goal: Just generate a script that prints hello world. dont ask questions. pass it straight to the coder and finish it fast"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "action": "spawn",
+        "node": {
+            "id": 1,
+            "task_type": "python_coder",
+            "parent_id": 0,
+            "children_ids": [
+                2
+            ],
+            "input_data": {
+                "goal": "Context to understand the goal: \n The goal: Just generate a script that prints hello world. dont ask questions. pass it straight to the coder and finish it fast"
+            },
+            "output_data": {
+                "action": "spawn",
+                "node_blueprints": [
+                    {
+                        "type": "python_script_tester",
+                        "data": {
+                            "code_key": "hello_world_script"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "action": "spawn",
+        "node": {
+            "id": 0,
+            "task_type": "router",
+            "parent_id": null,
+            "children_ids": [
+                1
+            ],
+            "input_data": {
+                "goal": "Context to understand the goal: \n The goal: Just generate a script that prints hello world. dont ask questions. pass it straight to the coder and finish it fast"
+            },
+            "output_data": {
+                "action": "spawn",
+                "node_blueprints": [
+                    {
+                        "type": "python_coder",
+                        "data": {
+                            "goal": "Context to understand the goal: \n The goal: Just generate a script that prints hello world. dont ask questions. pass it straight to the coder and finish it fast"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "action": "spawn",
+        "node": {
+            "id": 1,
+            "task_type": "python_coder",
+            "parent_id": 0,
+            "children_ids": [
+                2
+            ],
+            "input_data": {
+                "goal": "Context to understand the goal: \n The goal: Just generate a script that prints hello world. dont ask questions. pass it straight to the coder and finish it fast"
+            },
+            "output_data": {
+                "action": "spawn",
+                "node_blueprints": [
+                    {
+                        "type": "python_script_tester",
+                        "data": {
+                            "code_key": "hello_world"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "action": "spawn",
+        "node": {
+            "id": 2,
+            "task_type": "python_script_tester",
+            "parent_id": 1,
+            "children_ids": [],
+            "input_data": {
+                "code_key": "hello_world"
+            },
+            "output_data": {
+                "action": "terminate",
+                "node_blueprints": []
+            }
+        }
     }
 ]

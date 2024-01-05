@@ -1,5 +1,6 @@
 import json
-
+import traceback
+        
 class TaskHandler:
     '''This class handles the execution of tasks for nodes. It loads scripts in string form from a JSON file and can execute them'''
     _instance = None
@@ -28,9 +29,9 @@ class TaskHandler:
                 return output
             except TypeError as e:
                 print(f"Error calling function {script_name}: {e}")
+                traceback.print_exc()
         else:
             print(f"Function {script_name} is not available.")
-    
     '''
     +------------------------ Private methods ------------------------+
     '''  

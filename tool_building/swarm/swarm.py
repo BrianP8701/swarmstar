@@ -5,8 +5,7 @@ import os
 from swarm.agent import Agent
 from settings import Settings
 from swarm.task_handler import TaskHandler
-from pydantic import BaseModel
-from typing import Optional, List
+import traceback
 
 settings = Settings() # For config paths
 task_handler = TaskHandler(settings.NODE_SCRIPTS_PATH)
@@ -99,9 +98,12 @@ class Swarm:
         If node returns spawn, spawn and add children to lifecycle queue
         If node returns terminate, inititate termination process
         '''
-        output = await task_handler.execute(node)
-        node.output = output
-        
+        try:
+            output = await task_handler.execute(node)
+            node.output = output
+        except Exception as error:
+            print(f'Error executing node {node.id}: {error}')
+            traceback.print_exc()
 
         if output['action'] == 'spawn': # Create and add children to lifecycle queue
             for node_blueprint in output['node_blueprints']:
