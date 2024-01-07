@@ -17,9 +17,9 @@ async def manager(goal):
     while True:
         broken_down_goal = await manager.chat(goal)
         agent_has_questions = broken_down_goal['arguments']['do_you_have_questions']
-        question = broken_down_goal['arguments']['question']
 
         if agent_has_questions:
+            question = broken_down_goal['arguments']['question']
             user_input = input(f"Questions: {question}\n\nGoal: {goal}\n\n")
             goal = f'{goal}\n\nQuestion: {question} \n\nUser answer: {user_input}'
         else:
@@ -121,11 +121,11 @@ import os
 settings = Settings()
 with open(settings.AUTONOMOUS_SCRIPT_TESTS_PATH, 'r') as file:
     autonomous_test_data = json.load(file)
-    
-# DO same but with manualk
+
+# DO same but with manual
 with open(settings.MANUAL_SCRIPT_TESTS_PATH, 'r') as file:
     manual_test_data = json.load(file)
-    
+
 def save_test_progress(data, code_key, inner_key, value):
     if code_key not in data:
         data[code_key] = {} 
@@ -134,7 +134,7 @@ def save_test_progress(data, code_key, inner_key, value):
     data[code_key][inner_key] = value
     with open(settings.AUTONOMOUS_SCRIPT_TESTS_PATH, 'w') as file:
         json.dump(data, file, indent=4)
-        
+
 async def python_script_tester(code_key):
     swarm = Swarm()
     with open(settings.SYNTHETIC_CODE_PATH, 'r') as file:
@@ -189,9 +189,6 @@ async def python_script_tester(code_key):
             error_message = f"Error executing script {code_key}: {e}"
             save_test_progress(manual_test_data, code_key, 'error', error_message)
             raise Exception(error_message)
-        
+
     return {'action': 'terminate', 'node_blueprints': []}
     # Ok. so now we should have a success message in the autonomous or manual test data, or an error message in the autonomous test data. what do we do now?
-
-    
-    

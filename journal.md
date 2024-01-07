@@ -669,3 +669,16 @@ so ima be honest with myself - i might be pushing the limits of the model with t
 - Then download dependencies from the dependency list provided by the python coder
 - Run the script and if there are errors save them to the same place where we would have saved success messages
 - If at any point in this process we fail, we save the script to a .py file in the testing grounds, and let the user go in their himself and prepare the script, and the user will signal to the system when he is done by saying something in the terminal, and the system will pick up from there. 
+
+
+
+# New goal
+to move forward with the swarm i want to define a new goal. And have the swarm actually accomplish that goal. i was thinking of something but that might be too big of a jump... yk how we have the github wrapper? I want to create a bunch of api wrappers, create a bunch of tools for the swarm. web browsing, research, interacting with a cloud database
+
+
+
+# utils
+I want to make some utils to make the code generally cleaner. what save operations do i need to think of:
+
+save test results
+save generated code
