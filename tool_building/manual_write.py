@@ -84,28 +84,31 @@ async def try_executing_synthetic_script(code_key, executable_script):
         save_progress(code_key, {'autonomous_testing': {'error': error_message}})
         raise Exception(error_message)
 
-async def manually_prepare_script_for_testing(code_key, script_message):
+async def manually_prepare_script_for_testing(code_key, code, script_message):
     manual_test_file_path = f'{settings.MANUAL_PATH}/{code_key}.py'
     save_progress(code_key, {'manual_testing': {'manual_test_file_path': manual_test_file_path}})
     if not os.path.exists(manual_test_file_path):
         open(manual_test_file_path, 'w').close()
     with open(manual_test_file_path, 'w') as file:
-        file.write(script_message)
+        file.write(code)
     await async_input(
-        f'\nThe autonomous script tester failed. Please manually prepare the script for testing at {manual_test_file_path} '
-        f'and press enter when ready.\nAdd logic to save the result of the successful test in {settings.MANUAL_SCRIPT_TESTS_PATH} file as follows:\n'
+        f'\nThe autonomous script tester failed. Please add logic to execute the code in '
+        f'{manual_test_file_path}.\n\n'
         f'Prepare a success message that includes two dictionaries:\n'
-        f'- input: Containing the parameters used for the test.\n'
-        f'- output: Detailing the results or outputs from the test execution.\n'
-        f'These will be added to a JSON file so make sure they are serializable. Leave out non-serializable data.\n'
-        f'Save the success dict to the file: {settings.MANUAL_SCRIPT_TESTS_PATH} with the key: {code_key}\n\n'
+        f'  - input: Containing the parameters used for the test.\n'
+        f'  - output: Detailing the results or outputs from the test execution.\n'
+        f'\nTo save the success message:\n'
+        f'from swarm.utils import update_python_script_test_success\n\n'
+        f'When the success message is ready:\n'
+        f'update_python_script_test_success({code_key}, {False}, your_success_message)\n'
+        f'\n'
         f'Press enter when ready.\n'
     )
     return
 
 async def try_executing_manually_prepared_script(code_key):
     try:
-        with open(f'{settings.MANUAL_TESTING_GROUND_FOLDER_PATH}/{code_key}.py', 'r') as file:
+        with open(f'{settings.MANUAL_PATH}/{code_key}.py', 'r') as file:
             manually_prepared_test_script = file.read()
             save_progress(code_key, {'manual_testing': {'manually_prepared_test_script': manually_prepared_test_script}})
             exec(manually_prepared_test_script)
@@ -130,7 +133,7 @@ async def python_script_tester(code_key):
         executable_script = await generate_test_script(code_key, script_assessment, script_message, code, swarm)
         await try_executing_synthetic_script(executable_script)
     except: # manually prepare and test the script
-        manually_prepare_script_for_testing(code_key, script_message)
+        await manually_prepare_script_for_testing(code_key, code, script_message)
         await try_executing_manually_prepared_script(code_key)
 
     return {'action': 'terminate', 'node_blueprints': []}

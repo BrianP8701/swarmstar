@@ -1,3 +1,27 @@
 {
-    
+    "hello_world": {
+        "original_script": "<CODE STARTS>\nprint('Hello World')\n<CODE ENDS>\n<DESCRIPTION STARTS>\nA simple script that prints 'Hello World' to the console.\n<DESCRIPTION ENDS>\n",
+        "autonomous_testing": {
+            "script_assessment": null,
+            "synthetic_executable_script_for_testing": null,
+            "error": null,
+            "success": {
+                "input": null,
+                "output": null
+            }
+        },
+        "manual_testing": {
+            "manually_prepared_test_script": "from swarm.utils import update_python_script_test_success\n\nprint('Hello World')\n\nsuccess = {\n    'input': {'ooget': 'boogey'},\n    'output': {'ooga': 'booga'}\n}\n\nupdate_python_script_test_success('hello_world', False, success)",
+            "error": "Error executing script hello_world: 'Settings' object has no attribute 'MANUAL_TESTING_GROUND_FOLDER_PATH'",
+            "success": {
+                "input": {
+                    "ooget": "boogey"
+                },
+                "output": {
+                    "ooga": "booga"
+                }
+            },
+            "manual_test_file_path": "tool_building/swarm/memory/manual/hello_world.py"
+        }
+    }
 }

@@ -15,5 +15,12 @@
         "code": "def print_board(board):\n    for row in board:\n        print(' | '.join(row))\n        print('-' * 5)\n\ndef check_winner(board, player):\n    for row in board:\n        if all(s == player for s in row):\n            return True\n    for col in zip(*board):\n        if all(s == player for s in col):\n            return True\n    if all(board[i][i] == player for i in range(3)):\n        return True\n    if all(board[i][2 - i] == player for i in range(3)):\n        return True\n    return False\n\ndef get_move():\n    while True:\n        try:\n            x, y = map(int, input('Enter row and column numbers to fix spot: ').split())\n            if x in range(1, 4) and y in range(1, 4):\n                return x - 1, y - 1\n            else:\n                print('Invalid input. Try again.')\n        except ValueError:\n            print('Invalid input. Enter numbers only.')\n\ndef main():\n    board = [[' ' for _ in range(3)] for _ in range(3)]\n    players = ['X', 'O']\n    turn = 0\n\n    while True:\n        print_board(board)\n        print(f'Player {players[turn % 2]}, make your move.')\n        x, y = get_move()\n        if board[x][y] == ' ':\n            board[x][y] = players[turn % 2]\n            if check_winner(board, players[turn % 2]):\n                print_board(board)\n                print(f'Player {players[turn % 2]} wins!')\n                break\n            if all(all(cell != ' ' for cell in row) for row in board):\n                print_board(board)\n                print('The game is a draw!')\n                break\n            turn += 1\n        else:\n            print('This spot is already taken. Choose another.')\n\nif __name__ == '__main__':\n    main()\n",
         "description": "A simple command-line based Tic-Tac-Toe game where two players can play against each other. The board is a 3x3 grid, and players take turns to place their mark (X or O) on the grid. The game checks for a winner or a draw after each move and announces the result.",
         "dependencies": []
+    },
+    "hello_world": {
+        "language": "python",
+        "code_type": "script",
+        "code": "print('Hello World')",
+        "description": "A simple script that prints 'Hello World' to the console.",
+        "dependencies": []
     }
 }
