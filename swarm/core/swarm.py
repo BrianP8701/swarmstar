@@ -1,10 +1,10 @@
 import asyncio
-from swarm.node import Node
+from swarm.core.node import Node
 import json
 import os
-from swarm.agent import Agent
+from swarm.core.oai_agent import Agent
 from settings import Settings
-from swarm.task_handler import TaskHandler
+from swarm.core.task_handler import TaskHandler
 import traceback
 
 settings = Settings() # For config paths

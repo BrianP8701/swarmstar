@@ -716,3 +716,97 @@ if the swarm is creating a project itll be saved and tested in some seperate fol
 so what about things like the swarms terminate spawn methods, task handlers? those are internal swarm api things. the actual CORE of the system. 
 the rest of the code will need to go in memory and be dynamically managed. so should the memory folder go in the swarm folder or at the root? the root cuz itll get BIG.
 also quick note... this is so obvious but theres no need to always have to store code as strings. 
+
+
+
+# Reading 2023 RAG survey paper
+Interesting quote: "Additionally, it is suggested that LLMs may have a preference for focusing on readable rather than information-rich documents."
+One thing to note, is that in my swarm most of my rag will be over structured data, data structured as dicts. but just for a layer, under that we get to unstructured text and code etc
+
+searching over documentation requires common rag, like embedding nearest k.
+searching in a codebase requires structured rag
+
+potential tools for rag agents:
+recursive retrieval
+iterative retrieval
+small to big chunking
+reranking k results
+rewriting query
+compressing and verifying retrieved hits
+multiple indexes for same document
+indexing raw text, metadata, summaries, extracted info, different combos etc
+
+
+# Debugging swarm with new organization
+
+Essentially we should have a detailed description of the tree/file structure of our project to allow the swarm to autonomously navigate it to find what it wants. in addition to allow it to reorganize the file structure and write code to interact with different pieces on its own.
+
+like i have a couple pieces now i already talked abt above yesterday: testing, synthetic code, manual place for user to prepare scripts for testing, documentation for the swarm. so i suppose how will context retrieval really work? some agent will have task X and will require context which may be code, documentation, results of some other agent or test etc. the retrieval agent will be like a router agent but to navigate over memory:
+
+- structured code search
+- rag query
+- web search
+
+so yeah. i guess we have the one memory folder to hold it all. and a memory router or retrieval router to navigate it
+
+retrieval router, action router. when the quantity of options grow to large we need to break it down into sections and layers, a tree with clone nodes allowed. the routers navigate the action and memory tree. the swarm can create new actions and memories of its own. oh yeah baby now we're onto something.
+
+all the actions are agents
+any history, state, synthetic code, docs is memory
+
+okay i guess here is whats bothering me. i want one place for memory, which ive done now. lets say i want to save something like a new python script that was generated
+
+i want to make examples of the memory and action trees. just so u can see what i mean. These need to be autonomously configured - in the future. not yet. dont overwhelm myself yet. for now i can organize the action and memory space.
+
+
+                            ------- memory router      ----- script
+                            |                          |
+                            |   -------- python ------------ class   
+                            |   |                      |
+            retrieve info ---   |------- java ----     ----- function
+            code ---------------|                      
+action ---- write
+            test
+            break down goal
+            user interaction
+
+
+actually the initial layer can be more abstract
+
+
+             write
+action ----- code
+             test
+
+whatever im not doing this its taking too long to type out.
+okay so i get the action space is a tree. and the memory space is a tree. now one thing i gotta implement now is namespaces
+
+okay i need to make a dynamic router... meaning a router agent where i can pass a list of options along with an optional further description of each option to the router.
+the only problem is my whole architecture as of now has it so that the tools and prompts for agents are static. i need to make them dynamic.
+
+ah god do i need to make a unique object for the router agent? i wanted all agents to follow the same pattern but it cant.... approaches i can take:
+
+- have router, manager, optimizer, coder, writer agent in internal swarm and rest be in external memory? well ultimately.... fuck like writing code is something that can be done 
+
+Memory Router (list of options)
+Action Router (list of options)
+
+Manager (goal/action statement)
+
+Coder(goal/action statement)
+
+Writer(goal/action statement)
+
+not every llm call has to be called an agent right? fuckk my abstractions were wrong. bro im lost now. fuck fuck fuck. cuz the router needs dynamic input. ahhhhhhhhh
+
+what do i do bro fuck there does need to be a standard pattern for each agent or no? I guess.... no? each agent just needs clear documentation describing how to interact with it. each agent needs an api for itself. 
+
+
+should there be a single router for memory and actions or one for each? Whats the difference between both? 
+
+
+okay so ive created a schema for the action space. the action router recursively navigates the space to find the appropriate action. 
+
+now we need a way to pass this action back to the swarms action loop. 
+
+currently the way this works is the action loop takes a node blueprint which it will create and execute. so each action in the action space corresponds to a node which corresponds to a script is that correct? i guess it is...

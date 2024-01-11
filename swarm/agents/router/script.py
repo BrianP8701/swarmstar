@@ -1,4 +1,5 @@
 from swarm.core.swarm import Swarm
+
 async def router(goal):
     swarm = Swarm()
     router_agent = swarm.agents['router']

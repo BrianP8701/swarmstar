@@ -1,33 +1,18 @@
 # Agent_Swarm_Experiments
 Making experiments locally to contribute to AGI. Documenting my journey on YouTube @ [AI Agent Swarm Playlist](https://youtube.com/playlist?list=PLO8gVow6df_Rh7DEJ10_WAdnkGnIRCh-K&si=eYdyBu7NShKckilS)
 
-
-**ATTENTION**
-TLDR: Everything is in the tool_building folder. I have no readable documentation yet ik
-This README is not being used rn. THIS PROJECT IS ACTIVE. Im just working on the 'tool_building' experiment, which has actually evolved to be a much bigger experiment than i initially planned. Im going to carry on with lots of swarm development there until I achieve a point where the swarm can effectively write code for itself and execute it, along with the basic tools like web browsing etc. then i will begin a new experiment and update this. 
-
-
 # Principles
     1. Make everything as simple as possible
     2. Make swarm universally applicable/infinitely scalable to any goal
-    3. Strategically build to take advantage of SOTA models
-    4. Prepare for new modalities and robotics
+    3. Strategically build to take advantage of SOTA models, their emergent capabilities and new modalities 
+    4. Make the swarm self sufficient and capable of recursive self improvement
 
-## Usage
-First, configure the .env file. Each subfolder contains an idea or experiment (RAG/agent swarm related). Each experiment contains a plan.md file for my personal use (likely not of any use to you), and a docs.md which you should read. The docs.md will contain usage instructions, architecture details etc.
+# Usage
+1. Create an instance of the swarm class
+2. Call load_goal() to give the swarm a goal
+3. Call run()
 
-In the rest of this file I will describe the motivation and takeaways of each experiment.
-
-## Experiments
-
-In theory - or my imagination at least - there ought to be an inflection point where the swarm becomes self sufficient. 
-
-The swarm needs to be self aware that it is a swarm. The top agents need to know about the system they operate in. They need sufficient context. Lower agents who gain more and more specific tasks will need less context.
-
-
-
-### Tool Building Experiment
-Make the swarm capable of writing code for its own use and modifying itself
-
-
-
+# Architecture
+Fundamentally there are two parts of the swarm - actions and memory. 
+These spaces, the action and memory space, are navigated by "router" agents. Router agents have a task, query or request sent to them and decide where to go to fullfill it. Action routers decide what action to take, and memory routers help find the information to answer or assist you. 
+The action and memory space are organized as trees for scalability, ease of navigation and just because it's intuitive to store things as a tree. It's like a file structure, or a book with chapters, sections etc. Trees are scalable because retrieval within a tree is O(log n) time complexity. Additionally we need to utilize trees for the routers since we can't flood the router with every possible choice at once, but only a limited amount at a time. 

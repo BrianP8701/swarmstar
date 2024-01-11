@@ -3,7 +3,7 @@ import json
 
 client = get_openai_client()
 
-class Agent:
+class OAI_Agent:
     def __init__(self, instructions, tools, tool_choice="auto"):
         self.instructions = instructions
         self.tools = tools

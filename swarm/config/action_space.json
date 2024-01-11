@@ -1,0 +1,87 @@
+{
+    "type": "folder",
+    "description": "This is the root of the action tree",
+    "break down goal": {
+        "type": "action",
+        "name": "manager",
+        "description": "Break down the directive into smaller tasks"
+    },
+    "code": {
+        "type": "folder",
+        "description": "This route contains all things pertaining to the creation, testing or execution of software",
+        "writing code": {
+            "type": "folder",
+            "description": "This action route leads to the creation of code",
+            "python": {
+                "type": "folder",
+                "description": "This action route leads to the creation of python code",
+                "write function": {
+                    "name": "write_python_function",
+                    "type": "action",
+                    "description": "This action route leads to the creation of a function"
+                },
+                "write class": {
+                    "name": "write_python_class",
+                    "type": "action",
+                    "description": "This action route leads to the creation of a class"
+                },
+                "write module": {
+                    "name": "write_python_module",
+                    "type": "action",
+                    "description": "This action route leads to the creation of a module"
+                },
+                "write script": {
+                    "name": "write_python_script",
+                    "type": "action",
+                    "description": "This action route leads to the creation of a script"
+                }
+            },
+            "javascript": {
+                "type": "folder",
+                "description": "This action route leads to the creation of javascript code"
+            }
+        },
+        "executing code": {
+            "description": "This action route leads to the execution of code",
+            "python": {
+                "description": "This action route leads to the execution of python code"
+            },
+            "javascript": {
+                "description": "This action route leads to the execution of javascript code"
+            }
+        },
+        "testing code": {
+            "description": "This action route leads to the testing of code",
+            "python": {
+                "description": "This action route leads to the testing of python code"
+            },
+            "javascript": {
+                "description": "This action route leads to the testing of javascript code"
+            }
+        }
+    },
+    "writing english": {
+        "type": "folder",
+        "description": "This action route leads to the creation of english text",
+        "write email": {
+            "description": "This action route leads to the creation of an email"
+        },
+        "write letter": {
+            "description": "This action route leads to the creation of a letter"
+        },
+        "write essay": {
+            "description": "This action route leads to the creation of an essay"
+        },
+        "write story": {
+            "description": "This action route leads to the creation of a story"
+        },
+        "write poem": {
+            "description": "This action route leads to the creation of a poem"
+        }
+    },
+    "retrieve information": {
+        "name": "memory_router",
+        "type": "action",
+        "description": "This action route leads to the retrieval of information"
+    }
+}
