@@ -1,4 +1,4 @@
-from settings import Settings
+from swarm.settings import Settings
 from openai import AsyncOpenAI
 
 def get_openai_client():

@@ -4,11 +4,10 @@ import json
 import os
 from swarm.core.oai_agent import Agent
 from settings import Settings
-from swarm.core.task_handler import TaskHandler
 import traceback
+from swarm.core.executor import execute
 
 settings = Settings() # For config paths
-task_handler = TaskHandler(settings.NODE_SCRIPTS_PATH)
 
 class Swarm:
     '''
@@ -32,14 +31,14 @@ class Swarm:
             self._load()
             self.is_initialized = True
 
-    def load_goal(self, goal: str, context=None):
+    def load_goal(self, directive: str):
         '''
             If your starting a new swarm with an empty snapshot you need to initialize the swarm with a goal
         '''
         if not self.state['population'] == 0:
             raise ValueError('Create a new swarm to load a new goal')
         if context == None: context = ''
-        node_blueprint = {'type': 'router', 'data': {'goal': f'Context to understand the goal: {context}\n The goal: {goal}'}}
+        node_blueprint = {'type': 'action_router', 'data': {'directive': directive}}
         self._spawn_node(node_blueprint)
 
     async def run(self):
@@ -49,7 +48,7 @@ class Swarm:
         except KeyboardInterrupt:
             self._stop()
             await self.main()
-            
+
     async def main(self):
         '''
         This is the main function that loops until the swarm completes its goal.
@@ -80,7 +79,6 @@ class Swarm:
         if self.running_tasks:
             await asyncio.gather(*self.running_tasks) 
         self._save_state()
-            
 
     '''
     +------------------------ Private methods ------------------------+
@@ -91,7 +89,7 @@ class Swarm:
             This is called when the user presses ctrl+c
         '''
         self.is_running = False
-        
+
     async def _execute_node(self, node: Node):
         '''
         Execute node
@@ -99,7 +97,7 @@ class Swarm:
         If node returns terminate, inititate termination process
         '''
         try:
-            output = await task_handler.execute(node)
+            output = await execute(node)
             node.output = output
         except Exception as error:
             print(f'Error executing node {node.id}: {error}')
@@ -120,20 +118,20 @@ class Swarm:
             'node': node.jsonify()
         }
         self._save_checkpoint(checkpoint)
-    
+
     def _spawn_node(self, node_blueprint):
         node = Node(id=self.state['population'], type=node_blueprint['type'], data=node_blueprint['data'])
         self.state['population'] += 1
         self.nodes[node.id] = node
         self.lifecycle_queue.put_nowait(('execute', node))
         return node
-    
+
     def _save_checkpoint(self, checkpoint):
         self.history.append(checkpoint)
         os.makedirs(os.path.dirname(self.history_path), exist_ok=True)
         with open(self.history_path, 'w') as history:
             json.dump(self.history, history, indent=4)
-        
+
     def _save_state(self):
         self.state['lifecycle_queue'] = self.lifecycle_queue_to_list()
         for node in self.nodes:
@@ -174,7 +172,7 @@ class Swarm:
         for action, node_id in self.state['lifecycle_queue']: # Create lifecycle queue
             node = self.nodes[node_id]
             self.lifecycle_queue.put_nowait((action, node))
-    
+
     def _load_json_file(self, file_path, default_value):
         if os.path.exists(file_path):
             with open(file_path, 'r') as file:
@@ -189,7 +187,7 @@ class Swarm:
             tool_choice = {"type": "function", "function": {"name": agent_schemas[agent]['tools'][0]['function']['name']}}
             agents[agent] = Agent(agent_schemas[agent]['instructions'], agent_schemas[agent]['tools'], tool_choice)
         return agents
-    
+
     async def lifecycle_queue_to_list(self):
         '''
             Returns a list of tuples of the form (action, node_id). This will clear the lifecycle queue. Only used when the swarm is stopped to save lifecycle queue to snapshot
@@ -200,11 +198,10 @@ class Swarm:
             action, node = await queue.get()
             result.append([action, node.id])
         return result
-    
-    
+
     '''
     +------------------------ Testing methods ------------------------+
     '''       
-    
+
     def offline_testing(self):
         pass

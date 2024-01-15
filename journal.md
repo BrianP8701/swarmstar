@@ -810,3 +810,52 @@ okay so ive created a schema for the action space. the action router recursively
 now we need a way to pass this action back to the swarms action loop. 
 
 currently the way this works is the action loop takes a node blueprint which it will create and execute. so each action in the action space corresponds to a node which corresponds to a script is that correct? i guess it is...
+
+the node blueprint contains a path to the corresponding action in the action space.
+
+This action... could be an agent we've defined and made ourselves. 
+
+nah okay it cant just be an agent. it has to be more dynamic then that. what i reckon is the action space is replicated as an actual file system in the actions folder and each leaf node is a folder which is like its own little package. now we cant confine the action to be a class and u must run the main method. no, it should be... 
+
+each action should be in its own scope, its own namespace, its own package, seperate. Each action should have a docs.md file describing how to run it.... and the executor node is assigned with executing actions.
+
+ideally we dont want to waste unnecessary tokens and llm calls to execute a node... what are the paths?
+
+Well an action is a predefined piece of code to run. the router is always passing merely a goal and nothing more. are there any scenarios where between two different nodes we need to pass more than just a directive? Context obv but that comes from retrieval... when a coder writes code it needs to figure out where to sdave the code. one approach is to always have the same way to exexute an action package, say a file main.py with a main method to execute. but what if i have things with other languages?
+
+wait a second. after implementing the router that recursively searches the action space i realized that it doesent need dynamic input, it just takes a single directive. okay thats good news, maybe i dont have to change the architecture. are there any agents/actions that will require more input than can be in just a string?  irdk.... i rlly cant try to predict these things i just need to implement and move forward and if new functionality is needed, ill deal with that when it arises. 
+
+for now, i can just have a singular way to execute all actions. 
+
+so like would the github wrapper go in memory or actions?
+
+this goes back to the question of how we execute actions. each action should be isolated (it can still import things from memory or other places) It should have dynamic input. 
+
+
+
+# Goal 1
+Here is the first project im gonna have the swarm work on:
+
+    We want to autonomously prospect potential clients for a real estate agent using the ChatGPT API
+    We have csv files with expired listings, peoples names and their phone numbers. Create a full fledged system to prospect these people.
+    First, we need to take filters from the real estate agent to narrow down the list of people to prospect.
+    Then, we need to send an initial message to each person on the list to their phone number. I'll give you a template for the message.
+    Then we need triggers to send follow up messages to people who respond to the initial message.
+    We want to continue the conversation and continue to gather relevant information about the person pertaining to their real estate needs.
+    We need to save and extract structured data from the convo to a database. I'd like to use GCP.
+    We'll also want to be able to alert the agent when a person is ready to call, or when a person is ready to sell their house. If at any point the LLM 
+    needs help it should also alert the real estate agent.
+    We'll also want to offer things like a free home valuation, a comparative market analysis, and a free home buyers guide.
+    We'll expand functionality to include emailing them, and calling them using a model like whisper to cold call.
+    We may want to also automate the sending and receiving paperwork.
+    You'll need to design the system, build out all the components, save, test and run the code.
+    We'll want to have a test area where we can simulate conversations where the potential lead is an LLM.
+    We'll want a lot more. But this is a good start. keep working, build out this initial functionality keeping in mind that we'll want to expand it later.
+    
+    use twilio, gcp. probably google cloud function with triggers and then we'll want some sql database to store the extracted structured data. 
+
+Before we move forward, lets try to think about how we want the swarm to actually go through this so we can answer my many questions... im kinda overwhelmed.
+
+break down goal, make plan ask user questions to clarify. Get the actual file from the user. analyse the schema of the file. Create an area in my local file system to save all the code pertaining to this project. Write data cleaning scripts. write the code to send messages. save all this code to the appropriate place, keep the folder organized. Write cloud functions to continue conversation, save extracted data to database. get cloud keys from user. upload gcfs. test. 
+
+so actions like save code to this path, get file from this path. small functions like that. the swarm is probably gonna be writing lots of scripts to get info, or no. we should definitely have a predefined action node so we can easily compose all these actions. so yes 

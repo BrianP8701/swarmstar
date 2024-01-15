@@ -1,0 +1,32 @@
+{
+    "type": "folder",
+    "description": "This is the root of the action tree",
+    "manager": {
+        "type": "action",
+        "description": "Break down the directive into smaller tasks"
+    },
+    "retrieval_router": {
+        "type": "action",
+        "description": "Finds information in swarm memory or browses the web"
+    },
+    "memory_router": {
+        "type": "action",
+        "description": "Saves information to swarm memory"
+    },
+    "writer": {
+        "type": "action",
+        "description": "Write english text"
+    },
+    "code": {
+        "type": "folder",
+        "description": "This branch contains all things pertaining to the creation, testing or execution of software",
+        "python_coder": {
+            "type": "action",
+            "description": "Write python code"
+        },
+        "python_script_tester": {
+            "type": "action",
+            "description": "Test python scripts"
+        }
+    }
+}

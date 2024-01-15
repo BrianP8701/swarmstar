@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional, List
-from settings import Settings
+from swarm.settings import Settings
 
 settings = Settings() # For config paths
 

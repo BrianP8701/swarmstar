@@ -13,6 +13,11 @@ Making experiments locally to contribute to AGI. Documenting my journey on YouTu
 3. Call run()
 
 # Architecture
+## Action and Memory Space
 Fundamentally there are two parts of the swarm - actions and memory. 
-These spaces, the action and memory space, are navigated by "router" agents. Router agents have a task, query or request sent to them and decide where to go to fullfill it. Action routers decide what action to take, and memory routers help find the information to answer or assist you. 
-The action and memory space are organized as trees for scalability, ease of navigation and just because it's intuitive to store things as a tree. It's like a file structure, or a book with chapters, sections etc. Trees are scalable because retrieval within a tree is O(log n) time complexity. Additionally we need to utilize trees for the routers since we can't flood the router with every possible choice at once, but only a limited amount at a time. 
+
+These spaces, the action and memory space, are navigated by "router" agents. Router agents decide where to go to fullfill a directive. Action routers decide what action to take, and memory routers help find the information to answer or assist you. 
+
+The action and memory space are organized as trees for scalability, ease of navigation and just because it's intuitive to store things as a tree. It's like a file structure, or a book with chapters, sections etc. Trees are scalable because retrieval within a tree is O(log n) time complexity. Additionally we need to utilize trees for the routers since we can't flood the router with every possible choice at once, but only a limited amount at a time.  
+
+## 

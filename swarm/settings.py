@@ -8,11 +8,6 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     OPENAI_API_KEY: str
-    AGENTS_PATH: str
-    NODE_SCRIPTS_PATH: str
-    SYNTHETIC_CODE_PATH: str
-    MANUAL_PATH: str
-    PYTHON_SCRIPT_TEST_RESULTS_PATH: str
     ACTION_SPACE_PATH: str
 
     class Config:
