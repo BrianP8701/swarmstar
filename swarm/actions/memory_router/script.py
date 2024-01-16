@@ -1,34 +1,29 @@
 import json
-import copy
-import sys
-import asyncio
-sys.path.insert(0, '/Users/brianprzezdziecki/Code/Agent_Swarm_Experiments')
-
 from swarm.core.oai_agent import OAI_Agent
 from swarm.settings import Settings
 from swarm.utils.user_input import get_user_input
-
+import copy
 
 settings = Settings()
 
-async def action_router(directive: str):
+async def memory_router(directive: str):
     '''
     The action router decides what action to take next given a string, the "directive"
     }
     '''
-    with open('swarm/actions/action_router/tool.json') as f:
+    with open('swarm/actions/memory_router/tool.json') as f:
         router_schema = json.load(f)
-    tool_blueprint = router_schema['action_router']['tools'][0]
-    instructions = router_schema['action_router']['instructions']
+    tool_blueprint = router_schema['memory_router']['tools'][0]
+    instructions = router_schema['memory_router']['instructions']
 
-    with open(settings.ACTION_SPACE_PATH) as f:
-        action_space = json.load(f)
+    with open(settings.MEMORY_SPACE_PATH) as f:
+        memory_space = json.load(f)
         
-    searching_action_space = True
-    options = _extract_options(action_space)
+    searching_memory_space = True
+    options = _extract_options(memory_space)
     path = []
     
-    while searching_action_space:
+    while searching_memory_space:
         # Let LLM choose where to go in the action_space
         tool_blueprint_copy = copy.deepcopy(tool_blueprint)
         action_router = _update_router(options, tool_blueprint_copy, instructions)
@@ -41,11 +36,11 @@ async def action_router(directive: str):
 
         # Continue to traverse action space if you are in a folder. Exit if you are in an action.
         path.append(options[action_index]['key'])
-        subspace = _traverse_path(action_space, path)
+        subspace = _traverse_path(memory_space, path)
         if subspace['type'] == 'folder':
             options = _extract_options(subspace)
         elif subspace['type'] == 'action':
-            searching_action_space = False
+            searching_memory_space = False
         else:
             raise ValueError(f"Invalid type in action space. Expected 'folder' or 'action'.\n\nPath: {path}\n\n")
     
@@ -92,27 +87,5 @@ def _traverse_path(action_space, path):
     
     return current_space
 
-def main(args):
-    try:
-        # Deserialize the JSON string into a Python dictionary
-        args_dict = json.loads(args)
-
-        # Check if 'directive' key exists and is a string
-        if 'directive' in args_dict and isinstance(args_dict['directive'], str):
-            directive = args_dict['directive']
-            # Call the action_router function or any other relevant function
-            try:
-                results = asyncio.run(action_router(directive))
-                print(json.dumps(results))  # Convert dict to JSON and print
-            except Exception as e:
-                print(json.dumps({'error': str(e)}))  # Convert error to JSON and print
-        else:
-            raise ValueError("Expected a 'directive' key with a string value.")
-    
-    except json.JSONDecodeError:
-        raise ValueError("Invalid JSON input.")
-
-if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        raise ValueError("This script expects exactly one argument.")
-    main(sys.argv[1])
+def main(directive: str):
+    return memory_router(directive)

@@ -1,15 +1,15 @@
-import importlib.util
-import sys
+import asyncio
 import os
+import json
 
-def execute(node):
+async def execute(node):
     """
-    Executes the 'main' function from a script located in the given folder path
+    Executes a script located in the given folder path as an asyncio subprocess
     and returns its result.
 
     :param folder_path: Path to the folder containing the script.
-    :param args_dict: Dictionary of arguments to pass to the script's main function.
-    :return: The result of the script's main function.
+    :param args_dict: Dictionary of arguments to pass to the script.
+    :return: The output of the script.
     """
     path_prefix = 'swarm/actions/'
     folder_path = node.type
@@ -24,21 +24,24 @@ def execute(node):
     if not os.path.exists(script_path):
         raise FileNotFoundError(f"No script found at path: {script_path}")
 
-    # Prepare the module spec
-    spec = importlib.util.spec_from_file_location("module.name", script_path)
+    # Prepare the command
+    command = ['python', script_path] + [json.dumps(args_dict)]
 
-    # Load the module
-    module = importlib.util.module_from_spec(spec)
+    process = await asyncio.create_subprocess_exec(
+        *command,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE
+    )
 
-    # Add the folder path to sys.path for relative imports in the script
-    sys.path.append(action_path)
+    stdout, stderr = await process.communicate()
 
-    # Execute the module
-    spec.loader.exec_module(module)
+    if process.returncode != 0:
+        raise RuntimeError(f"Script execution failed: {stderr.decode()}")
 
-    # Check if the module has a 'main' function
-    if not hasattr(module, 'main'):
-        raise AttributeError("The script does not have a 'main' function.")
+    # Parse the JSON output
+    try:
+        result_dict = json.loads(stdout.decode())
+    except json.JSONDecodeError:
+        raise ValueError(f"Failed to parse script output as JSON: {stdout.decode()}")
 
-    # Call the 'main' function with the provided arguments and return its result
-    return module.main(**args_dict)
+    return result_dict

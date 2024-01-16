@@ -1,10 +1,11 @@
 import asyncio
-from swarm.core.node import Node
 import json
 import os
-from swarm.core.oai_agent import Agent
-from settings import Settings
 import traceback
+
+from swarm.core.node import Node
+from swarm.core.oai_agent import OAI_Agent
+from swarm.settings import Settings
 from swarm.core.executor import execute
 
 settings = Settings() # For config paths
@@ -12,8 +13,8 @@ settings = Settings() # For config paths
 class Swarm:
     '''
         If you are creating a new swarm you need to initialize it with a goal by calling load_goal()
-        
-        To run the swarm call run() 
+
+        To run the swarm call run()
     '''
     _instance = None
 
@@ -33,11 +34,12 @@ class Swarm:
 
     def load_goal(self, directive: str):
         '''
-            If your starting a new swarm with an empty snapshot you need to initialize the swarm with a goal
+            If your starting a new swarm with an empty snapshot 
+            you need to initialize the swarm with a goal
         '''
         if not self.state['population'] == 0:
             raise ValueError('Create a new swarm to load a new goal')
-        if context == None: context = ''
+        if context is None: context = ''
         node_blueprint = {'type': 'action_router', 'data': {'directive': directive}}
         self._spawn_node(node_blueprint)
 
@@ -73,11 +75,11 @@ class Swarm:
             except Exception as error:
                 print(error)
             finally:
-                self.lifecycle_queue.task_done()  
+                self.lifecycle_queue.task_done()
         
         # When the swarm is stopped, wait for all running tasks to finish and save state
         if self.running_tasks:
-            await asyncio.gather(*self.running_tasks) 
+            await asyncio.gather(*self.running_tasks)
         self._save_state()
 
     '''
@@ -153,7 +155,7 @@ class Swarm:
         else:
             self._load_swarm_from_snapshot()
             
-        self.agents = self._load_agents(settings.AGENTS_PATH)        
+        self.agents = self._load_agents(settings.AGENTS_PATH)
 
     def _load_swarm_from_snapshot(self):
         # Load nodes
@@ -185,7 +187,7 @@ class Swarm:
             agent_schemas = json.load(f)
         for agent in agent_schemas:
             tool_choice = {"type": "function", "function": {"name": agent_schemas[agent]['tools'][0]['function']['name']}}
-            agents[agent] = Agent(agent_schemas[agent]['instructions'], agent_schemas[agent]['tools'], tool_choice)
+            agents[agent] = OAI_Agent(agent_schemas[agent]['instructions'], agent_schemas[agent]['tools'], tool_choice)
         return agents
 
     async def lifecycle_queue_to_list(self):

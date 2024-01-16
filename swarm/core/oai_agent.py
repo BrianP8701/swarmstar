@@ -1,7 +1,7 @@
-from swarm.openai_config import get_openai_client
+from swarm.openai_config import get_async_openai_client
 import json
 
-client = get_openai_client()
+client = get_async_openai_client()
 
 class OAI_Agent:
     def __init__(self, instructions, tools, tool_choice="auto"):

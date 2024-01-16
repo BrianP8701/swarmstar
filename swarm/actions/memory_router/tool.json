@@ -1,0 +1,32 @@
+{
+	"memory_router": {
+		"instructions": "Output the JSON format specified in the memory_router tool. Memory Router Agent, your task is to navigate through our memory tree to find the most appropriate place to save new items. These items can include anything. Documentation, code projects, scripts, books, and other agents. As you traverse each layer of the memory tree, carefully examine every folder. Your goal is to assess which folder is the most suitable for storing each new item based on their relevance and categorization. If you find that none of the existing folders are a good fit, tell us so by setting stop to true. Your role is crucial in maintaining an organized and efficient structure in our memory tree, ensuring easy management and retrieval of all items.",
+		"tools": [
+            {
+                "type": "function",
+                "function": {
+                    "name": "memory_router",
+                    "description": "Route the data to the most appropriate space in memory",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "folder_index": {
+                                "type": "integer",
+                                "description": "Output the integer matching the best folder to store the new item in: ",
+                                "enum": []
+                            },
+                            "stop": {
+                                "type": "boolean",
+                                "description": "Set to true if none of the existing folders are a good fit for the new item"
+                            }
+						}
+                    },
+                    "required": [
+                        "folder_index",
+                        "create_new_folder"
+                    ]
+                }
+            }
+        ]
+	}
+}

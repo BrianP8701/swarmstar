@@ -57,7 +57,7 @@
 			{
 				"type": "function",
 				"function": {
-					"name": "write_python",
+					"name": "extract_metadata",
 					"description": "Write python code to complete the goal. Fill in all parameters defined in the JSON schema",
 					"parameters": {
 						"type": "object",

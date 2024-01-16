@@ -5,5 +5,3 @@ async def get_user_input(prompt: str):
     loop = asyncio.get_event_loop()
     user_input = await loop.run_in_executor(None, input)
     return user_input
-
-

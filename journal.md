@@ -859,3 +859,17 @@ Before we move forward, lets try to think about how we want the swarm to actuall
 break down goal, make plan ask user questions to clarify. Get the actual file from the user. analyse the schema of the file. Create an area in my local file system to save all the code pertaining to this project. Write data cleaning scripts. write the code to send messages. save all this code to the appropriate place, keep the folder organized. Write cloud functions to continue conversation, save extracted data to database. get cloud keys from user. upload gcfs. test. 
 
 so actions like save code to this path, get file from this path. small functions like that. the swarm is probably gonna be writing lots of scripts to get info, or no. we should definitely have a predefined action node so we can easily compose all these actions. so yes 
+
+
+
+# memory agents
+
+Theres a couple memory agents.
+
+Retrieval agent. This agent is like the action router. it navigates the memory tree layer by layer and finds the appropriate memory.
+
+memory router navigates the memory tree to save something to the memory tree. Its very simple and does not create new folders.
+
+optimizer agent. this agent aims to keep the tree balanced and creates new folders when possible
+
+clone agent. this agent replicates data to appropriate folders to make sure they can be easily found, even if a different route is taken.
