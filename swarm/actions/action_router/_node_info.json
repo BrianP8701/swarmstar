@@ -1,0 +1,5 @@
+{
+    "name": "action_router",
+    "type": "action",
+    "description": "Route directive to appropriate action in action space. If you are the action router, dont choose this action, dummy."
+}

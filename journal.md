@@ -872,4 +872,11 @@ memory router navigates the memory tree to save something to the memory tree. It
 
 optimizer agent. this agent aims to keep the tree balanced and creates new folders when possible
 
-clone agent. this agent replicates data to appropriate folders to make sure they can be easily found, even if a different route is taken.
+clone agent. this agent replicates data to appropriate folders to make sure they can be easily found, even if a different route is taken. a specific form of optimization i guess
+
+
+# optimize memory and action space
+
+rather than having the overhead of having a tree.json file and having to update it whenever we make a change to any of the spaces.... um.... why dont we just treat the actual file system as the space/tree? 
+
+The action space tree contains a type and description for each node in the tree. well we can very easily add a file to each folder in the tree describing those. boom big simplification. im like working on this codebase but constantly pruning so its not rlly growing but there is new functionality which i guess is good. ive deleted about as many lines as ive added (+13000, -10000)

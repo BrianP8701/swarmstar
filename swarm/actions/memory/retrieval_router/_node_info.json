@@ -1,0 +1,5 @@
+{
+    "name": "retrieval_router",
+    "type": "action",
+    "description": "Finds data to meet your needs in memory. Can also choose to browse the web."
+}

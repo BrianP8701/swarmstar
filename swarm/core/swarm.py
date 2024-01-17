@@ -6,7 +6,7 @@ import traceback
 from swarm.core.node import Node
 from swarm.core.oai_agent import OAI_Agent
 from swarm.settings import Settings
-from swarm.core.executor import execute
+from swarm.utils.actions.executor import execute
 
 settings = Settings() # For config paths
 

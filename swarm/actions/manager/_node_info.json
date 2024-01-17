@@ -1,0 +1,6 @@
+{
+    "name": "manager",
+    "type": "action",
+    "description": "Breaks a directive into multiple directives. This is useful for breaking a large directive into smaller directives that can be executed in parallel."
+}
+

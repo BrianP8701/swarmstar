@@ -1,0 +1,5 @@
+{
+    "name": "python_script_tester",
+    "type": "action",
+    "description": "Tests python script"
+}

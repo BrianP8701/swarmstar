@@ -2,12 +2,13 @@ import json
 import copy
 import sys
 import asyncio
+import os
 sys.path.insert(0, '/Users/brianprzezdziecki/Code/Agent_Swarm_Experiments')
 
 from swarm.core.oai_agent import OAI_Agent
 from swarm.settings import Settings
 from swarm.utils.user_input import get_user_input
-
+from swarm.utils.actions.validate_action_args import validate_action_args
 
 settings = Settings()
 
@@ -21,13 +22,12 @@ async def action_router(directive: str):
     tool_blueprint = router_schema['action_router']['tools'][0]
     instructions = router_schema['action_router']['instructions']
 
-    with open(settings.ACTION_SPACE_PATH) as f:
-        action_space = json.load(f)
+    action_space_path = 'swarm/actions'
         
     searching_action_space = True
-    options = _extract_options(action_space)
-    path = []
-    
+    options = _extract_options(action_space_path)
+    path = ['swarm', 'actions']
+
     while searching_action_space:
         # Let LLM choose where to go in the action_space
         tool_blueprint_copy = copy.deepcopy(tool_blueprint)
@@ -40,11 +40,15 @@ async def action_router(directive: str):
         if need_user_assistance or action_index == None: action_index = _get_user_input(directive, options)
 
         # Continue to traverse action space if you are in a folder. Exit if you are in an action.
-        path.append(options[action_index]['key'])
-        subspace = _traverse_path(action_space, path)
-        if subspace['type'] == 'folder':
-            options = _extract_options(subspace)
-        elif subspace['type'] == 'action':
+        path.append(options[action_index]['name'])
+        
+        node_info_path = os.path.join(*path, '_node_info.json')
+        with open(node_info_path, 'r') as json_file:
+            node_info = json.load(json_file)
+
+        if node_info['type'] == 'folder':
+            options = _extract_options(os.path.join(*path))
+        elif node_info['type'] == 'action':
             searching_action_space = False
         else:
             raise ValueError(f"Invalid type in action space. Expected 'folder' or 'action'.\n\nPath: {path}\n\n")
@@ -60,17 +64,26 @@ def _update_router(options, tool, instructions):
     
     return OAI_Agent(instructions, [tool], tool_choice)
 
-def _extract_options(space):
-    result = {}
-    i = 0
-    for key, value in space.items():
-        if isinstance(value, dict) and key not in ['type', 'description']:
-            result[i] = {
-                "key": key,
-                "description": value.get('description', '')
-            }
-            i += 1  
-    return result
+def _extract_options(base_folder):
+    """
+    Scans the subfolders in the base_folder for _node_info.json files,
+    and returns a dict with incrementing indices as keys and the content
+    of these json files as values.
+
+    :param base_folder: The path of the folder to scan.
+    :return: Dict of indices to json content.
+    """
+    node_info_dict = {}
+    index = 0
+
+    for folder in os.listdir(base_folder):
+        json_path = os.path.join(base_folder, folder, '_node_info.json')
+        if os.path.isfile(json_path):
+            with open(json_path, 'r') as json_file:
+                node_info_dict[index] = json.load(json_file)
+                index += 1
+
+    return node_info_dict
 
 def _get_user_input(directive, options):
     while True:
@@ -85,34 +98,16 @@ def _get_user_input(directive, options):
         else:
             print("Invalid input. Please enter a number.")
 
-def _traverse_path(action_space, path):
-    current_space = action_space
-    for key in path:
-        current_space = current_space[key]
-    
-    return current_space
-
 def main(args):
     try:
-        # Deserialize the JSON string into a Python dictionary
-        args_dict = json.loads(args)
-
-        # Check if 'directive' key exists and is a string
-        if 'directive' in args_dict and isinstance(args_dict['directive'], str):
-            directive = args_dict['directive']
-            # Call the action_router function or any other relevant function
-            try:
-                results = asyncio.run(action_router(directive))
-                print(json.dumps(results))  # Convert dict to JSON and print
-            except Exception as e:
-                print(json.dumps({'error': str(e)}))  # Convert error to JSON and print
-        else:
-            raise ValueError("Expected a 'directive' key with a string value.")
-    
-    except json.JSONDecodeError:
-        raise ValueError("Invalid JSON input.")
+        results = asyncio.run(action_router(args['directive']))
+        print(json.dumps(results))  # Convert dict to JSON and print
+    except Exception as e:
+        print(json.dumps({'error': str(e)}))  # Convert error to JSON and print
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        raise ValueError("This script expects exactly one argument.")
-    main(sys.argv[1])
+    schema = {
+        "directive": str
+    }
+    args_dict = validate_action_args(schema)
+    main(args_dict)

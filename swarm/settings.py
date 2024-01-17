@@ -8,8 +8,6 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     OPENAI_API_KEY: str
-    ACTION_SPACE_PATH: str
-    MEMORY_SPACE_PATH: str
 
     class Config:
         env_file = '.env'

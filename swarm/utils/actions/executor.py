@@ -4,12 +4,7 @@ import json
 
 async def execute(node):
     """
-    Executes a script located in the given folder path as an asyncio subprocess
-    and returns its result.
-
-    :param folder_path: Path to the folder containing the script.
-    :param args_dict: Dictionary of arguments to pass to the script.
-    :return: The output of the script.
+    Executes a node as a subprocess and returns the result
     """
     path_prefix = 'swarm/actions/'
     folder_path = node.type

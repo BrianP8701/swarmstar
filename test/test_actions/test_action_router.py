@@ -1,8 +1,9 @@
 import os
 import sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import pytest
+sys.path.insert(0, '/Users/brianprzezdziecki/Code/Agent_Swarm_Experiments')
 
-from swarm.core.executor import execute
+from swarm.utils.actions.executor import execute
 from swarm.core.node import Node
 
 import asyncio
