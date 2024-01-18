@@ -1,0 +1,5 @@
+{
+    "name": "swarm",
+    "type": "folder",
+    "description": "This folder contains all things pertaining to the swarm. You are a part of the swarm. The swarm is a collection of agents working to autonomously solve a goal. If you seek to understand, optimize, debug yourself etc, this folder contains the code that makes the swarm as well as documentation. This swarm also contains logs of previous runs."
+}

@@ -1,5 +1,5 @@
 {
-    "name": "actions",
+    "name": "memory",
     "type": "folder",
-    "description": "This folder contains all things pertaining to the swarm's memory, ie. saving, retrieving, and optimizing data from memory. It also contains web browsing."
+    "description": "This folder contains all things pertaining to the swarm's memory, ie. saving data, retrieving data, and optimizing the memory itself. It also contains action for retrieving data from external sources like github or web scraping."
 }

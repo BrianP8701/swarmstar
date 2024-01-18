@@ -1,0 +1,5 @@
+{
+    "name": "swarm",
+    "type": "folder",
+    "description": "This folder contains logs of runs of the swarm."
+}

@@ -875,8 +875,71 @@ optimizer agent. this agent aims to keep the tree balanced and creates new folde
 clone agent. this agent replicates data to appropriate folders to make sure they can be easily found, even if a different route is taken. a specific form of optimization i guess
 
 
+
 # optimize memory and action space
 
 rather than having the overhead of having a tree.json file and having to update it whenever we make a change to any of the spaces.... um.... why dont we just treat the actual file system as the space/tree? 
 
 The action space tree contains a type and description for each node in the tree. well we can very easily add a file to each folder in the tree describing those. boom big simplification. im like working on this codebase but constantly pruning so its not rlly growing but there is new functionality which i guess is good. ive deleted about as many lines as ive added (+13000, -10000)
+
+
+
+# implementation of memory router
+
+now this is quite challenging. First of all, we're faced with the different types of data we might want to save. strings, files, python code, text, images, etc. 
+
+What i reckon is that if we are faced tightly coupled system code, those areas of memory should have a specialized memory agent that knows the ins and outs of that area very well.
+
+memory pointers. not all folders or data need to actually be in the memory folder. there can be pointers to other folders, or memory agents who are specialized in that branch that take over if a memory router comes to its branch. this should be relatively easy to implement. but the hard question is how is the specialized memory agent implemented? wait now. a specialized memory agent in a branch is rlly just gonna have extra context in its prompt. okay so we dont necessarilly need a specialized memory agent but we need a very good description of the file structure and more, enough context for the memory agent to appropriately navigate the space. the thing is, like in cursor.so these agents all need to be able to ask questions whenever it feels like it has a question that needs answering 
+
+lets take the example of a github repo. when it first enters the repo it might - okay wait i got it. yeah we can keep the same idea of having node_info.json files with descriptions at each level. we'll have another level where we describe the type
+
+obv we also have github api and web browsing actions. 
+
+the memory folder seems like its more so for managing its runtime tests, work, and the actual stuff that the swarm itself is working on. cuz we wont rlly save documentation, its better to just web browse for that. 
+
+## creation and staging of memory
+so while the swarm is working and it generates something, it saves that to a temporary staging area with a unique name. alongside will also be a metadata file. this key will get passed to the memory router. memory router looks at the metadata file and finds the best place to save this data
+
+## routing memory space to save memory
+the memory router will keep the metadata of the data to save in its context and navigate the space similar to how the action router navigates the action space: by comparing the metadata of the data to the metadata of the nodes in the tree. the memory router will also have a COT step where it can generate an analysis and also ask questions if needed. now as it navigates the space it might find a couple unique things:
+
+- pointer nodes (point to another location/folder, cloud data)
+- specialized memory agents
+- indexes to perform rag over
+
+if it reaches one of these special nodes, it will pass the 
+
+## Creation of memory space
+each folder's description should contain all the information needed to navigate that level of space. which includes not just descriptions of the subfolders, but sometimes a big picture of what this is. 
+
+### How do we decide when to index and add a RAG agent over a space?
+when we have a corpus of data too large to fit in context, that cant be searched in a structured way, we need to index it.
+
+### What do i mean by structured search?
+ill give some examples. searching a codebase for a specific class or function. this ought to be done with api calls and parsers. web search - obviously dynamic and requires scripts. reading documentation that is broken into table of contents and small sections where each section is a chunk size. we can do the router search over this without indexing. although rag might be - would be - cheaper here. hm. so no. i guess the only two examples i can think of now is querying an actual database, codebases and web search.
+
+### Hierarchical Indexes
+hierarchical indexes can still be helpful. if there are clear differences between data, we dont have to dump it all into one index. they can be seperate indices. 
+
+
+uhh i keep on thinking abt the swarm at scale even though im in baby stages and should be doing baby steps
+
+every folder has _node_id.json with
+
+{
+    "name": "",
+    "type: "folder, local_pointer, special",
+    "description": "" 
+}
+
+special encapsulates all other types of data. it means that the folder contains a specialized memory agent that the task is to be passed to. every folder that is labeled with type: special should have a file called _memory_agent.py which takes the UUID of the data and saves it in whatever specific manner is appropriate for that branch.
+
+## Autonomous creation of local pointers and specialized memory agents
+first of all, who creates local pointers and specialized memory agents? the optimizer or the memory router? well for now im not gonna think abt this.... lets just say the optimizer does it.... even though in reality in the back of my head im kinda realizing we'll need to be able to do this on the go, im gonna ignore that thought for now.
+
+Lets build this memory router!
+
+
+
+what if i need to overwrite a file? how do i indicate that. no that should be a different process. if im working on a specific file, then the process that led to that should have the file, edit and then overwrite it. 

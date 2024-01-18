@@ -6,7 +6,7 @@ import traceback
 from swarm.core.node import Node
 from swarm.core.oai_agent import OAI_Agent
 from swarm.settings import Settings
-from swarm.utils.actions.executor import execute
+from swarm.utils.actions.executor import execute_node
 
 settings = Settings() # For config paths
 
@@ -99,7 +99,7 @@ class Swarm:
         If node returns terminate, inititate termination process
         '''
         try:
-            output = await execute(node)
+            output = await execute_node(node)
             node.output = output
         except Exception as error:
             print(f'Error executing node {node.id}: {error}')

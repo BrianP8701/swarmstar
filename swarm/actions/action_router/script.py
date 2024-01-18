@@ -15,7 +15,6 @@ settings = Settings()
 async def action_router(directive: str):
     '''
     The action router decides what action to take next given a string, the "directive"
-    }
     '''
     with open('swarm/actions/action_router/tool.json') as f:
         router_schema = json.load(f)
@@ -43,8 +42,12 @@ async def action_router(directive: str):
         path.append(options[action_index]['name'])
         
         node_info_path = os.path.join(*path, '_node_info.json')
-        with open(node_info_path, 'r') as json_file:
-            node_info = json.load(json_file)
+        try:
+            with open(node_info_path, 'r') as json_file:
+                node_info = json.load(json_file)
+        except FileNotFoundError:
+            print(f"File {node_info_path} does not exist.")
+            node_info = None
 
         if node_info['type'] == 'folder':
             options = _extract_options(os.path.join(*path))
