@@ -63,7 +63,7 @@ def _update_router(options, tool, instructions):
     tool['function']['parameters']['properties']['action_index']['description'] += str(options)
     tool['function']['parameters']['properties']['action_index']['enum'] = list(range(len(options)))
 
-    tool_choice = {"type": "function", "function": {"name": tool['function']['name']}}
+    tool_choice = {"type": "function", "function": {"name": "action_router"}}
     
     return OAI_Agent(instructions, [tool], tool_choice)
 

@@ -82,7 +82,7 @@ def _update_router(options, tool, instructions, description):
     tool['function']['parameters']['properties']['folder_index']['description'] += str(options)
     tool['function']['parameters']['properties']['folder_index']['enum'] = list(range(len(options)))
 
-    tool_choice = {"type": "function", "function": {"name": tool['function']['name']}}
+    tool_choice = {"type": "function", "function": {"name": "memory_router"}}
     
     return OAI_Agent(instructions, [tool], tool_choice)
 
@@ -115,7 +115,6 @@ def main(args):
         print(json.dumps({'error': str(e)}))  # Convert error to JSON and print
 
 if __name__ == "__main__":
-    ('we even get here?')
     schema = {
         "data_id": str
     }

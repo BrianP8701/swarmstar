@@ -943,3 +943,15 @@ Lets build this memory router!
 
 
 what if i need to overwrite a file? how do i indicate that. no that should be a different process. if im working on a specific file, then the process that led to that should have the file, edit and then overwrite it. 
+
+
+
+
+# Review break
+okey dokey. so weve made quite a bit of progress. have a lot more of the specific groundwork laid all out. but its not time to break yet. theres still a lot to do before the swarm is actually useful. which is what i want. i dont want to work on any of my other coding projects i want to USE my swarm to build those projects. so lets keep going.
+
+reviewing is hard cuz i have to step back and amalgamate everything ive built out. which is starting to grow in size.
+
+
+omggggg we are getting to the cool part. ima create the action creator agent... first signs of self sufficiency. First time i start USING the swarm. i can feel it.
+

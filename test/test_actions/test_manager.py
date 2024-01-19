@@ -7,9 +7,9 @@ from swarm.core.node import Node
 
 import asyncio
 
-@pytest.mark.unit_test_actions
+# @pytest.mark.unit_test_actions
 async def main():
-    node = Node(id=5, type='memory/memory_router', data={'data_id': "swarm_overview.md"})
+    node = Node(id=5, type='manager', data={'directive': "We need to see the code for the Swarm class."})
     result = await execute_node(node)
     print(result)
 
