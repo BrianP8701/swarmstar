@@ -22,7 +22,7 @@ async def memory_router(data_id: str):
     tool_blueprint = router_schema['memory_router']['tools'][0]
     instructions = router_schema['memory_router']['instructions']
     
-    metadata_path = f'swarm/stage/meta_{os.path.splitext(data_id)[0]}.json'
+    metadata_path = f'swarm/stage/_meta_{data_id}.json'
     with open(metadata_path) as f:
         metadata = json.load(f)
 
@@ -68,8 +68,8 @@ async def memory_router(data_id: str):
             raise ValueError(f"Invalid type in memory space. Expected 'folder' or 'special'.\n\nPath: {path}\n\n")
     
     # Move file to new destination
-    source_path = f'swarm/stage/{data_id}'
-    destination_path = os.path.join(*path, data_id)
+    source_path = f'swarm/stage/{data_id}.{metadata["file_extension"]}'
+    destination_path = os.path.join(*path, f'{data_id}.{metadata["file_extension"]}')
     shutil.move(source_path, destination_path)
     # Move metadata to firestore
     save_dict_to_firestore('memory_metadata', destination_path.replace('/', '-'), metadata)
@@ -112,7 +112,7 @@ def main(args):
         results = asyncio.run(memory_router(args['data_id']))
         print(json.dumps(results))  # Convert dict to JSON and print
     except Exception as e:
-        print(json.dumps({'error': str(e)}))  # Convert error to JSON and print
+        raise RuntimeError(f"Script execution failed: {str(e)}")
 
 if __name__ == "__main__":
     schema = {

@@ -955,3 +955,13 @@ reviewing is hard cuz i have to step back and amalgamate everything ive built ou
 
 omggggg we are getting to the cool part. ima create the action creator agent... first signs of self sufficiency. First time i start USING the swarm. i can feel it.
 
+
+
+okay ive made the big decision to ontake the interface as a web app. gonna finish that in a week, initially getting up a start button and user input(this week). then ill add a way to visualize the swarm as a tree, past runs, configuration, and a metrics board and more in the future.
+
+in addition on the side ima continue to build out the core of the swarm. we have the manager, action router and memory router working now. lets get integration tests, add termination and add a couple more agents:
+
+retrieval_router
+python_coder
+action_creator
+writer

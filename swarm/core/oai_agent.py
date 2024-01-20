@@ -7,7 +7,12 @@ class OAI_Agent:
     def __init__(self, instructions, tools, tool_choice="auto"):
         self.instructions = instructions
         self.tools = tools
-        self.tool_choice = tool_choice
+        if tool_choice == "auto" or type(tool_choice) == dict:
+            self.tool_choice = tool_choice
+        elif type(tool_choice) == str:
+            self.tool_choice = {"type": "function", "function": {"name": tool_choice}}
+        else:
+            raise ValueError(f"Invalid tool_choice type: {type(tool_choice)}")
         
     async def chat(self, message):
         messages = [{"role": "system", "content": self.instructions},{"role": "user", "content": message}]

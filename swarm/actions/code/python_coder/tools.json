@@ -64,7 +64,8 @@
 						"properties": {
 							"code_type": {
 								"type": "integer",
-								"description": "Number representing the type of python code to write. 0: Function, 1: Class, 2: Script"
+								"description": "Number representing the type of python code to write. 0: Function, 1: Class, 2: Script, 3: Other",
+								"enum": [0, 1, 2, 3]
 							},
 							"name": {
 								"type": "string",

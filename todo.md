@@ -18,8 +18,9 @@
 So a lot of the goals outlined above have actually been rendered irrelevant because ive changed the architecture and inner workings of the swarm so much. im just gonna renew the todo list below
 
 ## 1/18/24 - 
-- [ ] test manager
+- [x] test manager
 - [ ] integration test
+- [ ] create web app interface for swarm with user input to threads
 - [ ] add handling for termination in core
 - [ ] integration test with termination
 - [ ] add retrieval agent

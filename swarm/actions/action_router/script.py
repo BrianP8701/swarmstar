@@ -106,7 +106,7 @@ def main(args):
         results = asyncio.run(action_router(args['directive']))
         print(json.dumps(results))  # Convert dict to JSON and print
     except Exception as e:
-        print(json.dumps({'error': str(e)}))  # Convert error to JSON and print
+        raise RuntimeError(f"Script execution failed: {str(e)}")
 
 if __name__ == "__main__":
     schema = {
