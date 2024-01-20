@@ -7,12 +7,12 @@ from swarm.core.node import Node
 
 import asyncio
 
-@pytest.mark.temp
-async def main():
+@pytest.mark.unit_test_actions
+async def test_action_router():
     node = Node(id=5, type='action_router', data={'directive': "Write a python script that prints 'Hello World'"})
     result = await execute_node(node)
     print('hey')
     print(result)
 
 # Run the main function
-asyncio.run(main())
+asyncio.run(test_action_router())

@@ -7,11 +7,11 @@ from swarm.core.node import Node
 
 import asyncio
 
-# @pytest.mark.unit_test_actions
-async def main():
+@pytest.mark.unit_test_actions
+async def test_manager():
     node = Node(id=5, type='manager', data={'directive': "We need to see the code for the Swarm class."})
     result = await execute_node(node)
     print(result)
 
 # Run the main function
-asyncio.run(main())
+asyncio.run(test_manager())
