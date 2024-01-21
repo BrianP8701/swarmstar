@@ -1,5 +1,5 @@
 {
     "name": "code",
-    "type": "special",
+    "type": "folder",
     "description": "This folder contains the actual code/repo of the swarm"
 }

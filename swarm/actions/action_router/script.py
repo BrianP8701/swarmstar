@@ -56,7 +56,8 @@ async def action_router(directive: str):
         else:
             raise ValueError(f"Invalid type in action space. Expected 'folder' or 'action'.\n\nPath: {path}\n\n")
     
-    node_blueprints = [{'action_path': path, 'data': {'directive': directive}}]
+    path = '/'.join(path[2:])
+    node_blueprints = [{'type': path, 'data': {'directive': directive}}]
     return {'action': 'spawn', 'node_blueprints': node_blueprints}
 
 def _update_router(options, tool, instructions):

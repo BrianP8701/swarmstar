@@ -19,27 +19,26 @@ class Swarm:
     _instance = None
 
     # Singleton pattern
-    def __new__(cls, snapshot_path=None, history_path=None):
+    def __new__(cls):
         if cls._instance is None:
             cls._instance = super(Swarm, cls).__new__(cls)
-            cls._instance.__init__(snapshot_path, history_path)
+            cls._instance.__init__()
         return cls._instance
 
-    def __init__(self, snapshot_path=None, history_path=None):
+    def __init__(self):
         if not hasattr(self, 'is_initialized'):
-            self.snapshot_path = snapshot_path
-            self.history_path = history_path
-            self._load()
             self.is_initialized = True
+            self.state = {'population': 0}
+            self.nodes = {}
+            self.lifecycle_queue = asyncio.Queue()
 
-    def load_goal(self, directive: str):
+    def load_directive(self, directive: str):
         '''
             If your starting a new swarm with an empty snapshot 
             you need to initialize the swarm with a goal
         '''
         if not self.state['population'] == 0:
             raise ValueError('Create a new swarm to load a new goal')
-        if context is None: context = ''
         node_blueprint = {'type': 'action_router', 'data': {'directive': directive}}
         self._spawn_node(node_blueprint)
 
@@ -80,7 +79,6 @@ class Swarm:
         # When the swarm is stopped, wait for all running tasks to finish and save state
         if self.running_tasks:
             await asyncio.gather(*self.running_tasks)
-        self._save_state()
 
     '''
     +------------------------ Private methods ------------------------+
@@ -114,81 +112,14 @@ class Swarm:
             pass
         else:
             raise ValueError(f'Invalid action type from executing node: {output["action"]}')
-        
-        checkpoint = {
-            'action': 'spawn',
-            'node': node.jsonify()
-        }
-        self._save_checkpoint(checkpoint)
 
     def _spawn_node(self, node_blueprint):
+        
         node = Node(id=self.state['population'], type=node_blueprint['type'], data=node_blueprint['data'])
         self.state['population'] += 1
         self.nodes[node.id] = node
         self.lifecycle_queue.put_nowait(('execute', node))
         return node
-
-    def _save_checkpoint(self, checkpoint):
-        self.history.append(checkpoint)
-        os.makedirs(os.path.dirname(self.history_path), exist_ok=True)
-        with open(self.history_path, 'w') as history:
-            json.dump(self.history, history, indent=4)
-
-    def _save_state(self):
-        self.state['lifecycle_queue'] = self.lifecycle_queue_to_list()
-        for node in self.nodes:
-            self.state['nodes'][node.id] = node.jsonify()
-        os.makedirs(os.path.dirname(self.snapshot_path), exist_ok=True)
-        with open(self.snapshot_path, 'w') as snapshot:
-            json.dump(self.state, snapshot, indent=4)
-
-    def _load(self):
-        '''
-        Initialize swarm from snapshot or create new swarm
-        '''
-        self.history = self._load_json_file(self.history_path, [])
-        self.state = self._load_json_file(self.snapshot_path, {'population': 0, 'nodes': {}, 'lifecycle_queue': []})
-        
-        if self.state['population'] == 0: # initialize swarm with empty state
-            self.lifecycle_queue = asyncio.Queue()
-            self.nodes = {}
-        else:
-            self._load_swarm_from_snapshot()
-            
-        self.agents = self._load_agents(settings.AGENTS_PATH)
-
-    def _load_swarm_from_snapshot(self):
-        # Load nodes
-        for node_id in self.state['nodes']: # Create all nodes without parent or children relationships
-            jsonified_node = self.state['nodes'][node_id]
-            self.nodes[node_id] = Node(node_id, jsonified_node['task_type'], jsonified_node['input_data'])
-        for node_id in self.state['nodes']: # Create parent and children relationships
-            jsonified_node = self.state['nodes'][node_id]
-            node = self.nodes[node_id]
-            parent_id = jsonified_node['parent_id']
-            node.parent = self.nodes[parent_id] if parent_id is not None else None
-            for child_id in jsonified_node['children_ids']:
-                node.children.append(self.nodes[child_id])
-        
-        # Load lifecycle queue
-        for action, node_id in self.state['lifecycle_queue']: # Create lifecycle queue
-            node = self.nodes[node_id]
-            self.lifecycle_queue.put_nowait((action, node))
-
-    def _load_json_file(self, file_path, default_value):
-        if os.path.exists(file_path):
-            with open(file_path, 'r') as file:
-                return json.load(file)
-        return default_value
-
-    def _load_agents(self, agents_path):
-        agents = {}
-        with open(agents_path) as f:
-            agent_schemas = json.load(f)
-        for agent in agent_schemas:
-            tool_choice = {"type": "function", "function": {"name": agent_schemas[agent]['tools'][0]['function']['name']}}
-            agents[agent] = OAI_Agent(agent_schemas[agent]['instructions'], agent_schemas[agent]['tools'], tool_choice)
-        return agents
 
     async def lifecycle_queue_to_list(self):
         '''
@@ -200,10 +131,3 @@ class Swarm:
             action, node = await queue.get()
             result.append([action, node.id])
         return result
-
-    '''
-    +------------------------ Testing methods ------------------------+
-    '''       
-
-    def offline_testing(self):
-        pass

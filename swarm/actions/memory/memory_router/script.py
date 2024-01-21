@@ -60,17 +60,15 @@ async def memory_router(data_id: str):
             if len(options) == 0:
                 searching_memory_space = False
         elif node_info['type'] == 'special':
-            path.append('_memory_router.py')
-            args_dict = {'data_id': data_id}
-            execute_script(os.path.join(*path), args_dict)
-            searching_memory_space = False
+            # TODO TODO TODO TODO TODO 
+            pass
         else:
             raise ValueError(f"Invalid type in memory space. Expected 'folder' or 'special'.\n\nPath: {path}\n\n")
     
     # Move file to new destination
     source_path = f'swarm/stage/{data_id}.{metadata["file_extension"]}'
     destination_path = os.path.join(*path, f'{data_id}.{metadata["file_extension"]}')
-    shutil.move(source_path, destination_path)
+    shutil.move(source_path, os.path.join(*path))
     # Move metadata to firestore
     save_dict_to_firestore('memory_metadata', destination_path.replace('/', '-'), metadata)
     os.remove(metadata_path)
