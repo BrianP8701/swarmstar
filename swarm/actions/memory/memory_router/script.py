@@ -73,7 +73,9 @@ async def memory_router(data_id: str):
     save_dict_to_firestore('memory_metadata', destination_path.replace('/', '-'), metadata)
     os.remove(metadata_path)
     
-    return {'action': 'terminate', 'node_blueprints': []}
+    lifecycle_command = {'action': 'terminate', 'node_blueprints': []}
+    report = f'Given the data_id "{data_id}", the memory router chose the folder "{"/".join(path)}"'
+    return {'report': report, 'lifecycle_command': lifecycle_command}
 
 def _update_router(options, tool, instructions, description):
     tool['function']['parameters']['properties']['folder_index']['description'] += f'\n\nDescription of current folder: {description}\n\nOptions:'

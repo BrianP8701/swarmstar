@@ -24,7 +24,9 @@ async def manager(directive: str):
     for subtask in subtasks:
         node_blueprints.append({'type': 'action_router', 'data': {'directive': subtask}})
 
-    return {'action': 'spawn', 'node_blueprints': node_blueprints}
+    lifecycle_command = {'action': 'spawn', 'node_blueprints': node_blueprints}
+    report = f'Given the directive "{directive}", the manager chose the subtasks "{subtasks}"'
+    return {'report': report, 'lifecycle_command': lifecycle_command}
 
 # async def manager_with_old_tool(directive: str):
 #     with open('swarm/actions/manager/tool.json', 'r') as file:

@@ -33,10 +33,6 @@ async def action_router(directive: str):
         action_router = _update_router(options, tool_blueprint_copy, instructions)
         action_router_output = await action_router.chat(directive)
         action_index = action_router_output['arguments'].get('action_index', None)
-        
-        # Get assistance from the user if needed
-        need_user_assistance = action_router_output['arguments'].get('help', False)
-        if need_user_assistance or action_index == None: action_index = _get_user_input(directive, options)
 
         # Continue to traverse action space if you are in a folder. Exit if you are in an action.
         path.append(options[action_index]['name'])
@@ -57,8 +53,10 @@ async def action_router(directive: str):
             raise ValueError(f"Invalid type in action space. Expected 'folder' or 'action'.\n\nPath: {path}\n\n")
     
     path = '/'.join(path[2:])
+    report = f'Given the directive "{directive}", the action router chose the action "{path}"'
     node_blueprints = [{'type': path, 'data': {'directive': directive}}]
-    return {'action': 'spawn', 'node_blueprints': node_blueprints}
+    lifecycle_command = {'action': 'spawn', 'node_blueprints': node_blueprints}
+    return {'report': report, 'lifecycle_command': lifecycle_command}
 
 def _update_router(options, tool, instructions):
     tool['function']['parameters']['properties']['action_index']['description'] += str(options)
