@@ -51,7 +51,6 @@ class Swarm:
             await self._main()
 
 
-
     '''
     +------------------------ Private methods ------------------------+
     '''        
@@ -60,19 +59,13 @@ class Swarm:
         self.running_tasks = set()
 
         while self.is_running:
-            action, node = await self.lifecycle_queue.get() # action can be 'spawn' or 'terminate'
+            node = await self.lifecycle_queue.get()
+            if node == 'STOP':
+                break
             try:
-                if action == 'execute':
-                    task = asyncio.create_task(self._execute_node(node))
-                    self.running_tasks.add(task)
-                    task.add_done_callback(self.running_tasks.discard)
-                elif action == 'terminate':
-                    task = asyncio.create_task(self._terminate_node(node))
-                    self.running_tasks.add(task)
-                    task.add_done_callback(self.running_tasks.discard)
-                else:
-                    raise ValueError(f'Invalid action passed to lifecycle queue: {action}')
-
+                task = asyncio.create_task(self._execute_node(node))
+                self.running_tasks.add(task)
+                task.add_done_callback(self.running_tasks.discard)
             except Exception as error:
                 print(error)
             finally:
@@ -87,6 +80,7 @@ class Swarm:
             This is called when the user presses ctrl+c
         '''
         self.is_running = False
+        self.lifecycle_queue.put_nowait('STOP')
 
     async def _execute_node(self, node: Node):
         try:
@@ -109,7 +103,7 @@ class Swarm:
         else:
             raise ValueError(f'Invalid action type from executing node: {lifecycle_command["action"]}')
 
-    async def _terminate_node(self, node: Node):
+    def _terminate_node(self, node: Node):
         '''
             When a node terminates, the following steps are taken:
             1. Traverse up the parent chain to find a manager or root node.
@@ -125,7 +119,7 @@ class Swarm:
             current_node = self.nodes[current_node.parent.id]
         
         if current_node.parent is None:
-            self.is_running = False
+            self._stop()
             return
         
         manager_node = self.nodes[current_node.parent.id]
@@ -135,19 +129,17 @@ class Swarm:
             manager_supervisor_exists = any(child.type == 'manager_supervisor' for child in manager_node.children)
             if manager_supervisor_exists:
                 manager_node.alive = False
-                self.lifecycle_queue.put_nowait(('terminate', manager_node))
+                self._terminate_node(manager_node)
             else:
                 updated_directive = f'{manager_node.data["directive"]}\n\nWe have already accomplished the following sub-directives:\n{manager_node.report["subdirectives"]}\n\n'
                 manager_supervisor_blueprint = {'type': 'manager_supervisor', 'data': {'directive': updated_directive}}
                 manager_supervisor = self._spawn_node(manager_supervisor_blueprint)
                 manager_node.children.append(manager_supervisor)
                 manager_supervisor.parent = manager_node
-                self.lifecycle_command.put_nowait(('spawn', manager_supervisor))
-
     
     def _spawn_node(self, node_blueprint):
         node = Node(id=self.state['population'], type=node_blueprint['type'], data=node_blueprint['data'])
         self.state['population'] += 1
         self.nodes[node.id] = node
-        self.lifecycle_queue.put_nowait(('execute', node))
+        self.lifecycle_queue.put_nowait(node)
         return node
