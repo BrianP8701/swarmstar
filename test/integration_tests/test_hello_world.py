@@ -9,7 +9,7 @@ import asyncio
 @pytest.mark.unit_test_actions
 async def test_action_router():
     swarm = Swarm()
-    directive = 'write a script that prints "Hello World"'
+    directive = 'Write a script that prints hello world'
     swarm.load_directive(directive)
     await swarm.run()
     

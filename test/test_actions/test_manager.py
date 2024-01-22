@@ -9,7 +9,7 @@ import asyncio
 
 @pytest.mark.unit_test_actions
 async def test_manager():
-    node = Node(id=5, type='manager', data={'directive': "We need to see the code for the Swarm class."})
+    node = Node(id=5, type='manager', data={'directive': "We need to automate real estate agents"})
     result = await execute_node(node)
     print(result)
 

@@ -10,7 +10,9 @@ class Node(BaseModel):
     data: dict
     parent: Optional['Node'] = None
     children: List['Node'] = []
-    output: Optional[dict] = None
+    lifecycle_command: Optional[dict] = None
+    report: Optional[dict] = None
+    alive: bool = True
 
     class Config:
         arbitrary_types_allowed = True
@@ -24,5 +26,5 @@ class Node(BaseModel):
             "parent_id": self.parent.id if self.parent is not None else None,
             "children_ids": [child.id for child in self.children],
             "input_data": self.data,
-            "output_data": self.output
+            "report": self.report
         }

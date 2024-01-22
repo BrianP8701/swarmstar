@@ -1,10 +1,7 @@
 import asyncio
-import json
-import os
 import traceback
 
 from swarm.core.node import Node
-from swarm.core.oai_agent import OAI_Agent
 from swarm.settings import Settings
 from swarm.utils.actions.executor import execute_node
 
@@ -43,31 +40,36 @@ class Swarm:
         self._spawn_node(node_blueprint)
 
     async def run(self):
-        try:
-            self.is_running = True
-            await self.main()
-        except KeyboardInterrupt:
-            self._stop()
-            await self.main()
-
-    async def main(self):
         '''
         This is the main function that loops until the swarm completes its goal.
         '''
+        try:
+            self.is_running = True
+            await self._main()
+        except KeyboardInterrupt:
+            self._stop()
+            await self._main()
+
+
+
+    '''
+    +------------------------ Private methods ------------------------+
+    '''        
+
+    async def _main(self):
         self.running_tasks = set()
 
         while self.is_running:
             action, node = await self.lifecycle_queue.get() # action can be 'spawn' or 'terminate'
             try:
                 if action == 'execute':
-                    # Create a task for spawn_node and add it to running_tasks
                     task = asyncio.create_task(self._execute_node(node))
                     self.running_tasks.add(task)
-                    # Optionally, add a callback to remove the task from running_tasks when it's done
                     task.add_done_callback(self.running_tasks.discard)
                 elif action == 'terminate':
-                    # TODO TODO TODO TODO Handle termination TODO TODO TODO TODO
-                    pass
+                    task = asyncio.create_task(self._terminate_node(node))
+                    self.running_tasks.add(task)
+                    task.add_done_callback(self.running_tasks.discard)
                 else:
                     raise ValueError(f'Invalid action passed to lifecycle queue: {action}')
 
@@ -79,11 +81,7 @@ class Swarm:
         # When the swarm is stopped, wait for all running tasks to finish and save state
         if self.running_tasks:
             await asyncio.gather(*self.running_tasks)
-
-    '''
-    +------------------------ Private methods ------------------------+
-    '''        
-
+    
     def _stop(self):
         '''
             This is called when the user presses ctrl+c
@@ -91,43 +89,67 @@ class Swarm:
         self.is_running = False
 
     async def _execute_node(self, node: Node):
-        '''
-        Execute node
-        If node returns spawn, spawn and add children to lifecycle queue
-        If node returns terminate, inititate termination process
-        '''
         try:
-            output = await execute_node(node)
-            node.output = output
+            node_output = await execute_node(node)
+            lifecycle_command = node_output['lifecycle_command']
+            report = node_output['report']
+            node.lifecycle_command = lifecycle_command
+            node.report = report
         except Exception as error:
             print(f'Error executing node {node.id}: {error}')
             traceback.print_exc()
 
-        if output['action'] == 'spawn': # Create and add children to lifecycle queue
-            for node_blueprint in output['node_blueprints']:
+        if lifecycle_command['action'] == 'spawn': # Create and add children to lifecycle queue
+            for node_blueprint in lifecycle_command['node_blueprints']:
                 child = self._spawn_node(node_blueprint)
                 node.children.append(child)
                 child.parent = node
-        elif output['action'] == 'terminate':
-            pass
+        elif lifecycle_command['action'] == 'terminate':
+            self._terminate_node(node)
         else:
-            raise ValueError(f'Invalid action type from executing node: {output["action"]}')
+            raise ValueError(f'Invalid action type from executing node: {lifecycle_command["action"]}')
 
-    def _spawn_node(self, node_blueprint):
+    async def _terminate_node(self, node: Node):
+        '''
+            When a node terminates, the following steps are taken:
+            1. Traverse up the parent chain to find a manager or root node.
+            2. If a manager node is found, verify if all its children have terminated.
+            3. If all children are terminated:
+                a. Check for the presence of a manager_supervisor among the children.
+                b. If a manager_supervisor exists, proceed to terminate the manager node.
+                c. If no manager_supervisor is found, spawn one as a child of the manager node.
+        '''
+        current_node = node
+        while current_node.parent is not None and current_node.parent.type != 'manager':
+            current_node.alive = False
+            current_node = self.nodes[current_node.parent.id]
         
+        if current_node.parent is None:
+            self.is_running = False
+            return
+        
+        manager_node = self.nodes[current_node.parent.id]
+        
+        all_children_terminated = all(child.alive == False for child in manager_node.children)
+        if all_children_terminated:
+            manager_supervisor_exists = any(child.type == 'manager_supervisor' for child in manager_node.children)
+            if manager_supervisor_exists:
+                manager_node.alive = False
+                self.lifecycle_queue.put_nowait(('terminate', manager_node))
+            else:
+                data = {
+                    'directive': manager_node.data,
+                    'sub_directives': manager_node.report
+                }
+                manager_supervisor_blueprint = {'type': 'manager_supervisor', 'data': data}
+                manager_supervisor = self._spawn_node(manager_supervisor_blueprint)
+                manager_node.children.append(manager_supervisor)
+                manager_supervisor.parent = manager_node
+
+    
+    def _spawn_node(self, node_blueprint):
         node = Node(id=self.state['population'], type=node_blueprint['type'], data=node_blueprint['data'])
         self.state['population'] += 1
         self.nodes[node.id] = node
         self.lifecycle_queue.put_nowait(('execute', node))
         return node
-
-    async def lifecycle_queue_to_list(self):
-        '''
-            Returns a list of tuples of the form (action, node_id). This will clear the lifecycle queue. Only used when the swarm is stopped to save lifecycle queue to snapshot
-        '''
-        result = []
-        queue = self.lifecycle_queue
-        while not queue.empty():
-            action, node = await queue.get()
-            result.append([action, node.id])
-        return result

@@ -970,12 +970,22 @@ writer
 
 
 
+# termination
+node terminates. we go up the chain of parents until we encounter a node that is a manager or root node. if we encounter a manager node, we check if all its children are terminated. if they are.... we have a few options for how to implement:
 
+- we can have the same manager node label the nodes as terminated, and leave them in the children list. then have it run its script again knowing that it has had the initial steps all completed. it is asked if it has completed all the tasks or if there are further steps to accomplish the goal
+- we can have the same manager node label the nodes as terminated and have it spawn a new node to check if the task is done and accomplished or if we need to spawn a new manager to create new steps.
 
+okay i got it. manager checks if all children has been terminated.
 
+if all children terminated:     
+    if manager_supervisor is one of children:
+        terminate
+    else:
+        spawn a manager_supervisor as child
 
-
-
+that works so smooth :) problemo solvedo
+ima smooth criminal
 
 
 
