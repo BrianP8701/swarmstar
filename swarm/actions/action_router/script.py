@@ -53,7 +53,10 @@ async def action_router(directive: str):
             raise ValueError(f"Invalid type in action space. Expected 'folder' or 'action'.\n\nPath: {path}\n\n")
     
     path = '/'.join(path[2:])
-    report = f'Given the directive "{directive}", the action router chose the action "{path}"'
+    report = {
+        'message': f'Given the directive "{directive}", the action router chose the action "{path}"',
+        'action_path': path
+    }
     node_blueprints = [{'type': path, 'data': {'directive': directive}}]
     lifecycle_command = {'action': 'spawn', 'node_blueprints': node_blueprints}
     return {'report': report, 'lifecycle_command': lifecycle_command}
@@ -86,19 +89,6 @@ def _extract_options(base_folder):
                 index += 1
 
     return node_info_dict
-
-def _get_user_input(directive, options):
-    while True:
-        user_input = get_user_input(f"The action router needs help:\n\nDirective:\n{directive}\n\nPlease choose the index of the agent this goal should be routed to: {options}")
-        if user_input.isdigit():
-            user_number = int(user_input)
-            if 0 <= user_number <= len(options):
-                print(f"You chose the number: {user_number}")
-                return user_number
-            else:
-                print("Number out of range. Please try again. Don't select user_assistance again.")
-        else:
-            print("Invalid input. Please enter a number.")
 
 def main(args):
     try:

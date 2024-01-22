@@ -1,0 +1,5 @@
+{
+    "name": "core",
+    "type": "folder",
+    "description": "This folder is inaccessible to the action router. It is only for the swarm core to use."
+}

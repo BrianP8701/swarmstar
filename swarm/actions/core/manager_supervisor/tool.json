@@ -1,0 +1,26 @@
+{
+	"manager_supervisor": {
+		"instructions": "Output must adhere to the JSON schema defined in the manager_supervisor tool. The manager_supervisor is given the directive and the completed sub-directives. Your role is to assess whether the manager has fully accomplished the directive, which should have been divided into parallel sub-directives. Evaluate if the directive is fully accomplished or if further tasks remain for the manager and the swarm.",
+		"tools": [
+            {
+                "type": "function",
+                "function": {
+                    "name": "manager_supervisor",
+                    "description": "Checks if there are further steps to be taken to accomplish the directive given to the manager, or if the manager is done.",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "directive_accomplished": {
+                                "type": "boolean",
+                                "description": "True if the directive is fully accomplished, false if further steps are needed."
+                            }
+						}
+                    },
+                    "required": [
+                        "directive_accomplished"
+                    ]
+                }
+            }
+        ]
+	}
+}

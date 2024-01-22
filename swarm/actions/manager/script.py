@@ -18,14 +18,17 @@ async def manager(directive: str):
     manager = OAI_Agent(instructions, tools, tool_choice)
     
     broken_down_directive = await manager.chat(directive)
-    subtasks = broken_down_directive['arguments']['subtasks']
+    subdirectives = broken_down_directive['arguments']['subtasks']
             
     node_blueprints = []
-    for subtask in subtasks:
+    for subtask in subdirectives:
         node_blueprints.append({'type': 'action_router', 'data': {'directive': subtask}})
 
     lifecycle_command = {'action': 'spawn', 'node_blueprints': node_blueprints}
-    report = f'Given the directive "{directive}", the manager chose the subtasks "{subtasks}"'
+    report = {
+        'message': f'Given the directive "{directive}", the manager chose the subtasks "{subdirectives}"',
+        'subdirectives': subdirectives
+    }
     return {'report': report, 'lifecycle_command': lifecycle_command}
 
 # async def manager_with_old_tool(directive: str):

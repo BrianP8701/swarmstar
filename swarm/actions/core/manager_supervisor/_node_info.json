@@ -1,0 +1,5 @@
+{
+    "name": "manager_supervisor",
+    "type": "action",
+    "description": "Checks if there are further steps to be taken to accomplish the directive given to the manager, or if the manager is done."
+}

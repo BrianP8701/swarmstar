@@ -137,14 +137,12 @@ class Swarm:
                 manager_node.alive = False
                 self.lifecycle_queue.put_nowait(('terminate', manager_node))
             else:
-                data = {
-                    'directive': manager_node.data,
-                    'sub_directives': manager_node.report
-                }
-                manager_supervisor_blueprint = {'type': 'manager_supervisor', 'data': data}
+                updated_directive = f'{manager_node.data["directive"]}\n\nWe have already accomplished the following sub-directives:\n{manager_node.report["subdirectives"]}\n\n'
+                manager_supervisor_blueprint = {'type': 'manager_supervisor', 'data': {'directive': updated_directive}}
                 manager_supervisor = self._spawn_node(manager_supervisor_blueprint)
                 manager_node.children.append(manager_supervisor)
                 manager_supervisor.parent = manager_node
+                self.lifecycle_command.put_nowait(('spawn', manager_supervisor))
 
     
     def _spawn_node(self, node_blueprint):

@@ -74,7 +74,10 @@ async def memory_router(data_id: str):
     os.remove(metadata_path)
     
     lifecycle_command = {'action': 'terminate', 'node_blueprints': []}
-    report = f'Given the data_id "{data_id}", the memory router chose the folder "{"/".join(path)}"'
+    report = {
+        'message': f'Given the data_id "{data_id}", the memory router chose the folder "{"/".join(path)}"',
+        'folder_path': "/".join(path)
+    }
     return {'report': report, 'lifecycle_command': lifecycle_command}
 
 def _update_router(options, tool, instructions, description):

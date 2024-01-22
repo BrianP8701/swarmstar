@@ -47,7 +47,10 @@ async def python_coder(directive):
     data_id = stage_content(code, metadata, name)
     node_blueprints = [{'type': 'memory/memory_router', 'data': {'data_id': data_id}}]
     lifecycle_command = {'action': 'spawn', 'node_blueprints': node_blueprints}
-    report = f'Given the directive "{directive}", the python coder wrote the code "{data_id}"'
+    report = {
+        'message': f'Given the directive "{directive}", the python coder wrote the code "{data_id}"',
+        'data_id': data_id
+    }
     return {'report': report, 'lifecycle_command': lifecycle_command} 
 
 def main(args):
