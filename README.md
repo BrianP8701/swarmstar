@@ -1,7 +1,9 @@
-# Agent_Swarm_Experiments
-Making experiments locally to contribute to AGI. Documenting my journey on YouTube @ [AI Agent Swarm Playlist](https://youtube.com/playlist?list=PLO8gVow6df_Rh7DEJ10_WAdnkGnIRCh-K&si=eYdyBu7NShKckilS)
+# onno
+Building AGI and beyond. Documenting my journey on YouTube @ [AI Agent Swarm Playlist](https://youtube.com/playlist?list=PLO8gVow6df_Rh7DEJ10_WAdnkGnIRCh-K&si=eYdyBu7NShKckilS)
 
 hey guys, i noticed in my traffic metrics for this repo some people have cloned this repo. 40 shockingly. Anyway, the repo is still changing a lot - dont waste ur time tryna clone it and running it. when i make more progress ill make it really easy to use and add good docs. basically, noone should waste their time trying to understand this repo yet. i havent added good docs yet.
+
+im transitioning to turning this into an actual package
 
 # Principles
     1. Make everything as simple as possible
