@@ -1194,4 +1194,107 @@ the stuff thats getting configured - whats it actually changing?
         a question is what if a person whats to add their own extra actions to the action space, and closed source, keep it private? how would that work. well just follow the same idea as the memory space. theres the base internal action space. this is the one inside the package. You can then add your own actions to the action space. each action in the base action space from the space has a metadata tag indicating so. your custom actions can contain a tag specfying the way to that action
 
 
+## what is memory and action concretely?
 now we get down to another question. what is a memory and action? And lets reconcile the conflict in my head between the agent and action.
+
+### memory
+a memory is just a piece of data. json, pdf, py, java, pt, txt, png, mov anything. see its metadata in the memory space schema
+
+### action
+an action is a script. now i genuinely do have a lot of questions around this...
+an action should be a predefined deterministic unit. it should be able to take variable input. it should be able to output variable output.
+This means that there might be some sequences of actions that will always call each other.
+so far i only have a few actions that might result in dynamic calls. actually only one. the action router. and the action router comes after the manager.
+
+so besides the action router and manager the chains of actions are determinstic.
+
+so essentially the manager breaks down a directive into subtasks. and each of these subtasks will go to a chosen action chain. if the appropriate action chain doesent exist it will be created.
+
+actually its like a giant puzzle pieces because the same actions can be composed to create different action chains. you can imagine actions as puzzle pieces with two flat sides and two puzzle sides. puzzle sides that fit together (output of one actions follows the schema of the input of another action) can be chained together. okay i mean yeah that works. so actions are the scripts. 
+
+See the metadata for actions in the action space schema.
+
+
+#### Thought process while writing schemas for memory and action space
+
+for the action or data leaf node in the memory or action space cannot the uuid cannot be generated using the path because the optimizer might change the paths around. every action or data node must just have a uuid. do folders need uuids? do folders need uuids? fuck it just give them uuids cant hurt
+
+can folders have different retrieval types? no. no they cant. cuz the spaces is not the actual space just the metadata overlay with ids and how to do retrieval on leaf nodes. so folders dont need ids.
+
+wait or we can simplify things massively by having one hashmap without layers and having two different types of nodes and every node has ids. this - yes this is the approach.
+
+### memory space schema
+Nest folders with data or folders as leaf nodes. Data type nodes must be leaf nodes
+
+Node:
+{
+    "navigation_type": "folder, vector_index, sql_table, sql_row, sql_column, blob_storage, file_system...",
+    "retrieval_type": "sql, router, vector_similarity, choice"
+    "name": "",
+    "id": "",
+    "description": "",
+    "children": [ids of children]
+}
+
+### action space schema
+Nest folders with actions or folders as leaf nodes. Action type nodes must be leaf nodes
+
+Folder:
+{
+    "type": "folder",
+    "name": "",
+    "id": "",
+    "description": "",
+    "children": [ids of children]
+}
+
+Action:
+{
+    "type": "action",
+    "name": "",
+    "id": "",
+    "language": "",
+    "input_schema": "",
+    "output_schema": "",
+    "description": "",
+    "execute_type": "" (identifier to pass to the action router telling it how to execute the action)
+}
+
+### executor
+the executor takes the id of an action, input data and the action type.
+
+an example of an action type is the following:
+A folder that contains a python script that contains a main method. call it with the given input data in the form of a dict
+
+that action type could be called "simple_python_script_main_method"
+
+we could define action types for other languages or different calls. either way the action type itself would be like a function. 
+so the executor would need to hold a namespace mapping action_types to the function that takes the action_id and input and executes that function
+
+### memories
+we can upload data. we can retrieve data. we need two objects. Uploader and Retriever.
+
+#### uploader
+the uploader takes the id of data in the stage 
+
+it might need to upload to a kv store. it might need to add the data to a sql database. it might need to save to blob storage. it might need to add the data to a file system on a local machine. all of these require different methods. the uploader will need to know the method to use. how will the uploader know what method to use? The memory space should tell it.
+
+we have "folders" and "memories" in the memory space. thats not comprehensive enough. is a sql database a folder or a memory? do the uploader and retriever search over the same memory space? 
+
+okay i adjusted the memory space schema to work. yup thats general enough.
+
+#### retriever
+the retriever starts from the root of the memory space. it chooses the next node to go to. then the navigation_type of that node tells it what to do next. it might still be a folder so it passes it to the same router node. or it might be an index that requires a different rag method. Or a sql table that uses a specific sql method. the navigation_type tag at each node tells the retriever how to navigate the space. And the data on the bottom? is that in the memory space? 
+
+### Swarm object
+The swarm object takes the memory and action space. It takes the executor. (Upload and retriever's have their actions in the action space)
+The swarm id gets passed around as a uuid along any instantiation of itself
+
+### Running the swarm?
+Running the swarm consists of making a swarm object. u get ur swarm id. then you simply make pass a goal to the action router to the executor and let the executor do its thing. It will autonomously pursue the goal
+
+The key - this is why im building agi. You chatgpt ur api is so powerful. it will be able to be used within those action scripts. And there will be an action script - to create other actions. As ai models become better i integrate them. an indivdual model with its inference is a tool. within my system its an autonomous goal fullfiller. not just a tool but something that can replace humans and surpass them.
+
+
+
+im in the void and i dont care. u reach inner peace when u realize what ur doing is right. nothing else matters in the entire world other than building this. 
