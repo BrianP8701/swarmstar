@@ -22,8 +22,9 @@ So a lot of the goals outlined above have actually been rendered irrelevant beca
 - [x] integration test
 - [x] add handling for termination in core
 - [x] change all node executions to output report and lifecycle_command instead of just "output"
-- [ ] add manager_supervisor agent
-- [ ] integration test with termination
+- [x] add manager_supervisor agent
+- [x] integration test with termination
+- [ ] make node ids uuids
 - [ ] create web app interface for swarm with user input to threads
 - [ ] add retrieval agent
 - [ ] create action creator

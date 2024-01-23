@@ -1,13 +1,10 @@
 import json
-import copy
 import sys
 import asyncio
-import os
 sys.path.insert(0, '/Users/brianprzezdziecki/Code/Agent_Swarm_Experiments')
 
 from swarm.core.oai_agent import OAI_Agent
 from swarm.settings import Settings
-from swarm.utils.user_input import get_user_input
 from swarm.utils.actions.validate_action_args import validate_action_args
 
 settings = Settings()

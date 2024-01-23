@@ -993,12 +993,15 @@ ima smooth criminal
 
 
 
+# transition to an official pypi package and making it compatible with serverless cloud functions
+for the transition to serverless cloud functions theres two primary things we have to ensure:
 
+1. the swarm needs to be decoupled. we cannot have the swarm object running in an infinite loop checking the lifecycle queue. we just need actions and units to call each other
+2. we need to make the swarm completely stateless between units. we need to just pass around identifiers of data, the swarm and the ids of nodes etc
 
+so yeah we do this and ideally we'll have this package that is more decoupled and stateless, allowing us to use it locally or on cloud. i want the package to be able to be used locally and on cloud. When i do eventually write my cloud functions, i want them to have minimal logic. they should just consist of using the package. 
 
-
-
-
+umm yeak this is a pretty big undertaking and something i didnt fully comprehend before but now i get it. this should be fun.
 
 
 

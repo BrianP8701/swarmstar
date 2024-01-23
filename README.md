@@ -5,18 +5,21 @@ hey guys, i noticed in my traffic metrics for this repo some people have cloned 
 
 im transitioning to turning this into an actual package
 
-# Principles
+# Guiding Principles
     1. Make everything as simple as possible
     2. Make swarm universally applicable/infinitely scalable to any goal
     3. Strategically build to take advantage of SOTA models, their emergent capabilities and new modalities 
     4. Make the swarm self sufficient and capable of recursive self improvement
 
 # Usage
-1. Create an instance of the swarm class
-2. Call load_goal() to give the swarm a goal
-3. Call run()
+Not available yet. Still undergoing development before it's ready for use.
 
 # Architecture
+## Design Principles
+    1. Heavy bias torwards action 
+    2. Communication should primarily be focused around communicating requirements and directives
+    3. Aim for self sufficiency and autonomy
+
 ## Action and Memory Space
 Fundamentally there are two parts of the swarm - actions and memory. 
 
