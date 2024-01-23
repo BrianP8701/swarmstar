@@ -1003,26 +1003,195 @@ so yeah we do this and ideally we'll have this package that is more decoupled an
 
 umm yeak this is a pretty big undertaking and something i didnt fully comprehend before but now i get it. this should be fun.
 
+luckily the actions are already decoupled and stateless. the core is the only part we need to break down into a new abstraction.
+
+the core has a lifecycle queue that receives actions that it must execute. How can we change this?
+
+well. this is actually very simple. 
+
+All we need is an executor to replace the core
+
+and manage the state of the swarm. boom done lmao wait that was easy
+
+
+
+
+okay map out the interaction on serverless
+
+creation: create swarm object, load goal and execute action router with goal
+    input: goal, user_id, swarm_id
+    output: create swarm id (hooked to state, stage, history). pass swarm id along each node along with path to action and data.
+
+execute manager nodes
+
+
+execute children nodes
+
+...
+
+wait a second. we really only have 2 cloud functions.
+load goal
+execute node
+
+this doesent allow for much control or flexibility from a user perspective. or a software perspective. 
+like what things should be tunable, open to change for other coders? 
+
+- Ability to add to action space
+- Ability to add to memory space
+- easy to add rag/action chains
+
+so truly pre configuration stuff only
+
+
+i suppose generally the core should just offer nodes that take input and produce output
+
+and then obviously its directed deterministically users dont get a choice, but if the package is built this way then it can work on local or any cloud enviroment.
+
+ahh yes thats key i dont want the package to be tied to any specific cloud enviroment. 
+
+but then in addition i dont want users to struggle to set it up
+
+
+
+compatible with serverless
+not tied to any specfic cloud provider, enviroment
+easy to set up over any data (local or cloud, any provider, add your own propietary data) and be able to easily add custom action and rag chains
+
+obviously comes with what i call the internal swarm api. Actions and memory that are necessary for the swarm. 
+
+
+so now i want to imagine different flows for how different users might use this package
+
+# Usage
+## application (non coders)
+so application users dont care abt adaptability with providers or enviroments. they want functional features. Like:
+### custom data
+so the memory tree comes with pre stuff. just a folder/file structure for the swarm with the essential swarm documentation. and then very simply the user can add their own data. they dont worry about rag methods, labeling data it should all be done autonomously
+### custom actions???
+i guess non coders wont really want to add action chains/be able to. but they might want to give the swarm permissions, like permission to control their mouse and see their screen, in the future connections to robotic and other apis. we want the swarm to be able to build an entire software application for someone just by asking the person for requirements and showing and letting the person use stuff as the swarm builds it out. we want the swarm to be able to do research. we want the swarm to be able to build a slideshow or anything for someone. now this personal data obviously cannot be used to help build the package. 
+### Users helping build action space
+when a user asks for something and the swarm tries to create an action that doesent exist it creates the action and that gets added to the official swarm package and reviewed by me.
+## coders
+coders like hacking and really making stuff for THEIR specific use case. and people like to expand and add functionality. so whats some examples of things coders might want to do with this package?
+### custom rag chains and action chains
+coders will want to add their own specific rag methods over their data (already talked abt for normal users). people are self centered. coding is hard work. a coder is gonna want to profit themselves if their building on top of my framework. tbh rn its quite hard for me to think that far ahead. all im thinking is i want it to be easy for local and cloud development. thats it. and then i guess we'll come back to this in the future
+
+
+
+um i kinda got distracted and lost my chain of thought.... fuck what was i thinking abt... recollect recollect fuckity fuckity fuck
+
+im trying to think about how to design my package which i want to be used everywhere. i dont want to tie my code down to my local enviroment and one form of usage. I want my core code, my swarm to be much more... idk cant think of the word exactly
+
+remember my boy. noone. noone gives a fuck - NOBODY GIVES A FUCK - about how cool or esoteric or if they even could make it useful for themselves. the key thing is that the application for non coders is USEFUL and easy and natural. even coders start from there. then when they see how useful the swarm actually is will they want to build on top of it. switching costs have to be nonexistent for people. no training video, no instructions. just log on and use.
 
 
 
 
 
 
+okay i feel good abt this plan. now time to uh actually code it. im kinda overwhelmed by the magnitude of what im telling myself rn. what do i do rn?
+
+uh right yeah decouple and make the core stateless. lets do that.
+oh right i realize what i havent considered yet. custom memory spaces. How do i make it so that we can have the swarm work with and cloud provider or local memory spaces. fuck. rn i have a memory router, retriaval agent to navigate over the memory space. also i have all these paths within my package. when i make the package itll have a memory space that already has some stuff. Then how would we add stuff to that memory space from cloud from any possible source? rn the routers navigate    AHH BABY I GOT THE SOLUTION IM TOO GOOD FUCKING GET IN THERE MATE. EASY PEASY. we revert back to our old solution. Have a tree serialiable object representing the memory tree and each node pointing to location of the data. TOO EASY MAN
+
+Tree contains metadata for each node and pointer. Pointer can be within package or to a cloud location with which you define your connection specific retrieval function in utils. come on get in there baby its too easy for me. fuck yeah
 
 
 
+depending on your cloud enviroment youll have different ways to navigate to and add data. essentially all data uploading and retrieval should have a layer in between so
+
+
+lets just literally code the swarm rn so it will work with gcp, azure and local. instead of thinking abt it abstractly lets just do it so i can choose which one i want.
+im thinking so fast and my head is spinning and heating up so much - coder fever. coder fever to coders is like runners high to athletes
 
 
 
+For coders :
+path to stage
+
+
+does it contain - at which part do we choose our database integrations? 
+
+i suppose well actions obviously are in the package - or your fork of the package.
+
+data in the memory space.
+each node has a pointer. and in the metadata include the method to retrieve it. in the data include the function to retrieve it. where does this get defined? lets imagine the process of adding cutom data from a 3rd party/user persepctive.
+
+User 1:
+This user has data on azure blob storage and other azure data services
+
+User 2:
+This user has data locally on their machine.
+
+User 3:
+This user has data behind various apis
+
+
+Each user has to create methods that:
+- add to stage. retrieve from stage. Their stage could be a local folder, or a folder in some database
+- add data to database. retrieve data from database. if ur using azure, gcp, or local, you need to tell your memory router right now where to add data. the retrieval agent will simply follow the pointer to the data along with the method to retrieve it. that method comes from the memory router. 
+you only configure the memory router. 
+for staging, you configure the staging method.
 
 
 
+Swarm object:
+This object maintains the state and history of the swarm
+
+This object lets you configure the package with your staging agent, and your memory router and retrieval functions.
+
+You add the connection to your memory and action space. 
+
+When you configure as a developer you create your own memory and action space and staging, and memory router functions
+
+when you configure as a user you add your data and the backend is configured for you in the manner by that backend developer.
 
 
 
+lets think about the various layers there are.
+
+If i create an application
+
+I have 800 users.
+
+Each user has a profile and can create multiple swarms. 
+Each swarm a user creates has its own action and memory space.
+
+Each user can run one of their swarms. 
+An instance of a swarm has state and history.
+
+Because this is my application, every single swarm everywhere has the same staging and routing logic and is in the same enviroment.
 
 
+So theres like 3 layers:
 
-dependencies:
-pip install pytest-asyncio
+1. Coder layer
+Configure the swarm to work in you enviroment with your provider and data sources
+2. User layer
+Configure the swarm with your data
+3. Swarm layer
+Run the swarm maintain its state and history.
+
+
+what level is the swarm object at? we need objects with wrappers for each layer? yeah i think so.
+The swarm object encapsulates the user and swarm layer.
+
+above that we first need to create the coder layer
+
+
+whats the process of swarm configuration like? is it a one time thing? yes it is a one time thing. its like a configuration file. but you can change it any time and there should be no problems. expect all your defined util functions need to exist
+we should have a config folder. this contains a config file with constants and the utils pointed to by the constants.
+
+this is at the package layer. when your doing this your modifying the actual package. thats not a good way to do things is it. that would mean developers would have to fork and constantly merge changes from the main branch. we should be able to do this in a more modular way. 
+
+the stuff thats getting configured - whats it actually changing? 
+- its changing the metadata tag that the memory router saves data with. 
+- its adding functions. functions corresponding directly to the metadata tag mentioned above. 
+- we can have a scan function that makes sure that you have all the necessary data functions
+- you select your base memory and action space. 
+    - memory space obviously has the internal swarm memory space in addition to your added data along with the aformentioned data functions and tags in the config folder
+    - action space is inside the package
+        a question is what if a person whats to add their own extra actions to the action space, and closed source, keep it private? how would that work. well just follow the same idea as the memory space. theres the base internal action space. this is the one inside the package. You can then add your own actions to the action space. each action in the base action space from the space has a metadata tag indicating so. your custom actions can contain a tag specfying the way to that action
+
+
+now we get down to another question. what is a memory and action? And lets reconcile the conflict in my head between the agent and action.

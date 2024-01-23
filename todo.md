@@ -24,7 +24,11 @@ So a lot of the goals outlined above have actually been rendered irrelevant beca
 - [x] change all node executions to output report and lifecycle_command instead of just "output"
 - [x] add manager_supervisor agent
 - [x] integration test with termination
+- [ ] decouple and make core stateless
 - [ ] make node ids uuids
+- [ ] revert memory and action space to have a seperate tree representation.
+- [ ] add configuration for coder layer with data sources and custom router functions
+- [ ] test with multiple enviroments
 - [ ] create web app interface for swarm with user input to threads
 - [ ] add retrieval agent
 - [ ] create action creator

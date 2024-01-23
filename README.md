@@ -17,7 +17,7 @@ Not available yet. Still undergoing development before it's ready for use.
 # Architecture
 ## Design Principles
     1. Heavy bias torwards action 
-    2. Communication should primarily be focused around **requirements** and **directives**
+    2. Communication should primarily be focused around requirements and directives
     3. Aim for self sufficiency and autonomy
 
 ## Internal Swarm Communication

@@ -2,7 +2,7 @@ import sys
 import pytest
 sys.path.insert(0, '/Users/brianprzezdziecki/Code/Agent_Swarm_Experiments')
 
-from swarm.core.swarm import Swarm
+from swarm.core._swarm import Swarm
 import asyncio
 
 @pytest.mark.integration_tests

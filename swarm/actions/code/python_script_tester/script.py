@@ -1,11 +1,12 @@
 from settings import Settings
 import json
-from swarm.core.swarm import Swarm
+from swarm.core._swarm import Swarm
 import os
-from swarm.core.memory.testing_ground.python_scripts.schema import python_script_test_result_template
+# from swarm.core.memory.testing_ground.python_scripts.schema import python_script_test_result_template
 import asyncio
 
 settings = Settings()
+python_script_test_result_template = {} # TODO TODO TODO
 
 def load_json_data(path):
     with open(path, 'r') as file:
