@@ -1,9 +1,9 @@
 # onno
 Building AGI and beyond. Documenting my journey on YouTube @ [AI Agent Swarm Playlist](https://youtube.com/playlist?list=PLO8gVow6df_Rh7DEJ10_WAdnkGnIRCh-K&si=eYdyBu7NShKckilS)
 
-hey guys, i noticed in my traffic metrics for this repo some people have cloned this repo. 40 shockingly. Anyway, the repo is still changing a lot - dont waste ur time tryna clone it and running it. when i make more progress ill make it really easy to use and add good docs. basically, noone should waste their time trying to understand this repo yet. i havent added good docs yet.
-
-im transitioning to turning this into an actual package
+# Warning
+**Not available yet. Still undergoing development before it's ready for use.**
+**Documentation is also still shit. i dont expect anyone to understand this yet.**
 
 # Guiding Principles
     1. Make everything as simple as possible
@@ -17,8 +17,10 @@ Not available yet. Still undergoing development before it's ready for use.
 # Architecture
 ## Design Principles
     1. Heavy bias torwards action 
-    2. Communication should primarily be focused around communicating requirements and directives
+    2. Communication should primarily be focused around **requirements** and **directives**
     3. Aim for self sufficiency and autonomy
+
+## Internal Swarm Communication
 
 ## Action and Memory Space
 Fundamentally there are two parts of the swarm - actions and memory. 
@@ -27,4 +29,8 @@ These spaces, the action and memory space, are navigated by "router" agents. Rou
 
 The action and memory space are organized as trees for scalability, ease of navigation and just because it's intuitive to store things as a tree. It's like a file structure, or a book with chapters, sections etc. Trees are scalable because retrieval within a tree is O(log n) time complexity. Additionally we need to utilize trees for the routers since we can't flood the router with every possible choice at once, but only a limited amount at a time.  
 
-## 
+### Action Space
+
+
+### Memory Space
+
