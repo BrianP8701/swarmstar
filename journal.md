@@ -1166,7 +1166,7 @@ Because this is my application, every single swarm everywhere has the same stagi
 So theres like 3 layers:
 
 1. Coder layer
-Configure the swarm to work in you enviroment with your provider and data sources
+Configure the swarm to work in you enviroment with your provider and data sources and stage
 2. User layer
 Configure the swarm with your data
 3. Swarm layer
@@ -1198,7 +1198,7 @@ the stuff thats getting configured - whats it actually changing?
 now we get down to another question. what is a memory and action? And lets reconcile the conflict in my head between the agent and action.
 
 ### memory
-a memory is just a piece of data. json, pdf, py, java, pt, txt, png, mov anything. see its metadata in the memory space schema
+a memory is just a piece of data. json, pdf, py, java, pt, txt, png, mov, element in table anything. see its metadata in the memory space schema
 
 ### action
 an action is a script. now i genuinely do have a lot of questions around this...
@@ -1224,12 +1224,12 @@ can folders have different retrieval types? no. no they cant. cuz the spaces is 
 wait or we can simplify things massively by having one hashmap without layers and having two different types of nodes and every node has ids. this - yes this is the approach.
 
 ### memory space schema
-Nest folders with data or folders as leaf nodes. Data type nodes must be leaf nodes
+The memory space consists of memories and any type of thing that can hold memories. Azure blob storage, Google Firestore, SQL databases, a local folder etc. Every node in the memory space will tell you how to continue to navigate.
 
 Node:
 {
-    "navigation_type": "folder, vector_index, sql_table, sql_row, sql_column, blob_storage, file_system...",
-    "retrieval_type": "sql, router, vector_similarity, choice"
+    "navigation_type": "folder, vector_index, sql_table, sql_row, sql_column, blob_storage, file_system...",    -for Uploader
+    "retrieval_type": "none, sql, router, vector_similarity, choice",     -for Retriever
     "name": "",
     "id": "",
     "description": "",
@@ -1241,26 +1241,33 @@ Nest folders with actions or folders as leaf nodes. Action type nodes must be le
 
 Folder:
 {
-    "type": "folder",
-    "name": "",
-    "id": "",
-    "description": "",
-    "children": [ids of children]
+    id: {
+        "type": "folder",
+        "name": "",
+        "id": "",
+        "description": "",
+        "children": [ids of children]
+    },
+    ...
 }
-
 Action:
 {
-    "type": "action",
-    "name": "",
-    "id": "",
-    "language": "",
-    "input_schema": "",
-    "output_schema": "",
-    "description": "",
-    "execute_type": "" (identifier to pass to the action router telling it how to execute the action)
+    id: {
+        "type": "action",
+        "name": "",
+        "id": "",
+        "language": "",
+        "input_schema": "",
+        "output_schema": "",
+        "description": "",
+        "execute_type": "" (identifier to pass to the action router telling it how to execute the action)
+    },
+    ...
 }
 
-### executor
+### Core agents
+
+#### executor
 the executor takes the id of an action, input data and the action type.
 
 an example of an action type is the following:
@@ -1270,6 +1277,16 @@ that action type could be called "simple_python_script_main_method"
 
 we could define action types for other languages or different calls. either way the action type itself would be like a function. 
 so the executor would need to hold a namespace mapping action_types to the function that takes the action_id and input and executes that function
+
+#### spawner
+spawner spawns a node and updates swarm state and history and tells executor to execute
+
+#### terminator
+terminator begins a termination process
+
+#### optimizer
+
+#### user input
 
 ### memories
 we can upload data. we can retrieve data. we need two objects. Uploader and Retriever.
@@ -1287,14 +1304,79 @@ okay i adjusted the memory space schema to work. yup thats general enough.
 the retriever starts from the root of the memory space. it chooses the next node to go to. then the navigation_type of that node tells it what to do next. it might still be a folder so it passes it to the same router node. or it might be an index that requires a different rag method. Or a sql table that uses a specific sql method. the navigation_type tag at each node tells the retriever how to navigate the space. And the data on the bottom? is that in the memory space? 
 
 ### Swarm object
-The swarm object takes the memory and action space. It takes the executor. (Upload and retriever's have their actions in the action space)
-The swarm id gets passed around as a uuid along any instantiation of itself
+The swarm object takes the memory and action space. It configures the stage, core agents etc.
+The swarm id gets passed around as a uuid along any instantiation of itself. The swarm id is the only thing that gets passed around.
 
 ### Running the swarm?
-Running the swarm consists of making a swarm object. u get ur swarm id. then you simply make pass a goal to the action router to the executor and let the executor do its thing. It will autonomously pursue the goal
+Running the swarm consists of making a swarm object. u get ur swarm id. then you simply make pass a goal to the action router to the executor and let the executor do its thing. It will begin the process to autonomously pursue the goal- ofc stopping for user input when requirements arent clear or if it needs help
 
 The key - this is why im building agi. You chatgpt ur api is so powerful. it will be able to be used within those action scripts. And there will be an action script - to create other actions. As ai models become better i integrate them. an indivdual model with its inference is a tool. within my system its an autonomous goal fullfiller. not just a tool but something that can replace humans and surpass them.
 
 
 
 im in the void and i dont care. u reach inner peace when u realize what ur doing is right. nothing else matters in the entire world other than building this. 
+
+### Configuration process?
+#### What they see
+create your swarm object on your propietary data
+1. Add your OpenAI API key and frontend URL
+3. Define file storage and retrieval operations
+4. Add your propietary data along with the operations to retrieve them
+5. Add custom actions
+6. run an optimization over memory space ? optional
+
+You now have a swarm object connected to all your data with your custom actions.
+You can run an instance of your customized swarm with a goal.
+7. run swarm
+
+
+what actually happens in the back:
+1. Add OpenAI API key and frontend URL to swarm object
+2. Copy default action space from package. Add file storage actions into action space and save action space using users chosen file storage method.
+3. Add users data to memory space representation and save memory space
+2. add actions to action space and save back
+3. organize or add metadata if user didnt
+4. add actions to action space
+5. save
+
+The swarm object holds... holds what? i guess by default the swarm has a default memory and action space. but if you configure yours differently you'll copy and the swarm object will hold the new spaces, or references to them. and everytime you instantiate an instance of a swarm you get a further copy of that.
+
+
+think about the interaction between the backend and frontend.
+
+the swarm object, node objects will remain in the backend. 
+
+the frontend will only be taking a few things:
+    - representation of memory and action space leaving out some metadata
+    - some metrics about the instance of the swarm
+    - a representation of state and history of the swarm
+    - a list of the agents in conversation
+    - message replies from user conversational agents
+
+the backend will only be taking a few things from the frontend:
+    - the username and password of the user
+    - the swarm id
+    - the goal string
+    - requests for data it wants
+    - user responses and file uploads
+
+
+
+you create and configure a swarm object. a swarm object contains the memory space and action space (i understand when these spaces become larger it will become unmanagable. but for now). it also contains the openai api key. 
+
+Your file storage set up automatically as you configure.
+{
+    swarm_object: ___,
+    swarm_instance_1: {
+        swarm_object: ___,
+        goal: ""
+    },
+    ...
+}
+
+the package ought to be different seperate from te cloud provider remember.
+
+you pass a node blueprint and action to the swarm. the swarm returns nodeblueprints and actions and a report.
+
+
+okay NOW. now we are genuinely done with planning. i can actually start coding now.

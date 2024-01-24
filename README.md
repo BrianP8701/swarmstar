@@ -1,9 +1,20 @@
-# onno
-Building AGI and beyond. Documenting my journey on YouTube @ [AI Agent Swarm Playlist](https://youtube.com/playlist?list=PLO8gVow6df_Rh7DEJ10_WAdnkGnIRCh-K&si=eYdyBu7NShKckilS)
-
 # Warning
+**UPDATE. Documentation is not just shit. its not up to date.**
 **Not available yet. Still undergoing development before it's ready for use.**
 **Documentation is also still shit. i dont expect anyone to understand this yet.**
+**aiming to have a proper package, web app interface and documentation by February 10 2024**
+
+# onno
+onno is the name of my agent swarm. i like to anthropomorphize it and think of it as a single entity. 
+
+this system is designed to be a general purpose agent swarm. you give it any arbitrary goal, simply as a string and it will do its best to fullfill it. it will use any and all resources available to it to do so, including creating new tools autonomously. it will communicate with you throughout the process, asking for help and requirement specifications when it needs it. 
+
+if ur a coder there will be more configuration youll be able to do. the package will be compatible with serverless and any provider, or you can run it on your own hardware. 
+
+An agent swarm is a collection of agents working together to achieve a common goal. An agent is an autonomous entity that can perceive its environment and take actions to achieve its goals. 
+
+Also documenting on youtube @ [AI Agent Swarm Playlist](https://youtube.com/playlist?list=PLO8gVow6df_Rh7DEJ10_WAdnkGnIRCh-K&si=eYdyBu7NShKckilS)
+
 
 # Guiding Principles
     1. Make everything as simple as possible
