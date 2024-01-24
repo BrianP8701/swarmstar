@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "autonomous_general_agent_swarm"
+version = "0.1.0"
+description = ""
+authors = ["BrianP8701 <brianp8701@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+importlib = "^1.0.4"
+pydantic = "^2.5.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

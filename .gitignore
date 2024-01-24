@@ -9,6 +9,7 @@ __pycache__/
 *.pyd
 .DS_Store
 reference/
+temp.txt
 
 # C extensions
 *.so

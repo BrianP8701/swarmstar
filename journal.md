@@ -1366,7 +1366,9 @@ you create and configure a swarm object. a swarm object contains the memory spac
 
 Your file storage set up automatically as you configure.
 {
-    swarm_object: ___,
+    swarm_blueprint: {
+        memory_space
+    },
     swarm_instance_1: {
         swarm_object: ___,
         goal: ""
@@ -1380,3 +1382,30 @@ you pass a node blueprint and action to the swarm. the swarm returns nodebluepri
 
 
 okay NOW. now we are genuinely done with planning. i can actually start coding now.
+
+
+one of the problems i have not addressed is how the uploader decides what type of node to create in the memory space.
+
+Executor
+Now a question is how does the executor execute. An action is a file, or package of files. 
+
+the executor is given the action id and its type and its args. Given its type it will execute that action in that manner
+
+# My thoughts while implementing confguration stage
+Where do the default file storage and retrieval methods go when passed to the Swarm Blueprint object? 
+It cant go in the package's default action folder. 
+uhh this whole thing of passing the file storage and retrieval methods to the swarm blueprint object is a bit of a hack. i dont like it.
+
+Here is my question. Who is the one adjusting the default file methods? 
+
+The developer of the package leaves the default file methods blank
+
+The developer using the package will add the default file methods to work in their enviroment. 
+
+we have part of the action and memory space on the package. the rest will be in the specific 
+
+save file           (data, path)
+retrieve file       (path)
+make folder         (path)
+delete folder       (path)
+
