@@ -9,6 +9,7 @@ readme = "README.md"
 python = "^3.10"
 importlib = "^1.0.4"
 pydantic = "^2.5.3"
+openai = "^1.9.0"
 
 
 [build-system]

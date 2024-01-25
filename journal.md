@@ -1260,7 +1260,7 @@ Action:
         "input_schema": "",
         "output_schema": "",
         "description": "",
-        "execute_type": "" (identifier to pass to the action router telling it how to execute the action)
+        "dependencies": []
     },
     ...
 }
@@ -1409,3 +1409,25 @@ retrieve file       (path)
 make folder         (path)
 delete folder       (path)
 
+the swarm blueprint and all subsequent swarms carry all keys.
+the swarm blueprint carries the action and memory tree and all keys.
+
+when we are actually executing an instance of the swarm we dont actually want to pass the whole memory and action space and all keys between each node. rather we want to have an object that can retrieve those as needed. okay try to imagine what exactly the executor will need
+
+the executor can receive two types of things: 
+1. spawn and execute a node
+2. terminate a node
+
+subsequently itll need to be able to also:
+3. retrieve the action space and the memory space
+4. retrieve any keys that might be necessary for some actions
+
+i suppose we can do this by adding more metadata to each action:
+    - dependencies
+    - keys
+
+and keys will just need to have consistent naming across the whole package.
+
+i suppose in the future can u imagine the swarm needing multiple of the same key for various operations? tbh.... we're thinking to far ahead.
+
+during config stage swarm checks actions for key requirements

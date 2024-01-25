@@ -1,3 +1,52 @@
 {
-    
+    "actions": {
+        "type": "internal_swarm_folder",
+        "name": "actions",
+        "id": "actions",
+        "description": "This is the root of the action space",
+        "children": ["swarm", "data"]
+    },
+    "swarm": {
+        "type": "internal_swarm_folder",
+        "name": "actions/swarm",
+        "id": "swarm",
+        "description": "This folder contains all actions pertaining to internal swarm operations such as:\n- saving data to swarm memory\n- retrieving data from swarm memory",
+        "children": ["action_router", "memory"]
+    },
+    "data": {
+        "type": "internal_swarm_folder",
+        "name": "actions/data",
+        "id": "actions/data",
+        "description": "This folder contains all actions pertaining to data operations on any cloud provider or local machines",
+        "children": ["file_operations", "folder_operations"]
+    }, 
+    "file_operations": {
+        "type": "internal_swarm_folder",
+        "name": "actions/data/file_operations",
+        "id": "file_operations",
+        "description": "This folder contains all actions pertaining to file operations on any cloud provider or local machines",
+        "children": ["file_upload", "file_retrieval", "file_deletion", "rename_file", "move_file"]
+    },
+    "folder_operations": {
+        "type": "internal_swarm_folder",
+        "name": "actions/data/folder_operations",
+        "id": "folder_operations",
+        "description": "This folder contains all actions pertaining to folder operations on any cloud provider or local machines",
+        "children": ["make_folder", "delete_folder", "move_folder", "list_folder", "rename_folder"]
+    },
+    "file_retrieval": {
+        "type": "internal_swarm_folder",
+        "name": "actions/data/file_operations/file_retrieval",
+        "id": "file_retrieval",
+        "description": "This folder contains all actions pertaining to file retrieval operations on any cloud provider or local machines",
+        "children": ["mac_file_retrieval"]
+    },
+    "file_upload": {
+        "type": "internal_swarm_folder",
+        "name": "actions/data/file_operations/file_upload",
+        "id": "file_upload",
+        "description": "This folder contains all actions pertaining to file upload operations on any cloud provider or local machines",
+        "children": ["mac_file_upload"]
+    }
 }
+

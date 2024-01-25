@@ -4,7 +4,7 @@ from typing import Callable, BinaryIO
 
 from core.swarm.configuration_utils import get_default_action_tree, get_default_memory_tree
 
-class Swarm(BaseModel):
+class SwarmBlueprint(BaseModel):
     '''
     Create and configure your swarm with your environment and data.
     
@@ -12,24 +12,16 @@ class Swarm(BaseModel):
         - swarm_name (str)
         - openai_key (str)
         - frontend_url (str): The URL for the frontend interface of the swarm.
-        - file_storage_upload (str): The string representation of the method used for uploading files to storage.
-        - file_storage_retrieval (str): The string representation of the method used for retrieving files from storage.
-        - make_folder (str): The string representation of the method used for creating a folder at a given path.
-        - delete_folder (str): The string representation of the method used for deleting a folder at a given path.
+        - default_file_storage (str): Choose between: ['mac', 'windows', 'linux', 'azure', 'gcp', 'aws']
     '''
     swarm_name: str = Field(...)
     openai_key: str = Field(...)
     frontend_url: str = Field(...)
-    file_storage_upload: str = Field(...)
-    file_storage_retrieval: str = Field(...)
-    make_folder: str = Field(...)
-    delete_folder: str = Field(...)
+    default_file_storage: str = Field(...)
 
     def __init__(self, swarm_name: str, openai_key: str, frontend_url: str, 
-                 file_storage_upload: str, 
-                 file_storage_retrieval: str,
-                 make_folder: str,
-                 delete_folder: str):
+                 file_storage_upload: str, file_storage_retrieval: str,
+                 make_folder: str, delete_folder: str):
         # Convert string representations to callable functions and assign to self
         for method_name in ['file_storage_upload', 'file_storage_retrieval', 'make_folder', 'delete_folder']:
             module_name, func_name = locals()[method_name].rsplit('.', 1)

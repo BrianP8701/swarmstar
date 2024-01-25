@@ -29,10 +29,6 @@ def make_folder(path: str) -> None:
     """
     Creates a folder at a specified path, including any necessary parent directories.
 
-    This method will create the target folder and any non-existing parent directories
-    in the given path. For example, if the path is 'a/b/c' and 'a' and 'b' do not exist,
-    it will create directories 'a', 'a/b', and 'a/b/c'.
-
     Parameters:
         path (str): The path where the folder should be created.
 
@@ -47,6 +43,44 @@ def delete_folder(path: str) -> None:
 
     Parameters:
         path (str): The path of the folder to be deleted.
+
+    Returns:
+        None
+    """
+    pass
+
+def move_file(source: str, destination: str) -> None:
+    """
+    Moves a file from a source path to a destination path, creating any necessary parent directories.
+
+    Parameters:
+        source (str): The current path of the file to be moved.
+        destination (str): The new path where the file should be moved.
+
+    Returns:
+        None
+    """
+    pass
+
+def move_folder(source: str, destination: str) -> None:
+    """
+    Moves a folder from a source path to a destination path.
+
+    Parameters:
+        source (str): The current path of the folder to be moved.
+        destination (str): The new path where the folder should be moved.
+
+    Returns:
+        None
+    """
+    pass
+
+def delete_file(path: str) -> None:
+    """
+    Deletes a file at a specified path.
+
+    Parameters:
+        path (str): The path of the file to be deleted.
 
     Returns:
         None

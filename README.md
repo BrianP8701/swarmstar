@@ -17,10 +17,12 @@ Also documenting on youtube @ [AI Agent Swarm Playlist](https://youtube.com/play
 
 
 # Guiding Principles
-    1. Make everything as simple as possible
-    2. Make swarm universally applicable/infinitely scalable to any goal
-    3. Strategically build to take advantage of SOTA models, their emergent capabilities and new modalities 
-    4. Make the swarm self sufficient and capable of recursive self improvement
+Aim to maximize the following:
+    1. Simple
+    2. General
+    3. Autonomous 
+
+Strategically build to take advantage of SOTA models, incorporating new modalities and emergent capabilities
 
 # Usage
 Not available yet. Still undergoing development before it's ready for use.

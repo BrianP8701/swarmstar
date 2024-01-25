@@ -24,6 +24,8 @@ So a lot of the goals outlined above have actually been rendered irrelevant beca
 - [x] change all node executions to output report and lifecycle_command instead of just "output"
 - [x] add manager_supervisor agent
 - [x] integration test with termination
+- [ ] get new swarm architecture working locally
+- [ ] use new swarm architecture to add all cloud storage and file storage operations
 - [ ] decouple and make core stateless
 - [ ] make node ids uuids
 - [ ] revert memory and action space to have a seperate tree representation.
