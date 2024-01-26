@@ -1,7 +1,9 @@
 import os
+from pydantic import validate_arguments
 
 # Function to rename a file on a mac
-def mac_rename_file(file_path, new_file_name):
+@validate_arguments
+def mac_rename_file(file_path: str, new_file_name: str) -> dict:
     try:
         # Extract directory path
         directory = os.path.dirname(file_path)
@@ -9,13 +11,11 @@ def mac_rename_file(file_path, new_file_name):
         new_file_path = os.path.join(directory, new_file_name)
         # Rename the file
         os.rename(file_path, new_file_path)
-        return {'status_message': 'Success'}
+        return {'status_message': 'Success', 'error_message': ''}
     except Exception as e:
         return {'status_message': 'Failure', 'error_message': str(e)}
 
 # Main section
-if __name__ == '__main__':
-    # Example usage
-    input_data = {'file_path': '/path/to/oldfile.txt', 'new_file_name': 'newfile.txt'}
-    result = mac_rename_file(**input_data)
-    print(result)
+@validate_arguments
+def main(file_path: str, new_file_name: str) -> dict:
+    return mac_rename_file(file_path, new_file_name)

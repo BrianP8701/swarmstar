@@ -1,7 +1,9 @@
 import os
+from pydantic import validate_arguments
 
 # Function to list the contents of a folder on a mac
-def mac_list_folder(folder_path):
+@validate_arguments
+def mac_list_folder(folder_path: str) -> dict:
     try:
         # List the contents of the folder
         contents = os.listdir(folder_path)
@@ -11,8 +13,6 @@ def mac_list_folder(folder_path):
         return {'status_message': 'Failure', 'error_message': str(e)}
 
 # Main section
-if __name__ == '__main__':
-    # Example usage: Provide the folder path to list its contents
-    folder_path = '/path/to/folder'
-    result = mac_list_folder(folder_path)
-    print(result)
+@validate_arguments
+def main(folder_path: str) -> dict:
+    return mac_list_folder(folder_path)

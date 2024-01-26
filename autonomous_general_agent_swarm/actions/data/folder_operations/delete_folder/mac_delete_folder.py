@@ -1,10 +1,10 @@
 import os
 import shutil
-import sys
-import json
+from pydantic import validate_arguments
 
 # Function to delete a folder on a mac
-def mac_delete_folder(folder_path):
+@validate_arguments
+def mac_delete_folder(folder_path: str) -> dict:
     try:
         # Check if the folder exists
         if not os.path.exists(folder_path):
@@ -21,11 +21,6 @@ def mac_delete_folder(folder_path):
         return {'status_message': 'Failure', 'error_message': str(e)}
 
 # Main section
-if __name__ == '__main__':
-    # Parse input
-    input_args = json.loads(sys.argv[1])
-    folder_path = input_args['folder_path']
-    
-    # Call the function and print the result
-    result = mac_delete_folder(folder_path)
-    print(json.dumps(result))
+@validate_arguments
+def main(folder_path: str) -> dict:
+    return mac_delete_folder(folder_path)

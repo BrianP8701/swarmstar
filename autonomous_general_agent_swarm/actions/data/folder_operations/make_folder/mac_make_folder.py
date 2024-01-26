@@ -1,7 +1,9 @@
 import os
+from pydantic import validate_arguments
 
 # Function to create a folder on a mac
-def mac_make_folder(folder_path):
+@validate_arguments
+def mac_make_folder(folder_path: str) -> dict:
     try:
         # Create the directory if it does not exist
         if not os.path.exists(folder_path):
@@ -14,9 +16,6 @@ def mac_make_folder(folder_path):
         return {'status_message': 'Failure', 'error_message': str(e)}
 
 # Main section
-if __name__ == '__main__':
-    # Example usage:
-    # folder_path = '/path/to/new/folder'
-    # result = mac_make_folder(folder_path)
-    # print(result)
-    pass
+@validate_arguments
+def main(folder_path: str) -> dict:
+    return mac_make_folder(folder_path)

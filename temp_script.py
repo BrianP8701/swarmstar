@@ -1,9 +1,8 @@
+import os
 import shutil
-from pydantic import validate_arguments
 
 # Function to move a folder on a mac
-@validate_arguments
-def mac_move_folder(folder_path: str, new_folder_path: str) -> dict:
+def mac_move_folder(folder_path, new_folder_path):
     try:
         # Move the folder to the new location
         shutil.move(folder_path, new_folder_path)
@@ -13,6 +12,5 @@ def mac_move_folder(folder_path: str, new_folder_path: str) -> dict:
         return {'status_message': 'Failure', 'error_message': str(e)}
 
 # Main section
-@validate_arguments
-def main(folder_path: str, new_folder_path: str) -> dict:
+def main(folder_path: str, new_folder_path: str):
     return mac_move_folder(folder_path, new_folder_path)

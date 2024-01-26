@@ -1,7 +1,9 @@
 import os
+from pydantic import validate_arguments
 
 # Function to retrieve a file from a Mac
-def mac_file_retrieval(file_path):
+@validate_arguments
+def mac_file_retrieval(file_path: str) -> dict:
     try:
         # Check if the file exists
         if not os.path.exists(file_path):
@@ -30,9 +32,6 @@ def mac_file_retrieval(file_path):
         }
 
 # Main section
-if __name__ == '__main__':
-    # Example file path input
-    input_file_path = '/path/to/your/file.txt'
-    # Call the function with the example input
-    result = mac_file_retrieval(input_file_path)
-    print(result)
+@validate_arguments
+def main(file_path: str) -> dict:
+    return mac_file_retrieval(file_path)
