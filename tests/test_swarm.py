@@ -1,4 +1,4 @@
-from core.swarm.swarm_blueprint import build_swarm_blueprint
+from aga_swarm.core.swarm.swarm_blueprint import build_swarm_blueprint
 import os
 print('here')
 goal = '''Go through the data folder in actions. look at all the actions inside, 

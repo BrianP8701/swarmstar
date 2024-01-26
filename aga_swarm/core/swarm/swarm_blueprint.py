@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field, validate_arguments
 import importlib
 from typing import Callable, BinaryIO
-from core.swarm.default_swarm_operations import get_default_action_space, get_default_memory_space, setup_swarm_space
+from aga_swarm.core.swarm.default_swarm_operations import get_default_action_space, get_default_memory_space, setup_swarm_space
 
 
 
@@ -23,15 +23,10 @@ def build_swarm_blueprint(swarm_name: str, openai_key: str, frontend_url: str, p
         'configs': {
             openai_key: openai_key,
             frontend_url: frontend_url,
-            platform: platform,
+            'platform': platform,
             'root_path': root_path
         },
         'nodes': {},
         'history': []
     }
-    # Set the default actions in action space
     setup_swarm_space(swarm_blueprint)
-    
-
-
-

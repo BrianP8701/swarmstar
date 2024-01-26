@@ -4,9 +4,7 @@
 **Documentation is also still shit. i dont expect anyone to understand this yet.**
 **aiming to have a proper package, web app interface and documentation by February 10 2024**
 
-# onno
-onno is the name of my agent swarm. i like to anthropomorphize it and think of it as a single entity. 
-
+# Autonomous General Agent Swarm
 this system is designed to be a general purpose agent swarm. you give it any arbitrary goal, simply as a string and it will do its best to fullfill it. it will use any and all resources available to it to do so, including creating new tools autonomously. it will communicate with you throughout the process, asking for help and requirement specifications when it needs it. 
 
 if ur a coder there will be more configuration youll be able to do. the package will be compatible with serverless and any provider, or you can run it on your own hardware. 

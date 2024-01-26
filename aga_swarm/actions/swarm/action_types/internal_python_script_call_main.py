@@ -21,11 +21,12 @@ def internal_python_script_call_main(action_id: str, swarm: dict, params: dict):
     action_id = action_id.replace('/', '.')
     if action_id.endswith('.py'):
         action_id = action_id[:-3]
-    script = __import__(action_id, fromlist=[''])
-    if hasattr(script, 'main'):
-        main_function = getattr(script, 'main')
+    action = __import__(action_id, fromlist=[''])
+    if hasattr(action, 'main'):
+        main_function = getattr(action, 'main')
     else:
         raise AttributeError("No main function found in the script")
+    
     
     # Install dependencies
     return main_function(**params)

@@ -1,113 +1,153 @@
 {
-    "actions": {
+    "aga_swarm/actions": {
         "type": "internal_swarm_folder",
         "name": "actions",
-        "id": "actions",
+        "id": "aga_swarm/actions",
         "description": "This is the root of the action space",
-        "children": ["actions/swarm", "actions/data"]
+        "children": ["aga_swarm/actions/swarm", "aga_swarm/actions/data"]
     },
-    "actions/swarm": {
+    "aga_swarm/actions/swarm": {
         "type": "internal_swarm_folder",
         "name": "swarm",
-        "id": "actions/swarm",
+        "id": "aga_swarm/actions/swarm",
         "description": "This folder contains all actions pertaining to internal swarm operations such as:\n- saving data to swarm memory\n- retrieving data from swarm memory",
-        "children": ["actions/swarm/action_router", "actions/swarm/memory"]
+        "children": ["aga_swarm/actions/swarm/action_router", "aga_swarm/actions/swarm/memory"]
     },
-    "actions/data": {
+    "aga_swarm/actions/data": {
         "type": "internal_swarm_folder",
         "name": "data",
-        "id": "actions/data",
+        "id": "aga_swarm/actions/data",
         "description": "This folder contains all actions pertaining to data operations on any cloud provider or local machines",
-        "children": ["actions/data/file_operations", "actions/data/folder_operations"]
+        "children": ["aga_swarm/actions/data/file_operations", "aga_swarm/actions/data/folder_operations"]
     }, 
-    "actions/data/file_operations": {
+    "aga_swarm/actions/data/file_operations": {
         "type": "internal_swarm_folder",
         "name": "file_operations",
-        "id": "actions/data/file_operations",
+        "id": "aga_swarm/actions/data/file_operations",
         "description": "This folder contains all actions pertaining to file operations on any cloud provider or local machines",
-        "children": ["actions/data/file_operations/file_upload", "actions/data/file_operations/file_retrieval", "actions/data/file_operations/file_deletion", "actions/data/file_operations/rename_file", "actions/data/file_operations/move_file"]
+        "children": ["aga_swarm/actions/data/file_operations/file_upload", "aga_swarm/actions/data/file_operations/file_retrieval", "aga_swarm/actions/data/file_operations/file_deletion", "aga_swarm/actions/data/file_operations/rename_file", "aga_swarm/actions/data/file_operations/move_file"]
     },
-    "actions/data/folder_operations": {
+    "aga_swarm/actions/data/folder_operations": {
         "type": "internal_swarm_folder",
         "name": "folder_operations",
-        "id": "actions/data/folder_operations",
+        "id": "aga_swarm/actions/data/folder_operations",
         "description": "This folder contains all actions pertaining to folder operations on any cloud provider or local machines",
-        "children": ["actions/data/folder_operations/make_folder", "actions/data/folder_operations/delete_folder", "actions/data/folder_operations/move_folder", "actions/data/folder_operations/list_folder", "actions/data/folder_operations/rename_folder"]
+        "children": ["aga_swarm/actions/data/folder_operations/make_folder", "aga_swarm/actions/data/folder_operations/delete_folder", "aga_swarm/actions/data/folder_operations/move_folder", "aga_swarm/actions/data/folder_operations/list_folder", "aga_swarm/actions/data/folder_operations/rename_folder"]
     },
-    "actions/data/file_operations/file_retrieval": {
+    "aga_swarm/actions/data/file_operations/file_retrieval": {
         "type": "internal_swarm_folder",
         "name": "file_retrieval",
-        "id": "actions/data/file_operations/file_retrieval",
+        "id": "aga_swarm/actions/data/file_operations/file_retrieval",
         "description": "This folder contains all actions pertaining to file retrieval operations on any cloud provider or local machines",
-        "children": ["actions/data/file_operations/file_retrieval/mac_file_retrieval"]
+        "children": ["aga_swarm/actions/data/file_operations/file_retrieval/mac_file_retrieval"]
     },
-    "actions/data/file_operations/file_upload": {
+    "aga_swarm/actions/data/file_operations/file_upload": {
         "type": "internal_swarm_folder",
         "name": "file_upload",
-        "id": "actions/data/file_operations/file_upload",
+        "id": "aga_swarm/actions/data/file_operations/file_upload",
         "description": "This folder contains all actions pertaining to file upload operations on any cloud provider or local machines",
-        "children": ["actions/data/file_operations/file_upload/mac_file_upload"]
+        "children": ["aga_swarm/actions/data/file_operations/file_upload/mac_file_upload"]
     },
-    "actions/data/file_operations/file_deletion": {
+    "aga_swarm/actions/data/file_operations/file_deletion": {
         "type": "internal_swarm_folder",
         "name": "file_deletion",
-        "id": "actions/data/file_operations/file_deletion",
+        "id": "aga_swarm/actions/data/file_operations/file_deletion",
         "description": "This folder contains all actions pertaining to file deletion operations on any cloud provider or local machines",
-        "children": ["actions/data/file_operations/file_deletion/mac_file_deletion"]
+        "children": ["aga_swarm/actions/data/file_operations/file_deletion/mac_file_deletion"]
     },
-    "actions/data/file_operations/rename_file": {
+    "aga_swarm/actions/data/file_operations/rename_file": {
         "type": "internal_swarm_folder",
         "name": "rename_file",
-        "id": "actions/data/file_operations/rename_file",
+        "id": "aga_swarm/actions/data/file_operations/rename_file",
         "description": "This folder contains all actions pertaining to file renaming operations on any cloud provider or local machines",
-        "children": ["actions/data/file_operations/rename_file/mac_rename_file"]
+        "children": ["aga_swarm/actions/data/file_operations/rename_file/mac_rename_file"]
     },
-    "actions/data/file_operations/move_file": {
+    "aga_swarm/actions/data/file_operations/move_file": {
         "type": "internal_swarm_folder",
         "name": "move_file",
-        "id": "actions/data/file_operations/move_file",
+        "id": "aga_swarm/actions/data/file_operations/move_file",
         "description": "This folder contains all actions pertaining to file moving operations on any cloud provider or local machines",
-        "children": ["actions/data/file_operations/move_file/mac_move_file"]
+        "children": ["aga_swarm/actions/data/file_operations/move_file/mac_move_file"]
     },
-    "actions/data/folder_operations/make_folder": {
+    "aga_swarm/actions/data/folder_operations/make_folder": {
         "type": "internal_swarm_folder",
         "name": "make_folder",
-        "id": "actions/data/folder_operations/make_folder",
+        "id": "aga_swarm/actions/data/folder_operations/make_folder",
         "description": "This folder contains all actions pertaining to folder creation operations on any cloud provider or local machines",
-        "children": ["actions/data/folder_operations/make_folder/mac_make_folder"]
+        "children": ["aga_swarm/actions/data/folder_operations/make_folder/mac_make_folder"]
     },
-    "actions/data/folder_operations/delete_folder": {
+    "aga_swarm/actions/data/folder_operations/delete_folder": {
         "type": "internal_swarm_folder",
         "name": "delete_folder",
-        "id": "actions/data/folder_operations/delete_folder",
+        "id": "aga_swarm/actions/data/folder_operations/delete_folder",
         "description": "This folder contains all actions pertaining to folder deletion operations on any cloud provider or local machines",
-        "children": ["actions/data/folder_operations/delete_folder/mac_delete_folder"]
+        "children": ["aga_swarm/actions/data/folder_operations/delete_folder/mac_delete_folder"]
     },
-    "actions/data/folder_operations/move_folder": {
+    "aga_swarm/actions/data/folder_operations/move_folder": {
         "type": "internal_swarm_folder",
         "name": "move_folder",
-        "id": "actions/data/folder_operations/move_folder",
+        "id": "aga_swarm/actions/data/folder_operations/move_folder",
         "description": "This folder contains all actions pertaining to folder moving operations on any cloud provider or local machines",
-        "children": ["actions/data/folder_operations/move_folder/mac_move_folder"]
+        "children": ["aga_swarm/actions/data/folder_operations/move_folder/mac_move_folder"]
     },
-    "actions/data/folder_operations/list_folder": {
+    "aga_swarm/actions/data/folder_operations/list_folder": {
         "type": "internal_swarm_folder",
         "name": "list_folder",
-        "id": "actions/data/folder_operations/list_folder",
+        "id": "aga_swarm/actions/data/folder_operations/list_folder",
         "description": "This folder contains all actions pertaining to folder listing operations on any cloud provider or local machines",
-        "children": ["actions/data/folder_operations/list_folder/mac_list_folder"]
+        "children": ["aga_swarm/actions/data/folder_operations/list_folder/mac_list_folder"]
     },
-    "actions/data/folder_operations/rename_folder": {
+    "aga_swarm/actions/data/folder_operations/rename_folder": {
         "type": "internal_swarm_folder",
         "name": "rename_folder",
-        "id": "actions/data/folder_operations/rename_folder",
+        "id": "aga_swarm/actions/data/folder_operations/rename_folder",
         "description": "This folder contains all actions pertaining to folder renaming operations on any cloud provider or local machines",
-        "children": ["actions/data/folder_operations/rename_folder/mac_rename_folder"]
+        "children": ["aga_swarm/actions/data/folder_operations/rename_folder/mac_rename_folder"]
     },
-    "actions/data/file_operations/file_retrieval/mac_file_retrieval.py": {
+    "aga_swarm/actions/data/file_operations/file_retrieval/file_retrieval.py": {
+        "type": "python_script_call_main",
+        "name": "file_retrieval.py",
+        "id": "aga_swarm/actions/data/file_operations/file_retrieval/file_retrieval.py",
+        "description": "This action calls the appropriate file retrieval action based on the 'platform' param in the swarm config",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "file_path": {
+                    "type": "string",
+                    "description": "The path to the file to be retrieved"
+                },
+                "swarm": {
+                    "type": "dict",
+                    "description": "The swarm"
+                }
+            },
+            "required": ["file_path"]
+        },
+        "output_schema": {
+            "type": "object",
+            "properties": {
+                "status_message": {
+                    "type": "string",
+                    "description": "'Success' or 'Failure'"
+                },
+                "error_message": {
+                    "type": "string",
+                    "description": "Error message if status_message is 'Failure'"
+                },
+                "data": {
+                    "type": "bytes",
+                    "description": "The binary of the file"
+                }
+            },
+            "required": ["status_message"]
+        },
+        "dependencies": [],
+        "configs": []
+    },
+    "aga_swarm/actions/data/file_operations/file_retrieval/mac_file_retrieval.py": {
         "type": "python_script_call_main",
         "name": "mac_file_retrieval.py",
-        "id": "actions/data/file_operations/file_retrieval/mac_file_retrieval.py",
+        "id": "aga_swarm/actions/data/file_operations/file_retrieval/mac_file_retrieval.py",
         "description": "This action retrieves a file from a mac",
         "input_schema": {
             "type": "object",
@@ -131,7 +171,7 @@
                     "description": "Error message if status_message is 'Failure'"
                 },
                 "data": {
-                    "type": "BinaryIO",
+                    "type": "bytes",
                     "description": "The binary of the file"
                 }
             },
@@ -140,10 +180,54 @@
         "dependencies": [],
         "configs": []
     },
-    "actions/data/file_operations/file_upload/mac_file_upload.py": {
+    "aga_swarm/actions/data/file_operations/file_upload/file_upload.py": {
+        "type": "python_script_call_main",
+        "name": "file_upload.py",
+        "id": "aga_swarm/actions/data/file_operations/file_upload/file_upload.py",
+        "description": "This action calls the appropriate file upload action based on the 'platform' param in the swarm config",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "file_path": {
+                    "type": "string",
+                    "description": "The path to the file to be uploaded"
+                },
+                "data": {
+                    "type": "bytes",
+                    "description": "The binary of the file"
+                },
+                "swarm": {
+                    "type": "dict",
+                    "description": "The swarm"
+                }
+            },
+            "required": ["file_path"]
+        },
+        "output_schema": {
+            "type": "object",
+            "properties": {
+                "status_message": {
+                    "type": "string",
+                    "description": "'Success' or 'Failure'"
+                },
+                "error_message": {
+                    "type": "string",
+                    "description": "Error message if status_message is 'Failure'"
+                },
+                "data": {
+                    "type": "bytes",
+                    "description": "The binary of the file"
+                }
+            },
+            "required": ["status_message"]
+        },
+        "dependencies": [],
+        "configs": []
+    },
+    "aga_swarm/actions/data/file_operations/file_upload/mac_file_upload.py": {
         "type": "python_script_call_main",
         "name": "mac_file_upload.py",
-        "id": "actions/data/file_operations/file_upload/mac_file_upload.py",
+        "id": "aga_swarm/actions/data/file_operations/file_upload/mac_file_upload.py",
         "description": "This action uploads a file to a mac",
         "input_schema": {
             "type": "object",
@@ -153,7 +237,7 @@
                     "description": "The path to the file to be uploaded"
                 },
                 "data": {
-                    "type": "BinaryIO",
+                    "type": "bytes",
                     "description": "The binary of the file"
                 }
             },
@@ -176,10 +260,10 @@
         "dependencies": [],
         "configs": []
     },
-    "actions/data/file_operations/file_deletion/mac_file_deletion.py": {
+    "aga_swarm/actions/data/file_operations/file_deletion/mac_file_deletion.py": {
         "type": "python_script_call_main",
         "name": "mac_file_deletion.py",
-        "id": "actions/data/file_operations/file_deletion/mac_file_deletion.py",
+        "id": "aga_swarm/actions/data/file_operations/file_deletion/mac_file_deletion.py",
         "description": "This action deletes a file from a mac",
         "input_schema": {
             "type": "object",
@@ -208,10 +292,10 @@
         "dependencies": [],
         "configs": []
     },
-    "actions/data/file_operations/rename_file/mac_rename_file.py": {
+    "aga_swarm/actions/data/file_operations/rename_file/mac_rename_file.py": {
         "type": "python_script_call_main",
         "name": "mac_rename_file.py",
-        "id": "actions/data/file_operations/rename_file/mac_rename_file.py",
+        "id": "aga_swarm/actions/data/file_operations/rename_file/mac_rename_file.py",
         "description": "This action renames a file on a mac",
         "input_schema": {
             "type": "object",
@@ -244,10 +328,10 @@
         "dependencies": [],
         "configs": []
     },
-    "actions/data/file_operations/move_file/mac_move_file.py": {
+    "aga_swarm/actions/data/file_operations/move_file/mac_move_file.py": {
         "type": "python_script_call_main",
         "name": "mac_move_file.py",
-        "id": "actions/data/file_operations/move_file/mac_move_file.py",
+        "id": "aga_swarm/actions/data/file_operations/move_file/mac_move_file.py",
         "description": "This action moves a file on a mac",
         "input_schema": {
             "type": "object",
@@ -280,10 +364,46 @@
         "dependencies": [],
         "configs": []
     },
-    "actions/data/folder_operations/make_folder/mac_make_folder.py": {
+    "aga_swarm/actions/data/folder_operations/make_folder/make_folder.py": {
+        "type": "python_script_call_main",
+        "name": "make_folder.py",
+        "id": "aga_swarm/actions/data/folder_operations/make_folder/make_folder.py",
+        "description": "This action makes a folder using the appropriate platform set in swarm config",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "folder_path": {
+                    "type": "string",
+                    "description": "The path to the folder to be made"
+                },
+                "swarm": {
+                    "type": "dict",
+                    "description": "The swarm"
+                }
+            },
+            "required": ["folder_path"]
+        },
+        "output_schema": {
+            "type": "object",
+            "properties": {
+                "status_message": {
+                    "type": "string",
+                    "description": "'Success' or 'Failure'"
+                },
+                "error_message": {
+                    "type": "string",
+                    "description": "Error message if status_message is 'Failure'"
+                }
+            },
+            "required": ["status_message"]
+        },
+        "dependencies": [],
+        "configs": []
+    },
+    "aga_swarm/actions/data/folder_operations/make_folder/mac_make_folder.py": {
         "type": "python_script_call_main",
         "name": "mac_make_folder.py",
-        "id": "actions/data/folder_operations/make_folder/mac_make_folder.py",
+        "id": "aga_swarm/actions/data/folder_operations/make_folder/mac_make_folder.py",
         "description": "This action makes a folder on a mac",
         "input_schema": {
             "type": "object",
@@ -312,10 +432,10 @@
         "dependencies": [],
         "configs": []
     },
-    "actions/data/folder_operations/delete_folder/mac_delete_folder.py": {
+    "aga_swarm/actions/data/folder_operations/delete_folder/mac_delete_folder.py": {
         "type": "python_script_call_main",
         "name": "mac_delete_folder.py",
-        "id": "actions/data/folder_operations/delete_folder/mac_delete_folder.py",
+        "id": "aga_swarm/actions/data/folder_operations/delete_folder/mac_delete_folder.py",
         "description": "This action deletes a folder on a mac",
         "input_schema": {
             "type": "object",
@@ -344,10 +464,10 @@
         "dependencies": [],
         "configs": []
     },
-    "actions/data/folder_operations/rename_folder/mac_rename_folder.py": {
+    "aga_swarm/actions/data/folder_operations/rename_folder/mac_rename_folder.py": {
         "type": "python_script_call_main",
         "name": "mac_rename_folder.py",
-        "id": "actions/data/folder_operations/rename_folder/mac_rename_folder.py",
+        "id": "aga_swarm/actions/data/folder_operations/rename_folder/mac_rename_folder.py",
         "description": "This action renames a folder on a mac",
         "input_schema": {
             "type": "object",
@@ -380,10 +500,10 @@
         "dependencies": [],
         "configs": []
     },
-    "actions/data/folder_operations/move_folder/mac_move_folder.py": {
+    "aga_swarm/actions/data/folder_operations/move_folder/mac_move_folder.py": {
         "type": "python_script_call_main",
         "name": "mac_move_folder.py",
-        "id": "actions/data/folder_operations/move_folder/mac_move_folder.py",
+        "id": "aga_swarm/actions/data/folder_operations/move_folder/mac_move_folder.py",
         "description": "This action moves a folder on a mac",
         "input_schema": {
             "type": "object",
@@ -416,10 +536,10 @@
         "dependencies": [],
         "configs": []
     },
-    "actions/data/folder_operations/list_folder/mac_list_folder.py": {
+    "aga_swarm/actions/data/folder_operations/list_folder/mac_list_folder.py": {
         "type": "python_script_call_main",
         "name": "mac_list_folder.py",
-        "id": "actions/data/folder_operations/list_folder/mac_list_folder.py",
+        "id": "aga_swarm/actions/data/folder_operations/list_folder/mac_list_folder.py",
         "description": "This action lists the contents of a folder on a mac",
         "input_schema": {
             "type": "object",
