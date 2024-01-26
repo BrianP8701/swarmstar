@@ -10,8 +10,8 @@
         "type": "internal_swarm_folder",
         "name": "swarm",
         "id": "aga_swarm/actions/swarm",
-        "description": "This folder contains all actions pertaining to internal swarm operations such as:\n- saving data to swarm memory\n- retrieving data from swarm memory",
-        "children": ["aga_swarm/actions/swarm/action_router", "aga_swarm/actions/swarm/memory"]
+        "description": "This folder contains all actions pertaining to internal swarm operations such as:\n- navigating the action space to find the best action to take\n- navigating the swarm memory to find relevant information\n- different types of actions/memories and how to handle them",
+        "children": ["aga_swarm/actions/swarm/action_router", "aga_swarm/actions/swarm/memory_router", "aga_swarm/actions/swarm/action_types", "aga_swarm/actions/swarm/memory_types"]
     },
     "aga_swarm/actions/data": {
         "type": "internal_swarm_folder",
@@ -20,12 +20,55 @@
         "description": "This folder contains all actions pertaining to data operations on any cloud provider or local machines",
         "children": ["aga_swarm/actions/data/file_operations", "aga_swarm/actions/data/folder_operations"]
     }, 
+    "aga_swarm/actions/swarm/action_types": {
+        "type": "internal_swarm_folder",
+        "name": "action_types",
+        "id": "aga_swarm/actions/swarm/action_types",
+        "description": "Every action in the action space has a type. This folder contains all the actions to handle each type of action. Each of these will take the action type, params and the swarm and return the output of said action. Each action in this folder is of type: internal_swarm_default_action",
+        "children": ["aga_swarm/actions/swarm/action_types/internal_swarm_default_action.py"]
+    },
+    "aga_swarm/actions/swarm/action_types/internal_swarm_default_action.py": {
+        "type": "internal_swarm_default_action",
+        "name": "internal_swarm_default_action.py",
+        "id": "aga_swarm/actions/swarm/action_types/internal_swarm_default_action.py",
+        "description": "This action handles all actions from the default action space. It takes the action type, params and the swarm and returns the output of said action by calling the main function in the action file",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "action_type": {
+                    "type": "string",
+                    "description": "The type of action to be taken"
+                },
+                "params": {
+                    "type": "dict",
+                    "description": "The params for the action"
+                },
+                "swarm": {
+                    "type": "SwarmID",
+                    "description": "The swarm"
+                }
+            },
+            "required": ["action_type", "params", "swarm"]
+        },
+        "output_schema": {
+            "type": "object",
+            "properties": {
+                "output": {
+                    "type": "dict",
+                    "description": "The output of the action"
+                }
+            },
+            "required": ["output"]
+        },
+        "dependencies": ["pydantic"],
+        "configs": []
+    },
     "aga_swarm/actions/data/file_operations": {
         "type": "internal_swarm_folder",
         "name": "file_operations",
         "id": "aga_swarm/actions/data/file_operations",
         "description": "This folder contains all actions pertaining to file operations on any cloud provider or local machines",
-        "children": ["aga_swarm/actions/data/file_operations/file_upload", "aga_swarm/actions/data/file_operations/file_retrieval", "aga_swarm/actions/data/file_operations/file_deletion", "aga_swarm/actions/data/file_operations/rename_file", "aga_swarm/actions/data/file_operations/move_file"]
+        "children": ["aga_swarm/actions/data/file_operations/upload_file", "aga_swarm/actions/data/file_operations/retrieve_file", "aga_swarm/actions/data/file_operations/delete_file", "aga_swarm/actions/data/file_operations/rename_file", "aga_swarm/actions/data/file_operations/move_file"]
     },
     "aga_swarm/actions/data/folder_operations": {
         "type": "internal_swarm_folder",
@@ -34,26 +77,26 @@
         "description": "This folder contains all actions pertaining to folder operations on any cloud provider or local machines",
         "children": ["aga_swarm/actions/data/folder_operations/make_folder", "aga_swarm/actions/data/folder_operations/delete_folder", "aga_swarm/actions/data/folder_operations/move_folder", "aga_swarm/actions/data/folder_operations/list_folder", "aga_swarm/actions/data/folder_operations/rename_folder"]
     },
-    "aga_swarm/actions/data/file_operations/file_retrieval": {
+    "aga_swarm/actions/data/file_operations/retrieve_file": {
         "type": "internal_swarm_folder",
-        "name": "file_retrieval",
-        "id": "aga_swarm/actions/data/file_operations/file_retrieval",
+        "name": "retrieve_file",
+        "id": "aga_swarm/actions/data/file_operations/retrieve_file",
         "description": "This folder contains all actions pertaining to file retrieval operations on any cloud provider or local machines",
-        "children": ["aga_swarm/actions/data/file_operations/file_retrieval/mac_file_retrieval"]
+        "children": ["aga_swarm/actions/data/file_operations/retrieve_file/mac_retrieve_file"]
     },
-    "aga_swarm/actions/data/file_operations/file_upload": {
+    "aga_swarm/actions/data/file_operations/upload_file": {
         "type": "internal_swarm_folder",
-        "name": "file_upload",
-        "id": "aga_swarm/actions/data/file_operations/file_upload",
+        "name": "upload_file",
+        "id": "aga_swarm/actions/data/file_operations/upload_file",
         "description": "This folder contains all actions pertaining to file upload operations on any cloud provider or local machines",
-        "children": ["aga_swarm/actions/data/file_operations/file_upload/mac_file_upload"]
+        "children": ["aga_swarm/actions/data/file_operations/upload_file/mac_upload_file"]
     },
-    "aga_swarm/actions/data/file_operations/file_deletion": {
+    "aga_swarm/actions/data/file_operations/delete_file": {
         "type": "internal_swarm_folder",
-        "name": "file_deletion",
-        "id": "aga_swarm/actions/data/file_operations/file_deletion",
+        "name": "delete_file",
+        "id": "aga_swarm/actions/data/file_operations/delete_file",
         "description": "This folder contains all actions pertaining to file deletion operations on any cloud provider or local machines",
-        "children": ["aga_swarm/actions/data/file_operations/file_deletion/mac_file_deletion"]
+        "children": ["aga_swarm/actions/data/file_operations/delete_file/mac_delete_file"]
     },
     "aga_swarm/actions/data/file_operations/rename_file": {
         "type": "internal_swarm_folder",
@@ -104,10 +147,10 @@
         "description": "This folder contains all actions pertaining to folder renaming operations on any cloud provider or local machines",
         "children": ["aga_swarm/actions/data/folder_operations/rename_folder/mac_rename_folder"]
     },
-    "aga_swarm/actions/data/file_operations/file_retrieval/file_retrieval.py": {
+    "aga_swarm/actions/data/file_operations/retrieve_file/retrieve_file.py": {
         "type": "internal_swarm_default_action",
-        "name": "file_retrieval.py",
-        "id": "aga_swarm/actions/data/file_operations/file_retrieval/file_retrieval.py",
+        "name": "retrieve_file.py",
+        "id": "aga_swarm/actions/data/file_operations/retrieve_file/retrieve_file.py",
         "description": "This action calls the appropriate file retrieval action based on the 'platform' param in the swarm config",
         "input_schema": {
             "type": "object",
@@ -117,7 +160,7 @@
                     "description": "The path to the file to be retrieved"
                 },
                 "swarm": {
-                    "type": "dict",
+                    "type": "SwarmID",
                     "description": "The swarm"
                 }
             },
@@ -144,10 +187,10 @@
         "dependencies": [],
         "configs": []
     },
-    "aga_swarm/actions/data/file_operations/file_retrieval/mac_file_retrieval.py": {
+    "aga_swarm/actions/data/file_operations/retrieve_file/mac_retrieve_file.py": {
         "type": "internal_swarm_default_action",
-        "name": "mac_file_retrieval.py",
-        "id": "aga_swarm/actions/data/file_operations/file_retrieval/mac_file_retrieval.py",
+        "name": "mac_retrieve_file.py",
+        "id": "aga_swarm/actions/data/file_operations/retrieve_file/mac_retrieve_file.py",
         "description": "This action retrieves a file from a mac",
         "input_schema": {
             "type": "object",
@@ -180,10 +223,10 @@
         "dependencies": [],
         "configs": []
     },
-    "aga_swarm/actions/data/file_operations/file_upload/file_upload.py": {
+    "aga_swarm/actions/data/file_operations/upload_file/upload_file.py": {
         "type": "internal_swarm_default_action",
-        "name": "file_upload.py",
-        "id": "aga_swarm/actions/data/file_operations/file_upload/file_upload.py",
+        "name": "upload_file.py",
+        "id": "aga_swarm/actions/data/file_operations/upload_file/upload_file.py",
         "description": "This action calls the appropriate file upload action based on the 'platform' param in the swarm config",
         "input_schema": {
             "type": "object",
@@ -197,7 +240,7 @@
                     "description": "The binary of the file"
                 },
                 "swarm": {
-                    "type": "dict",
+                    "type": "SwarmID",
                     "description": "The swarm"
                 }
             },
@@ -224,10 +267,10 @@
         "dependencies": [],
         "configs": []
     },
-    "aga_swarm/actions/data/file_operations/file_upload/mac_file_upload.py": {
+    "aga_swarm/actions/data/file_operations/upload_file/mac_upload_file.py": {
         "type": "internal_swarm_default_action",
-        "name": "mac_file_upload.py",
-        "id": "aga_swarm/actions/data/file_operations/file_upload/mac_file_upload.py",
+        "name": "mac_upload_file.py",
+        "id": "aga_swarm/actions/data/file_operations/upload_file/mac_upload_file.py",
         "description": "This action uploads a file to a mac",
         "input_schema": {
             "type": "object",
@@ -260,10 +303,10 @@
         "dependencies": [],
         "configs": []
     },
-    "aga_swarm/actions/data/file_operations/file_deletion/file_deletion.py": {
+    "aga_swarm/actions/data/file_operations/delete_file/delete_file.py": {
         "type": "internal_swarm_default_action",
-        "name": "file_deletion.py",
-        "id": "aga_swarm/actions/data/file_operations/file_deletion/file_deletion.py",
+        "name": "delete_file.py",
+        "id": "aga_swarm/actions/data/file_operations/delete_file/delete_file.py",
         "description": "This action calls the appropriate file deletion action based on the 'platform' param in the swarm config",
         "input_schema": {
             "type": "object",
@@ -273,7 +316,7 @@
                     "description": "The path to the file to be deleted"
                 },
                 "swarm": {
-                    "type": "dict",
+                    "type": "SwarmID",
                     "description": "The swarm"
                 }
             },
@@ -296,10 +339,10 @@
         "dependencies": [],
         "configs": []
     },
-    "aga_swarm/actions/data/file_operations/file_deletion/mac_file_deletion.py": {
+    "aga_swarm/actions/data/file_operations/delete_file/mac_delete_file.py": {
         "type": "internal_swarm_default_action",
-        "name": "mac_file_deletion.py",
-        "id": "aga_swarm/actions/data/file_operations/file_deletion/mac_file_deletion.py",
+        "name": "mac_delete_file.py",
+        "id": "aga_swarm/actions/data/file_operations/delete_file/mac_delete_file.py",
         "description": "This action deletes a file from a mac",
         "input_schema": {
             "type": "object",
@@ -345,7 +388,7 @@
                     "description": "The new name of the file"
                 },
                 "swarm": {
-                    "type": "dict",
+                    "type": "SwarmID",
                     "description": "The swarm"
                 }
             },
@@ -421,7 +464,7 @@
                     "description": "The new path of the file"
                 },
                 "swarm": {
-                    "type": "dict",
+                    "type": "SwarmID",
                     "description": "The swarm"
                 }
             },
@@ -493,7 +536,7 @@
                     "description": "The path to the folder to be made"
                 },
                 "swarm": {
-                    "type": "dict",
+                    "type": "SwarmID",
                     "description": "The swarm"
                 }
             },
@@ -561,7 +604,7 @@
                     "description": "The path to the folder to be deleted"
                 },
                 "swarm": {
-                    "type": "dict",
+                    "type": "SwarmID",
                     "description": "The swarm"
                 }
             },
@@ -633,7 +676,7 @@
                     "description": "The new path of the folder"
                 },
                 "swarm": {
-                    "type": "dict",
+                    "type": "SwarmID",
                     "description": "The swarm"
                 }
             },
@@ -709,7 +752,7 @@
                     "description": "The new path of the folder"
                 },
                 "swarm": {
-                    "type": "dict",
+                    "type": "SwarmID",
                     "description": "The swarm"
                 }
             },
@@ -781,7 +824,7 @@
                     "description": "The path to the folder to be listed"
                 },
                 "swarm": {
-                    "type": "dict",
+                    "type": "SwarmID",
                     "description": "The swarm"
                 }
             },

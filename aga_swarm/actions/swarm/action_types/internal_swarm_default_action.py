@@ -1,19 +1,22 @@
 import importlib
-import sys
 from pydantic import validate_arguments
 
+from aga_swarm.core.swarm.types import SwarmID
+from aga_swarm.core.swarm.swarm_utils import get_default_action_space_metadata
+
 @validate_arguments
-def internal_swarm_default_action(action_type: str, swarm: dict, params: dict):
+def internal_swarm_default_action(action_type: str, swarm_id: SwarmID, params: dict):
+    action_space_metadata = get_default_action_space_metadata()
     # Import dependencies
-    dependencies = swarm['action_space'][action_type]['dependencies']
+    dependencies = action_space_metadata[action_type]['dependencies']
     for package in dependencies:
         importlib.import_module(package)
     
     # Get config parameters required for this action
-    required_configs = swarm['action_space'][action_type]['configs']
+    required_configs = action_space_metadata[action_type]['configs']
     for config in required_configs: 
         try:
-            params[config] = swarm['configs'][config]
+            params[config] = swarm_id['configs'][config]
         except KeyError:
             raise KeyError(f"Config {config} not found in swarm configs")
     
@@ -30,5 +33,5 @@ def internal_swarm_default_action(action_type: str, swarm: dict, params: dict):
     return main_function(**params)
 
 @validate_arguments
-def main(action_id: str, swarm: dict, params: dict):
-    return internal_swarm_default_action(action_id, swarm, params)
+def main(action_id: str, swarm_id: SwarmID, params: dict):
+    return internal_swarm_default_action(action_id, swarm_id, params)

@@ -1454,3 +1454,14 @@ run it with:
 }
 
 come on come on get it together what what
+
+
+
+okay weve made some progress. implemented quite a bit. now i want the swarm to actually help me:
+
+whats needed first is broken trees. trees with pointers to other places.
+
+
+okay fuck theres sort of this infinite loop problem now. uhh let me try breaking it down
+
+we pass keys, platform type etc
