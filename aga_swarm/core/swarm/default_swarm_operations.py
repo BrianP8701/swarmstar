@@ -2,7 +2,7 @@ from pydantic import validate_arguments
 import json
 
 from aga_swarm.utils.file_utils import get_json_data
-from aga_swarm.actions.swarm.action_types.internal_python_script_call_main import internal_python_script_call_main as execute
+from aga_swarm.actions.swarm.action_types.internal_swarm_default_action import internal_swarm_default_action as execute
 
 @validate_arguments
 def get_default_action_space() -> dict:

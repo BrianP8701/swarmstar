@@ -105,7 +105,7 @@
         "children": ["aga_swarm/actions/data/folder_operations/rename_folder/mac_rename_folder"]
     },
     "aga_swarm/actions/data/file_operations/file_retrieval/file_retrieval.py": {
-        "type": "python_script_call_main",
+        "type": "internal_swarm_default_action",
         "name": "file_retrieval.py",
         "id": "aga_swarm/actions/data/file_operations/file_retrieval/file_retrieval.py",
         "description": "This action calls the appropriate file retrieval action based on the 'platform' param in the swarm config",
@@ -121,7 +121,7 @@
                     "description": "The swarm"
                 }
             },
-            "required": ["file_path"]
+            "required": ["file_path", "swarm"]
         },
         "output_schema": {
             "type": "object",
@@ -145,7 +145,7 @@
         "configs": []
     },
     "aga_swarm/actions/data/file_operations/file_retrieval/mac_file_retrieval.py": {
-        "type": "python_script_call_main",
+        "type": "internal_swarm_default_action",
         "name": "mac_file_retrieval.py",
         "id": "aga_swarm/actions/data/file_operations/file_retrieval/mac_file_retrieval.py",
         "description": "This action retrieves a file from a mac",
@@ -181,7 +181,7 @@
         "configs": []
     },
     "aga_swarm/actions/data/file_operations/file_upload/file_upload.py": {
-        "type": "python_script_call_main",
+        "type": "internal_swarm_default_action",
         "name": "file_upload.py",
         "id": "aga_swarm/actions/data/file_operations/file_upload/file_upload.py",
         "description": "This action calls the appropriate file upload action based on the 'platform' param in the swarm config",
@@ -201,7 +201,7 @@
                     "description": "The swarm"
                 }
             },
-            "required": ["file_path"]
+            "required": ["file_path", "data", "swarm"]
         },
         "output_schema": {
             "type": "object",
@@ -225,7 +225,7 @@
         "configs": []
     },
     "aga_swarm/actions/data/file_operations/file_upload/mac_file_upload.py": {
-        "type": "python_script_call_main",
+        "type": "internal_swarm_default_action",
         "name": "mac_file_upload.py",
         "id": "aga_swarm/actions/data/file_operations/file_upload/mac_file_upload.py",
         "description": "This action uploads a file to a mac",
@@ -241,7 +241,43 @@
                     "description": "The binary of the file"
                 }
             },
-            "required": ["file_path", "file_name"]
+            "required": ["file_path", "data"]
+        },
+        "output_schema": {
+            "type": "object",
+            "properties": {
+                "status_message": {
+                    "type": "string",
+                    "description": "'Success' or 'Failure'"
+                },
+                "error_message": {
+                    "type": "string",
+                    "description": "Error message if status_message is 'Failure'"
+                }
+            },
+            "required": ["status_message"]
+        },
+        "dependencies": [],
+        "configs": []
+    },
+    "aga_swarm/actions/data/file_operations/file_deletion/file_deletion.py": {
+        "type": "internal_swarm_default_action",
+        "name": "file_deletion.py",
+        "id": "aga_swarm/actions/data/file_operations/file_deletion/file_deletion.py",
+        "description": "This action calls the appropriate file deletion action based on the 'platform' param in the swarm config",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "file_path": {
+                    "type": "string",
+                    "description": "The path to the file to be deleted"
+                },
+                "swarm": {
+                    "type": "dict",
+                    "description": "The swarm"
+                }
+            },
+            "required": ["file_path", "swarm"]
         },
         "output_schema": {
             "type": "object",
@@ -261,7 +297,7 @@
         "configs": []
     },
     "aga_swarm/actions/data/file_operations/file_deletion/mac_file_deletion.py": {
-        "type": "python_script_call_main",
+        "type": "internal_swarm_default_action",
         "name": "mac_file_deletion.py",
         "id": "aga_swarm/actions/data/file_operations/file_deletion/mac_file_deletion.py",
         "description": "This action deletes a file from a mac",
@@ -292,8 +328,48 @@
         "dependencies": [],
         "configs": []
     },
+    "aga_swarm/actions/data/file_operations/rename_file/rename_file.py": {
+        "type": "internal_swarm_default_action",
+        "name": "rename_file.py",
+        "id": "aga_swarm/actions/data/file_operations/rename_file/rename_file.py",
+        "description": "This action calls the appropriate file rename action based on the 'platform' param in the swarm config",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "file_path": {
+                    "type": "string",
+                    "description": "The path to the file to be renamed"
+                },
+                "new_file_name": {
+                    "type": "string",
+                    "description": "The new name of the file"
+                },
+                "swarm": {
+                    "type": "dict",
+                    "description": "The swarm"
+                }
+            },
+            "required": ["file_path", "new_file_name", "swarm"]
+        },
+        "output_schema": {
+            "type": "object",
+            "properties": {
+                "status_message": {
+                    "type": "string",
+                    "description": "'Success' or 'Failure'"
+                },
+                "error_message": {
+                    "type": "string",
+                    "description": "Error message if status_message is 'Failure'"
+                }
+            },
+            "required": ["status_message"]
+        },
+        "dependencies": [],
+        "configs": []
+    },
     "aga_swarm/actions/data/file_operations/rename_file/mac_rename_file.py": {
-        "type": "python_script_call_main",
+        "type": "internal_swarm_default_action",
         "name": "mac_rename_file.py",
         "id": "aga_swarm/actions/data/file_operations/rename_file/mac_rename_file.py",
         "description": "This action renames a file on a mac",
@@ -328,8 +404,48 @@
         "dependencies": [],
         "configs": []
     },
+    "aga_swarm/actions/data/file_operations/move_file/move_file.py": {
+        "type": "internal_swarm_default_action",
+        "name": "move_file.py",
+        "id": "aga_swarm/actions/data/file_operations/move_file/move_file.py",
+        "description": "This action calls the appropriate file move action based on the 'platform' param in the swarm config",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "file_path": {
+                    "type": "string",
+                    "description": "The path to the file to be moved"
+                },
+                "new_file_path": {
+                    "type": "string",
+                    "description": "The new path of the file"
+                },
+                "swarm": {
+                    "type": "dict",
+                    "description": "The swarm"
+                }
+            },
+            "required": ["file_path", "new_file_path", "swarm"]
+        },
+        "output_schema": {
+            "type": "object",
+            "properties": {
+                "status_message": {
+                    "type": "string",
+                    "description": "'Success' or 'Failure'"
+                },
+                "error_message": {
+                    "type": "string",
+                    "description": "Error message if status_message is 'Failure'"
+                }
+            },
+            "required": ["status_message"]
+        },
+        "dependencies": [],
+        "configs": []
+    },
     "aga_swarm/actions/data/file_operations/move_file/mac_move_file.py": {
-        "type": "python_script_call_main",
+        "type": "internal_swarm_default_action",
         "name": "mac_move_file.py",
         "id": "aga_swarm/actions/data/file_operations/move_file/mac_move_file.py",
         "description": "This action moves a file on a mac",
@@ -365,7 +481,7 @@
         "configs": []
     },
     "aga_swarm/actions/data/folder_operations/make_folder/make_folder.py": {
-        "type": "python_script_call_main",
+        "type": "internal_swarm_default_action",
         "name": "make_folder.py",
         "id": "aga_swarm/actions/data/folder_operations/make_folder/make_folder.py",
         "description": "This action makes a folder using the appropriate platform set in swarm config",
@@ -381,7 +497,7 @@
                     "description": "The swarm"
                 }
             },
-            "required": ["folder_path"]
+            "required": ["folder_path", "swarm"]
         },
         "output_schema": {
             "type": "object",
@@ -401,7 +517,7 @@
         "configs": []
     },
     "aga_swarm/actions/data/folder_operations/make_folder/mac_make_folder.py": {
-        "type": "python_script_call_main",
+        "type": "internal_swarm_default_action",
         "name": "mac_make_folder.py",
         "id": "aga_swarm/actions/data/folder_operations/make_folder/mac_make_folder.py",
         "description": "This action makes a folder on a mac",
@@ -432,8 +548,44 @@
         "dependencies": [],
         "configs": []
     },
+    "aga_swarm/actions/data/folder_operations/delete_folder/delete_folder.py": {
+        "type": "internal_swarm_default_action",
+        "name": "delete_folder.py",
+        "id": "aga_swarm/actions/data/folder_operations/delete_folder/delete_folder.py",
+        "description": "This action calls the appropriate folder delete action based on the 'platform' param in the swarm config",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "folder_path": {
+                    "type": "string",
+                    "description": "The path to the folder to be deleted"
+                },
+                "swarm": {
+                    "type": "dict",
+                    "description": "The swarm"
+                }
+            },
+            "required": ["folder_path", "swarm"]
+        },
+        "output_schema": {
+            "type": "object",
+            "properties": {
+                "status_message": {
+                    "type": "string",
+                    "description": "'Success' or 'Failure'"
+                },
+                "error_message": {
+                    "type": "string",
+                    "description": "Error message if status_message is 'Failure'"
+                }
+            },
+            "required": ["status_message"]
+        },
+        "dependencies": [],
+        "configs": []
+    },
     "aga_swarm/actions/data/folder_operations/delete_folder/mac_delete_folder.py": {
-        "type": "python_script_call_main",
+        "type": "internal_swarm_default_action",
         "name": "mac_delete_folder.py",
         "id": "aga_swarm/actions/data/folder_operations/delete_folder/mac_delete_folder.py",
         "description": "This action deletes a folder on a mac",
@@ -464,8 +616,48 @@
         "dependencies": [],
         "configs": []
     },
+    "aga_swarm/actions/data/folder_operations/rename_folder/rename_folder.py": {
+        "type": "internal_swarm_default_action",
+        "name": "rename_folder.py",
+        "id": "aga_swarm/actions/data/folder_operations/rename_folder/rename_folder.py",
+        "description": "This action calls the appropriate folder rename action based on the 'platform' param in the swarm config",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "folder_path": {
+                    "type": "string",
+                    "description": "The path to the folder to be moved"
+                },
+                "new_folder_path": {
+                    "type": "string",
+                    "description": "The new path of the folder"
+                },
+                "swarm": {
+                    "type": "dict",
+                    "description": "The swarm"
+                }
+            },
+            "required": ["folder_path", "new_folder_path", "swarm"]
+        },
+        "output_schema": {
+            "type": "object",
+            "properties": {
+                "status_message": {
+                    "type": "string",
+                    "description": "'Success' or 'Failure'"
+                },
+                "error_message": {
+                    "type": "string",
+                    "description": "Error message if status_message is 'Failure'"
+                }
+            },
+            "required": ["status_message"]
+        },
+        "dependencies": [],
+        "configs": []
+    },
     "aga_swarm/actions/data/folder_operations/rename_folder/mac_rename_folder.py": {
-        "type": "python_script_call_main",
+        "type": "internal_swarm_default_action",
         "name": "mac_rename_folder.py",
         "id": "aga_swarm/actions/data/folder_operations/rename_folder/mac_rename_folder.py",
         "description": "This action renames a folder on a mac",
@@ -500,8 +692,48 @@
         "dependencies": [],
         "configs": []
     },
+    "aga_swarm/actions/data/folder_operations/move_folder/move_folder.py": {
+        "type": "internal_swarm_default_action",
+        "name": "move_folder.py",
+        "id": "aga_swarm/actions/data/folder_operations/move_folder/move_folder.py",
+        "description": "This action calls the appropriate folder move action based on the 'platform' param in the swarm config",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "folder_path": {
+                    "type": "string",
+                    "description": "The path to the folder to be moved"
+                },
+                "new_folder_path": {
+                    "type": "string",
+                    "description": "The new path of the folder"
+                },
+                "swarm": {
+                    "type": "dict",
+                    "description": "The swarm"
+                }
+            },
+            "required": ["folder_path", "new_folder_path", "swarm"]
+        },
+        "output_schema": {
+            "type": "object",
+            "properties": {
+                "status_message": {
+                    "type": "string",
+                    "description": "'Success' or 'Failure'"
+                },
+                "error_message": {
+                    "type": "string",
+                    "description": "Error message if status_message is 'Failure'"
+                }
+            },
+            "required": ["status_message"]
+        },
+        "dependencies": [],
+        "configs": []
+    },
     "aga_swarm/actions/data/folder_operations/move_folder/mac_move_folder.py": {
-        "type": "python_script_call_main",
+        "type": "internal_swarm_default_action",
         "name": "mac_move_folder.py",
         "id": "aga_swarm/actions/data/folder_operations/move_folder/mac_move_folder.py",
         "description": "This action moves a folder on a mac",
@@ -536,8 +768,44 @@
         "dependencies": [],
         "configs": []
     },
+    "aga_swarm/actions/data/folder_operations/list_folder/list_folder.py": {
+        "type": "internal_swarm_default_action",
+        "name": "list_folder.py",
+        "id": "aga_swarm/actions/data/folder_operations/list_folder/list_folder.py",
+        "description": "This action calls the appropriate folder list action based on the 'platform' param in the swarm config",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "folder_path": {
+                    "type": "string",
+                    "description": "The path to the folder to be listed"
+                },
+                "swarm": {
+                    "type": "dict",
+                    "description": "The swarm"
+                }
+            },
+            "required": ["folder_path", "swarm"]
+        },
+        "output_schema": {
+            "type": "object",
+            "properties": {
+                "status_message": {
+                    "type": "string",
+                    "description": "Success or Failure"
+                },
+                "error_message": {
+                    "type": "string",
+                    "description": "Error message if status_message is Failure"
+                }
+            },
+            "required": ["status_message", "error_message"]
+        },
+        "dependencies": [],
+        "configs": []
+    },
     "aga_swarm/actions/data/folder_operations/list_folder/mac_list_folder.py": {
-        "type": "python_script_call_main",
+        "type": "internal_swarm_default_action",
         "name": "mac_list_folder.py",
         "id": "aga_swarm/actions/data/folder_operations/list_folder/mac_list_folder.py",
         "description": "This action lists the contents of a folder on a mac",

@@ -1,4 +1,4 @@
-from aga_swarm.actions.swarm.action_types.internal_python_script_call_main import internal_python_script_call_main as execute
+from aga_swarm.actions.swarm.action_types.internal_swarm_default_action import internal_swarm_default_action as execute
 
 def main(swarm: dict, file_path: str):
     platform = swarm['configs']['platform']

@@ -21,8 +21,8 @@ def build_swarm_blueprint(swarm_name: str, openai_key: str, frontend_url: str, p
         'action_space': get_default_action_space(),
         'memory_space': get_default_memory_space(),
         'configs': {
-            openai_key: openai_key,
-            frontend_url: frontend_url,
+            'openai_key': openai_key,
+            'frontend_url': frontend_url,
             'platform': platform,
             'root_path': root_path
         },

@@ -1,6 +1,6 @@
 from pydantic import validate_arguments
 
-from aga_swarm.actions.swarm.action_types.internal_python_script_call_main import internal_python_script_call_main as execute
+from aga_swarm.actions.swarm.action_types.internal_swarm_default_action import internal_swarm_default_action as execute
 
 @ validate_arguments
 def main(swarm: dict, folder_path: str, new_folder_path: str) -> dict:

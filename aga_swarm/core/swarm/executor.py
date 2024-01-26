@@ -1,13 +1,15 @@
 from pydantic import validate_arguments
 
+from aga_swarm.actions.swarm.action_types.internal_swarm_default_action import internal_swarm_default_action as execute
+
 @validate_arguments
-def swarm_official_executor(lifecycle_command: str, action: dict, swarm: dict) -> dict:
+def swarm_lifecycle_executor(lifecycle_command: str, action: dict, swarm: dict) -> dict:
     '''
     {
         "lifecycle_command": "spawn" or "terminate",
         "action" : {
-            "id": "",
-            "args": {}
+            "type": "",
+            "params": {}
         },
         "swarm": {
             "memory_space": {},
@@ -32,3 +34,8 @@ def spawn_node(action: dict, swarm: dict) -> dict:
 @validate_arguments
 def terminate_node(action: dict, swarm: dict) -> dict:
     pass
+
+@validate_arguments
+def action_executor(action: dict, swarm: dict) -> dict:
+    return execute(action['type'], swarm, action['params'])
+
