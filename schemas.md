@@ -1,4 +1,4 @@
- this is a temporary file for me to define schemas for objects, config files etc
+1 this is a temporary file for me to define schemas for objects, config files etc
 
  # Memory Space Schema
 
@@ -30,10 +30,9 @@ Action:
         "type": "action",
         "name": "",
         "id": "",
-        "language": "",
+        "description": "",
         "input_schema": "",
         "output_schema": "",
-        "description": "",
         "dependencies": [],
         "keys": []
     },
