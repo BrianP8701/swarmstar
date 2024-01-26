@@ -37,3 +37,7 @@ So a lot of the goals outlined above have actually been rendered irrelevant beca
 - [ ] have swarm add more specifc file operation actions
 - [ ] have swarm add github actions
 - [ ]
+
+
+User input needed at:
+- autonomous_general_agent_swarm/actions/swarm/action_types/internal_python_script_call_main.py

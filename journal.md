@@ -1431,3 +1431,26 @@ and keys will just need to have consistent naming across the whole package.
 i suppose in the future can u imagine the swarm needing multiple of the same key for various operations? tbh.... we're thinking to far ahead.
 
 during config stage swarm checks actions for key requirements
+
+
+chain of events when running instance of swarm
+
+run it with:
+- action id
+- action args
+- swarm_blueprint object
+- spawn or terminate
+
+{
+    "lifecycle_command": "spawn or terminate",
+    "action" : {
+        "id": "",
+        "args": {}
+    },
+    "swarm_blueprint": {
+        "memory_space": {},
+        "action_space": {}
+    }
+}
+
+come on come on get it together what what

@@ -138,7 +138,7 @@
             "required": ["status_message"]
         },
         "dependencies": [],
-        "keys": []
+        "configs": []
     },
     "actions/data/file_operations/file_upload/mac_file_upload.py": {
         "type": "python_script_call_main",
@@ -174,7 +174,7 @@
             "required": ["status_message"]
         },
         "dependencies": [],
-        "keys": []
+        "configs": []
     },
     "actions/data/file_operations/file_deletion/mac_file_deletion.py": {
         "type": "python_script_call_main",
@@ -206,7 +206,7 @@
             "required": ["status_message"]
         },
         "dependencies": [],
-        "keys": []
+        "configs": []
     },
     "actions/data/file_operations/rename_file/mac_rename_file.py": {
         "type": "python_script_call_main",
@@ -242,7 +242,7 @@
             "required": ["status_message"]
         },
         "dependencies": [],
-        "keys": []
+        "configs": []
     },
     "actions/data/file_operations/move_file/mac_move_file.py": {
         "type": "python_script_call_main",
@@ -278,7 +278,7 @@
             "required": ["status_message"]
         },
         "dependencies": [],
-        "keys": []
+        "configs": []
     },
     "actions/data/folder_operations/make_folder/mac_make_folder.py": {
         "type": "python_script_call_main",
@@ -310,7 +310,7 @@
             "required": ["status_message"]
         },
         "dependencies": [],
-        "keys": []
+        "configs": []
     },
     "actions/data/folder_operations/delete_folder/mac_delete_folder.py": {
         "type": "python_script_call_main",
@@ -342,7 +342,7 @@
             "required": ["status_message"]
         },
         "dependencies": [],
-        "keys": []
+        "configs": []
     },
     "actions/data/folder_operations/rename_folder/mac_rename_folder.py": {
         "type": "python_script_call_main",
@@ -378,7 +378,7 @@
             "required": ["status_message"]
         },
         "dependencies": [],
-        "keys": []
+        "configs": []
     },
     "actions/data/folder_operations/move_folder/mac_move_folder.py": {
         "type": "python_script_call_main",
@@ -414,7 +414,7 @@
             "required": ["status_message"]
         },
         "dependencies": [],
-        "keys": []
+        "configs": []
     },
     "actions/data/folder_operations/list_folder/mac_list_folder.py": {
         "type": "python_script_call_main",
@@ -446,6 +446,6 @@
             "required": ["status_message", "error_message"]
         },
         "dependencies": [],
-        "keys": []
+        "configs": []
     }
 }

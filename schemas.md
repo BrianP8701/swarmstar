@@ -34,7 +34,51 @@ Action:
         "input_schema": "",
         "output_schema": "",
         "dependencies": [],
-        "keys": []
+        "configs": []
     },
     ...
 }
+
+
+# Input to Executor
+
+{
+    "lifecycle_command": "spawn or terminate",
+    "action" : {
+        "id": "",
+        "args": {}
+    },
+    "swarm_blueprint": {
+        "memory_space": {},
+        "action_space": {}
+    }
+}
+
+
+
+# Swarm
+{
+    "nodes": {
+        node_id: Node,
+        ...
+    },
+    "action_space": {
+        # check action space schema above
+    },
+    "memory_space": {
+        # check memory space schema above
+    },
+    "history": [
+        {
+            "lifecycle_command": "terminate" or "spawn",
+            # this rlly just depends on how we want to visualize it. as a bare minimum just passing id and args of action is all thats needed
+        }
+    ],
+    configs: {
+        "platform": ""
+        "root_path": "",
+        "openai_key": "",
+        ...
+    }
+}
+## Node
