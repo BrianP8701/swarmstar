@@ -40,7 +40,7 @@ Action:
 }
 
 
-# Input to Executor
+# Input to Lifecycle Executor
 
 {
     "lifecycle_command": "spawn or terminate",

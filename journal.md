@@ -1465,3 +1465,8 @@ whats needed first is broken trees. trees with pointers to other places.
 okay fuck theres sort of this infinite loop problem now. uhh let me try breaking it down
 
 we pass keys, platform type etc
+
+
+okay we've now finished implementing the configuration stage. Designed everything so the swarm is compatible with any platform!
+
+Now we need to implement the executors and nodes.

@@ -1,6 +1,6 @@
 from settings import Settings
 import json
-from old_swarm.core._swarm import Swarm
+from old_swarm.core.swarm import Swarm
 import os
 # from swarm.core.memory.testing_ground.python_scripts.schema import python_script_test_result_template
 import asyncio

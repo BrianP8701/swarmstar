@@ -1,7 +1,7 @@
 from pydantic import validate_arguments
 
 from aga_swarm.actions.swarm.action_types.internal_swarm_default_action import internal_swarm_default_action as execute
-from aga_swarm.core.swarm.types import SwarmID
+from aga_swarm.swarm.types import SwarmID
 
 @validate_arguments
 def main(swarm_id: SwarmID, file_path: str, data: bytes) -> dict:

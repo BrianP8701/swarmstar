@@ -9,7 +9,7 @@
         "type": "internal_swarm_folder",
         "name": "swarm",
         "description": "This folder contains all actions pertaining to internal swarm operations such as:\n- navigating the action space to find the best action to take\n- navigating the swarm memory to find relevant information\n- different types of actions/memories and how to handle them",
-        "children": ["aga_swarm/actions/swarm/action_router", "aga_swarm/actions/swarm/memory_router", "aga_swarm/actions/swarm/action_types", "aga_swarm/actions/swarm/memory_types"]
+        "children": ["aga_swarm/actions/swarm/action_router/action_router.py", "aga_swarm/actions/swarm/memory_router", "aga_swarm/actions/swarm/action_types", "aga_swarm/actions/swarm/memory_types"]
     },
     "aga_swarm/actions/data": {
         "type": "internal_swarm_folder",
@@ -22,6 +22,33 @@
         "name": "action_types",
         "description": "Every action in the action space has a type. This folder contains all the actions to handle each type of action. Each of these will take the action type, params and the swarm and return the output of said action. Each action in this folder is of type: internal_swarm_default_action",
         "children": ["aga_swarm/actions/swarm/action_types/internal_swarm_default_action.py"]
+    },
+    "aga_swarm/actions/swarm/manager/manager.py": {
+        "type": "internal_swarm_default_action",
+        "name": "manager.py",
+        "description": "The manager's task is to break down directives into managable pieces.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "directive": {
+                    "type": "string",
+                    "description": "The directive to be broken down"
+                }
+            },
+            "required": ["directive"]
+        },
+        "output_schema": {
+            "type": "object",
+            "properties": {
+                "node_output": {
+                    "type": "aga_swarm.core.swarm.types.NodeOutput",
+                    "description": "The output of the node"
+                }
+            },
+            "required": ["node_output"]
+        },
+        "dependencies": ["pydantic", "openai"],
+        "required_configs": ["openai_key"]
     },
     "aga_swarm/actions/swarm/action_types/internal_swarm_default_action.py": {
         "type": "internal_swarm_default_action",
@@ -56,7 +83,7 @@
             "required": ["output"]
         },
         "dependencies": ["pydantic"],
-        "configs": []
+        "required_configs": []
     },
     "aga_swarm/actions/data/file_operations": {
         "type": "internal_swarm_folder",
@@ -167,7 +194,7 @@
             "required": ["status_message"]
         },
         "dependencies": [],
-        "configs": []
+        "required_configs": []
     },
     "aga_swarm/actions/data/file_operations/retrieve_file/mac_retrieve_file.py": {
         "type": "internal_swarm_default_action",
@@ -202,7 +229,7 @@
             "required": ["status_message"]
         },
         "dependencies": [],
-        "configs": []
+        "required_configs": []
     },
     "aga_swarm/actions/data/file_operations/upload_file/upload_file.py": {
         "type": "internal_swarm_default_action",
@@ -245,7 +272,7 @@
             "required": ["status_message"]
         },
         "dependencies": [],
-        "configs": []
+        "required_configs": []
     },
     "aga_swarm/actions/data/file_operations/upload_file/mac_upload_file.py": {
         "type": "internal_swarm_default_action",
@@ -280,7 +307,7 @@
             "required": ["status_message"]
         },
         "dependencies": [],
-        "configs": []
+        "required_configs": []
     },
     "aga_swarm/actions/data/file_operations/delete_file/delete_file.py": {
         "type": "internal_swarm_default_action",
@@ -315,7 +342,7 @@
             "required": ["status_message"]
         },
         "dependencies": [],
-        "configs": []
+        "required_configs": []
     },
     "aga_swarm/actions/data/file_operations/delete_file/mac_delete_file.py": {
         "type": "internal_swarm_default_action",
@@ -346,7 +373,7 @@
             "required": ["status_message"]
         },
         "dependencies": [],
-        "configs": []
+        "required_configs": []
     },
     "aga_swarm/actions/data/file_operations/rename_file/rename_file.py": {
         "type": "internal_swarm_default_action",
@@ -385,7 +412,7 @@
             "required": ["status_message"]
         },
         "dependencies": [],
-        "configs": []
+        "required_configs": []
     },
     "aga_swarm/actions/data/file_operations/rename_file/mac_rename_file.py": {
         "type": "internal_swarm_default_action",
@@ -420,7 +447,7 @@
             "required": ["status_message"]
         },
         "dependencies": [],
-        "configs": []
+        "required_configs": []
     },
     "aga_swarm/actions/data/file_operations/move_file/move_file.py": {
         "type": "internal_swarm_default_action",
@@ -459,7 +486,7 @@
             "required": ["status_message"]
         },
         "dependencies": [],
-        "configs": []
+        "required_configs": []
     },
     "aga_swarm/actions/data/file_operations/move_file/mac_move_file.py": {
         "type": "internal_swarm_default_action",
@@ -494,7 +521,7 @@
             "required": ["status_message"]
         },
         "dependencies": [],
-        "configs": []
+        "required_configs": []
     },
     "aga_swarm/actions/data/folder_operations/make_folder/make_folder.py": {
         "type": "internal_swarm_default_action",
@@ -529,7 +556,7 @@
             "required": ["status_message"]
         },
         "dependencies": [],
-        "configs": []
+        "required_configs": []
     },
     "aga_swarm/actions/data/folder_operations/make_folder/mac_make_folder.py": {
         "type": "internal_swarm_default_action",
@@ -560,7 +587,7 @@
             "required": ["status_message"]
         },
         "dependencies": [],
-        "configs": []
+        "required_configs": []
     },
     "aga_swarm/actions/data/folder_operations/delete_folder/delete_folder.py": {
         "type": "internal_swarm_default_action",
@@ -595,7 +622,7 @@
             "required": ["status_message"]
         },
         "dependencies": [],
-        "configs": []
+        "required_configs": []
     },
     "aga_swarm/actions/data/folder_operations/delete_folder/mac_delete_folder.py": {
         "type": "internal_swarm_default_action",
@@ -626,7 +653,7 @@
             "required": ["status_message"]
         },
         "dependencies": [],
-        "configs": []
+        "required_configs": []
     },
     "aga_swarm/actions/data/folder_operations/rename_folder/rename_folder.py": {
         "type": "internal_swarm_default_action",
@@ -665,7 +692,7 @@
             "required": ["status_message"]
         },
         "dependencies": [],
-        "configs": []
+        "required_configs": []
     },
     "aga_swarm/actions/data/folder_operations/rename_folder/mac_rename_folder.py": {
         "type": "internal_swarm_default_action",
@@ -700,7 +727,7 @@
             "required": ["status_message"]
         },
         "dependencies": [],
-        "configs": []
+        "required_configs": []
     },
     "aga_swarm/actions/data/folder_operations/move_folder/move_folder.py": {
         "type": "internal_swarm_default_action",
@@ -739,7 +766,7 @@
             "required": ["status_message"]
         },
         "dependencies": [],
-        "configs": []
+        "required_configs": []
     },
     "aga_swarm/actions/data/folder_operations/move_folder/mac_move_folder.py": {
         "type": "internal_swarm_default_action",
@@ -774,7 +801,7 @@
             "required": ["status_message"]
         },
         "dependencies": [],
-        "configs": []
+        "required_configs": []
     },
     "aga_swarm/actions/data/folder_operations/list_folder/list_folder.py": {
         "type": "internal_swarm_default_action",
@@ -809,7 +836,7 @@
             "required": ["status_message", "error_message"]
         },
         "dependencies": [],
-        "configs": []
+        "required_configs": []
     },
     "aga_swarm/actions/data/folder_operations/list_folder/mac_list_folder.py": {
         "type": "internal_swarm_default_action",
@@ -840,6 +867,6 @@
             "required": ["status_message", "error_message"]
         },
         "dependencies": [],
-        "configs": []
+        "required_configs": []
     }
 }

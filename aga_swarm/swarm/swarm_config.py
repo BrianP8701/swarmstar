@@ -2,8 +2,8 @@ from pydantic import validate_arguments
 import json
 import os
 
-from aga_swarm.core.swarm.types import SwarmID
-from aga_swarm.core.swarm.swarm_utils import get_default_action_space_metadata, get_default_memory_space_metadata
+from aga_swarm.swarm.types import SwarmID
+from aga_swarm.swarm.internal_swarm_utils import get_default_action_space_metadata, get_default_memory_space_metadata
 from aga_swarm.actions.swarm.action_types.internal_swarm_default_action import internal_swarm_default_action as execute
 
 @validate_arguments
@@ -39,6 +39,7 @@ def setup_swarm_blueprint(blueprint_name: str, openai_key: str, frontend_url: st
             'frontend_url': frontend_url
         }
     )
+    
     _setup_swarm_space(swarm_id, 
         json.dumps(get_default_action_space_metadata()).encode('utf-8'), 
         json.dumps(get_default_memory_space_metadata()).encode('utf-8'))
@@ -62,11 +63,12 @@ def create_swarm_instance(blueprint_id: SwarmID, instance_name: str) -> SwarmID:
         platform=blueprint_id.platform,
         action_space_metadata_path=os.path.join(blueprint_id.root_path, instance_name, 'action_space_metadata.json'),
         memory_space_metadata_path=os.path.join(blueprint_id.root_path, instance_name, 'memory_space_metadata.json'),
-        stage_path=os.path.join(blueprint_id.root_path, instance_name, 'stage'),
-        state_path=os.path.join(blueprint_id.root_path, instance_name, 'state'),
-        history_path=os.path.join(blueprint_id.root_path, instance_name, 'history'),
+        stage_path=os.path.join(blueprint_id.root_path, instance_name, 'stage.json'),
+        state_path=os.path.join(blueprint_id.root_path, instance_name, 'state.json'),
+        history_path=os.path.join(blueprint_id.root_path, instance_name, 'history.json'),
         configs=blueprint_id.configs
     )
+    
     # Get action and memory space from blueprint
     retrieve_file_action_id = 'aga_swarm/actions/data/file_operations/retrieve_file/retrieve_file.py'
     action_space_metadata = execute(retrieve_file_action_id, swarm_id, 
@@ -75,6 +77,7 @@ def create_swarm_instance(blueprint_id: SwarmID, instance_name: str) -> SwarmID:
         {'file_path': blueprint_id.memory_space_metadata_path, "swarm_id": swarm_id})['data']
     
     _setup_swarm_space(swarm_id, action_space_metadata, memory_space_metadata)
+    
     return swarm_id
 
 
@@ -113,3 +116,7 @@ def _setup_swarm_space(swarm_id: SwarmID, action_space: bytes, memory_space: byt
     execute(upload_file_action_id, swarm_id, 
         {'file_path': f"{swarm_id.instance_path}/history.json", "swarm_id": swarm_id,
         'data': json.dumps([]).encode('utf-8')})
+    # Save swarmid
+    execute(upload_file_action_id, swarm_id, 
+        {'file_path': f"{swarm_id.instance_path}/swarm_id.json", "swarm_id": swarm_id,
+        'data': json.dumps(swarm_id.model_dump_json()).encode('utf-8')})

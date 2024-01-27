@@ -2,11 +2,11 @@ import importlib
 from pydantic import validate_arguments
 
 from aga_swarm.swarm.types import SwarmID
-from aga_swarm.swarm.internal_swarm_utils import get_default_action_space_metadata
+from aga_swarm.swarm.swarm_utils import get_action_space_metadata
 
 @validate_arguments
-def internal_swarm_default_action(action_id: str, swarm_id: SwarmID, params: dict):
-    action_space_metadata = get_default_action_space_metadata()
+def action(action_id: str, action_type:str, swarm_id: SwarmID, params: dict):
+    action_space_metadata = get_action_space_metadata()
     # Import dependencies
     dependencies = action_space_metadata[action_id]['dependencies']
     for package in dependencies:
@@ -21,17 +21,18 @@ def internal_swarm_default_action(action_id: str, swarm_id: SwarmID, params: dic
             raise KeyError(f"Config {config} not found in swarm configs")
     
     # Import the main function from the path specified by the action_id
-    action_id = action_id.replace('/', '.')
-    if action_id.endswith('.py'):
-        action_id = action_id[:-3]
-    action = __import__(action_id, fromlist=[''])
+    action_type = action_type.replace('/', '.')
+    if action_type.endswith('.py'):
+        action_type = action_type[:-3]
+    action = __import__(action_type, fromlist=[''])
     if hasattr(action, 'main'):
         main_function = getattr(action, 'main')
     else:
         raise AttributeError("No main function found in the script")
     
+    params.pop('action_type', None)
     return main_function(**params)
 
 @validate_arguments
-def main(action_id: str, swarm_id: SwarmID, params: dict):
-    return internal_swarm_default_action(action_id, swarm_id, params)
+def main(action_id: str, action_type: str, swarm_id: SwarmID, params: dict):
+    return action(action_id, action_type, swarm_id, params)

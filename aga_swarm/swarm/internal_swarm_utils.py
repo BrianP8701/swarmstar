@@ -9,3 +9,4 @@ def get_default_action_space_metadata() -> dict:
 @validate_arguments
 def get_default_memory_space_metadata() -> dict: 
     return get_json_data('aga_swarm.memory', 'memory_space_metadata.json')
+
