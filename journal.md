@@ -1470,3 +1470,12 @@ we pass keys, platform type etc
 okay we've now finished implementing the configuration stage. Designed everything so the swarm is compatible with any platform!
 
 Now we need to implement the executors and nodes.
+
+
+# Consistency
+This system needs consistency. Later we'll need to add so that only one node can:
+    retrieve and update the state, history, or any space at one time.
+
+But obv read only operations can be done at the same time.
+
+Just keep this in mind!

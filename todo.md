@@ -27,9 +27,11 @@ So a lot of the goals outlined above have actually been rendered irrelevant beca
 - [ ] get new swarm architecture working locally
 - [ ] use new swarm architecture to add all cloud storage and file storage operations
 - [ ] decouple and make core stateless
-- [ ] make node ids uuids
-- [ ] revert memory and action space to have a seperate tree representation.
-- [ ] add configuration for coder layer with data sources and custom router functions
+- [x] make node ids uuids
+- [ ] add consistency for read-write operations to swarm space
+- [x] revert memory and action space to have a seperate tree representation for metadata.
+- [x] add configuration for coder layer with data sources and custom router functions
+- [ ] add config functions to add custom data to memory and action space
 - [ ] test with multiple enviroments
 - [ ] create web app interface for swarm with user input to threads
 - [ ] add retrieval agent
@@ -40,4 +42,5 @@ So a lot of the goals outlined above have actually been rendered irrelevant beca
 
 
 User input needed at:
-- autonomous_general_agent_swarm/actions/swarm/action_types/internal_python_script_call_main.py
+- aga_swarm/actions/swarm/action_types/internal_python_script_call_main.py
+- aga_swarm/actions/swarm/manager/manager.py

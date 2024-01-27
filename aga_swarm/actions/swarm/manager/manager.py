@@ -17,7 +17,7 @@ def manager(directive: str, swarm_id: SwarmID) -> NodeOutput:
         subdirectives = manager.chat(directive)['subdirectives']
     except Exception as e:
         node_report = {
-            'success': False,
+            'status': 'failed',
             'error': str(e)
         }
         return {'node_report': node_report, 'swarm_commands': []}
@@ -40,7 +40,7 @@ def manager(directive: str, swarm_id: SwarmID) -> NodeOutput:
         swarm_commands.append(swarm_command)
     
     node_report = {
-        'success': True,
+        'status': 'success',
         'message': f'Given the directive "{directive}", the manager chose the subtasks "{subdirectives}"'
     }
     return {'node_report': node_report, 'swarm_commands': []}
