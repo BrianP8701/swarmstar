@@ -1479,3 +1479,20 @@ This system needs consistency. Later we'll need to add so that only one node can
 But obv read only operations can be done at the same time.
 
 Just keep this in mind!
+
+# Action config and packages
+okay we need to rethink how we do action config for each action. we need to INSTALL the dependencies not just import them. the script itself imports them. We cant do this inside the action it needs to happen outside, before we create the cloud function because, we need to know all the dependencies before we even enter the cloud function.
+
+Cloud Function 1: spawn a node. Pass it along to the next cloud function to the swarm master to execute. This next cloud function needs to have the appropriate packages installed. Before we pass to the swarm master we need to install all packages
+
+umm so the developer is gonna have to make this themselves for their platform.... or i can give it to them. thats definitely something for later ima leave a blank space there for now
+
+# Action Space mistake....
+well we can easily identify between a folder and action by whether they have children... expect for an empty folder. 
+
+Guess we should add an attribute to check for that
+
+in addition, the type for a folder should point to the action to move forward? Yeah. it should We dont need to define one for internal_swarm_folder tho.... wait a second any folder should be in the metadata space so yes, the cases where we might need to do something weird are unique ones like sql bases, indexes etc. wait im thinking abt the memory space im stupid bruh. no uhh with the action space there is one singular type of folder. so no need for anything special there i think. genuinely dont even need to specify internal swarm folder. just say folder right, cuz the folder is aklways the same no matter ur platform. 
+
+also the types should be the proper id of the action. okey dokey. man ive wasted so much time manually editing the action space. i definitely need to automate editing the action space. ooohh..... right the action creator thatll be sick man. well first automate saving a new action then automate the creation of the action. yessirrrr we making self sufficient... im deadass just building AGI bro. ppl dont understand. i want to do it first tho. I want to be the first person in the world to build this. Then i wont a useless nobody leech to society anymore - ill have some sort of value. im a worthless piece of shit unless i contribute something back to society.
+

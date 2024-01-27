@@ -1,29 +1,27 @@
 import json
 
 from aga_swarm.swarm.types import SwarmID, SwarmCommand
-from aga_swarm.swarm.swarm_lifecycle import execute_node, spawn_node, terminate_node, swarm_master
+# from aga_swarm.swarm.swarm_lifecycle import spawn_node, swarm_master
 
 with open('/Users/brianprzezdziecki/Code/autonomous-general-agent-swarm/z/test_swarm_instance/swarm_id.json', 'r') as f:
     swarm_id_json = json.loads(f.read())
 
 swarm_id = SwarmID.model_validate_json(swarm_id_json)
 
-directive = '''Go through the data folder in actions. look at all the actions inside, 
-which consist of mac platform operations. in addition to those add corresponding 
-operations for windows, linux file system,  azure gcp and aws blob storage'''
+print(type(swarm_id))
 
-swarm_command = SwarmCommand(
-    lifecycle_command='spawn',
-    action={
-        'action_id': 'aga_swarm/actions/swarm/manager/manager.py',
-        'params': {
-            'directive': directive,
-            'swarm_id': swarm_id
-        }
-    },
-    swarm_id=swarm_id
-)
+# directive = '''Go through the data folder in actions. look at all the actions inside, 
+# which consist of mac platform operations. in addition to those add corresponding 
+# operations for windows, linux file system,  azure gcp and aws blob storage'''
 
-manager_node = spawn_node(swarm_command, None)
+# swarm_command = SwarmCommand(
+#     action_id='aga_swarm/actions/swarm/manager/manager.py',
+#     params={
+#         'directive': directive,
+#         'swarm_id': swarm_id
+#     }
+# )
 
-swarm_master(swarm_command)
+# manager_node = spawn_node(swarm_command, None)
+
+# swarm_master(swarm_command)

@@ -23,18 +23,18 @@
         "description": "Every action in the action space has a type. This folder contains all the actions to handle each type of action. Each of these will take the action type, params and the swarm and return the output of said action.",
         "children": ["aga_swarm/actions/swarm/action_types/internal_default_swarm_action.py", "aga_swarm/actions/swarm/action_types/default_swarm_action.py", "aga_swarm/actions/swarm/action_types/action.py"]
     },
-    "aga_swarm/actions/swarm/manager/manager.py": {
+    "aga_swarm/actions/reasoning/manager/manager.py": {
         "type": "aga_swarm/actions/swarm/action_types/internal_default_swarm_action.py",
         "name": "manager.py",
-        "description": "The manager's task is to break down directives into managable pieces.",
+        "description": "The manager's task is to break down directives into immediate parralel sub-direvtives.",
         "input_schema": {
             "directive": {
                 "type": "string",
                 "description": "The directive to be broken down"
             },
-            "openai_key": {
-                "type": "string",
-                "description": "The openai key"
+            "swarm_id": {
+                "type": "aga_swarm.swarm.types.swarm.SwarmID",
+                "description": "The swarm id"
             }
         },
         "output_schema": {
@@ -43,8 +43,7 @@
                 "description": "The output of the node"
             }
         },
-        "dependencies": ["openai"],
-        "required_configs": ["openai_key"]
+        "dependencies": ["openai"]
     },
     "aga_swarm/actions/swarm/action_types/action.py": {
         "type": "aga_swarm/actions/swarm/action_types/action.py",
@@ -61,7 +60,7 @@
             },
             "swarm_id": {
                 "type": "aga_swarm.swarm.types.swarm.SwarmID",
-                "description": "The swarm id."
+                "description": "The swarm id"
             }
         },
         "output_schema": {
@@ -70,8 +69,7 @@
                 "description": "The output of the action"
             }
         },
-        "dependencies": [],
-        "required_configs": []
+        "dependencies": []
     },
     "aga_swarm/actions/swarm/action_types/internal_default_swarm_action.py": {
         "type": "aga_swarm/actions/swarm/action_types/internal_default_swarm_action.py",
@@ -97,8 +95,7 @@
                 "description": "The output of the action"
             }
         },
-        "dependencies": [],
-        "required_configs": []
+        "dependencies": []
     },
     "aga_swarm/actions/swarm/action_types/default_swarm_action.py": {
         "type": "aga_swarm/actions/swarm/action_types/default_swarm_action.py",
@@ -124,8 +121,7 @@
                 "description": "The output of the action"
             }
         },
-        "dependencies": [],
-        "required_configs": []
+        "dependencies": []
     },
     "aga_swarm/actions/data/file_operations": {
         "type": "folder",
@@ -210,13 +206,13 @@
             },
             "swarm_id": {
                 "type": "aga_swarm.swarm.types.swarm.SwarmID",
-                "description": "The swarm id."
+                "description": "The swarm id"
             }
         },
         "output_schema": {
-            "status": {
-                "type": "bool",
-                "description": "True if successful, False otherwise"
+            "status_message": {
+                "type": "string",
+                "description": "'Success' or 'Failure'"
             },
             "error_message": {
                 "type": "string",
@@ -227,8 +223,7 @@
                 "description": "The binary of the file"
             }
         },
-        "dependencies": [],
-        "required_configs": []
+        "dependencies": []
     },
     "aga_swarm/actions/data/file_operations/retrieve_file/mac_retrieve_file.py": {
         "type": "aga_swarm/actions/swarm/action_types/internal_default_swarm_action.py",
@@ -241,9 +236,9 @@
             }
         },
         "output_schema": {
-            "status": {
-                "type": "bool",
-                "description": "True if successful, False otherwise"
+            "status_message": {
+                "type": "string",
+                "description": "'Success' or 'Failure'"
             },
             "error_message": {
                 "type": "string",
@@ -254,8 +249,7 @@
                 "description": "The binary of the file"
             }
         },
-        "dependencies": [],
-        "required_configs": []
+        "dependencies": []
     },
     "aga_swarm/actions/data/file_operations/upload_file/upload_file.py": {
         "type": "aga_swarm/actions/swarm/action_types/internal_default_swarm_action.py",
@@ -272,21 +266,20 @@
             },
             "swarm_id": {
                 "type": "aga_swarm.swarm.types.swarm.SwarmID",
-                "description": "The swarm id."
+                "description": "The swarm id"
             }
         },
         "output_schema": {
-            "status": {
-                "type": "bool",
-                "description": "True if successful, False otherwise"
+            "status_message": {
+                "type": "string",
+                "description": "'Success' or 'Failure'"
             },
             "error_message": {
                 "type": "string",
                 "description": "Error message if status_message is 'Failure'"
             }
         },
-        "dependencies": [],
-        "required_configs": []
+        "dependencies": []
     },
     "aga_swarm/actions/data/file_operations/upload_file/mac_upload_file.py": {
         "type": "aga_swarm/actions/swarm/action_types/internal_default_swarm_action.py",
@@ -303,17 +296,16 @@
             }
         },
         "output_schema": {
-            "status": {
-                "type": "bool",
-                "description": "True if successful, False otherwise"
+            "status_message": {
+                "type": "string",
+                "description": "'Success' or 'Failure'"
             },
             "error_message": {
                 "type": "string",
                 "description": "Error message if status_message is 'Failure'"
             }
         },
-        "dependencies": [],
-        "required_configs": []
+        "dependencies": []
     },
     "aga_swarm/actions/data/file_operations/delete_file/delete_file.py": {
         "type": "aga_swarm/actions/swarm/action_types/internal_default_swarm_action.py",
@@ -330,17 +322,16 @@
             }
         },
         "output_schema": {
-            "status": {
-                "type": "bool",
-                "description": "True if successful, False otherwise"
+            "status_message": {
+                "type": "string",
+                "description": "'Success' or 'Failure'"
             },
             "error_message": {
                 "type": "string",
                 "description": "Error message if status_message is 'Failure'"
             }
         },
-        "dependencies": [],
-        "required_configs": []
+        "dependencies": []
     },
     "aga_swarm/actions/data/file_operations/delete_file/mac_delete_file.py": {
         "type": "aga_swarm/actions/swarm/action_types/internal_default_swarm_action.py",
@@ -353,17 +344,16 @@
             }
         },
         "output_schema": {
-            "status": {
-                "type": "bool",
-                "description": "True if successful, False otherwise"
+            "status_message": {
+                "type": "string",
+                "description": "'Success' or 'Failure'"
             },
             "error_message": {
                 "type": "string",
                 "description": "Error message if status_message is 'Failure'"
             }
         },
-        "dependencies": [],
-        "required_configs": []
+        "dependencies": []
     },
     "aga_swarm/actions/data/file_operations/rename_file/rename_file.py": {
         "type": "aga_swarm/actions/swarm/action_types/internal_default_swarm_action.py",
@@ -384,17 +374,16 @@
             }
         },
         "output_schema": {
-            "status": {
-                "type": "bool",
-                "description": "True if successful, False otherwise"
+            "status_message": {
+                "type": "string",
+                "description": "'Success' or 'Failure'"
             },
             "error_message": {
                 "type": "string",
                 "description": "Error message if status_message is 'Failure'"
             }
         },
-        "dependencies": [],
-        "required_configs": []
+        "dependencies": []
     },
     "aga_swarm/actions/data/file_operations/rename_file/mac_rename_file.py": {
         "type": "aga_swarm/actions/swarm/action_types/internal_default_swarm_action.py",
@@ -411,17 +400,16 @@
             }
         },
         "output_schema": {
-            "status": {
-                "type": "bool",
-                "description": "True if successful, False otherwise"
+            "status_message": {
+                "type": "string",
+                "description": "'Success' or 'Failure'"
             },
             "error_message": {
                 "type": "string",
                 "description": "Error message if status_message is 'Failure'"
             }
         },
-        "dependencies": [],
-        "required_configs": []
+        "dependencies": []
     },
     "aga_swarm/actions/data/file_operations/move_file/move_file.py": {
         "type": "aga_swarm/actions/swarm/action_types/internal_default_swarm_action.py",
@@ -442,17 +430,16 @@
             }
         },
         "output_schema": {
-            "status": {
-                "type": "bool",
-                "description": "True if successful, False otherwise"
+            "status_message": {
+                "type": "string",
+                "description": "'Success' or 'Failure'"
             },
             "error_message": {
                 "type": "string",
                 "description": "Error message if status_message is 'Failure'"
             }
         },
-        "dependencies": [],
-        "required_configs": []
+        "dependencies": []
     },
     "aga_swarm/actions/data/file_operations/move_file/mac_move_file.py": {
         "type": "aga_swarm/actions/swarm/action_types/internal_default_swarm_action.py",
@@ -469,17 +456,16 @@
             }
         },
         "output_schema": {
-            "status": {
-                "type": "bool",
-                "description": "True if successful, False otherwise"
+            "status_message": {
+                "type": "string",
+                "description": "'Success' or 'Failure'"
             },
             "error_message": {
                 "type": "string",
                 "description": "Error message if status_message is 'Failure'"
             }
         },
-        "dependencies": [],
-        "required_configs": []
+        "dependencies": []
     },
     "aga_swarm/actions/data/folder_operations/make_folder/make_folder.py": {
         "type": "aga_swarm/actions/swarm/action_types/internal_default_swarm_action.py",
@@ -496,17 +482,16 @@
             }
         },
         "output_schema": {
-            "status": {
-                "type": "bool",
-                "description": "True if successful, False otherwise"
+            "status_message": {
+                "type": "string",
+                "description": "'Success' or 'Failure'"
             },
             "error_message": {
                 "type": "string",
                 "description": "Error message if status_message is 'Failure'"
             }
         },
-        "dependencies": [],
-        "required_configs": []
+        "dependencies": []
     },
     "aga_swarm/actions/data/folder_operations/make_folder/mac_make_folder.py": {
         "type": "aga_swarm/actions/swarm/action_types/internal_default_swarm_action.py",
@@ -519,17 +504,16 @@
             }
         },
         "output_schema": {
-            "status": {
-                "type": "bool",
-                "description": "True if successful, False otherwise"
+            "status_message": {
+                "type": "string",
+                "description": "'Success' or 'Failure'"
             },
             "error_message": {
                 "type": "string",
                 "description": "Error message if status_message is 'Failure'"
             }
         },
-        "dependencies": [],
-        "required_configs": []
+        "dependencies": []
     },
     "aga_swarm/actions/data/folder_operations/delete_folder/delete_folder.py": {
         "type": "aga_swarm/actions/swarm/action_types/internal_default_swarm_action.py",
@@ -546,17 +530,16 @@
             }
         },
         "output_schema": {
-            "status": {
-                "type": "bool",
-                "description": "True if successful, False otherwise"
+            "status_message": {
+                "type": "string",
+                "description": "'Success' or 'Failure'"
             },
             "error_message": {
                 "type": "string",
                 "description": "Error message if status_message is 'Failure'"
             }
         },
-        "dependencies": [],
-        "required_configs": []
+        "dependencies": []
     },
     "aga_swarm/actions/data/folder_operations/delete_folder/mac_delete_folder.py": {
         "type": "aga_swarm/actions/swarm/action_types/internal_default_swarm_action.py",
@@ -569,17 +552,16 @@
             }
         },
         "output_schema": {
-            "status": {
-                "type": "bool",
-                "description": "True if successful, False otherwise"
+            "status_message": {
+                "type": "string",
+                "description": "'Success' or 'Failure'"
             },
             "error_message": {
                 "type": "string",
                 "description": "Error message if status_message is 'Failure'"
             }
         },
-        "dependencies": [],
-        "required_configs": []
+        "dependencies": []
     },
     "aga_swarm/actions/data/folder_operations/rename_folder/rename_folder.py": {
         "type": "aga_swarm/actions/swarm/action_types/internal_default_swarm_action.py",
@@ -600,17 +582,16 @@
             }
         },
         "output_schema": {
-            "status": {
-                "type": "bool",
-                "description": "True if successful, False otherwise"
+            "status_message": {
+                "type": "string",
+                "description": "'Success' or 'Failure'"
             },
             "error_message": {
                 "type": "string",
                 "description": "Error message if status_message is 'Failure'"
             }
         },
-        "dependencies": [],
-        "required_configs": []
+        "dependencies": []
     },
     "aga_swarm/actions/data/folder_operations/rename_folder/mac_rename_folder.py": {
         "type": "aga_swarm/actions/swarm/action_types/internal_default_swarm_action.py",
@@ -627,17 +608,16 @@
             }
         },
         "output_schema": {
-            "status": {
-                "type": "bool",
-                "description": "True if successful, False otherwise"
+            "status_message": {
+                "type": "string",
+                "description": "'Success' or 'Failure'"
             },
             "error_message": {
                 "type": "string",
                 "description": "Error message if status_message is 'Failure'"
             }
         },
-        "dependencies": [],
-        "required_configs": []
+        "dependencies": []
     },
     "aga_swarm/actions/data/folder_operations/move_folder/move_folder.py": {
         "type": "aga_swarm/actions/swarm/action_types/internal_default_swarm_action.py",
@@ -658,17 +638,16 @@
             }
         },
         "output_schema": {
-            "status": {
-                "type": "bool",
-                "description": "True if successful, False otherwise"
+            "status_message": {
+                "type": "string",
+                "description": "'Success' or 'Failure'"
             },
             "error_message": {
                 "type": "string",
                 "description": "Error message if status_message is 'Failure'"
             }
         },
-        "dependencies": [],
-        "required_configs": []
+        "dependencies": []
     },
     "aga_swarm/actions/data/folder_operations/move_folder/mac_move_folder.py": {
         "type": "aga_swarm/actions/swarm/action_types/internal_default_swarm_action.py",
@@ -685,17 +664,16 @@
             }
         },
         "output_schema": {
-            "status": {
-                "type": "bool",
-                "description": "True if successful, False otherwise"
+            "status_message": {
+                "type": "string",
+                "description": "'Success' or 'Failure'"
             },
             "error_message": {
                 "type": "string",
                 "description": "Error message if status_message is 'Failure'"
             }
         },
-        "dependencies": [],
-        "required_configs": []
+        "dependencies": []
     },
     "aga_swarm/actions/data/folder_operations/list_folder/list_folder.py": {
         "type": "aga_swarm/actions/swarm/action_types/internal_default_swarm_action.py",
@@ -712,17 +690,20 @@
             }
         },
         "output_schema": {
-            "status": {
-                "type": "bool",
-                "description": "True if successful, False otherwise"
+            "status_message": {
+                "type": "string",
+                "description": "'Success' or 'Failure'"
             },
             "error_message": {
                 "type": "string",
                 "description": "Error message if status_message is Failure"
+            },
+            "contents": {
+                "type": "List[str]",
+                "description": "The contents of the folder"
             }
         },
-        "dependencies": [],
-        "required_configs": []
+        "dependencies": []
     },
     "aga_swarm/actions/data/folder_operations/list_folder/mac_list_folder.py": {
         "type": "aga_swarm/actions/swarm/action_types/internal_default_swarm_action.py",
@@ -735,16 +716,19 @@
             }
         },
         "output_schema": {
-            "status": {
-                "type": "bool",
-                "description": "True if successful, False otherwise"
+            "status_message": {
+                "type": "string",
+                "description": "'Success' or 'Failure'"
             },
             "error_message": {
                 "type": "string",
                 "description": "Error message if status_message is Failure"
+            },
+            "contents": {
+                "type": "List[str]",
+                "description": "The contents of the folder"
             }
         },
-        "dependencies": [],
-        "required_configs": []
+        "dependencies": []
     }
 }

@@ -2,7 +2,6 @@ import os
 from pydantic import validate_arguments
 
 # Function to create a folder on a mac
-@validate_arguments
 def mac_make_folder(folder_path: str) -> dict:
     try:
         # Create the directory if it does not exist

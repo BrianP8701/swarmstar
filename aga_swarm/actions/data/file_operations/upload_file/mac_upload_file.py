@@ -2,7 +2,6 @@ import os
 from pydantic import validate_arguments
 
 # Function to upload a file to a Mac
-@validate_arguments
 def mac_file_upload(file_path: str, data: bytes) -> dict:
     try:
         # Ensure the directory exists

@@ -2,12 +2,12 @@ from pydantic import validate_arguments
 import json
 import os
 
-from aga_swarm.swarm.types import SwarmID
+from aga_swarm.swarm.types import SwarmID, Platform
 from aga_swarm.swarm.internal_swarm_utils import get_default_action_space_metadata, get_default_memory_space_metadata
-from aga_swarm.actions.swarm.action_types.internal_swarm_default_action import internal_swarm_default_action as execute
+from aga_swarm.actions.swarm.action_types.internal_default_swarm_action import internal_default_swarm_action 
 
 @validate_arguments
-def setup_swarm_blueprint(blueprint_name: str, openai_key: str, frontend_url: str, platform: str, root_path: str) -> SwarmID:
+def setup_swarm_blueprint(blueprint_name: str, openai_key: str, frontend_url: str, platform: Platform, root_path: str) -> SwarmID:
     '''
         Setup a new blank swarm blueprint on your platform of choice.
         
@@ -39,7 +39,6 @@ def setup_swarm_blueprint(blueprint_name: str, openai_key: str, frontend_url: st
             'frontend_url': frontend_url
         }
     )
-    
     _setup_swarm_space(swarm_id, 
         json.dumps(get_default_action_space_metadata()).encode('utf-8'), 
         json.dumps(get_default_memory_space_metadata()).encode('utf-8'))
@@ -68,14 +67,11 @@ def create_swarm_instance(blueprint_id: SwarmID, instance_name: str) -> SwarmID:
         history_path=os.path.join(blueprint_id.root_path, instance_name, 'history.json'),
         configs=blueprint_id.configs
     )
-    
-    # Get action and memory space from blueprint
     retrieve_file_action_id = 'aga_swarm/actions/data/file_operations/retrieve_file/retrieve_file.py'
-    action_space_metadata = execute(retrieve_file_action_id, swarm_id, 
-        {'file_path': blueprint_id.action_space_metadata_path, "swarm_id": swarm_id})['data']
-    memory_space_metadata = execute(retrieve_file_action_id, swarm_id, 
-        {'file_path': blueprint_id.memory_space_metadata_path, "swarm_id": swarm_id})['data']
-    
+    action_space_metadata = internal_default_swarm_action(action_id=retrieve_file_action_id, swarm_id=swarm_id, 
+        params={'file_path': blueprint_id.action_space_metadata_path, "swarm_id": swarm_id})['data']
+    memory_space_metadata = internal_default_swarm_action(action_id=retrieve_file_action_id, swarm_id=swarm_id, 
+        params={'file_path': blueprint_id.memory_space_metadata_path, "swarm_id": swarm_id})['data']
     _setup_swarm_space(swarm_id, action_space_metadata, memory_space_metadata)
     
     return swarm_id
@@ -95,28 +91,28 @@ def _setup_swarm_space(swarm_id: SwarmID, action_space: bytes, memory_space: byt
     upload_file_action_id = 'aga_swarm/actions/data/file_operations/upload_file/upload_file.py'
     
     # Create swarm instance folder
-    execute(make_folder_action_id, swarm_id, 
-            {'folder_path': swarm_id.instance_path, "swarm_id": swarm_id})
+    internal_default_swarm_action(action_id=make_folder_action_id, swarm_id=swarm_id, 
+        params={'folder_path': swarm_id.instance_path, "swarm_id": swarm_id})
     # Create stage
-    execute(make_folder_action_id, swarm_id, 
-            {'folder_path': f"{swarm_id.instance_path}/stage", "swarm_id": swarm_id})
+    internal_default_swarm_action(action_id=make_folder_action_id, swarm_id=swarm_id, 
+        params={'folder_path': f"{swarm_id.instance_path}/stage", "swarm_id": swarm_id})
     # Create action space metadata
-    execute(upload_file_action_id, swarm_id, 
-            {'file_path': f"{swarm_id.instance_path}/action_space_metadata.json", "swarm_id": swarm_id,
-            'data': action_space})
+    internal_default_swarm_action(action_id=upload_file_action_id, swarm_id=swarm_id, 
+        params={'file_path': f"{swarm_id.instance_path}/action_space_metadata.json", "swarm_id": swarm_id,
+        'data': action_space})
     # Create memory space metadata
-    execute(upload_file_action_id, swarm_id, 
-            {'file_path': f"{swarm_id.instance_path}/memory_space_metadata.json", "swarm_id": swarm_id,
-            'data': memory_space})
+    internal_default_swarm_action(action_id=upload_file_action_id, swarm_id=swarm_id, 
+        params={'file_path': f"{swarm_id.instance_path}/memory_space_metadata.json", "swarm_id": swarm_id,
+        'data': memory_space})
     # Create state
-    execute(upload_file_action_id, swarm_id, 
-        {'file_path': f"{swarm_id.instance_path}/state.json", "swarm_id": swarm_id,
+    internal_default_swarm_action(action_id=upload_file_action_id, swarm_id=swarm_id, 
+        params={'file_path': f"{swarm_id.instance_path}/state.json", "swarm_id": swarm_id,
         'data': json.dumps({}).encode('utf-8')})
     # Create history
-    execute(upload_file_action_id, swarm_id, 
-        {'file_path': f"{swarm_id.instance_path}/history.json", "swarm_id": swarm_id,
+    internal_default_swarm_action(action_id=upload_file_action_id, swarm_id=swarm_id, 
+        params={'file_path': f"{swarm_id.instance_path}/history.json", "swarm_id": swarm_id,
         'data': json.dumps([]).encode('utf-8')})
-    # Save swarmid
-    execute(upload_file_action_id, swarm_id, 
-        {'file_path': f"{swarm_id.instance_path}/swarm_id.json", "swarm_id": swarm_id,
+    # Save swarm id
+    internal_default_swarm_action(action_id=upload_file_action_id, swarm_id=swarm_id, 
+        params={'file_path': f"{swarm_id.instance_path}/swarm_id.json", "swarm_id": swarm_id,
         'data': json.dumps(swarm_id.model_dump_json()).encode('utf-8')})

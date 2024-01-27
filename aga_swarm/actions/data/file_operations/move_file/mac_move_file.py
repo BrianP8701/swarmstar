@@ -2,7 +2,6 @@ import shutil
 from pydantic import validate_arguments
 
 # Function to move a file on a mac
-@validate_arguments
 def mac_move_file(file_path: str, new_file_path: str) -> dict:
     try:
         # Move the file

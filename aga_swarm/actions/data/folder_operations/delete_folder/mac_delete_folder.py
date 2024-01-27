@@ -3,7 +3,6 @@ import shutil
 from pydantic import validate_arguments
 
 # Function to delete a folder on a mac
-@validate_arguments
 def mac_delete_folder(folder_path: str) -> dict:
     try:
         # Check if the folder exists
