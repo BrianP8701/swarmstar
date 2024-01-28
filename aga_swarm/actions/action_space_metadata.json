@@ -45,6 +45,28 @@
         },
         "dependencies": ["openai"]
     },
+    "aga_swarm/actions/swarm/action_router/action_router.py": {
+        "type": "aga_swarm/actions/swarm/action_types/internal_default_swarm_action.py",
+        "name": "action_router.py",
+        "description": "This action decides whats the best action to take given a directive",
+        "input_schema": {
+            "directive": {
+                "type": "string",
+                "description": "The directive to be broken down"
+            },
+            "swarm_id": {
+                "type": "aga_swarm.swarm.types.swarm.SwarmID",
+                "description": "The swarm id"
+            }
+        },
+        "output_schema": {
+            "node_output": {
+                "type": "aga_swarm.core.swarm.types.NodeOutput",
+                "description": "The output of the node"
+            }
+        },
+        "dependencies": ["openai"]
+    },
     "aga_swarm/actions/swarm/action_types/action.py": {
         "type": "aga_swarm/actions/swarm/action_types/action.py",
         "name": "action.py",
@@ -83,10 +105,6 @@
             "params": {
                 "type": "Dict[str, Any]",
                 "description": "The params for the action"
-            },
-            "swarm_id": {
-                "type": "aga_swarm.swarm.types.swarm.SwarmID",
-                "description": "The swarm id."
             }
         },
         "output_schema": {
@@ -109,10 +127,6 @@
             "params": {
                 "type": "Dict[str, Any]",
                 "description": "The params for the action"
-            },
-            "swarm_id": {
-                "type": "aga_swarm.swarm.types.swarm.SwarmID",
-                "description": "The swarm id."
             }
         },
         "output_schema": {

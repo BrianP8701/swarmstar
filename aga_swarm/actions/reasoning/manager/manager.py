@@ -1,7 +1,8 @@
 import json
 from pydantic import validate_arguments
+import traceback
 
-from aga_swarm.swarm.types import NodeOutput, SwarmID, SwarmCommand, LifecycleCommand, NodeReport, NodeOutput, NodeStatus
+from aga_swarm.swarm.types import NodeOutput, SwarmID, SwarmCommand, LifecycleCommand, NodeOutput
 from aga_swarm.swarm.oai_agent import OAI_Agent
 
 def manager(directive: str, swarm_id: SwarmID) -> NodeOutput:
@@ -18,7 +19,7 @@ def manager(directive: str, swarm_id: SwarmID) -> NodeOutput:
         return NodeOutput(
             lifecycle_command=LifecycleCommand.NODE_FAILURE,
             swarm_commands=[],
-            report=e
+            report=str(e) + "\nTraceback:\n" + traceback.format_exc()
         )
 
     swarm_commands = []

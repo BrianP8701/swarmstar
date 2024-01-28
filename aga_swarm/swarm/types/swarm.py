@@ -21,7 +21,7 @@ class SwarmNode(BaseModel):
     parent_id: Optional[str] = None
     children_ids: List[str]
     swarm_command: SwarmCommand
-    report: str
+    report: Optional[str] = None
     alive: bool
 
 class Configs(BaseModel):

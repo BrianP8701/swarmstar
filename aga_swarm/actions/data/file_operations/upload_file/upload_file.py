@@ -5,7 +5,6 @@ from aga_swarm.swarm.types.swarm import SwarmID
 
 @validate_arguments
 def main(swarm_id: SwarmID, file_path: str, data: bytes) -> dict:
-    platform = swarm_id.platform
+    platform = swarm_id.platform.value
     return internal_default_swarm_action(action_id=f'aga_swarm/actions/data/file_operations/upload_file/{platform}_upload_file.py', 
-        swarm_id=swarm_id, params={'file_path': file_path, 'data': data})
-
+        params={'file_path': file_path, 'data': data})
