@@ -4,6 +4,9 @@
 **Documentation is also still shit. i dont expect anyone to understand this yet.**
 **aiming to have a proper package, web app interface and documentation by February 10 2024**
 
+
+**reminder to myself. make it clear in the docs when i do them to put the swarm space in gitignore because it holds all your private keys**
+
 # Autonomous General Agent Swarm
 this system is designed to be a general purpose agent swarm. you give it any arbitrary goal, simply as a string and it will do its best to fullfill it. it will use any and all resources available to it to do so, including creating new tools autonomously. it will communicate with you throughout the process, asking for help and requirement specifications when it needs it. 
 

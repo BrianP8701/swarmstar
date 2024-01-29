@@ -1,5 +1,5 @@
 import os
-from pydantic import validate_arguments
+from pydantic import validate_call
 
 # Function to upload a file to a Mac
 def mac_file_upload(file_path: str, data: bytes) -> dict:
@@ -16,6 +16,6 @@ def mac_file_upload(file_path: str, data: bytes) -> dict:
         return {'status_message': 'Failure', 'error_message': str(e)}
 
 # Main section
-@validate_arguments
+@validate_call
 def main(file_path: str, data: bytes) -> dict:
     return mac_file_upload(file_path, data)

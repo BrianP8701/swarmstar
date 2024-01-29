@@ -24,6 +24,7 @@ So a lot of the goals outlined above have actually been rendered irrelevant beca
 - [x] change all node executions to output report and lifecycle_command instead of just "output"
 - [x] add manager_supervisor agent
 - [x] integration test with termination
+- [ ] add action router
 - [ ] define all pydantic schemas and integrate them in the swarm architecture
 - [ ] get new swarm architecture working locally across the entire lifecycle of a swarm
 - [ ] automate the process of manually adding swarm actions
@@ -42,7 +43,13 @@ So a lot of the goals outlined above have actually been rendered irrelevant beca
 - [ ] have swarm add more specifc file operation actions
 - [ ] have swarm add github actions
 - [ ] add multi platform support for autonomous package installation between swarm frames
-
+- [ ] action space merging
+- [ ] platform interoperable user interaction
+- [ ] autonomous action/memory space optimization
+- [ ] visualize the memory and action space
+- [ ] visualize the swarm state and history
+- [ ] ensure consistency in operations that write to swarm space
+- [ ] add feature to pause and resume the swarm
 
 User input needed at:
 - aga_swarm/actions/swarm/manager/manager.py

@@ -1,5 +1,5 @@
 import json
-from pydantic import validate_arguments
+from pydantic import validate_call
 import traceback
 
 from aga_swarm.swarm.types import NodeOutput, SwarmID, SwarmCommand, LifecycleCommand, NodeOutput
@@ -11,7 +11,7 @@ def decompose_directive(directive: str, swarm_id: SwarmID) -> NodeOutput:
     
     tools = decompose_directive_blueprint['decompose_directive']['tools']
     instructions = decompose_directive_blueprint['decompose_directive']['instructions']
-    decompose_directive = OAI_Agent(instructions=instructions, tools=tools, tool_choice="break_down_directive", openai_key=swarm_id.configs.openai_key)
+    decompose_directive = OAI_Agent(instructions=instructions, tools=tools, tool_choice="decompose_directive", openai_key=swarm_id.configs.openai_key)
     
     try:
         subdirectives = decompose_directive.chat(directive)['subdirectives']
@@ -25,7 +25,7 @@ def decompose_directive(directive: str, swarm_id: SwarmID) -> NodeOutput:
     swarm_commands = []
     for subdirective in subdirectives:
         swarm_command = SwarmCommand(
-            action_id='aga_swarm/actions/swarm/action_router/action_router.py',
+            action_id='aga_swarm/actions/swarm/actions/route_to_action/route_to_action.py',
             params = {
                 'directive': subdirective,
                 'swarm_id': swarm_id
@@ -39,6 +39,6 @@ def decompose_directive(directive: str, swarm_id: SwarmID) -> NodeOutput:
         report=f'Directive: {directive}\n\nSubdirectives:\n' + '\n'.join(subdirectives)
     )
 
-@validate_arguments
+@validate_call
 def main(directive: str, swarm_id: SwarmID) -> NodeOutput:
     return decompose_directive(directive, swarm_id)

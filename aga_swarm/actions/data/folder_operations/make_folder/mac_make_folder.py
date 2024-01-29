@@ -1,5 +1,5 @@
 import os
-from pydantic import validate_arguments
+from pydantic import validate_call
 
 # Function to create a folder on a mac
 def mac_make_folder(folder_path: str) -> dict:
@@ -15,6 +15,6 @@ def mac_make_folder(folder_path: str) -> dict:
         return {'status_message': 'Failure', 'error_message': str(e)}
 
 # Main section
-@validate_arguments
+@validate_call
 def main(folder_path: str) -> dict:
     return mac_make_folder(folder_path)

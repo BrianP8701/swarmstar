@@ -1,8 +1,8 @@
-from pydantic import validate_arguments
+from pydantic import validate_call
 from typing import Dict, Any
 
 from aga_swarm.swarm.types import SwarmID
-from aga_swarm.swarm.swarm_utils import get_action_type
+from aga_swarm.utils.swarm_utils import get_action_type
 
 def action(action_id: str, params: Dict[str, Any], swarm_id: SwarmID) -> dict:
     """
@@ -23,11 +23,11 @@ def action(action_id: str, params: Dict[str, Any], swarm_id: SwarmID) -> dict:
     if hasattr(action, 'main'):
         main_function = getattr(action, 'main')
     else:
-        raise AttributeError("No main function found in the script")
+        raise AttributeError(f"No main function found in the script {action_id}")
     
     params.pop('action_type', None)
     return main_function(**{'action_id': action_id, 'params': params})
 
-@validate_arguments
+@validate_call
 def main(action_id: str, params: Dict[str, Any], swarm_id: SwarmID):
     return action(action_id, params, swarm_id)

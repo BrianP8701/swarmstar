@@ -1496,3 +1496,44 @@ in addition, the type for a folder should point to the action to move forward? Y
 
 also the types should be the proper id of the action. okey dokey. man ive wasted so much time manually editing the action space. i definitely need to automate editing the action space. ooohh..... right the action creator thatll be sick man. well first automate saving a new action then automate the creation of the action. yessirrrr we making self sufficient... im deadass just building AGI bro. ppl dont understand. i want to do it first tho. I want to be the first person in the world to build this. Then i wont a useless nobody leech to society anymore - ill have some sort of value. im a worthless piece of shit unless i contribute something back to society.
 
+# Reflection
+Okay so we just added a bunch of sick stuff and layed down a lot of the groundwork. i want to do a reflection now to make sure everything is correct before i move on, design/architecture wise.
+
+ultimately what will using this look like for ME. 
+
+so lally doodly lalalala
+
+yk so im on the user interface. I have a copy of the default package. whats important is that when my local copy of the package is modifying the action space there needs to be a way to merge those created actions back into the default swarm package. this process can be called, Action Space Merging.
+
+Where there rlly be as much of a need for Memory Space Merging? I really dont think so. No. Not really. Memory Space Merging is not a thing mate. Memory Space is created primarily manually. 
+
+what else. user interaction ofc. Think about User Interaction components. Any User Interaction components must be standalone action units. because if we're inside a cloud function and ask for user input that blocking input will surpass the cloud function time limit. it needs to be like activate a trigger. idk depends on the platform, but we need to make user interaction compatible with any platform. Platform Interoperable User Interaction
+
+Autonomous Action/Memory Space Optimization - we need autonomous optimization processes that look to balance the trees to aim for O(nlogn) efficiencies in the memory and action space
+
+Add Custom Actions and Data - self explanatory. in the configuration stage, add custom data and actions to your blueprint
+
+Visualize the Swarm - visualize the memory and action space in a tree format. visualize the state and history of the swarm.
+
+Ensure consistency in operations that write to swarm space. Operations are fast, but one fuck up is a fuck up. we need to enforce through the package this if its possible?
+
+what else is there? hmmmm.... config the swarm, make blueprint default copy, add custom action data to blueprint, run instance of swarm, interact through interface. lets now make sure the generality of the swarm, and think precisely about how the swarm will interact with itself and the typing stuff.
+
+oh wait also pausing and resuming the swarm. we can simply do this by when we pause a swarm we let all current running nodes finish, and add all their output nodes to a place to be picked up when we resume the swarm. user interactions will just sit and wait.
+
+no as for internal swarm operations. specifically we need to create these things in this order:
+action router
+memory router
+retrieval agent
+upload data agent
+stage manager
+action creator
+
+# Automating Action Space Interactions
+- i cant manually touch the action space. I need to have a script to add an action, move an action, move a folder etc. Im actually gonna do this rn, but first im gonna reconcile and make sure everything is correct. another nice thing would be adding a script to verify the correctness of the action space.
+
+1. Confirm that i like the action space rn
+2. Manually match the action spaces up together
+3. DONT TOUCH either of them. Write scripts to autonomously interact with action space
+
+thisll be tedious. i should have had autonomous scripts from the getgo

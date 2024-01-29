@@ -1,6 +1,6 @@
 from openai import OpenAI
 from typing import Union, List, Dict, Any
-from pydantic import validate_arguments, BaseModel
+from pydantic import validate_call, BaseModel
 import json
 
 class OAI_Agent(BaseModel):
@@ -21,7 +21,7 @@ class OAI_Agent(BaseModel):
         else:
             raise ValueError(f"Invalid tool_choice type: {type(self.tool_choice)}")
 
-    @validate_arguments
+    @validate_call
     def chat(self, message: str) -> dict:
         messages = [{"role": "system", "content": self.instructions},{"role": "user", "content": message}]
         try:

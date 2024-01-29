@@ -1,4 +1,4 @@
-from pydantic import validate_arguments
+from pydantic import validate_call
 from typing import Dict, Any
 
 def default_swarm_action(action_id: str, params: Dict[str, Any]) -> dict:
@@ -13,10 +13,10 @@ def default_swarm_action(action_id: str, params: Dict[str, Any]) -> dict:
     if hasattr(action, 'main'):
         main_function = getattr(action, 'main')
     else:
-        raise AttributeError("No main function found in the script")
+        raise AttributeError(f"No main function found in the script {action_id}")
     
     return main_function(**params)
 
-@validate_arguments
+@validate_call
 def main(action_id: str, params: Dict[str, Any]):
     return default_swarm_action(action_id, params)

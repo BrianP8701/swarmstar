@@ -1,5 +1,5 @@
 import os
-from pydantic import validate_arguments
+from pydantic import validate_call
 
 # Function to retrieve a file from a Mac
 def mac_file_retrieval(file_path: str) -> dict:
@@ -31,6 +31,6 @@ def mac_file_retrieval(file_path: str) -> dict:
         }
 
 # Main section
-@validate_arguments
+@validate_call
 def main(file_path: str) -> dict:
     return mac_file_retrieval(file_path)

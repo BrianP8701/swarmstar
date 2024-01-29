@@ -3,20 +3,20 @@ from typing import List
 
 from aga_swarm.swarm.types import *
 from aga_swarm.swarm.swarm_lifecycle import spawn_node, swarm_master
-from aga_swarm.swarm.swarm_utils import get_action_name
+from aga_swarm.utils.swarm_utils import get_action_name
 from aga_swarm.utils.uuid import generate_uuid
 
-with open('/Users/brianprzezdziecki/Code/autonomous-general-agent-swarm/z/test_swarm_instance/swarm_id.json', 'r') as f:
-    swarm_id_json = json.loads(f.read())
+with open('/Users/brianprzezdziecki/Code/autonomous-general-agent-swarm/z/instance/swarm_id.json', 'r') as f:
+    swarm_id_dict = json.loads(f.read())
 
-swarm_id = SwarmID.model_validate_json(swarm_id_json)
+swarm_id = SwarmID.model_validate(swarm_id_dict)
 
 directive = '''Go through the data folder in actions. look at all the actions inside, 
 which consist of mac platform operations. in addition to those add corresponding 
 operations for windows, linux file system,  azure gcp and aws blob storage'''
 
 swarm_command = SwarmCommand(
-    action_id='aga_swarm/actions/reasoning/manager/manager.py',
+    action_id='aga_swarm/actions/reasoning/decompose_directive/decompose_directive.py',
     params={
         'directive': directive,
         'swarm_id': swarm_id

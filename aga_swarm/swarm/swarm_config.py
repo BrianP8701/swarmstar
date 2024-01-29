@@ -1,12 +1,12 @@
-from pydantic import validate_arguments
+from pydantic import validate_call
 import json
 import os
 
 from aga_swarm.swarm.types import SwarmID, Platform, SwarmState, SwarmHistory
-from aga_swarm.swarm.internal_swarm_utils import get_default_action_space_metadata, get_default_memory_space_metadata
-from aga_swarm.actions.swarm.action_types.internal_default_swarm_action import internal_default_swarm_action 
+from aga_swarm.utils.internal_swarm_utils import get_default_action_space_metadata, get_default_memory_space_metadata
+from aga_swarm.actions.swarm.actions.action_types.internal_default_swarm_action import internal_default_swarm_action 
 
-@validate_arguments
+@validate_call
 def setup_swarm_blueprint(blueprint_name: str, openai_key: str, frontend_url: str, platform: Platform, root_path: str) -> SwarmID:
     '''
         Setup a new blank swarm blueprint on your platform of choice.
@@ -45,7 +45,7 @@ def setup_swarm_blueprint(blueprint_name: str, openai_key: str, frontend_url: st
     
     return swarm_id
 
-@validate_arguments
+@validate_call
 def create_swarm_instance(blueprint_id: SwarmID, instance_name: str) -> SwarmID:
     '''
     Create a new instance of a swarm blueprint.
@@ -81,19 +81,19 @@ def create_swarm_instance(blueprint_id: SwarmID, instance_name: str) -> SwarmID:
     Private functions
 '''    
 
-@validate_arguments
+@validate_call
 def _make_folder(swarm_id: SwarmID, folder_path: str) -> None:
     make_folder_action_id = 'aga_swarm/actions/data/folder_operations/make_folder/make_folder.py'
     internal_default_swarm_action(action_id=make_folder_action_id, 
         params={'folder_path': folder_path, "swarm_id": swarm_id})
 
-@validate_arguments
+@validate_call
 def _upload_file(swarm_id: SwarmID, file_path: str, data: bytes) -> None:
     upload_file_action_id = 'aga_swarm/actions/data/file_operations/upload_file/upload_file.py'
     internal_default_swarm_action(action_id=upload_file_action_id, 
         params={'file_path': file_path, "swarm_id": swarm_id, 'data': data})
 
-@validate_arguments
+@validate_call
 def _setup_swarm_space(swarm_id: SwarmID, action_space: bytes, memory_space: bytes) -> None:
     '''
         The "swarm space" is just the folder on your local machine 
@@ -102,11 +102,9 @@ def _setup_swarm_space(swarm_id: SwarmID, action_space: bytes, memory_space: byt
         All we are doing here is setting up the default swarm space
         in your chosen platform and folder.
     '''
-    _make_folder(swarm_id, swarm_id.instance_path)
     _make_folder(swarm_id, f"{swarm_id.instance_path}/stage")
     _upload_file(swarm_id, f"{swarm_id.instance_path}/action_space_metadata.json", action_space)
     _upload_file(swarm_id, f"{swarm_id.instance_path}/memory_space_metadata.json", memory_space)
     _upload_file(swarm_id, f"{swarm_id.instance_path}/state.json", SwarmState(nodes={}).model_dump_json().encode('utf-8'))
     _upload_file(swarm_id, f"{swarm_id.instance_path}/history.json", SwarmHistory(frames=[]).model_dump_json().encode('utf-8'))
-    _upload_file(swarm_id, f"{swarm_id.instance_path}/swarm_id.json", json.dumps(swarm_id.model_dump_json()).encode('utf-8'))
-
+    _upload_file(swarm_id, f"{swarm_id.instance_path}/swarm_id.json", swarm_id.model_dump_json().encode('utf-8'))
