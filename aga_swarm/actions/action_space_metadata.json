@@ -43,9 +43,9 @@
         "name": "reasoning",
         "description": "This folder contains all actions pertaining to reasoning operations. Decomposing directives, requirements analysis and reviewing reports to see if a directive has been completed.",
         "children": [
-            "aga_swarm/actions/reasoning/decompose_directive",
-            "aga_swarm/actions/reasoning/requirements_analysis",
-            "aga_swarm/actions/reasoning/review_reports"
+            "aga_swarm/actions/reasoning/decompose_directive/decompose_directive.py",
+            "aga_swarm/actions/reasoning/requirements_analysis/requirements_analysis.py",
+            "aga_swarm/actions/reasoning/review_reports/review_reports.py"
         ]
     },
     "aga_swarm/actions/math": {
@@ -344,7 +344,12 @@
         "description": "This folder is currently empty.",
         "children": []
     },
-    "aga_swarm/actions/software/writing_code": {},
+    "aga_swarm/actions/software/writing_code": {
+        "type": "folder",
+        "name": "writing_code",
+        "description": "This folder contains all actions pertaining to writing code",
+        "children": []
+    },
     "aga_swarm/actions/software/debugging_code": {
         "type": "folder",
         "name": "debugging_code",

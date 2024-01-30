@@ -8,10 +8,10 @@ from typing import Dict, List, Optional
 '''
 
 class ActionType(Enum):
-    INTERNAL_SWARM_FOLDER = "internal_swarm_folder"
-    ACTION = "action"
-    INTERNAL_DEFAULT_SWARM_ACTION = "internal_default_swarm_action"
-    DEFAULT_SWARM_ACTION = "default_swarm_action"
+    INTERNAL_SWARM_FOLDER = "folder"
+    ACTION = "aga_swarm/actions/swarm/actions/action_types/action.py"
+    INTERNAL_DEFAULT_SWARM_ACTION = "aga_swarm/actions/swarm/actions/action_types/internal_default_swarm_action.py"
+    DEFAULT_SWARM_ACTION = "aga_swarm/actions/swarm/actions/action_types/default_swarm_action.py"
 
 class Property(BaseModel):
     type: str

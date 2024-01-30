@@ -1532,8 +1532,9 @@ action creator
 # Automating Action Space Interactions
 - i cant manually touch the action space. I need to have a script to add an action, move an action, move a folder etc. Im actually gonna do this rn, but first im gonna reconcile and make sure everything is correct. another nice thing would be adding a script to verify the correctness of the action space.
 
-1. Confirm that i like the action space rn
-2. Manually match the action spaces up together
-3. DONT TOUCH either of them. Write scripts to autonomously interact with action space
+1. Confirm that i like the action space rn - Done
+2. Manually match the action spaces up together - Done
+3. Write a script to verify the correctness of the action space 
+4. DONT TOUCH either of them. Write scripts to autonomously interact with action space
 
 thisll be tedious. i should have had autonomous scripts from the getgo

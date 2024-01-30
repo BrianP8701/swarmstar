@@ -1,6 +1,7 @@
 from pydantic import validate_call
 import json
 import os
+from typing import Any, Dict, Optional, Union
 
 from aga_swarm.swarm.types import SwarmID, Platform, SwarmState, SwarmHistory
 from aga_swarm.utils.internal_swarm_utils import get_default_action_space_metadata, get_default_memory_space_metadata
@@ -46,16 +47,19 @@ def setup_swarm_blueprint(blueprint_name: str, openai_key: str, frontend_url: st
     return swarm_id
 
 @validate_call
-def create_swarm_instance(blueprint_id: SwarmID, instance_name: str) -> SwarmID:
+def create_swarm_instance(blueprint_id: Union[SwarmID, Dict[str, Any]], instance_name: str) -> SwarmID:
     '''
     Create a new instance of a swarm blueprint.
     
     Parameters:
-        - blueprint_id (SwarmID): 
-            The ID of the blueprint you want to create an instance of.
+        - blueprint_id (SwarmID, dict): 
+            The ID of the blueprint you want to create an instance of. You can also pass in the dictionary representation of a SwarmID.
         - instance_name (str): 
             The name of the instance you want to create.
     '''
+    if isinstance(blueprint_id, dict):
+        blueprint_id = SwarmID.model_validate(blueprint_id)
+    
     swarm_id = SwarmID(
         instance_path=os.path.join(blueprint_id.root_path, instance_name),
         root_path=blueprint_id.root_path,
