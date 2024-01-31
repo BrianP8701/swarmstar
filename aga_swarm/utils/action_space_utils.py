@@ -1,10 +1,13 @@
 import os
 import shutil
 from pydantic import validate_call
+from typing import Dict, Union
+
+from aga_swarm.utils.swarm_utils import get_action_space_metadata, save_action_space_metadata
 from aga_swarm.swarm.types import *
 
 @validate_call
-def delete_action_space_node(action_id: str, action_space_metadata: ActionSpaceMetadata):
+def delete_action_space_node(action_id: str, swarm_id: SwarmID):
     '''
     Delete an action space node and all it's children 
     from the action space and action space metadata.
@@ -16,19 +19,12 @@ def delete_action_space_node(action_id: str, action_space_metadata: ActionSpaceM
         action_id (str): The id of the action to delete.
         action_space_metadata (dict): The action space metadata.
     '''
-    action_metadata = action_space_metadata['action_id']
-    if action_metadata is None:
-        raise ValueError(f"This action id {action_id} does not exist.")
-    
-    if action_metadata['type'] == 'folder':
-        for child in action_metadata.children:
-            delete_action_space_node(child, action_space_metadata)
-        _delete_action(action_id, action_space_metadata)
-    else:
-        _delete_action(action_id, action_space_metadata)
-    
+    action_space_metadata = get_action_space_metadata(swarm_id)
+    action_space_metadata = _delete_action_space_node_recursive_helper(action_id, action_space_metadata)
+    save_action_space_metadata(swarm_id, action_space_metadata)
+
 @validate_call
-def add_action_space_node(action_id: str, action_space_metadata: ActionSpaceMetadata, action_metadata: ActionMetadata):
+def add_action_space_node(action_id: str, action_space_metadata: Dict[str, Union[ActionMetadata, ActionFolderMetadata]], action_metadata: ActionMetadata):
     '''
     Simply adds an action space node to the action space and 
     action space metadata.
@@ -42,7 +38,26 @@ def add_action_space_node(action_id: str, action_space_metadata: ActionSpaceMeta
     parent_id = action_metadata.parent
     parent_metadata = action_space_metadata[parent_id]
     parent_metadata.children.append(action_id)
+
+def _delete_action_space_node_recursive_helper(action_id: str, action_space_metadata: Dict[str, Union[ActionMetadata, ActionFolderMetadata]]):
+    '''
+    Helper function for delete_action_space_node. Recursively
+    deletes all children of the action space node and then the
+    node itself. Returns the updated action space metadata.
+    '''
+    action_metadata = action_space_metadata[action_id]
+    if action_metadata is None:
+        raise ValueError(f"This action id {action_id} does not exist.")
     
+    if action_metadata.type == 'folder':
+        for child in action_metadata.children:
+            _delete_action_space_node_recursive_helper(child, action_space_metadata)
+        _delete_action(action_id, action_space_metadata)
+    else:
+        _delete_action(action_id, action_space_metadata)
+        
+    return action_space_metadata
+
 def _delete_action(action_id: str, action_space_metadata: ActionSpaceMetadata):
     '''
     Delete an action from the action space and action space metadata.

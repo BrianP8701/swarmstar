@@ -112,7 +112,6 @@
         "name": "actions",
         "description": "This folder contains an action router that takes a directive and routes it to the appropriate action, as well as all the actions to handle each type of action.",
         "children": [
-            "aga_swarm/actions/swarm/actions/action_types",
             "aga_swarm/actions/swarm/actions/route_to_action"
         ],
         "parent": "aga_swarm/actions/swarm",
@@ -138,7 +137,7 @@
         "internal": true
     },
     "aga_swarm/actions/swarm/actions/route_to_action": {
-        "type": "aga_swarm/actions/swarm/actions/action_types/internal_default_swarm_action.py",
+        "type": "action",
         "name": "route_to_action.py",
         "description": "Finds the best action to take given a directive",
         "input_schema": {
@@ -165,103 +164,8 @@
         "language": "python",
         "internal": true
     },
-    "aga_swarm/actions/swarm/actions/action_types": {
-        "type": "folder",
-        "name": "action_types",
-        "description": "Every action in the action space has a type. This folder contains all the actions to handle each type of action. Each of these will take the action type, params and the swarm and return the output of said action.",
-        "children": [
-            "aga_swarm/actions/swarm/actions/action_types/internal_default_swarm_action.py",
-            "aga_swarm/actions/swarm/actions/action_types/default_swarm_action.py",
-            "aga_swarm/actions/swarm/actions/action_types/action.py"
-        ],
-        "parent": "aga_swarm/actions/swarm/actions",
-        "folder_path": "aga_swarm/actions/swarm/actions/action_types",
-        "internal": true
-    },
-    "aga_swarm/actions/swarm/actions/action_types/action.py": {
-        "type": "aga_swarm/actions/swarm/actions/action_types/default_swarm_action.py",
-        "name": "action.py",
-        "description": "Passes the action to the appropriate action_type for execution. This function serves as a universal entry point for executing actions. Every action action_type is expected to follow the default_swarm_action.py action type.",
-        "input_schema": {
-            "action_id": {
-                "type": "string",
-                "description": "The type of action to be taken"
-            },
-            "params": {
-                "type": "Dict[str, Any]",
-                "description": "The params for the action"
-            },
-            "swarm_id": {
-                "type": "aga_swarm.swarm.types.swarm.SwarmID",
-                "description": "The swarm id"
-            }
-        },
-        "output_schema": {
-            "output": {
-                "type": "Dict[str, Any]",
-                "description": "The output of the action"
-            }
-        },
-        "dependencies": [],
-        "parent": "aga_swarm/actions/swarm/actions/action_types",
-        "script_path": "aga_swarm/actions/swarm/actions/action_types/action.py",
-        "language": "python",
-        "internal": true
-    },
-    "aga_swarm/actions/swarm/actions/action_types/internal_default_swarm_action.py": {
-        "type": "aga_swarm/actions/swarm/actions/action_types/default_swarm_action.py",
-        "name": "internal_default_swarm_action.py",
-        "description": "This action type is only used to execute actions that are defined in the swarm package itself. It simply calls the main function of the action script specified by the action_id with the params provided.",
-        "input_schema": {
-            "action_id": {
-                "type": "string",
-                "description": "The type of action to be taken"
-            },
-            "params": {
-                "type": "Dict[str, Any]",
-                "description": "The params for the action"
-            }
-        },
-        "output_schema": {
-            "output": {
-                "type": "Dict[str, Any]",
-                "description": "The output of the action"
-            }
-        },
-        "dependencies": [],
-        "parent": "aga_swarm/actions/swarm/actions/action_types",
-        "script_path": "aga_swarm/actions/swarm/actions/action_types/internal_default_swarm_action.py",
-        "language": "python",
-        "internal": true
-    },
-    "aga_swarm/actions/swarm/actions/action_types/default_swarm_action.py": {
-        "type": "aga_swarm/actions/swarm/actions/action_types/default_swarm_action.py",
-        "name": "default_swarm_action.py",
-        "description": "This action calls the main function of the action script specified by the action_id with the params provided.",
-        "input_schema": {
-            "action_id": {
-                "type": "string",
-                "description": "The type of action to be taken"
-            },
-            "params": {
-                "type": "Dict[str, Any]",
-                "description": "The params for the action"
-            }
-        },
-        "output_schema": {
-            "output": {
-                "type": "Dict[str, Any]",
-                "description": "The output of the action"
-            }
-        },
-        "dependencies": [],
-        "parent": "aga_swarm/actions/swarm/actions/action_types",
-        "script_path": "aga_swarm/actions/swarm/actions/action_types/default_swarm_action.py",
-        "language": "python",
-        "internal": true
-    },
     "aga_swarm/actions/reasoning/decompose_directive": {
-        "type": "aga_swarm/actions/swarm/actions/action_types/internal_default_swarm_action.py",
+        "type": "action",
         "name": "decompose_directive.py",
         "description": "Decompose directives into immediate parralel sub-directives.",
         "input_schema": {
@@ -289,7 +193,7 @@
         "internal": true
     },
     "aga_swarm/actions/reasoning/requirements_analysis": {
-        "type": "aga_swarm/actions/swarm/actions/action_types/internal_default_swarm_action.py",
+        "type": "action",
         "name": "requirements_analysis.py",
         "description": "Analyze the requirements of a directive and identify what requirements are unclear or missing. Ask questions to clarify.",
         "input_schema": {
@@ -317,7 +221,7 @@
         "internal": true
     },
     "aga_swarm/actions/reasoning/review_reports": {
-        "type": "aga_swarm/actions/swarm/actions/action_types/internal_default_swarm_action.py",
+        "type": "action",
         "name": "review_reports.py",
         "description": "Review reports to see if a directive has been completed.",
         "input_schema": {
@@ -665,7 +569,7 @@
         "internal": true
     },
     "aga_swarm/actions/data/file_operations/retrieve_file/retrieve_file.py": {
-        "type": "aga_swarm/actions/swarm/actions/action_types/internal_default_swarm_action.py",
+        "type": "action",
         "name": "retrieve_file.py",
         "description": "This action calls the appropriate file retrieval action based on the 'platform' param in the swarm config",
         "input_schema": {
@@ -699,7 +603,7 @@
         "internal": true
     },
     "aga_swarm/actions/data/file_operations/retrieve_file/mac_retrieve_file.py": {
-        "type": "aga_swarm/actions/swarm/actions/action_types/internal_default_swarm_action.py",
+        "type": "action",
         "name": "mac_retrieve_file.py",
         "description": "This action retrieves a file from a mac",
         "input_schema": {
@@ -729,7 +633,7 @@
         "internal": true
     },
     "aga_swarm/actions/data/file_operations/upload_file/upload_file.py": {
-        "type": "aga_swarm/actions/swarm/actions/action_types/internal_default_swarm_action.py",
+        "type": "action",
         "name": "upload_file.py",
         "description": "This action calls the appropriate file upload action based on the 'platform' param in the swarm config",
         "input_schema": {
@@ -763,7 +667,7 @@
         "internal": true
     },
     "aga_swarm/actions/data/file_operations/upload_file/mac_upload_file.py": {
-        "type": "aga_swarm/actions/swarm/actions/action_types/internal_default_swarm_action.py",
+        "type": "action",
         "name": "mac_upload_file.py",
         "description": "This action uploads a file to a mac",
         "input_schema": {
@@ -793,7 +697,7 @@
         "internal": true
     },
     "aga_swarm/actions/data/file_operations/delete_file/delete_file.py": {
-        "type": "aga_swarm/actions/swarm/actions/action_types/internal_default_swarm_action.py",
+        "type": "action",
         "name": "delete_file.py",
         "description": "This action calls the appropriate file deletion action based on the 'platform' param in the swarm config",
         "input_schema": {
@@ -823,7 +727,7 @@
         "internal": true
     },
     "aga_swarm/actions/data/file_operations/delete_file/mac_delete_file.py": {
-        "type": "aga_swarm/actions/swarm/actions/action_types/internal_default_swarm_action.py",
+        "type": "action",
         "name": "mac_delete_file.py",
         "description": "This action deletes a file from a mac",
         "input_schema": {
@@ -849,7 +753,7 @@
         "internal": true
     },
     "aga_swarm/actions/data/file_operations/rename_file/rename_file.py": {
-        "type": "aga_swarm/actions/swarm/actions/action_types/internal_default_swarm_action.py",
+        "type": "action",
         "name": "rename_file.py",
         "description": "This action calls the appropriate file rename action based on the 'platform' param in the swarm config",
         "input_schema": {
@@ -883,7 +787,7 @@
         "internal": true
     },
     "aga_swarm/actions/data/file_operations/rename_file/mac_rename_file.py": {
-        "type": "aga_swarm/actions/swarm/actions/action_types/internal_default_swarm_action.py",
+        "type": "action",
         "name": "mac_rename_file.py",
         "description": "This action renames a file on a mac",
         "input_schema": {
@@ -913,7 +817,7 @@
         "internal": true
     },
     "aga_swarm/actions/data/file_operations/move_file/move_file.py": {
-        "type": "aga_swarm/actions/swarm/actions/action_types/internal_default_swarm_action.py",
+        "type": "action",
         "name": "move_file.py",
         "description": "This action calls the appropriate file move action based on the 'platform' param in the swarm config",
         "input_schema": {
@@ -947,7 +851,7 @@
         "internal": true
     },
     "aga_swarm/actions/data/file_operations/move_file/mac_move_file.py": {
-        "type": "aga_swarm/actions/swarm/actions/action_types/internal_default_swarm_action.py",
+        "type": "action",
         "name": "mac_move_file.py",
         "description": "This action moves a file on a mac",
         "input_schema": {
@@ -977,7 +881,7 @@
         "internal": true
     },
     "aga_swarm/actions/data/folder_operations/make_folder/make_folder.py": {
-        "type": "aga_swarm/actions/swarm/actions/action_types/internal_default_swarm_action.py",
+        "type": "action",
         "name": "make_folder.py",
         "description": "This action makes a folder using the appropriate platform set in swarm config",
         "input_schema": {
@@ -1007,7 +911,7 @@
         "internal": true
     },
     "aga_swarm/actions/data/folder_operations/make_folder/mac_make_folder.py": {
-        "type": "aga_swarm/actions/swarm/actions/action_types/internal_default_swarm_action.py",
+        "type": "action",
         "name": "mac_make_folder.py",
         "description": "This action makes a folder on a mac",
         "input_schema": {
@@ -1033,7 +937,7 @@
         "internal": true
     },
     "aga_swarm/actions/data/folder_operations/delete_folder/delete_folder.py": {
-        "type": "aga_swarm/actions/swarm/actions/action_types/internal_default_swarm_action.py",
+        "type": "action",
         "name": "delete_folder.py",
         "description": "This action calls the appropriate folder delete action based on the 'platform' param in the swarm config",
         "input_schema": {
@@ -1063,7 +967,7 @@
         "internal": true
     },
     "aga_swarm/actions/data/folder_operations/delete_folder/mac_delete_folder.py": {
-        "type": "aga_swarm/actions/swarm/actions/action_types/internal_default_swarm_action.py",
+        "type": "action",
         "name": "mac_delete_folder.py",
         "description": "This action deletes a folder on a mac",
         "input_schema": {
@@ -1089,7 +993,7 @@
         "internal": true
     },
     "aga_swarm/actions/data/folder_operations/rename_folder/rename_folder.py": {
-        "type": "aga_swarm/actions/swarm/actions/action_types/internal_default_swarm_action.py",
+        "type": "action",
         "name": "rename_folder.py",
         "description": "This action calls the appropriate folder rename action based on the 'platform' param in the swarm config",
         "input_schema": {
@@ -1123,7 +1027,7 @@
         "internal": true
     },
     "aga_swarm/actions/data/folder_operations/rename_folder/mac_rename_folder.py": {
-        "type": "aga_swarm/actions/swarm/actions/action_types/internal_default_swarm_action.py",
+        "type": "action",
         "name": "mac_rename_folder.py",
         "description": "This action renames a folder on a mac",
         "input_schema": {
@@ -1153,7 +1057,7 @@
         "internal": true
     },
     "aga_swarm/actions/data/folder_operations/move_folder/move_folder.py": {
-        "type": "aga_swarm/actions/swarm/actions/action_types/internal_default_swarm_action.py",
+        "type": "action",
         "name": "move_folder.py",
         "description": "This action calls the appropriate folder move action based on the 'platform' param in the swarm config",
         "input_schema": {
@@ -1187,7 +1091,7 @@
         "internal": true
     },
     "aga_swarm/actions/data/folder_operations/move_folder/mac_move_folder.py": {
-        "type": "aga_swarm/actions/swarm/actions/action_types/internal_default_swarm_action.py",
+        "type": "action",
         "name": "mac_move_folder.py",
         "description": "This action moves a folder on a mac",
         "input_schema": {
@@ -1217,7 +1121,7 @@
         "internal": true
     },
     "aga_swarm/actions/data/folder_operations/list_folder/list_folder.py": {
-        "type": "aga_swarm/actions/swarm/actions/action_types/internal_default_swarm_action.py",
+        "type": "action",
         "name": "list_folder.py",
         "description": "This action calls the appropriate folder list action based on the 'platform' param in the swarm config",
         "input_schema": {
@@ -1251,7 +1155,7 @@
         "internal": true
     },
     "aga_swarm/actions/data/folder_operations/list_folder/mac_list_folder.py": {
-        "type": "aga_swarm/actions/swarm/actions/action_types/internal_default_swarm_action.py",
+        "type": "action",
         "name": "mac_list_folder.py",
         "description": "This action lists the contents of a folder on a mac",
         "input_schema": {

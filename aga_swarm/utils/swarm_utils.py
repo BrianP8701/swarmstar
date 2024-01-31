@@ -83,3 +83,6 @@ def update_history(swarm_id: SwarmID, lifecycle_command: LifecycleCommand, node_
         lifecycle_command=lifecycle_command
     ))
     upload_history(swarm_id, history)
+
+def save_action_space_metadata(swarm_id: SwarmID, action_space_metadata: ActionSpaceMetadata):
+    upload_file(swarm_id, swarm_id.action_space_metadata_path, action_space_metadata.model_dump_json().encode('utf-8'))
