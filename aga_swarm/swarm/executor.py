@@ -1,17 +1,16 @@
 from typing import Any, Dict
 
 from aga_swarm.swarm.types import *
-from aga_swarm.utils.swarm_utils import get_action_space_metadata
 from aga_swarm.utils.internal_swarm_utils import import_internal_python_action
 
-def execute_action(action_id: str, swarm_id: SwarmID, params: Dict[str, Any]) -> Dict[str, Any]:
+def execute_action(action_id: str, swarm_space: SwarmSpace, params: Dict[str, Any]) -> Dict[str, Any]:
     '''
     Execute any action in the swarm.
 
     Parameters:
         - action_id (str): 
             The ID of the action you want to execute.
-        - swarm_id (SwarmID): 
+        - swarm_space (SwarmSpace): 
             The ID of the swarm you want to execute the action in.
         - params (dict): 
             The parameters you want to pass to the action.
@@ -20,7 +19,7 @@ def execute_action(action_id: str, swarm_id: SwarmID, params: Dict[str, Any]) ->
         - dict: 
             The result of the action.
     '''
-    action_space_metadata = get_action_space_metadata(swarm_id)
+    action_space_metadata = swarm_space.get_action_space_metadata()
     action_metadata = action_space_metadata.root[action_id]
     if action_metadata is None:
         raise ValueError(f"This action id {action_id} does not exist.")
@@ -48,7 +47,7 @@ def _execute_internal_python_action(action_metadata: ActionMetadata, params: Dic
     Parameters:
         - action_metadata (ActionMetadata): 
             The metadata of the action you want to execute.
-        - swarm_id (SwarmID): 
+        - swarm_space (SwarmSpace): 
             The ID of the swarm you want to execute the action in.
         - params (dict): 
             The parameters you want to pass to the action.

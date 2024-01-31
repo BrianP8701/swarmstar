@@ -1,11 +1,9 @@
-from enum import Enum
-from pydantic import BaseModel, RootModel, Field
-from typing import Dict, List, Literal, Optional, Union
+from pydantic import BaseModel, Field, Literal, RootModel
+from typing import Dict, List, Optional, Union
+import os
+import shutil
 
-
-'''
-    Action Space Metadata
-'''
+from aga_swarm.utils.internal_swarm_utils import import_internal_python_action
 
 class Property(BaseModel):
     type: str                                                       # the type of the property
@@ -36,21 +34,15 @@ class ActionFolderMetadata(BaseModel):
 
 class ActionSpaceMetadata(RootModel):
     root: Dict[str, Union[ActionMetadata, ActionFolderMetadata]]
-
-'''
-    Memory Space Metadata
-'''
-
-class MemoryType(Enum):
-    INTERNAL_SWARM_FOLDER = "internal_swarm_folder"
-    MEMORY = "memory"
-    INTERNAL_SWARM_MEMORY = "internal_swarm_memory"
     
-class MemoryMetadata(BaseModel):
-    type: MemoryType
-    name: str
-    description: str
-    children:Optional[List[str]] = []
-    
-class MemorySpaceMetadata(Dict[str, MemoryMetadata]):
-    pass
+    def get_action_type(self, action_id: str) -> str:
+        action_metadata = self.root[action_id]
+        if action_metadata is None:
+            raise ValueError(f"This action id {action_id} does not exist.")
+        return action_metadata.type
+
+    def get_action_name(self, action_id: str) -> str:
+        action_metadata = self.root[action_id]
+        if action_metadata is None:
+            raise ValueError(f"This action id {action_id} does not exist.")
+        return action_metadata.name

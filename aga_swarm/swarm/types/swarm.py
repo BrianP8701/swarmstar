@@ -1,65 +1,39 @@
-from pydantic import BaseModel
 from enum import Enum
-from typing import Dict, List, Any, Optional
+from pydantic import BaseModel, RootModel, Field
+from typing import Dict, List, Literal, Optional, Union, Any
+from importlib import import_module
+import json
 
-class LifecycleCommand(Enum):
-    SPAWN= "spawn"
-    EXECUTE = "execute"
-    TERMINATE = "terminate"
-    NODE_FAILURE = "node_failure"
 
-class SwarmCommand(BaseModel):
-    action_id: str
-    params: Dict[str, Any]
-    
-class NodeOutput(BaseModel):
-    lifecycle_command: LifecycleCommand
-    swarm_commands: List[SwarmCommand]
-    report: str
-    
-class SwarmNode(BaseModel):
-    node_id: str
-    parent_id: Optional[str] = None
-    children_ids: List[str]
-    swarm_command: SwarmCommand
-    report: Optional[str] = None
-    alive: bool
 
-class Configs(BaseModel):
-    openai_key: str
-    frontend_url: str
+'''
+    Memory Space Metadata
+'''
 
-class Platform(Enum):
-    MAC = 'mac'
-    WINDOWS = 'windows'
-    LINUX = 'linux'
-    AWS = 'aws'
-    GCP = 'gcp'
-    AZURE = 'azure'
+
+
+
+
+
+'''
+    Swarm Types
+'''
+
+
+
     
-class SwarmID(BaseModel):
-    instance_path: str
-    root_path: str
-    platform: Platform
-    action_space_metadata_path: str
-    memory_space_metadata_path: str
-    stage_path: str
-    state_path: str
-    history_path: str
-    configs: Configs
+
     
-class SwarmState(BaseModel):
-    nodes: Dict[str, SwarmNode]
-    
-    def update_node(self, node_id: str, node: SwarmNode):
-        self.nodes[node_id] = node
-    
-class Frame(BaseModel):
-    lifecycle_command: LifecycleCommand
-    node_id: str
-    
-class SwarmHistory(BaseModel):
-    frames: List[Frame]
-    
-    def add_frame(self, frame: Frame):
-        self.frames.append(frame)
+
+
+
+
+
+
+
+
+
+
+'''
+    I need to repeat these functions here to avoid circular imports.
+'''

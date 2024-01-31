@@ -1019,7 +1019,7 @@ and manage the state of the swarm. boom done lmao wait that was easy
 okay map out the interaction on serverless
 
 creation: create swarm object, load goal and execute action router with goal
-    input: goal, user_id, swarm_id
+    input: goal, user_id, swarm_space
     output: create swarm id (hooked to state, stage, history). pass swarm id along each node along with path to action and data.
 
 execute manager nodes

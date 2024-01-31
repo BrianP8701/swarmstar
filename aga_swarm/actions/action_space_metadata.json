@@ -145,8 +145,8 @@
                 "type": "str",
                 "description": "The directive to be broken down"
             },
-            "swarm_id": {
-                "type": "SwarmID",
+            "swarm_space": {
+                "type": "SwarmSpace",
                 "description": "The swarm id"
             }
         },
@@ -173,8 +173,8 @@
                 "type": "str",
                 "description": "The directive to be decomposed"
             },
-            "swarm_id": {
-                "type": "SwarmID",
+            "swarm_space": {
+                "type": "SwarmSpace",
                 "description": "The swarm id"
             }
         },
@@ -201,8 +201,8 @@
                 "type": "str",
                 "description": "The directive to be analyzed"
             },
-            "swarm_id": {
-                "type": "SwarmID",
+            "swarm_space": {
+                "type": "SwarmSpace",
                 "description": "The swarm id"
             }
         },
@@ -233,8 +233,8 @@
                 "type": "List[str]",
                 "description": "The reports to be reviewed"
             },
-            "swarm_id": {
-                "type": "SwarmID",
+            "swarm_space": {
+                "type": "SwarmSpace",
                 "description": "The swarm id"
             }
         },
@@ -577,8 +577,8 @@
                 "type": "str",
                 "description": "The path to the file to be retrieved"
             },
-            "swarm_id": {
-                "type": "SwarmID",
+            "swarm_space": {
+                "type": "SwarmSpace",
                 "description": "The swarm id"
             }
         },
@@ -645,8 +645,8 @@
                 "type": "bytes",
                 "description": "The binary of the file"
             },
-            "swarm_id": {
-                "type": "SwarmID",
+            "swarm_space": {
+                "type": "SwarmSpace",
                 "description": "The swarm id"
             }
         },
@@ -705,8 +705,8 @@
                 "type": "str",
                 "description": "The path to the file to be deleted"
             },
-            "swarm_id": {
-                "type": "SwarmID",
+            "swarm_space": {
+                "type": "SwarmSpace",
                 "description": "The swarm id."
             }
         },
@@ -765,8 +765,8 @@
                 "type": "str",
                 "description": "The new name of the file"
             },
-            "swarm_id": {
-                "type": "SwarmID",
+            "swarm_space": {
+                "type": "SwarmSpace",
                 "description": "The swarm id."
             }
         },
@@ -829,8 +829,8 @@
                 "type": "str",
                 "description": "The new path of the file"
             },
-            "swarm_id": {
-                "type": "SwarmID",
+            "swarm_space": {
+                "type": "SwarmSpace",
                 "description": "The swarm id."
             }
         },
@@ -889,8 +889,8 @@
                 "type": "str",
                 "description": "The path to the folder to be made"
             },
-            "swarm_id": {
-                "type": "SwarmID",
+            "swarm_space": {
+                "type": "SwarmSpace",
                 "description": "The swarm id."
             }
         },
@@ -945,8 +945,8 @@
                 "type": "str",
                 "description": "The path to the folder to be deleted"
             },
-            "swarm_id": {
-                "type": "SwarmID",
+            "swarm_space": {
+                "type": "SwarmSpace",
                 "description": "The swarm id."
             }
         },
@@ -1005,8 +1005,8 @@
                 "type": "str",
                 "description": "The new path of the folder"
             },
-            "swarm_id": {
-                "type": "SwarmID",
+            "swarm_space": {
+                "type": "SwarmSpace",
                 "description": "The swarm id."
             }
         },
@@ -1069,8 +1069,8 @@
                 "type": "str",
                 "description": "The new path of the folder"
             },
-            "swarm_id": {
-                "type": "SwarmID",
+            "swarm_space": {
+                "type": "SwarmSpace",
                 "description": "The swarm id."
             }
         },
@@ -1129,8 +1129,8 @@
                 "type": "str",
                 "description": "The path to the folder to be listed"
             },
-            "swarm_id": {
-                "type": "SwarmID",
+            "swarm_space": {
+                "type": "SwarmSpace",
                 "description": "The swarm id."
             }
         },

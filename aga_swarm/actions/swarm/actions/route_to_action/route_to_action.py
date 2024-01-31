@@ -1,9 +1,13 @@
-import json
-import copy
-import sys
-import asyncio
-import os
-sys.path.insert(0, '/Users/brianprzezdziecki/Code/Agent_Swarm_Experiments')
+from pydantic import validate_call
+
+from aga_swarm.swarm.types import NodeOutput, SwarmSpace
+
+def route_to_action(swarm_space: SwarmSpace, action_id: str, directive: str) -> NodeOutput:
+    action_space_metadata = swarm_space.get_action_space_metadata(action_id)
+
+@validate_call
+def main(action_id: str, directive: str) -> NodeOutput:
+    return route_to_action(action_id, directive)
 
 # from old_swarm.core.oai_agent import OAI_Agent
 # from old_swarm.settings import Settings
