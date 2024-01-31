@@ -6,7 +6,7 @@ from aga_swarm.utils.internal_swarm_utils import import_internal_python_action
 
 def execute_action(action_id: str, swarm_id: SwarmID, params: Dict[str, Any]) -> Dict[str, Any]:
     '''
-    Execute an action in the swarm.
+    Execute any action in the swarm.
 
     Parameters:
         - action_id (str): 
@@ -21,7 +21,7 @@ def execute_action(action_id: str, swarm_id: SwarmID, params: Dict[str, Any]) ->
             The result of the action.
     '''
     action_space_metadata = get_action_space_metadata(swarm_id)
-    action_metadata = action_space_metadata.get(action_id)
+    action_metadata = action_space_metadata.root[action_id]
     if action_metadata is None:
         raise ValueError(f"This action id {action_id} does not exist.")
     
@@ -33,7 +33,7 @@ def execute_action(action_id: str, swarm_id: SwarmID, params: Dict[str, Any]) ->
     
     if action_is_internal:
         if action_langauge == 'python':
-            return execute_internal_python_action(action_id, params)
+            return _execute_internal_python_action(action_metadata, params)
         else:
             raise ValueError(f"This action language {action_langauge} is not supported.")
     else:
@@ -41,7 +41,7 @@ def execute_action(action_id: str, swarm_id: SwarmID, params: Dict[str, Any]) ->
         raise ValueError(f"This action id {action_id} is not internal. I didn't implement handling for this yet.")
 
 
-def execute_internal_python_action(action_metadata: ActionMetadata, params: Dict[str, Any]) -> Dict[str, Any]:
+def _execute_internal_python_action(action_metadata: ActionMetadata, params: Dict[str, Any]) -> Dict[str, Any]:
     '''
     Execute an internal python action.
 
@@ -64,7 +64,7 @@ def execute_internal_python_action(action_metadata: ActionMetadata, params: Dict
         if param_metadata.enum is not None:
             if params[param_name] not in param_metadata.enum:
                 raise ValueError(f"Invalid value {params[param_name]} for parameter {param_name} for action {action_metadata.name}.")
-        if param_metadata.type != type(params[param_name]):
-            raise ValueError(f"Invalid type: {type(params[param_name])}, for parameter: {param_name}, for action: {action_metadata.name}. Expected: {param_metadata.type}.")
+        if type(params[param_name]).__name__ != param_metadata.type:
+            raise ValueError(f"Invalid type: {type(params[param_name]).__name__}, for parameter: {param_name}, for action: {action_metadata.name}. Expected: {param_metadata.type}.")
     action = import_internal_python_action(action_metadata.script_path)
     return action(**params)

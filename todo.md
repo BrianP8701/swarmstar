@@ -25,7 +25,7 @@ So a lot of the goals outlined above have actually been rendered irrelevant beca
 - [x] add manager_supervisor agent
 - [x] integration test with termination
 - [ ] add action router
-- [ ] define all pydantic schemas and integrate them in the swarm architecture
+- [x] define all pydantic schemas and integrate them in the swarm architecture
 - [ ] get new swarm architecture working locally across the entire lifecycle of a swarm
 - [ ] automate the process of manually adding swarm actions
 - [ ] create action creator
@@ -39,7 +39,6 @@ So a lot of the goals outlined above have actually been rendered irrelevant beca
 - [ ] test with multiple enviroments
 - [ ] create web app interface for swarm with user input to threads
 - [ ] add retrieval agent
-- [ ] create action creator
 - [ ] have swarm add more specifc file operation actions
 - [ ] have swarm add github actions
 - [ ] add multi platform support for autonomous package installation between swarm frames

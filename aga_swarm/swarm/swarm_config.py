@@ -1,7 +1,7 @@
 from pydantic import validate_call
 import json
-import os
-from typing import Any, Dict, Optional, Union
+from pathlib import Path
+from typing import Any, Dict, Union
 
 from aga_swarm.swarm.types import SwarmID, Platform, SwarmState, SwarmHistory
 from aga_swarm.utils.internal_swarm_utils import get_default_action_space_metadata, get_default_memory_space_metadata
@@ -26,15 +26,16 @@ def setup_swarm_blueprint(blueprint_name: str, openai_key: str, frontend_url: st
                 folder.
         
     '''
+    paths = _build_swarm_paths(root_path, blueprint_name)
     swarm_id = SwarmID(
-        instance_path=os.path.join(root_path, blueprint_name),
+        instance_path=paths["instance_path"],
         root_path=root_path,
         platform=platform,
-        action_space_metadata_path=os.path.join(root_path, blueprint_name, 'action_space_metadata.json'),
-        memory_space_metadata_path=os.path.join(root_path, blueprint_name, 'memory_space_metadata.json'),
-        stage_path=os.path.join(root_path, blueprint_name, 'stage'),
-        state_path=os.path.join(root_path, blueprint_name, 'state'),
-        history_path=os.path.join(root_path, blueprint_name, 'history'),
+        action_space_metadata_path=paths["action_space_metadata_path"],
+        memory_space_metadata_path=paths["memory_space_metadata_path"],
+        stage_path=paths["stage_path"],
+        state_path=paths["state_path"],
+        history_path=paths["history_path"],
         configs={
             'openai_key': openai_key,
             'frontend_url': frontend_url
@@ -59,16 +60,17 @@ def create_swarm_instance(blueprint_id: Union[SwarmID, Dict[str, Any]], instance
     '''
     if isinstance(blueprint_id, dict):
         blueprint_id = SwarmID.model_validate(blueprint_id)
-    
+        
+    paths = _build_swarm_paths(blueprint_id.root_path, instance_name)
     swarm_id = SwarmID(
-        instance_path=os.path.join(blueprint_id.root_path, instance_name),
+        instance_path=paths["instance_path"],
         root_path=blueprint_id.root_path,
         platform=blueprint_id.platform,
-        action_space_metadata_path=os.path.join(blueprint_id.root_path, instance_name, 'action_space_metadata.json'),
-        memory_space_metadata_path=os.path.join(blueprint_id.root_path, instance_name, 'memory_space_metadata.json'),
-        stage_path=os.path.join(blueprint_id.root_path, instance_name, 'stage.json'),
-        state_path=os.path.join(blueprint_id.root_path, instance_name, 'state.json'),
-        history_path=os.path.join(blueprint_id.root_path, instance_name, 'history.json'),
+        action_space_metadata_path=paths["action_space_metadata_path"],
+        memory_space_metadata_path=paths["memory_space_metadata_path"],
+        stage_path=paths["stage_path"],
+        state_path=paths["state_path"],
+        history_path=paths["history_path"],
         configs=blueprint_id.configs
     )
     action_space_metadata = retrieve_file(swarm_id, blueprint_id.action_space_metadata_path)
@@ -82,8 +84,6 @@ def create_swarm_instance(blueprint_id: Union[SwarmID, Dict[str, Any]], instance
     Private functions
 '''    
 
-
-@validate_call
 def _setup_swarm_space(swarm_id: SwarmID, action_space: bytes, memory_space: bytes) -> None:
     '''
         The "swarm space" is just the folder on your local machine 
@@ -98,3 +98,15 @@ def _setup_swarm_space(swarm_id: SwarmID, action_space: bytes, memory_space: byt
     upload_file(swarm_id, f"{swarm_id.instance_path}/state.json", SwarmState(nodes={}).model_dump_json().encode('utf-8'))
     upload_file(swarm_id, f"{swarm_id.instance_path}/history.json", SwarmHistory(frames=[]).model_dump_json().encode('utf-8'))
     upload_file(swarm_id, f"{swarm_id.instance_path}/swarm_id.json", swarm_id.model_dump_json().encode('utf-8'))
+
+
+def _build_swarm_paths(root_path: str, instance_name: str) -> Dict[str, Path]:
+    instance_path = Path(root_path, instance_name)
+    return {
+        "instance_path": str(instance_path),
+        "action_space_metadata_path": str(instance_path / 'action_space_metadata.json'),
+        "memory_space_metadata_path": str(instance_path / 'memory_space_metadata.json'),
+        "stage_path": str(instance_path / 'stage'),
+        "state_path": str(instance_path / 'state.json'),
+        "history_path": str(instance_path / 'history.json')
+    }

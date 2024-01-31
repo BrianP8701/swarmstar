@@ -39,17 +39,22 @@ def validate_asm(asm: Dict[str, ActionMetadata]):
                     print(f"Child {child} of {key} does not exist in ASM")
 
 
-def add_folder_path(asm: Dict[str, ActionMetadata]):
+def add_folder_path(asm: dict):
     for key, value in asm.items():
-        asm[key]['internal'] = True
+        if not value['type'] == 'folder':
+            value['content_path'] = key
     return asm
 
 
 # Example usage
-with open('aga_swarm/actions/action_space_metadata.json') as f:
+with open('z/gratamatta/action_space_metadata.json') as f:
     action_space_metadata = json.load(f)
 
-validate_asm(action_space_metadata)
+# turn action_space_metadata into a dict
+action_space_metadata = ActionSpaceMetadata(**action_space_metadata).model_dump()
+print(type(action_space_metadata))
+
+# validate_asm(action_space_metadata)
 
 pp = add_folder_path(action_space_metadata)
 

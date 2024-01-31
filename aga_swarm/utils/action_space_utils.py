@@ -7,7 +7,7 @@ from aga_swarm.utils.swarm_utils import get_action_space_metadata, save_action_s
 from aga_swarm.swarm.types import *
 
 @validate_call
-def delete_action_space_node(action_id: str, swarm_id: SwarmID):
+def delete_action_space_node(action_id: str, swarm_id: SwarmID) -> None:
     '''
     Delete an action space node and all it's children 
     from the action space and action space metadata.
@@ -24,7 +24,7 @@ def delete_action_space_node(action_id: str, swarm_id: SwarmID):
     save_action_space_metadata(swarm_id, action_space_metadata)
 
 @validate_call
-def add_action_space_node(action_id: str, action_space_metadata: ActionSpaceMetadata, action_metadata: ActionMetadata):
+def add_action_space_node(action_id: str, action_space_metadata: ActionSpaceMetadata, action_metadata: ActionMetadata) -> None:
     '''
     Simply adds an action space node to the action space and 
     action space metadata.
@@ -39,7 +39,12 @@ def add_action_space_node(action_id: str, action_space_metadata: ActionSpaceMeta
     parent_metadata = action_space_metadata.root[parent_id]
     parent_metadata.children.append(action_id)
 
-def _delete_action_space_node_recursive_helper(action_id: str, action_space_metadata: ActionSpaceMetadata):
+
+'''
+    Private Methods
+'''
+
+def _delete_action_space_node_recursive_helper(action_id: str, action_space_metadata: ActionSpaceMetadata) -> None:
     '''
     Helper function for delete_action_space_node. Recursively
     deletes all children of the action space node and then the

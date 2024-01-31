@@ -25,7 +25,7 @@ def decompose_directive(directive: str, swarm_id: SwarmID) -> NodeOutput:
     swarm_commands = []
     for subdirective in subdirectives:
         swarm_command = SwarmCommand(
-            action_id='aga_swarm/actions/swarm/actions/route_to_action/route_to_action.py',
+            action_id='aga_swarm/actions/swarm/actions/route_to_action',
             params = {
                 'directive': subdirective,
                 'swarm_id': swarm_id

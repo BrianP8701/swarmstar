@@ -29,7 +29,7 @@ class OAI_Agent(BaseModel):
         except Exception as e:
             raise e
    
-        return self.get_tool_output(completion)
+        return self._get_tool_output(completion)
 
-    def get_tool_output(self, completion) -> dict:
+    def _get_tool_output(self, completion) -> dict:
         return json.loads(completion.choices[0].message.tool_calls[0].function.arguments)

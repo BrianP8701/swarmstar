@@ -4,6 +4,7 @@ from typing import Dict, List, Any, Optional
 
 class LifecycleCommand(Enum):
     SPAWN= "spawn"
+    EXECUTE = "execute"
     TERMINATE = "terminate"
     NODE_FAILURE = "node_failure"
 
@@ -50,8 +51,8 @@ class SwarmID(BaseModel):
 class SwarmState(BaseModel):
     nodes: Dict[str, SwarmNode]
     
-    def update_node(self, node_id: str, node_data: SwarmNode):
-        self.nodes[node_id] = node_data
+    def update_node(self, node_id: str, node: SwarmNode):
+        self.nodes[node_id] = node
     
 class Frame(BaseModel):
     lifecycle_command: LifecycleCommand

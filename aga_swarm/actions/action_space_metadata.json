@@ -19,7 +19,7 @@
     "aga_swarm/actions/swarm": {
         "type": "folder",
         "name": "swarm",
-        "description": "This folder contains all actions pertaining to internal swarm operations such as:\n- navigating the action space to find the best action to take\n- navigating the swarm memory to find relevant information\n- different types of actions/memories and how to handle them\n- documentation to understand internals of the swarm",
+        "description": "This folder contains all actions pertaining to internal swarm operations such as:\n- navigating the action space to find the best action to take\n- navigating the swarm memory to find relevant information\n- documentation to understand internals of the swarm",
         "children": [
             "aga_swarm/actions/swarm/documentation",
             "aga_swarm/actions/swarm/memory",
@@ -110,7 +110,7 @@
     "aga_swarm/actions/swarm/actions": {
         "type": "folder",
         "name": "actions",
-        "description": "This folder contains an action router that takes a directive and routes it to the appropriate action, as well as all the actions to handle each type of action.",
+        "description": "This folder contains an action router that takes a directive and routes it to the appropriate action.",
         "children": [
             "aga_swarm/actions/swarm/actions/route_to_action"
         ],
@@ -142,11 +142,11 @@
         "description": "Finds the best action to take given a directive",
         "input_schema": {
             "directive": {
-                "type": "string",
+                "type": "str",
                 "description": "The directive to be broken down"
             },
             "swarm_id": {
-                "type": "aga_swarm.swarm.types.swarm.SwarmID",
+                "type": "SwarmID",
                 "description": "The swarm id"
             }
         },
@@ -170,11 +170,11 @@
         "description": "Decompose directives into immediate parralel sub-directives.",
         "input_schema": {
             "directive": {
-                "type": "string",
+                "type": "str",
                 "description": "The directive to be decomposed"
             },
             "swarm_id": {
-                "type": "aga_swarm.swarm.types.swarm.SwarmID",
+                "type": "SwarmID",
                 "description": "The swarm id"
             }
         },
@@ -198,11 +198,11 @@
         "description": "Analyze the requirements of a directive and identify what requirements are unclear or missing. Ask questions to clarify.",
         "input_schema": {
             "directive": {
-                "type": "string",
+                "type": "str",
                 "description": "The directive to be analyzed"
             },
             "swarm_id": {
-                "type": "aga_swarm.swarm.types.swarm.SwarmID",
+                "type": "SwarmID",
                 "description": "The swarm id"
             }
         },
@@ -226,7 +226,7 @@
         "description": "Review reports to see if a directive has been completed.",
         "input_schema": {
             "directive": {
-                "type": "string",
+                "type": "str",
                 "description": "The directive to be reviewed"
             },
             "reports": {
@@ -234,7 +234,7 @@
                 "description": "The reports to be reviewed"
             },
             "swarm_id": {
-                "type": "aga_swarm.swarm.types.swarm.SwarmID",
+                "type": "SwarmID",
                 "description": "The swarm id"
             }
         },
@@ -574,21 +574,21 @@
         "description": "This action calls the appropriate file retrieval action based on the 'platform' param in the swarm config",
         "input_schema": {
             "file_path": {
-                "type": "string",
+                "type": "str",
                 "description": "The path to the file to be retrieved"
             },
             "swarm_id": {
-                "type": "aga_swarm.swarm.types.swarm.SwarmID",
+                "type": "SwarmID",
                 "description": "The swarm id"
             }
         },
         "output_schema": {
             "status": {
-                "type": "string",
+                "type": "str",
                 "description": "'Success' or 'Failure'"
             },
             "error_message": {
-                "type": "string",
+                "type": "str",
                 "description": "Error message if status is 'Failure'"
             },
             "data": {
@@ -608,17 +608,17 @@
         "description": "This action retrieves a file from a mac",
         "input_schema": {
             "file_path": {
-                "type": "string",
+                "type": "str",
                 "description": "The path to the file to be retrieved"
             }
         },
         "output_schema": {
             "status": {
-                "type": "string",
+                "type": "str",
                 "description": "'Success' or 'Failure'"
             },
             "error_message": {
-                "type": "string",
+                "type": "str",
                 "description": "Error message if status is 'Failure'"
             },
             "data": {
@@ -638,7 +638,7 @@
         "description": "This action calls the appropriate file upload action based on the 'platform' param in the swarm config",
         "input_schema": {
             "file_path": {
-                "type": "string",
+                "type": "str",
                 "description": "The path to the file to be uploaded"
             },
             "data": {
@@ -646,17 +646,17 @@
                 "description": "The binary of the file"
             },
             "swarm_id": {
-                "type": "aga_swarm.swarm.types.swarm.SwarmID",
+                "type": "SwarmID",
                 "description": "The swarm id"
             }
         },
         "output_schema": {
             "status": {
-                "type": "string",
+                "type": "str",
                 "description": "'Success' or 'Failure'"
             },
             "error_message": {
-                "type": "string",
+                "type": "str",
                 "description": "Error message if status is 'Failure'"
             }
         },
@@ -672,7 +672,7 @@
         "description": "This action uploads a file to a mac",
         "input_schema": {
             "file_path": {
-                "type": "string",
+                "type": "str",
                 "description": "The path to the file to be uploaded"
             },
             "data": {
@@ -682,11 +682,11 @@
         },
         "output_schema": {
             "status": {
-                "type": "string",
+                "type": "str",
                 "description": "'Success' or 'Failure'"
             },
             "error_message": {
-                "type": "string",
+                "type": "str",
                 "description": "Error message if status is 'Failure'"
             }
         },
@@ -702,21 +702,21 @@
         "description": "This action calls the appropriate file deletion action based on the 'platform' param in the swarm config",
         "input_schema": {
             "file_path": {
-                "type": "string",
+                "type": "str",
                 "description": "The path to the file to be deleted"
             },
             "swarm_id": {
-                "type": "aga_swarm.swarm.types.swarm.SwarmID",
+                "type": "SwarmID",
                 "description": "The swarm id."
             }
         },
         "output_schema": {
             "status": {
-                "type": "string",
+                "type": "str",
                 "description": "'Success' or 'Failure'"
             },
             "error_message": {
-                "type": "string",
+                "type": "str",
                 "description": "Error message if status is 'Failure'"
             }
         },
@@ -732,17 +732,17 @@
         "description": "This action deletes a file from a mac",
         "input_schema": {
             "file_path": {
-                "type": "string",
+                "type": "str",
                 "description": "The path to the file to be deleted"
             }
         },
         "output_schema": {
             "status": {
-                "type": "string",
+                "type": "str",
                 "description": "'Success' or 'Failure'"
             },
             "error_message": {
-                "type": "string",
+                "type": "str",
                 "description": "Error message if status is 'Failure'"
             }
         },
@@ -758,25 +758,25 @@
         "description": "This action calls the appropriate file rename action based on the 'platform' param in the swarm config",
         "input_schema": {
             "file_path": {
-                "type": "string",
+                "type": "str",
                 "description": "The path to the file to be renamed"
             },
             "new_file_name": {
-                "type": "string",
+                "type": "str",
                 "description": "The new name of the file"
             },
             "swarm_id": {
-                "type": "aga_swarm.swarm.types.swarm.SwarmID",
+                "type": "SwarmID",
                 "description": "The swarm id."
             }
         },
         "output_schema": {
             "status": {
-                "type": "string",
+                "type": "str",
                 "description": "'Success' or 'Failure'"
             },
             "error_message": {
-                "type": "string",
+                "type": "str",
                 "description": "Error message if status is 'Failure'"
             }
         },
@@ -792,21 +792,21 @@
         "description": "This action renames a file on a mac",
         "input_schema": {
             "file_path": {
-                "type": "string",
+                "type": "str",
                 "description": "The path to the file to be renamed"
             },
             "new_file_name": {
-                "type": "string",
+                "type": "str",
                 "description": "The new name of the file"
             }
         },
         "output_schema": {
             "status": {
-                "type": "string",
+                "type": "str",
                 "description": "'Success' or 'Failure'"
             },
             "error_message": {
-                "type": "string",
+                "type": "str",
                 "description": "Error message if status is 'Failure'"
             }
         },
@@ -822,25 +822,25 @@
         "description": "This action calls the appropriate file move action based on the 'platform' param in the swarm config",
         "input_schema": {
             "file_path": {
-                "type": "string",
+                "type": "str",
                 "description": "The path to the file to be moved"
             },
             "new_file_path": {
-                "type": "string",
+                "type": "str",
                 "description": "The new path of the file"
             },
             "swarm_id": {
-                "type": "aga_swarm.swarm.types.swarm.SwarmID",
+                "type": "SwarmID",
                 "description": "The swarm id."
             }
         },
         "output_schema": {
             "status": {
-                "type": "string",
+                "type": "str",
                 "description": "'Success' or 'Failure'"
             },
             "error_message": {
-                "type": "string",
+                "type": "str",
                 "description": "Error message if status is 'Failure'"
             }
         },
@@ -856,21 +856,21 @@
         "description": "This action moves a file on a mac",
         "input_schema": {
             "file_path": {
-                "type": "string",
+                "type": "str",
                 "description": "The path to the file to be moved"
             },
             "new_file_path": {
-                "type": "string",
+                "type": "str",
                 "description": "The new path of the file"
             }
         },
         "output_schema": {
             "status": {
-                "type": "string",
+                "type": "str",
                 "description": "'Success' or 'Failure'"
             },
             "error_message": {
-                "type": "string",
+                "type": "str",
                 "description": "Error message if status is 'Failure'"
             }
         },
@@ -886,21 +886,21 @@
         "description": "This action makes a folder using the appropriate platform set in swarm config",
         "input_schema": {
             "folder_path": {
-                "type": "string",
+                "type": "str",
                 "description": "The path to the folder to be made"
             },
             "swarm_id": {
-                "type": "aga_swarm.swarm.types.swarm.SwarmID",
+                "type": "SwarmID",
                 "description": "The swarm id."
             }
         },
         "output_schema": {
             "status": {
-                "type": "string",
+                "type": "str",
                 "description": "'Success' or 'Failure'"
             },
             "error_message": {
-                "type": "string",
+                "type": "str",
                 "description": "Error message if status is 'Failure'"
             }
         },
@@ -916,17 +916,17 @@
         "description": "This action makes a folder on a mac",
         "input_schema": {
             "folder_path": {
-                "type": "string",
+                "type": "str",
                 "description": "The path to the folder to be made"
             }
         },
         "output_schema": {
             "status": {
-                "type": "string",
+                "type": "str",
                 "description": "'Success' or 'Failure'"
             },
             "error_message": {
-                "type": "string",
+                "type": "str",
                 "description": "Error message if status is 'Failure'"
             }
         },
@@ -942,21 +942,21 @@
         "description": "This action calls the appropriate folder delete action based on the 'platform' param in the swarm config",
         "input_schema": {
             "folder_path": {
-                "type": "string",
+                "type": "str",
                 "description": "The path to the folder to be deleted"
             },
             "swarm_id": {
-                "type": "aga_swarm.swarm.types.swarm.SwarmID",
+                "type": "SwarmID",
                 "description": "The swarm id."
             }
         },
         "output_schema": {
             "status": {
-                "type": "string",
+                "type": "str",
                 "description": "'Success' or 'Failure'"
             },
             "error_message": {
-                "type": "string",
+                "type": "str",
                 "description": "Error message if status is 'Failure'"
             }
         },
@@ -972,17 +972,17 @@
         "description": "This action deletes a folder on a mac",
         "input_schema": {
             "folder_path": {
-                "type": "string",
+                "type": "str",
                 "description": "The path to the folder to be deleted"
             }
         },
         "output_schema": {
             "status": {
-                "type": "string",
+                "type": "str",
                 "description": "'Success' or 'Failure'"
             },
             "error_message": {
-                "type": "string",
+                "type": "str",
                 "description": "Error message if status is 'Failure'"
             }
         },
@@ -998,25 +998,25 @@
         "description": "This action calls the appropriate folder rename action based on the 'platform' param in the swarm config",
         "input_schema": {
             "folder_path": {
-                "type": "string",
+                "type": "str",
                 "description": "The path to the folder to be moved"
             },
             "new_folder_path": {
-                "type": "string",
+                "type": "str",
                 "description": "The new path of the folder"
             },
             "swarm_id": {
-                "type": "aga_swarm.swarm.types.swarm.SwarmID",
+                "type": "SwarmID",
                 "description": "The swarm id."
             }
         },
         "output_schema": {
             "status": {
-                "type": "string",
+                "type": "str",
                 "description": "'Success' or 'Failure'"
             },
             "error_message": {
-                "type": "string",
+                "type": "str",
                 "description": "Error message if status is 'Failure'"
             }
         },
@@ -1032,21 +1032,21 @@
         "description": "This action renames a folder on a mac",
         "input_schema": {
             "folder_path": {
-                "type": "string",
+                "type": "str",
                 "description": "The path to the folder to be moved"
             },
             "new_folder_path": {
-                "type": "string",
+                "type": "str",
                 "description": "The new path of the folder"
             }
         },
         "output_schema": {
             "status": {
-                "type": "string",
+                "type": "str",
                 "description": "'Success' or 'Failure'"
             },
             "error_message": {
-                "type": "string",
+                "type": "str",
                 "description": "Error message if status is 'Failure'"
             }
         },
@@ -1062,25 +1062,25 @@
         "description": "This action calls the appropriate folder move action based on the 'platform' param in the swarm config",
         "input_schema": {
             "folder_path": {
-                "type": "string",
+                "type": "str",
                 "description": "The path to the folder to be moved"
             },
             "new_folder_path": {
-                "type": "string",
+                "type": "str",
                 "description": "The new path of the folder"
             },
             "swarm_id": {
-                "type": "aga_swarm.swarm.types.swarm.SwarmID",
+                "type": "SwarmID",
                 "description": "The swarm id."
             }
         },
         "output_schema": {
             "status": {
-                "type": "string",
+                "type": "str",
                 "description": "'Success' or 'Failure'"
             },
             "error_message": {
-                "type": "string",
+                "type": "str",
                 "description": "Error message if status is 'Failure'"
             }
         },
@@ -1096,21 +1096,21 @@
         "description": "This action moves a folder on a mac",
         "input_schema": {
             "folder_path": {
-                "type": "string",
+                "type": "str",
                 "description": "The path to the folder to be moved"
             },
             "new_folder_path": {
-                "type": "string",
+                "type": "str",
                 "description": "The new path of the folder"
             }
         },
         "output_schema": {
             "status": {
-                "type": "string",
+                "type": "str",
                 "description": "'Success' or 'Failure'"
             },
             "error_message": {
-                "type": "string",
+                "type": "str",
                 "description": "Error message if status is 'Failure'"
             }
         },
@@ -1126,21 +1126,21 @@
         "description": "This action calls the appropriate folder list action based on the 'platform' param in the swarm config",
         "input_schema": {
             "folder_path": {
-                "type": "string",
+                "type": "str",
                 "description": "The path to the folder to be listed"
             },
             "swarm_id": {
-                "type": "aga_swarm.swarm.types.swarm.SwarmID",
+                "type": "SwarmID",
                 "description": "The swarm id."
             }
         },
         "output_schema": {
             "status": {
-                "type": "string",
+                "type": "str",
                 "description": "'Success' or 'Failure'"
             },
             "error_message": {
-                "type": "string",
+                "type": "str",
                 "description": "Error message if status is Failure"
             },
             "contents": {
@@ -1160,17 +1160,17 @@
         "description": "This action lists the contents of a folder on a mac",
         "input_schema": {
             "folder_path": {
-                "type": "string",
+                "type": "str",
                 "description": "The path to the folder to be listed"
             }
         },
         "output_schema": {
             "status": {
-                "type": "string",
+                "type": "str",
                 "description": "'Success' or 'Failure'"
             },
             "error_message": {
-                "type": "string",
+                "type": "str",
                 "description": "Error message if status is Failure"
             },
             "contents": {

@@ -2,14 +2,19 @@ from aga_swarm.utils.action_space_utils import delete_action_space_node
 from aga_swarm.swarm.types import *
 from aga_swarm.utils.swarm_utils import get_action_space_metadata
 import json
+from pydantic import validate_call
 
-with open('/Users/brianprzezdziecki/Code/autonomous-general-agent-swarm/z/gratamatta/swarm_id.json', 'r') as f:
-    swarm_id = f.read()
+with open('/Users/brianprzezdziecki/Code/autonomous-general-agent-swarm/aga_swarm/actions/action_space_metadata.json', 'r') as f:
+    action_space_metadata = f.read()
     
 # Turn json string into dict
-swarm_id = json.loads(swarm_id)
+action_space_metadata = json.loads(action_space_metadata)
 
 # Turn dict into SwarmID object
-swarm_id = SwarmID(**swarm_id)
+action_space_metadata = ActionSpaceMetadata(**action_space_metadata)
 
-delete_action_space_node('aga_swarm/actions/swarm', swarm_id)
+
+
+@validate_call
+def test(action_space_metadata: ActionSpaceMetadata) -> dict:
+    print('success')
