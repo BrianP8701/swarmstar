@@ -1,8 +1,8 @@
 from typing import Any, Dict
-from importlib import import_module
 
 from aga_swarm.swarm.types import *
 from aga_swarm.utils.swarm_utils import get_action_space_metadata
+from aga_swarm.utils.internal_swarm_utils import import_internal_python_action
 
 def execute_action(action_id: str, swarm_id: SwarmID, params: Dict[str, Any]) -> Dict[str, Any]:
     '''
@@ -33,7 +33,7 @@ def execute_action(action_id: str, swarm_id: SwarmID, params: Dict[str, Any]) ->
     
     if action_is_internal:
         if action_langauge == 'python':
-            return execute_internal_python_action(action_id, swarm_id, params)
+            return execute_internal_python_action(action_id, params)
         else:
             raise ValueError(f"This action language {action_langauge} is not supported.")
     else:
@@ -41,7 +41,7 @@ def execute_action(action_id: str, swarm_id: SwarmID, params: Dict[str, Any]) ->
         raise ValueError(f"This action id {action_id} is not internal. I didn't implement handling for this yet.")
 
 
-def execute_internal_python_action(action_metadata: ActionMetadata, swarm_id: SwarmID, params: Dict[str, Any]) -> Dict[str, Any]:
+def execute_internal_python_action(action_metadata: ActionMetadata, params: Dict[str, Any]) -> Dict[str, Any]:
     '''
     Execute an internal python action.
 
@@ -66,12 +66,5 @@ def execute_internal_python_action(action_metadata: ActionMetadata, swarm_id: Sw
                 raise ValueError(f"Invalid value {params[param_name]} for parameter {param_name} for action {action_metadata.name}.")
         if param_metadata.type != type(params[param_name]):
             raise ValueError(f"Invalid type: {type(params[param_name])}, for parameter: {param_name}, for action: {action_metadata.name}. Expected: {param_metadata.type}.")
-    action = dynamic_import_main_function(action_metadata.script_path)
-    return action(swarm_id=swarm_id, params=params)
-
-def dynamic_import_main_function(module_name):
-    module = import_module(module_name)
-    main = getattr(module, 'main', None)  
-    if main is None:
-        raise AttributeError(f"No main function found in the script {module_name}")
-    return main
+    action = import_internal_python_action(action_metadata.script_path)
+    return action(**params)

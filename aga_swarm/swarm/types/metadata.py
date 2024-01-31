@@ -1,5 +1,5 @@
 from enum import Enum
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, RootModel, Field
 from typing import Dict, List, Literal, Optional, Union
 
 
@@ -33,8 +33,8 @@ class ActionFolderMetadata(BaseModel):
     folder_path: str
     internal: bool
 
-class ActionSpaceMetadata(Dict[str, Union[ActionMetadata, ActionFolderMetadata]]):
-    pass
+class ActionSpaceMetadata(RootModel):
+    root: Dict[str, Union[ActionMetadata, ActionFolderMetadata]]
 
 '''
     Memory Space Metadata
