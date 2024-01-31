@@ -1,17 +1,11 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from enum import Enum
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union, Literal
 
 
 '''
     Action Space Metadata
 '''
-
-class ActionType(Enum):
-    INTERNAL_SWARM_FOLDER = "folder"
-    ACTION = "aga_swarm/actions/swarm/actions/action_types/action.py"
-    INTERNAL_DEFAULT_SWARM_ACTION = "aga_swarm/actions/swarm/actions/action_types/internal_default_swarm_action.py"
-    DEFAULT_SWARM_ACTION = "aga_swarm/actions/swarm/actions/action_types/default_swarm_action.py"
 
 class Property(BaseModel):
     type: str
@@ -19,17 +13,28 @@ class Property(BaseModel):
     enum: Optional[List[str]] = None
 
 class ActionMetadata(BaseModel):
-    type: ActionType
+    type: Literal['action'] = Field('action', Literal=True)
     name: str
     description: str
-    input_schema: Optional[Dict[str, Property]] = {}
-    output_schema: Optional[Dict[str, Property]] = {}
-    dependencies: Optional[List[str]] = []
-    children: Optional[List[str]] = []
+    input_schema: Dict[str, Property] = {}
+    output_schema: Dict[str, Property] = {}
+    dependencies: List[str] = []
+    parent: str = None
+    script_path: str = None
+    language: str
+    internal: bool
+    
+class ActionFolderMetadata(BaseModel):
+    type: Literal['folder'] = Field('folder', Literal=True)
+    name: str
+    description: str
+    children: List[str]
+    parent: Optional[str] = None
+    folder_path: str
+    internal: bool
 
-class ActionSpaceMetadata(Dict[str, ActionMetadata]):
+class ActionSpaceMetadata(Dict[str, Union[ActionMetadata, ActionFolderMetadata]]):
     pass
-
 
 '''
     Memory Space Metadata

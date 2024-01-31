@@ -1530,11 +1530,27 @@ stage manager
 action creator
 
 # Automating Action Space Interactions
-- i cant manually touch the action space. I need to have a script to add an action, move an action, move a folder etc. Im actually gonna do this rn, but first im gonna reconcile and make sure everything is correct. another nice thing would be adding a script to verify the correctness of the action space.
+- i cant manually touch the action space. I need to have a script to add an action, move an action, move a folder etc. Im actually gonna do this rn, but first im gonna reconcile and make sure everything is correct. another nice thing would be adding a script to verify the correctness of the action space. thisll be tedious. i should have had autonomous scripts from the getgo
 
 1. Confirm that i like the action space rn - Done
 2. Manually match the action spaces up together - Done
-3. Write a script to verify the correctness of the action space 
-4. DONT TOUCH either of them. Write scripts to autonomously interact with action space
+3. Write a script to verify the correctness of the action space - Done
+4. DONT TOUCH either of them. Write scripts to autonomously interact with action space - now lets break this down
+    a. We want a function that takes the path to a folder or file and moves it given:
+        - Select the parent. the action will be moved  to be a child of this
+        - Select the metadata for the action
+        - the function should perform validation. make sure the parent is a folder, make sure the type is proper and that the action actually follows the schemas and types it says
 
-thisll be tedious. i should have had autonomous scripts from the getgo
+        Then we automate this!!!
+
+One particularly interesting question is how to organize the swarm folder. So the aga_swarm/actions/swarm folder we should contain any actions pertaining to the swarm. this could include action types. i feel like action types is a horrible name. 
+
+10 min later...
+
+had a chat with chatgpt. soooo i dont rlly think we need action types. we do need a seperation between internal execution for initialization. but beyond that the only different types of actions would be those in different languages
+
+so remember we cant manually touch the action space.
+
+wait first of all whats the new execution process for actions gonna be? 
+
+write scripts to delete from action space and add to action space externally first then add those in

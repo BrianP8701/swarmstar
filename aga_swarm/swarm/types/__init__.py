@@ -12,9 +12,9 @@ from .swarm import (
 )
 
 from .metadata import (   
-    ActionType,
     Property, 
     ActionMetadata,
+    ActionFolderMetadata,
     ActionSpaceMetadata,
     MemoryType,
     MemoryMetadata,

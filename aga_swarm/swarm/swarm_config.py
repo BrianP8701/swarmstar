@@ -5,6 +5,7 @@ from typing import Any, Dict, Optional, Union
 
 from aga_swarm.swarm.types import SwarmID, Platform, SwarmState, SwarmHistory
 from aga_swarm.utils.internal_swarm_utils import get_default_action_space_metadata, get_default_memory_space_metadata
+from aga_swarm.utils.swarm_utils import make_folder, upload_file, retrieve_file
 from aga_swarm.actions.swarm.actions.action_types.internal_default_swarm_action import internal_default_swarm_action 
 
 @validate_call
@@ -72,8 +73,7 @@ def create_swarm_instance(blueprint_id: Union[SwarmID, Dict[str, Any]], instance
         configs=blueprint_id.configs
     )
     retrieve_file_action_id = 'aga_swarm/actions/data/file_operations/retrieve_file/retrieve_file.py'
-    action_space_metadata = internal_default_swarm_action(action_id=retrieve_file_action_id, 
-        params={'file_path': blueprint_id.action_space_metadata_path, "swarm_id": swarm_id})['data']
+    action_space_metadata = retrieve_file(file_path= 'blueprint_id.action_space_metadata_path', swarm_id= swarm_id)
     memory_space_metadata = internal_default_swarm_action(action_id=retrieve_file_action_id, 
         params={'file_path': blueprint_id.memory_space_metadata_path, "swarm_id": swarm_id})['data']
     _setup_swarm_space(swarm_id, action_space_metadata, memory_space_metadata)
@@ -85,17 +85,6 @@ def create_swarm_instance(blueprint_id: Union[SwarmID, Dict[str, Any]], instance
     Private functions
 '''    
 
-@validate_call
-def _make_folder(swarm_id: SwarmID, folder_path: str) -> None:
-    make_folder_action_id = 'aga_swarm/actions/data/folder_operations/make_folder/make_folder.py'
-    internal_default_swarm_action(action_id=make_folder_action_id, 
-        params={'folder_path': folder_path, "swarm_id": swarm_id})
-
-@validate_call
-def _upload_file(swarm_id: SwarmID, file_path: str, data: bytes) -> None:
-    upload_file_action_id = 'aga_swarm/actions/data/file_operations/upload_file/upload_file.py'
-    internal_default_swarm_action(action_id=upload_file_action_id, 
-        params={'file_path': file_path, "swarm_id": swarm_id, 'data': data})
 
 @validate_call
 def _setup_swarm_space(swarm_id: SwarmID, action_space: bytes, memory_space: bytes) -> None:
@@ -106,9 +95,9 @@ def _setup_swarm_space(swarm_id: SwarmID, action_space: bytes, memory_space: byt
         All we are doing here is setting up the default swarm space
         in your chosen platform and folder.
     '''
-    _make_folder(swarm_id, f"{swarm_id.instance_path}/stage")
-    _upload_file(swarm_id, f"{swarm_id.instance_path}/action_space_metadata.json", action_space)
-    _upload_file(swarm_id, f"{swarm_id.instance_path}/memory_space_metadata.json", memory_space)
-    _upload_file(swarm_id, f"{swarm_id.instance_path}/state.json", SwarmState(nodes={}).model_dump_json().encode('utf-8'))
-    _upload_file(swarm_id, f"{swarm_id.instance_path}/history.json", SwarmHistory(frames=[]).model_dump_json().encode('utf-8'))
-    _upload_file(swarm_id, f"{swarm_id.instance_path}/swarm_id.json", swarm_id.model_dump_json().encode('utf-8'))
+    make_folder(swarm_id, f"{swarm_id.instance_path}/stage")
+    upload_file(swarm_id, f"{swarm_id.instance_path}/action_space_metadata.json", action_space)
+    upload_file(swarm_id, f"{swarm_id.instance_path}/memory_space_metadata.json", memory_space)
+    upload_file(swarm_id, f"{swarm_id.instance_path}/state.json", SwarmState(nodes={}).model_dump_json().encode('utf-8'))
+    upload_file(swarm_id, f"{swarm_id.instance_path}/history.json", SwarmHistory(frames=[]).model_dump_json().encode('utf-8'))
+    upload_file(swarm_id, f"{swarm_id.instance_path}/swarm_id.json", swarm_id.model_dump_json().encode('utf-8'))

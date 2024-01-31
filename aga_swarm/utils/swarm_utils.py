@@ -1,6 +1,6 @@
 '''
-    This module contains utility functions for interacting with the swarm
-    space outside of the package.
+    This module contains utility functions for interacting 
+    with your swarm space outside of the package.
 '''
 
 import json
@@ -8,30 +8,18 @@ import json
 from aga_swarm.swarm.types.swarm import SwarmID, SwarmState, SwarmHistory, Frame
 from aga_swarm.swarm.types.metadata import ActionSpaceMetadata, MemorySpaceMetadata
 from aga_swarm.swarm.types import SwarmNode, LifecycleCommand
-from aga_swarm.actions.swarm.actions.action_types.internal_default_swarm_action import internal_default_swarm_action
-
-retrieve_file_action_id = 'aga_swarm/actions/data/file_operations/retrieve_file/retrieve_file.py'
-upload_file_action_id = 'aga_swarm/actions/data/file_operations/upload_file/upload_file.py'
 
 def retrieve_file(swarm_id: SwarmID, file_path: str) -> bytes:
-    output = internal_default_swarm_action(
-        action_id=retrieve_file_action_id, 
-        params={'file_path': file_path, "swarm_id": swarm_id}
-    )
-    if output['status'] == 'Success':
-        return output['data']
-    else:
-        raise Exception(output['error_message'])
+    action = __import__('aga_swarm/actions/data/file_operations/retrieve_file/retrieve_file.py', fromlist=[''])
+    return action(swarm_id=swarm_id, file_path=file_path)['data']
 
-def upload_file(swarm_id: SwarmID, file_path: str, data: bytes):
-    output = internal_default_swarm_action(
-        action_id=upload_file_action_id, 
-        params={'file_path': file_path, "data": data, "swarm_id": swarm_id}
-    )
-    if output['status'] == 'Success':
-        return
-    else:
-        raise Exception(output['error_message'])
+def make_folder(swarm_id: SwarmID, folder_path: str) -> None:
+    action = __import__('aga_swarm/actions/data/folder_operations/make_folder/make_folder.py', fromlist=[''])
+    action(swarm_id=swarm_id, folder_path=folder_path)
+
+def upload_file(swarm_id: SwarmID, file_path: str, data: bytes) -> None:
+    action = __import__('aga_swarm/actions/data/file_operations/upload_file/upload_file.py', fromlist=[''])
+    action(swarm_id=swarm_id, file_path=file_path, data=data)
 
 def get_swarm_state(swarm_id: SwarmID) -> SwarmState:
     state_bytes = retrieve_file(swarm_id, swarm_id.state_path)
