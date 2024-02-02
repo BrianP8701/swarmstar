@@ -1,21 +1,30 @@
 import os
-from pydantic import validate_call
+from pydantic import validate_call, BaseModel
+
+class Input(BaseModel):
+    file_path: str
+    data: bytes
+    
+class Output(BaseModel):
+    success: bool
+    error_message: str
 
 # Function to upload a file to a Mac
-def mac_file_upload(file_path: str, data: bytes) -> dict:
+def mac_file_upload(input: Input) -> Output:
     try:
         # Ensure the directory exists
-        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        os.makedirs(os.path.dirname(input.file_path), exist_ok=True)
 
         # Write the file
-        with open(file_path, 'wb') as file:
-            file.write(data)
+        with open(input.file_path, 'wb') as file:
+            file.write(input.data)
 
-        return {'status_message': 'Success', 'error_message': ''}
+        return {'success': True, 'error_message': ''}
     except Exception as e:
-        return {'status_message': 'Failure', 'error_message': str(e)}
+        return {'success': False, 'error_message': str(e)}
 
 # Main section
 @validate_call
-def main(file_path: str, data: bytes) -> dict:
-    return mac_file_upload(file_path, data)
+def main(input: Input) -> Output:
+    return mac_file_upload(input)
+

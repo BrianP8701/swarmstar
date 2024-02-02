@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aga_swarm"
-version = "0.1.1"
+version = "0.1.2"
 description = ""
 authors = ["BrianP8701 <brianp8701@gmail.com>"]
 readme = "README.md"
@@ -10,6 +10,7 @@ python = "^3.10"
 importlib = "^1.0.4"
 pydantic = "^2.5.3"
 openai = "^1.9.0"
+instructor = "^0.4.8"
 
 
 [build-system]

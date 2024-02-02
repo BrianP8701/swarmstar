@@ -10,7 +10,7 @@ with open('/Users/brianprzezdziecki/Code/autonomous-general-agent-swarm/aga_swar
 # Turn json string into dict
 action_space_metadata = json.loads(action_space_metadata)
 
-# Turn dict into SwarmSpace object
+# Turn dict into SwarmConfig object
 action_space_metadata = ActionSpaceMetadata(**action_space_metadata)
 
 

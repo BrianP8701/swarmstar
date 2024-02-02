@@ -1,20 +1,27 @@
 import os
-from pydantic import validate_call
+from pydantic import validate_call, BaseModel
+
+class Input(BaseModel):
+    folder_path: str
+    
+class Output(BaseModel):
+    success: bool
+    error_message: str
 
 # Function to create a folder on a mac
-def mac_make_folder(folder_path: str) -> dict:
+def mac_make_folder(input: Input) -> Output:
     try:
         # Create the directory if it does not exist
-        if not os.path.exists(folder_path):
-            os.makedirs(folder_path)
-            return {'status_message': 'Success', 'error_message': ''}
+        if not os.path.exists(input.folder_path):
+            os.makedirs(input.folder_path)
+            return {'success': True, 'error_message': ''}
         else:
-            return {'status_message': 'Failure', 'error_message': 'Folder already exists.'}
+            return {'success': False, 'error_message': 'Folder already exists.'}
     except Exception as e:
         # Return failure with an error message
-        return {'status_message': 'Failure', 'error_message': str(e)}
+        return {'success': False, 'error_message': str(e)}
 
 # Main section
 @validate_call
-def main(folder_path: str) -> dict:
-    return mac_make_folder(folder_path)
+def main(input: Input) -> Output:
+    return mac_make_folder(input)

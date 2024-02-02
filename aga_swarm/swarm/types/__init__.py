@@ -12,12 +12,14 @@ from .memory_metadata import (
 )
 
 
-from .swarm_space import (
-    SwarmSpace
+from .swarm_config import (
+    Platform,
+    Configs,
+    SwarmConfig
 )
 
 from .swarm_history import (
-    Frame,
+    SwarmEvent,
     SwarmHistory
 )
 

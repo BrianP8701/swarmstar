@@ -1019,7 +1019,7 @@ and manage the state of the swarm. boom done lmao wait that was easy
 okay map out the interaction on serverless
 
 creation: create swarm object, load goal and execute action router with goal
-    input: goal, user_id, swarm_space
+    input: goal, user_id, swarm_config
     output: create swarm id (hooked to state, stage, history). pass swarm id along each node along with path to action and data.
 
 execute manager nodes
@@ -1556,3 +1556,58 @@ wait first of all whats the new execution process for actions gonna be?
 write scripts to delete from action space and add to action space externally first then add those in
 
 lets define a concrete definition for the executor and where to use it. 
+
+# Memory Space
+we now will begin to touch and shell out the memory space. A few things i want to note, some things to go in the memory space:
+- default action space metadata
+- action space metadata
+- external actions
+- 
+
+internal actions are inside the package. do i...
+
+wait i just realized. the actual... ah man fuck. this gets confusing now. memory space action space, blob storage noqsl. the actual memory and... no the annoying thing i just realized is that the action space metadata and memory space metadata can be a nosql container instead of a blob. which would be more efficient. do i say fuck interoperability and just code? Or do i truly try to strive for interoperabilty? i think purely striving for interoperability forces me to make the swarm more general. yes interoperability.
+
+the solution has to be a flexible memory space that can store metadata of "memories" that the swarm can navigate, and any of those "memories" are labeled with a type telling us how to actually access the data. i was underestimating wait.... but now i see how powerful this can be. the combination of a completely general action and memory space. oh boy. oh boy im cooking. im cooking yessirrrrr. yessir. YESSIR BITCH ASS FAGGOT. WE MAKING THIS SHIT BABY
+
+these small details, getting these tiny details right will make the difference between a system that is general and a system that is not. this is not some thing thatll ill be able to think about and take time and build. any week now somebody might finish creating a recursively self improving system. I have to hurry the fuck up and make this shit
+
+i think a mistake ive made is that the action space is not gonna contain small individual actions like 'data_transformations' and whatnot. The action space will in reality contain larger more complex scripts that are to be dynamically chained together. Write code, review reports.
+
+The underlying memory space and action space have to be really flexible for this to work. I was thinking primarily in the action space above - but ive come to simplify the action space pretty well. Action space is partitioned along 3 axes: [language, internal or external, platform]. If internal we just do an internal import. Depeneding on language we have to yk.... interact with it differently. and then if its external, we'll need to access the action using actions specific to that platform.
+
+on my local device im currently taking a root path and storing the action space metadata, memory space metadata, state, history, stage and swarm space metadata JSON at the given root path. 
+
+On a cloud provider the file system corresponds to blob storage and the JSON files can be replaced with NOSQL containers. The thing is these are all gonna have some sort of overlap.
+
+do the file and folder operations really belong in the action space alongside code python, decompose directive, review report, search ? because they arent really actions they're more like utils for actions to use. I suppose here is the question. Would an action ever get routed to them? no. no absolutely not. an action wont get routed to them but actions definitely will want to import and use them. So when the swarm is creating an action how should they find the action they need? I suppose they would want to route over a similar action tree structure and import there.... ahh i see. we wont do embedded vector rag to find helper functions and work on the swarm but just a constant routing over spaces. should the "swarm_utils" be in the action space then? I mean fuck it i guess so. when they get imported we can import the actual function instead of the main function. aight this works.
+
+now anyway back to thinking about the memory space. fuck i wanna take a walk but let me just clear my head on the memory space first. Okay yk that folder i create locally that stores the swarm space? That is the memory space. and the memory space contains the memory metadata and swarm space within itself. this way we can have those things be blob, json or nosql. external action stuff goes in that acxtion space retrieved according to the mmeory space. OKAY woo i feel so much better. i think thats a solution there. ahh thank god.
+
+anyway, im going to craft a local memory space for my mac. but during config the memory space wont be as simple as just copying like the action space metadata.
+
+I need to make the action and memory space appropriate for the action and memory router. that is a clear metric for me to think about.
+
+# Instructor and Pydantic
+
+okay so what weve discovered is that instructor is really fucking cool and we want to use it. to review what can instructor do?
+
+instead of passing JSON into my LLM calls we can use instructor to define the Pydantic model we want the LLM to follow. This comes with the benefit of making it much easier and faster to geenrate schemas. it also makes it much easier for the LLMs to generate schemas. furthermore, we can add validation to our models and retry mechanisms.
+
+What changes do we want to make exactly?
+
+    - our action space metadata should contain jsonified pydantic models for the input and output schemas. 
+
+however the jsonified pydantic model does not contain any custom validation. i believe we definitely will want to include custom validation. what we can do is that in the script path we can define INPUT and OUTPUT pydantic models. lets think about this very carefully. 
+
+we have the following options:
+
+1. Put input and output schemas in ASM without custom validation                    No definitely not
+2. Put input and output schemas with custom validation in the action script         Maybe
+3. Put them in both                                                                 Maybe
+
+to decide between 2 and 3 we need to think, what would be the benefit of also including the schemas in ASM? In this scenario we wouldnt have to import the input and output schemas from the action to check... nah we're going with 2. 
+
+One thing i could see being good is narrowing the action router to only searching for actions that have the input schema of the data it has now. this means we would need consistent naming across the entire action space. i suppose this could be a good idea, and for that reason i will support it.
+
+So thats the first thing, is making the action space use pydantic for its inputs and outputs. Secondly, we'll actually use instructor for all our LLM interactions now. We'll also really want better logging to monitor and analyze the swarm. One thing that has crossed my mind multple times is that we want to specifically monitor the LLM interactions inside the action nodes. This can just be something that is included in the report. So what we will do now is fix the action space to match the new format. Then we will integrate instructor into our actions. Then we will build the memory space, action router, memory router, review reports, python coder etc. 

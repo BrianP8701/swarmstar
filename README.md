@@ -19,20 +19,22 @@ Also documenting on youtube @ [AI Agent Swarm Playlist](https://youtube.com/play
 
 # Guiding Principles
 Aim to maximize the following:
-    1. Simple
-    2. General
-    3. Autonomous 
+1. Simple
+2. General
+3. Autonomous 
+4. Scalable
 
-Strategically build to take advantage of SOTA models, incorporating new modalities and emergent capabilities
+Strategically build to take advantage of SOTA models, incorporating new modalities and emergent capabilities.
 
 # Usage
 Not available yet. Still undergoing development before it's ready for use.
 
 # Architecture
 ## Design Principles
-    1. Heavy bias torwards action 
-    2. Communication should primarily be focused around requirements and directives
-    3. Aim for self sufficiency and autonomy
+1. Heavy bias torwards action.
+2. Communication should primarily be focused around requirements and directives.
+3. Aim for self sufficiency and autonomy. Constantly automate. We will automate and eat the world. 
+4. The swarm should be able to operate in a completely decentralized manner. 
 
 ## Internal Swarm Communication
 

@@ -5,8 +5,8 @@ import json
 from aga_swarm.swarm.types.memory_metadata import MemorySpaceMetadata
 from aga_swarm.swarm.types.action_metadata import ActionSpaceMetadata, ActionMetadata
 from aga_swarm.swarm.types.swarm_state import SwarmState
-from aga_swarm.swarm.types.swarm_history import SwarmHistory
-from aga_swarm.swarm.types.swarm_lifecycle import LifecycleCommand, SwarmNode, Frame
+from aga_swarm.swarm.types.swarm_history import SwarmHistory, SwarmEvent
+from aga_swarm.swarm.types.swarm_lifecycle import LifecycleCommand, SwarmNode
 from aga_swarm.utils.internal_swarm_utils import import_internal_python_action
 
 class Configs(BaseModel):
@@ -21,9 +21,9 @@ class Platform(Enum):
     GCP = 'gcp'
     AZURE = 'azure'
 
-class SwarmSpace(BaseModel):
+class SwarmConfig(BaseModel):
     instance_path: str
-    root_path: str
+    swarm_space_root_path: str
     platform: Platform
     action_space_metadata_path: str
     memory_space_metadata_path: str
@@ -36,25 +36,25 @@ class SwarmSpace(BaseModel):
         action_space_bytes = self._retrieve_file(self.action_space_metadata_path)
         action_space_str = action_space_bytes.decode('utf-8')
         action_space_dict = json.loads(action_space_str)
-        return ActionSpaceMetadata(action_space_dict)
+        return ActionSpaceMetadata.model_validate(action_space_dict)
 
     def get_memory_space_metadata(self) -> MemorySpaceMetadata:
         memory_space_bytes = self._retrieve_file(self.memory_space_metadata_path)
         memory_space_str = memory_space_bytes.decode('utf-8')
         memory_space_dict = json.loads(memory_space_str)
-        return MemorySpaceMetadata(memory_space_dict)
+        return MemorySpaceMetadata.model_validate(memory_space_dict)
 
     def get_state(self) -> SwarmState:
         state_bytes = self._retrieve_file(self.state_path)
         state_str = state_bytes.decode('utf-8')
         state_dict = json.loads(state_str)
-        return SwarmState(state_dict)
+        return SwarmState.model_validate(state_dict)
 
     def get_history(self) -> SwarmHistory:
         history_bytes = self._retrieve_file(self.history_path)
         history_str = history_bytes.decode('utf-8')
         history_dict = json.loads(history_str)
-        return SwarmHistory(history_dict)
+        return SwarmHistory.model_validate(history_dict)
         
     def update_state(self, node: SwarmNode) -> None:
         '''
@@ -69,7 +69,7 @@ class SwarmSpace(BaseModel):
             This must be a blocking operation to maintain consistency of the state
         '''
         history = self.get_history()
-        history.add_frame(Frame(
+        history.add_frame(SwarmEvent(
             node_id=node_id,
             lifecycle_command=lifecycle_command
         ))
@@ -158,7 +158,7 @@ class SwarmSpace(BaseModel):
         '''
         upload_file_action_id = 'aga_swarm/actions/data/file_operations/upload_file/upload_file.py'
         main = import_internal_python_action(upload_file_action_id)
-        main(swarm_space=self, file_path=file_path, file_content=file_content)
+        main(swarm_config=self, file_path=file_path, data=file_content)
         
     def _retrieve_file(self, file_path: str) -> bytes:
         '''
@@ -167,7 +167,7 @@ class SwarmSpace(BaseModel):
         '''
         retrieve_file_action_id = 'aga_swarm/actions/data/file_operations/retrieve_file/retrieve_file.py'
         main = import_internal_python_action(retrieve_file_action_id)
-        return main(swarm_space=self, file_path=file_path)['data']
+        return main(swarm_config=self, file_path=file_path)['data']
         
     def _make_folder(self, folder_path: str) -> None:
         '''
@@ -176,7 +176,7 @@ class SwarmSpace(BaseModel):
         '''
         make_folder_action_id = 'aga_swarm/actions/data/folder_operations/make_folder/make_folder.py'
         main = import_internal_python_action(make_folder_action_id)
-        return main(swarm_space=self, folder_path=folder_path)
+        return main(swarm_config=self, folder_path=folder_path)
 
     def _delete_file(self, file_path: str) -> None:
         '''
@@ -185,7 +185,7 @@ class SwarmSpace(BaseModel):
         '''
         delete_file_action_id = 'aga_swarm/actions/data/file_operations/delete_file/delete_file.py'
         main = import_internal_python_action(delete_file_action_id)
-        return main(swarm_space=self, file_path=file_path)
+        return main(swarm_config=self, file_path=file_path)
     
     def _delete_foler(self, folder_path: str) -> None:
         '''
@@ -194,4 +194,4 @@ class SwarmSpace(BaseModel):
         '''
         delete_folder_action_id = 'aga_swarm/actions/data/folder_operations/delete_folder/delete_folder.py'
         main = import_internal_python_action(delete_folder_action_id)
-        return main(swarm_space=self, folder_path=folder_path)
+        return main(swarm_config=self, folder_path=folder_path)

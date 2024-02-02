@@ -1,36 +1,45 @@
 import os
-from pydantic import validate_call
+from pydantic import validate_call, BaseModel
+
+class Input(BaseModel):
+    file_path: str
+    
+class Output(BaseModel):
+    success: bool
+    error_message: str
+    data: bytes
 
 # Function to retrieve a file from a Mac
-def mac_file_retrieval(file_path: str) -> dict:
+def mac_file_retrieval(input: Input) -> Output:
     try:
         # Check if the file exists
-        if not os.path.exists(file_path):
+        if not os.path.exists(input.file_path):
             return {
-                'status_message': 'Failure',
+                'success': False,
                 'error_message': 'File does not exist',
                 'data': None
             }
 
         # Open the file in binary mode
-        with open(file_path, 'rb') as file:
+        with open(input.file_path, 'rb') as file:
             file_data = file.read()
 
         # Return the file data
         return {
-            'status_message': 'Success',
+            'success': True,
             'error_message': '',
             'data': file_data
         }
     except Exception as e:
         # Handle any exception that occurs
         return {
-            'status_message': 'Failure',
+            'success': False,
             'error_message': str(e),
             'data': None
         }
 
 # Main section
 @validate_call
-def main(file_path: str) -> dict:
-    return mac_file_retrieval(file_path)
+def main(input: Input) -> Output:
+    return mac_file_retrieval(input)
+

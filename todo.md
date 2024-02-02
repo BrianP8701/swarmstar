@@ -35,6 +35,9 @@ So a lot of the goals outlined above have actually been rendered irrelevant beca
 - [ ] add consistency for read-write operations to swarm space
 - [x] revert memory and action space to have a seperate tree representation for metadata.
 - [x] add configuration for coder layer with data sources and custom router functions
+- [ ] add pydantic models to action space
+- [ ] replace all tools with instructor
+- [ ] build memory space
 - [ ] add config functions to add custom data to memory and action space
 - [ ] test with multiple enviroments
 - [ ] create web app interface for swarm with user input to threads

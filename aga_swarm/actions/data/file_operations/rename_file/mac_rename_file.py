@@ -1,21 +1,28 @@
 import os
-from pydantic import validate_call
+from pydantic import validate_call, BaseModel
+
+class Input(BaseModel):
+    file_path: str
+    new_file_name: str
+
+class Output(BaseModel):
+    success: bool
+    error_message: str
 
 # Function to rename a file on a mac
-@validate_call
-def mac_rename_file(file_path: str, new_file_name: str) -> dict:
+def mac_rename_file(input: Input) -> Output:
     try:
         # Extract directory path
-        directory = os.path.dirname(file_path)
+        directory = os.path.dirname(input.file_path)
         # Create new file path
-        new_file_path = os.path.join(directory, new_file_name)
+        new_file_path = os.path.join(directory, input.new_file_name)
         # Rename the file
-        os.rename(file_path, new_file_path)
-        return {'status_message': 'Success', 'error_message': ''}
+        os.rename(input.file_path, new_file_path)
+        return {'success': True, 'error_message': ''}
     except Exception as e:
-        return {'status_message': 'Failure', 'error_message': str(e)}
+        return {'success': False, 'error_message': str(e)}
 
 # Main section
 @validate_call
-def main(file_path: str, new_file_name: str) -> dict:
-    return mac_rename_file(file_path, new_file_name)
+def main(input: Input) -> Output:
+    return mac_rename_file(input)

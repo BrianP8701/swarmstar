@@ -1,9 +1,9 @@
 from pydantic import validate_call
 
-from aga_swarm.swarm.types import NodeOutput, SwarmSpace
+from aga_swarm.swarm.types import NodeOutput, SwarmConfig
 
-def route_to_action(swarm_space: SwarmSpace, action_id: str, directive: str) -> NodeOutput:
-    action_space_metadata = swarm_space.get_action_space_metadata(action_id)
+def route_to_action(swarm_config: SwarmConfig, action_id: str, directive: str) -> NodeOutput:
+    action_space_metadata = swarm_config.get_action_space_metadata(action_id)
 
 @validate_call
 def main(action_id: str, directive: str) -> NodeOutput:

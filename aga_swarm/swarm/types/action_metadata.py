@@ -1,9 +1,5 @@
-from pydantic import BaseModel, Field, Literal, RootModel
-from typing import Dict, List, Optional, Union
-import os
-import shutil
-
-from aga_swarm.utils.internal_swarm_utils import import_internal_python_action
+from pydantic import BaseModel, Field, RootModel
+from typing import Dict, List, Optional, Union, Literal
 
 class Property(BaseModel):
     type: str                                                       # the type of the property
@@ -14,8 +10,8 @@ class ActionMetadata(BaseModel):
     type: Literal['action'] = Field('action', Literal=True)         # this is always 'action'
     name: str                                                       # the human readable name of the action
     description: str                                                # concise & comprehensive description of the action
-    input_schema: Dict[str, Property] = {}                          # the input schema of the action
-    output_schema: Dict[str, Property] = {}                         # the output schema of the action
+    input_schema: BaseModel                                         # the input schema of the action
+    output_schema: BaseModel                                        # the output schema of the action
     dependencies: List[str] = []                                    # the list of packages that this action depends on
     parent: str = None                                              # the parent folder of the action
     script_path: str = None                                         # the path to the script that the action runs
