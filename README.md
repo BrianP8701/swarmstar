@@ -46,7 +46,10 @@ These spaces, the action and memory space, are navigated by "router" agents. Rou
 The action and memory space are organized as trees for scalability, ease of navigation and just because it's intuitive to store things as a tree. It's like a file structure, or a book with chapters, sections etc. Trees are scalable because retrieval within a tree is O(log n) time complexity. Additionally we need to utilize trees for the routers since we can't flood the router with every possible choice at once, but only a limited amount at a time.  
 
 ### Action Space
-
+The action space is for searching for the right action to take
 
 ### Memory Space
+The memory space is for searching for the right memory/information to use.
 
+### Swarm Util Space
+The util space is for searching for the right util to use. 

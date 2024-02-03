@@ -7,7 +7,7 @@ from aga_swarm.swarm.types.action_metadata import ActionSpaceMetadata, ActionMet
 from aga_swarm.swarm.types.swarm_state import SwarmState
 from aga_swarm.swarm.types.swarm_history import SwarmHistory, SwarmEvent
 from aga_swarm.swarm.types.swarm_lifecycle import LifecycleCommand, SwarmNode
-from aga_swarm.utils.internal_swarm_utils import import_internal_python_action
+from aga_swarm.swarm_utils.internal_package_utils.internal_swarm_utils import import_internal_python_action
 
 class Configs(BaseModel):
     openai_key: str

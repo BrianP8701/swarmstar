@@ -115,33 +115,55 @@
 
 
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, RootModel
 import os
 from dotenv import load_dotenv
 import pdb
-
-from aga_swarm.utils.llm import completion
-
-class UserInfo(BaseModel):
-    name: str
-    age: int
-    gender: str
+from typing import List, Dict, Union
+import json
 
 
+# class UserInfo(BaseModel):
+#     name: str
+#     age: int
+#     gender: strw
 
-load_dotenv()
-openai_key = os.getenv("OPENAI_API_KEY")
 
 
-messages = [
-    {
-        "role": "user",
-        "content": "I am 29 years old, male, and my name is Jason"
-    }
-]
 
-resp = completion(messages, openai_key, UserInfo)
-print(resp)
-pdb.set_trace()
-print(resp)
-print(type(resp))
+
+
+# messages = [
+#     {
+#         "role": "user",
+#         "content": "I am 29 years old, male, and my name is Jason"
+#     }
+# ]
+
+# # resp = completion(messages, openai_key, UserInfo)
+
+# class DecomposeDirective(BaseModel):
+#     subdirectives: List[str] = Field(..., description="Decompose the directive into subdirectives")
+    
+# schema = DecomposeDirective.model_json_schema()
+
+# print(json.dumps(schema))
+
+# print(type(json.dumps(schema)))
+# from aga_swam
+
+# class test(RootModel):
+#     root: Dict[str, DecomposeDirective] = Field(..., description="Decompose the directive into subdirectives alonf with a name for each subdirective")
+    
+
+# messages = [
+#     {
+#         "role": "user",
+#         "content": "Research the root causes of aging and cancer and develop a plan to address them"
+#     }
+# ]
+# load_dotenv()
+# openai_key = os.getenv("OPENAI_API_KEY")
+# completion(messages=messages, openai_key=openai_key, model=test, max_retries=2)
+
+# print(completion)

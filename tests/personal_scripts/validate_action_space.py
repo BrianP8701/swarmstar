@@ -20,7 +20,7 @@ def validate_asm(asm: Dict[str, ActionMetadata]):
             if not os.path.isdir(key):
                 print(f"{key} does not exist as a folder")
             try:
-                ActionFolderMetadata(**value)
+                ActionFolder(**value)
             except ValidationError as e:
                 print(f"{key} does not follow schema: {e}")
                 

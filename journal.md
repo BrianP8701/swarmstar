@@ -1589,7 +1589,6 @@ anyway, im going to craft a local memory space for my mac. but during config the
 I need to make the action and memory space appropriate for the action and memory router. that is a clear metric for me to think about.
 
 # Instructor and Pydantic
-
 okay so what weve discovered is that instructor is really fucking cool and we want to use it. to review what can instructor do?
 
 instead of passing JSON into my LLM calls we can use instructor to define the Pydantic model we want the LLM to follow. This comes with the benefit of making it much easier and faster to geenrate schemas. it also makes it much easier for the LLMs to generate schemas. furthermore, we can add validation to our models and retry mechanisms.
@@ -1611,3 +1610,9 @@ to decide between 2 and 3 we need to think, what would be the benefit of also in
 One thing i could see being good is narrowing the action router to only searching for actions that have the input schema of the data it has now. this means we would need consistent naming across the entire action space. i suppose this could be a good idea, and for that reason i will support it.
 
 So thats the first thing, is making the action space use pydantic for its inputs and outputs. Secondly, we'll actually use instructor for all our LLM interactions now. We'll also really want better logging to monitor and analyze the swarm. One thing that has crossed my mind multple times is that we want to specifically monitor the LLM interactions inside the action nodes. This can just be something that is included in the report. So what we will do now is fix the action space to match the new format. Then we will integrate instructor into our actions. Then we will build the memory space, action router, memory router, review reports, python coder etc. 
+
+
+# Redefining the action space again
+okay again. going to need to redefine the action space. simplifying it now. The action space shall be dedicated to knowledge tasks, along the likes of decompose directive, review reports, write code etc. the things like file and folder operations are not actions. they dont take language. those are helper functions, utils of the swarm that actions might use in their scripts. this makes the action space much simpler - creates a seperation of concerns. the difference is actions are actual nodes in the swarm, whereas the utils are just imported and used amongst the swarm. and they will be navigated differently.
+
+the util section can utilize a metadata tree and a vector db for search. im gonna redefine the schema for these now

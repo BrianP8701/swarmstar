@@ -1,7 +1,6 @@
 from .action_metadata import (
-    Property,
     ActionMetadata,
-    ActionFolderMetadata,
+    ActionFolder,
     ActionSpaceMetadata
 )
 

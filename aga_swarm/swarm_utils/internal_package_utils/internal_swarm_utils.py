@@ -58,3 +58,4 @@ def get_binary_file(package: str, resource_name: str) -> BinaryIO:
     :return: File-like object for binary data.
     """
     return resources.open_binary(package, resource_name)
+

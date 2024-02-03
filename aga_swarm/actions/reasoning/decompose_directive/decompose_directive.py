@@ -13,11 +13,11 @@ class Input(BaseModel):
 Output = NodeOutput    
 
 def decompose_directive(input: Input) -> NodeOutput:
-    with open('aga_swarm/actions/reasoning/decompose_directive/tool.json', 'r') as file:
-        decompose_directive_blueprint = json.load(file)
     
-    system_instructions = '''You must output following the specified JSON schema. You play 
-    a pivotal role in navigating complex goals across various levels in domains like software 
+    class DecomposeDirective(BaseModel):
+        subdirectives: List[str] = Field(..., description="Decompose the directive into subdirectives")
+        
+    system_instructions = '''You play a pivotal role in navigating complex goals across various levels in domains like software 
     development, engineering, and research. Your operations within this multi-tiered system 
     include:\n\nIterative Goal Interpretation and Decomposition: In the swarm hierarchy, you'll 
     handle goals at different completion stages. Your primary task is to break down these goals 
@@ -36,9 +36,6 @@ def decompose_directive(input: Input) -> NodeOutput:
     research and more.\n\nCost-Efficiency and Operations: Uphold cost-efficiency at every management 
     level. Ensure that the subgoals you provide are detailed yet concise, adhering to the context 
     window and budgetary constraints.'''
-    
-    class DecomposeDirective(BaseModel):
-        subdirectives: List[str] = Field(..., description="Decompose the directive into subdirectives")
     
     messages = [
         {
