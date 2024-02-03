@@ -1,6 +1,19 @@
+'''
+Here we define the smaller components that make up the swarm.
+
+The lifecycle command describes the only 4 commands that an action
+can send to the swarm. Spawn children nodes to take more actions,
+execute itself, terminate itself if it completed its directive and 
+needs no more children, or failure.
+
+The swarm command and NodeIO are what nodes pass between each other.
+
+The swarm node is the fundamental unit of the swarm.
+'''
+
 from enum import Enum
 from pydantic import BaseModel
-from typing import Dict, List, Optional, Any
+from typing import List, Optional
 
 class LifecycleCommand(Enum):
     SPAWN= "spawn"
@@ -10,9 +23,9 @@ class LifecycleCommand(Enum):
 
 class SwarmCommand(BaseModel):
     action_id: str
-    params: Dict[str, Any]
+    directive: str
     
-class NodeOutput(BaseModel):
+class NodeIO(BaseModel):
     lifecycle_command: LifecycleCommand
     swarm_commands: List[SwarmCommand]
     report: str

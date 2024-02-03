@@ -1,3 +1,13 @@
+'''
+The swarm config is a record of the configuration of the swarm. It
+stores all the information about the environment in which the swarm 
+is running. It also provides methods to interact with the swarm space.
+
+The swarm config is a small data structure consisting only of strings,
+and is passed around between every action. I made this so the swarm
+could be decoupled and stateless. This is important for scalability.
+'''
+
 from enum import Enum
 from pydantic import BaseModel
 import json

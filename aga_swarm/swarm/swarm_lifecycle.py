@@ -2,7 +2,7 @@ from pydantic import validate_call
 from typing import List, Union
 
 from aga_swarm.swarm.types import *
-from aga_swarm.utils.uuid import generate_uuid
+from aga_swarm.swarm_utils.uuid import generate_uuid
 from aga_swarm.swarm.executor import execute_action
 
 @validate_call
@@ -40,9 +40,11 @@ def _spawn_children(swarm_config: SwarmConfig, swarm_node: SwarmNode, node_outpu
     return child_nodes
 
 def _execute_node(swarm_config: SwarmConfig, node: SwarmNode) -> NodeOutput:
+    # TODO Make execute node work properly
     node_output = execute_action(
         action_id=node.swarm_command.action_id, 
-        params=node.swarm_command.params,
+        directive=node.swarm_command.directive,
+        node_id=node.node_id,
         swarm_config=swarm_config)
     
     if not isinstance(node_output, NodeOutput):

@@ -1,10 +1,21 @@
+'''
+The swarm util space metadata has a simlar but different role to 
+the action space metadata:
+
+(1) To allow the swarm to organize and search for utils
+(2) Describe how to interact with the utils
+
+Swarm utils are just swarm specific functions. They may be
+used in the construction of actions.
+'''
+
 from pydantic import BaseModel, Field, RootModel
 from typing import Dict, List, Optional, Union, Literal
 from enum import Enum
 
 class ConsumerMetadataType(Enum):
-    action = 'action'
-    util = 'util'
+    ACTION = 'action'
+    UTIL = 'util'
 
 class ConsumerMetadata(BaseModel):
     type: ConsumerMetadataType
@@ -13,7 +24,6 @@ class ConsumerMetadata(BaseModel):
 class SwarmUtilFolder(BaseModel):
     type: Literal['folder'] = Field('folder', Literal=True)
     name: str
-    memory_id: str
     description: str
     children: List[str] = []
     parent: Optional[str] = None
@@ -28,6 +38,7 @@ class SwarmFunctionMetadata(BaseModel):
     dependencies: List[str]  
     consumers: List[ConsumerMetadata]
     import_path: str
+    function_name: str
     language: str
     internal: bool
     input_schema: BaseModel

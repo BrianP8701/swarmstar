@@ -1,6 +1,24 @@
 '''
-The action space metadata organizes the actions and 
-is used by the action router to find the next action to execute.
+Every node in the swarm corresponds to an action.
+
+The action space metadata organizes the actions and is used to search
+for actions and execute them.
+
+Every action expects the same input: directive, swarm_config and node_id
+
+The actual actions are all prewritten code. The action space metadata's
+purpose is:
+
+(1) To allow the swarm to organize and search for actions
+(2) To allow the swarm to execute actions
+
+Because the swarm can dynamically create actions we need (2). For example,
+we have all the predefined internal actions. So far these are all executed by
+importing the main function from the import path. However, when the swarm
+dynamically creates actions, they will be stored in the swarm space, on the user's
+platform. Actions might be written in different languages, and actions might
+have different methods of execution. The action space metadata provides a way
+to execute these actions.
 '''
 
 from pydantic import BaseModel, Field, RootModel
@@ -8,15 +26,7 @@ from typing import Dict, List, Optional, Union, Literal
 from enum import Enum
 
 class ActionType(Enum):
-    main_function = 'main_function'
-
-class ConsumerMetadataType(Enum):
-    action = 'action'
-    util = 'util'
-
-class ConsumerMetadata(BaseModel):
-    type: ConsumerMetadataType
-    consumer_id: str
+    python_main_function = 'python_main_function'
 
 class ActionFolder(BaseModel):
     type: Literal['folder'] = Field('folder', Literal=True)        
@@ -34,7 +44,6 @@ class ActionMetadata(BaseModel):
     description: str     
     parent: str                                                                              
     dependencies: List[str]     # the packages that this action needs installed
-    consumers: List[ConsumerMetadata]        # the list of actions or utils that use this action
     import_path: str
     content_path: str
     language: str 
