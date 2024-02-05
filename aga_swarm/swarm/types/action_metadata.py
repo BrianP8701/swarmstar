@@ -4,7 +4,7 @@ Every node in the swarm corresponds to an action.
 The action space metadata organizes the actions and is used to search
 for actions and execute them.
 
-Every action expects the same input: directive, swarm_config and node_id
+Every action expects the same input: directive, swarm and node_id
 
 The actual actions are all prewritten code. The action space metadata's
 purpose is:
@@ -26,10 +26,15 @@ from typing import Dict, List, Optional, Union, Literal
 from enum import Enum
 
 class ActionType(Enum):
-    python_main_function = 'python_main_function'
+    INTERNAL_FOLDER = 'internal_folder'
+    INTERNAL_PYTHON_MAIN_FUNCTION = 'internal_python_main_function'
+    
+class InternalPythonMainFunctionMetadata(BaseModel):
+    import_path: str
+    content_path: str
 
 class ActionFolder(BaseModel):
-    type: Literal['folder'] = Field('folder', Literal=True)        
+    action_type: ActionType        
     name: str       
     description: str                                             
     children: List[str] = []                                      
@@ -37,19 +42,13 @@ class ActionFolder(BaseModel):
     folder_path: str    
     internal: bool
     
-
 class ActionMetadata(BaseModel):
-    type: Literal['action'] = Field('action', Literal=True)        
+    action_type: ActionType       
     name: str                   
     description: str     
     parent: str                                                                              
     dependencies: List[str]     # the packages that this action needs installed
-    import_path: str
-    content_path: str
-    language: str 
-    internal: bool
-    action_type: ActionType
-    metadata: Optional[Dict[str, str]] = None       # further metadata to define custom behavior for this action
+    execution_metadata: Optional[Dict[str, str]] = None       # further metadata to define custom behavior for this action
 
 class ActionSpaceMetadata(RootModel):
     root: Dict[str, Union[ActionMetadata, ActionFolder]]

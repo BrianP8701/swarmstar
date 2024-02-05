@@ -11,10 +11,10 @@ from .memory_metadata import (
 )
 
 
-from .swarm_config import (
+from .swarm import (
     Platform,
     Configs,
-    SwarmConfig
+    Swarm
 )
 
 from .swarm_history import (
@@ -30,5 +30,5 @@ from .swarm_lifecycle import (
     LifecycleCommand,
     SwarmNode,
     SwarmCommand,
-    NodeOutput
+    NodeIO
 )

@@ -3,16 +3,16 @@ from pydantic import validate_call, BaseModel, Field
 import traceback
 from typing import List
 
-from aga_swarm.swarm.types import NodeOutput, SwarmConfig, SwarmCommand, LifecycleCommand, NodeOutput
+from aga_swarm.swarm.types import NodeIO, Swarm, SwarmCommand, LifecycleCommand, NodeIO
 from aga_swarm.utils.llm import completion
 
 class Input(BaseModel):
     directive: str
-    swarm_config: SwarmConfig
+    swarm: Swarm
     
-Output = NodeOutput    
+Output = NodeIO    
 
-def decompose_directive(input: Input) -> NodeOutput:
+def decompose_directive(input: Input) -> NodeIO:
     
     class DecomposeDirective(BaseModel):
         subdirectives: List[str] = Field(..., description="Decompose the directive into subdirectives")
@@ -49,9 +49,9 @@ def decompose_directive(input: Input) -> NodeOutput:
     ]
     
     try:
-        subdirectives = completion(messages, input.swarm_config.configs.openai_key, DecomposeDirective, max_retries=2).subdirectives
+        subdirectives = completion(messages, input.swarm.configs.openai_key, DecomposeDirective, max_retries=2).subdirectives
     except Exception as e:
-        return NodeOutput(
+        return NodeIO(
             lifecycle_command=LifecycleCommand.NODE_FAILURE,
             swarm_commands=[],
             report=str(e) + "\nTraceback:\n" + traceback.format_exc()
@@ -63,17 +63,17 @@ def decompose_directive(input: Input) -> NodeOutput:
             action_id='aga_swarm/actions/swarm/actions/route_to_action',
             params = {
                 'directive': subdirective,
-                'swarm_config': input.swarm_config
+                'swarm': input.swarm
             }
         )
         swarm_commands.append(swarm_command)
     
-    return NodeOutput(
+    return NodeIO(
         lifecycle_command=LifecycleCommand.SPAWN,
         swarm_commands=swarm_commands,
         report=f'Directive: {input.directive}\n\nSubdirectives:\n' + '\n'.join(subdirectives)
     )
 
 @validate_call
-def main(directive: str, swarm_config: SwarmConfig) -> NodeOutput:
-    return decompose_directive(directive, swarm_config)
+def main(directive: str, swarm: Swarm) -> NodeIO:
+    return decompose_directive(directive, swarm)

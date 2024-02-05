@@ -1,18 +1,7 @@
-'''
-    Functions for getting default stuff from
-    the aga_swarm package.
-'''
-
 from importlib import import_module
 import json
 from importlib import resources
 from typing import Any, BinaryIO
-
-def get_default_action_space_metadata() -> dict:
-    return get_json_data('aga_swarm.actions', 'action_space_metadata.json')
-
-def get_default_memory_space_metadata() -> dict: 
-    return get_json_data('aga_swarm.memory', 'memory_space_metadata.json')
 
 def import_internal_python_action(module_name):
     '''

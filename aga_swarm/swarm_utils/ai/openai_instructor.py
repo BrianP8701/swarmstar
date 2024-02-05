@@ -15,6 +15,15 @@ def completion(messages: List[Dict[str, str]], openai_key: str, model: Type[Base
     checking it out!
     
     https://github.com/jxnl/instructor
+
+    Args:
+    - messages: List[Dict[str, str]]: The messages to send to the model
+    - openai_key: str: The OpenAI API key
+    - model: Type[BaseModel]: The Pydantic model to return
+    - max_retries: int: The maximum number of retries to attempt
+    
+    Returns:
+    - Type[BaseModel]: The Pydantic model
     '''
     client = instructor.patch(OpenAI(api_key=openai_key))
     return client.chat.completions.create(model='gpt-4-1106-preview', 

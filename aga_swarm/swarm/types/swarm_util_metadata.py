@@ -7,6 +7,8 @@ the action space metadata:
 
 Swarm utils are just swarm specific functions. They may be
 used in the construction of actions.
+
+For now we assume all utils are internal to the package.
 '''
 
 from pydantic import BaseModel, Field, RootModel
@@ -28,22 +30,17 @@ class SwarmUtilFolder(BaseModel):
     children: List[str] = []
     parent: Optional[str] = None
     folder_path: str    
-    internal: bool
 
 class SwarmFunctionMetadata(BaseModel):
     type: Literal['function'] = Field('function', Literal=True) 
     name: str
     description: str
     parent: str
-    dependencies: List[str]  
     consumers: List[ConsumerMetadata]
     import_path: str
     function_name: str
-    language: str
-    internal: bool
     input_schema: BaseModel
     output_schema: BaseModel
-    metadata: Optional[Dict[str, str]] = None
     
 class SwarmUtilSpaceMetadata(RootModel):
     root: Dict[str, Union[SwarmFunctionMetadata, SwarmUtilFolder]]

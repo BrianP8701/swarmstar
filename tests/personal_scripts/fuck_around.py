@@ -162,8 +162,41 @@ import json
 #         "content": "Research the root causes of aging and cancer and develop a plan to address them"
 #     }
 # ]
-# load_dotenv()
-# openai_key = os.getenv("OPENAI_API_KEY")
+load_dotenv()
+openai_key = os.getenv("OPENAI_API_KEY")
 # completion(messages=messages, openai_key=openai_key, model=test, max_retries=2)
 
 # print(completion)
+
+from aga_swarm.swarm_utils.ai.openai_instructor import completion
+from pydantic import BaseModel, Field, RootModel
+
+# class user(BaseModel):
+#     name: str
+#     age: int
+#     gender: str
+
+# messages = [
+#     {
+#         "role": "system",
+#         "content": "Extract the user"
+#     },
+#     {
+#         "role": "user",
+#         "content": "I am 29 years old, male, and my name is Jason"
+#     }
+# ]
+
+# co = completion(messages, openai_key, user, 2)
+
+# print(co)
+# print(type(co))
+
+from aga_swarm.swarm.types import Platform
+
+platform = 'mac'
+
+platform = Platform(platform)
+
+print(platform.value)
+print(type(platform))

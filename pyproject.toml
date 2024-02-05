@@ -11,6 +11,7 @@ importlib = "^1.0.4"
 pydantic = "^2.5.3"
 openai = "^1.9.0"
 instructor = "^0.4.8"
+azure-cosmos = "^4.5.1"
 
 
 [build-system]

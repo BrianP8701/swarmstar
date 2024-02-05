@@ -22,9 +22,7 @@ class MemoryType(Enum):
     INTERNAL_PYTHON_FILE = "internal_python_file"
     LOCAL_FOLDER = "local_folder"
     LOCAL_JSON = "local_json"
-    LOCAL_FILE = "local_file"
-    AZURE_COSMOS_DB = "azure_cosmos_db"
-    GOOGLE_FIRESTORE = "google_firestore"
+    AZURE_COSMOS_DB_CONTAINER = "azure_cosmos_db_container"
     AZURE_BLOB_STORAGE = "azure_blob_storage"
     
 class MemoryFolder(BaseModel):
@@ -41,7 +39,6 @@ class MemoryMetadata(BaseModel):
     name: str
     description: str
     internal: bool
-    content_path: str
     parent: str
     metadata: Optional[Dict[str, str]] = None      # further metadata to define custom behavior for this memory
     

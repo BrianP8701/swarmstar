@@ -1019,7 +1019,7 @@ and manage the state of the swarm. boom done lmao wait that was easy
 okay map out the interaction on serverless
 
 creation: create swarm object, load goal and execute action router with goal
-    input: goal, user_id, swarm_config
+    input: goal, user_id, swarm
     output: create swarm id (hooked to state, stage, history). pass swarm id along each node along with path to action and data.
 
 execute manager nodes
@@ -1616,3 +1616,147 @@ So thats the first thing, is making the action space use pydantic for its inputs
 okay again. going to need to redefine the action space. simplifying it now. The action space shall be dedicated to knowledge tasks, along the likes of decompose directive, review reports, write code etc. the things like file and folder operations are not actions. they dont take language. those are helper functions, utils of the swarm that actions might use in their scripts. this makes the action space much simpler - creates a seperation of concerns. the difference is actions are actual nodes in the swarm, whereas the utils are just imported and used amongst the swarm. and they will be navigated differently.
 
 the util section can utilize a metadata tree and a vector db for search. im gonna redefine the schema for these now
+
+
+# Package management
+okay fuck so system packages just cant be downloaded on cloud functions. fuck. okay so whenever i am in a situation where a system packahe is needed gcp azure and aws offer "container-based services like AWS Fargate, Google Cloud Run, or Azure Container Instances."
+
+after lots of talking and deciding i have decided to majorly pivot my focus. Im not going to try to make this an interoperable package for devs to easily set up on their enviroments. im already overwhelmed by the need for the swarm to be able to dynamically create environments on its own i just cant. Im honing in on just creating a product for myself. that is the focus. but the project will be open source
+
+# Cosmos DB
+3 partiton keys only
+
+User credential:
+id and partition key is username
+holds user_id, password, list of user swarms
+
+User credentials:
+Partition keys:
+1. username
+2. bcrypt(password)
+{
+    user_id
+}
+
+1. user_id
+2. swarm_id
+3. action_space_metadata, memory_space_metadata, util_space_metadata, swarm_state
+id    action_id                memory_id              util_id          node_id
+
+
+Action metadata
+Memory metadata
+Util Metadata
+Swarm Space metadata
+Swarm State
+
+
+So like we'll have one container:
+and paths will be like this:
+user_id/swarm_id/action_space_metadata
+user_id/swarm_id/memory_space_metadata
+user_id/swarm_id/util_space_metadata
+user_id/swarm_id/swarm_space_metadata
+user_id/swarm_id/swarm_state
+
+# Cloud vs Local
+
+Cloud:
+    - runs actions on cloud functions
+    - uses cosmosdb as kv and blob storage as file storage
+    - uses Azure Container Instances to create dynamic enviroments for generated code
+
+Local:
+    - runs actions asynchronously in loop
+    - uses LevelDB for kv and local file system for file storage
+    - uses subproccesses to create dynamic enviroments for generated code
+
+
+
+## Chatgpts response on dynamically creating docker instances on clopud for generated code
+
+To achieve this, you'll need a process that involves several steps, integrating Azure Functions, Docker, and possibly Azure Container Instances (ACI) or another container orchestration service like Kubernetes if you're looking for scalability and manageability. Here's a high-level overview of how you can implement such a system:
+
+### Step 1: Azure Function to Receive Script and Dependencies
+
+- **Input:** This Azure Function is triggered by some event (e.g., an HTTP request, a message on an Azure Queue, etc.) and receives the script along with its dependencies and parameters for execution.
+- **Process:** It parses the input to extract the script, its dependencies, and execution parameters.
+- **Output:** Passes this information to the next step.
+
+### Step 2: Dynamic Docker Container Creation
+
+You have a few options to dynamically create a Docker container:
+
+#### Option A: Use Azure Container Instances (ACI) directly from Azure Function
+
+- **Process:**
+  - The Azure Function uses the Azure SDK to programmatically create an ACI instance.
+  - You define a Docker image that serves as a base image with a common set of dependencies pre-installed. For any additional dependencies, you could either:
+    - Use a script within the container to install these dependencies dynamically upon container startup.
+    - Generate a Dockerfile dynamically that includes the additional `RUN pip install` commands for Python libraries or equivalent for other languages, build the Docker image, and then deploy it to ACI.
+
+#### Option B: Use a Docker Host
+
+- **Infrastructure Setup:** Have a Docker host running (could be a VM in Azure) with Docker installed and an API endpoint exposed for container management.
+- **Process:**
+  - The Azure Function sends a command to this Docker host to create a new container based on a base image.
+  - The command includes running a script (could be a bash script or another small program) that:
+    1. Dynamically installs the dependencies listed.
+    2. Adds the script to the container.
+    3. Executes the script with the provided parameters.
+
+### Step 3: Trigger Next Azure Function After Execution
+
+- **Execution Monitoring:** You'll need to monitor the execution of the script within the Docker container. This could be done through logs or by monitoring the process directly.
+- **Trigger Next Step:** Once the script execution is complete, the system needs to trigger the next Azure Function. This could be done through:
+  - Direct API call to the next Azure Function if it's exposed through HTTP.
+  - Placing a message in an Azure Queue or a topic in Azure Service Bus, which the next Azure Function is listening to.
+
+### Implementation Considerations:
+
+- **Security:** Ensure that the execution environment is secure, especially if executing arbitrary code.
+- **Error Handling:** Implement robust error handling and logging, particularly for the dynamic installation of dependencies and execution of the script.
+- **Resource Cleanup:** Ensure that the Docker containers are stopped and deleted after execution to avoid unnecessary costs and resource usage.
+
+### Example Code Skeleton:
+
+For the dynamic Docker container creation (Option A), using Python and Azure SDK:
+
+```python
+from azure.identity import DefaultAzureCredential
+from azure.mgmt.containerinstance import ContainerInstanceManagementClient
+from azure.mgmt.containerinstance.models import ContainerGroup, Container, ContainerPort, EnvironmentVariable, ImageRegistryCredential, IpAddress, OperatingSystemTypes, Port, ResourceRequests, ResourceRequirements
+
+# Replace these variables with your actual settings
+resource_group_name = "yourResourceGroupName"
+container_group_name = "yourContainerGroupName"
+location = "yourLocation"
+image_name = "python:3.8-slim"  # Base image
+container_name = "yourContainerName"
+cpu_requirement = 1.0
+memory_requirement = 1.5
+environment_variables = [EnvironmentVariable(name="MY_ENV_VAR", value="my_value")]  # Add your script execution parameters here
+
+credentials = DefaultAzureCredential()
+client = ContainerInstanceManagementClient(credentials, subscription_id)
+
+container_resource_requirements = ResourceRequirements(requests=ResourceRequests(memory_in_gb=memory_requirement, cpu=cpu_requirement))
+
+container_instance = Container(name=container_name, image=image_name, resources=container_resource_requirements, environment_variables=environment_variables)
+
+# Optionally define ports if your container needs to be accessible over the network
+ports = [ContainerPort(port=80)]
+ip_address = IpAddress(ports=[Port(protocol="TCP", port=80)], type="Public")
+
+container_group = ContainerGroup(location=location, containers=[container_instance], os_type=OperatingSystemTypes.linux, ip_address=ip_address)
+
+response = client.container_groups.begin_create_or_update(resource_group_name, container_group_name, container_group)
+response.result()
+
+# After creation, use Azure SDK or CLI to monitor logs and trigger the next function
+```
+
+This is a basic outline. The actual implementation will depend on your specific requirements, such as how the script and its dependencies are formatted and passed to the Azure Function, how parameters for the script's execution are defined, and how you plan to manage Docker images and containers.
+
+
+I need to seperate the internal package from things that may differ in local and cloud. this is simple as leaving external actions, memories and utils to be handled and implemented outside of the package.

@@ -127,14 +127,14 @@
                 "type": "str",
                 "description": "The directive to be broken down"
             },
-            "swarm_config": {
-                "type": "SwarmConfig",
+            "swarm": {
+                "type": "Swarm",
                 "description": "The swarm id"
             }
         },
         "output_schema": {
             "node_output": {
-                "type": "aga_swarm.core.swarm.types.NodeOutput",
+                "type": "aga_swarm.core.swarm.types.NodeIO",
                 "description": "The output of the node"
             }
         },
@@ -155,14 +155,14 @@
                 "type": "str",
                 "description": "The directive to be decomposed"
             },
-            "swarm_config": {
-                "type": "SwarmConfig",
+            "swarm": {
+                "type": "Swarm",
                 "description": "The swarm id"
             }
         },
         "output_schema": {
             "node_output": {
-                "type": "aga_swarm.core.swarm.types.NodeOutput",
+                "type": "aga_swarm.core.swarm.types.NodeIO",
                 "description": "The output of the node"
             }
         },
@@ -183,14 +183,14 @@
                 "type": "str",
                 "description": "The directive to be analyzed"
             },
-            "swarm_config": {
-                "type": "SwarmConfig",
+            "swarm": {
+                "type": "Swarm",
                 "description": "The swarm id"
             }
         },
         "output_schema": {
             "node_output": {
-                "type": "aga_swarm.core.swarm.types.NodeOutput",
+                "type": "aga_swarm.core.swarm.types.NodeIO",
                 "description": "The output of the node"
             }
         },
@@ -215,14 +215,14 @@
                 "type": "List[str]",
                 "description": "The reports to be reviewed"
             },
-            "swarm_config": {
-                "type": "SwarmConfig",
+            "swarm": {
+                "type": "Swarm",
                 "description": "The swarm id"
             }
         },
         "output_schema": {
             "node_output": {
-                "type": "aga_swarm.core.swarm.types.NodeOutput",
+                "type": "aga_swarm.core.swarm.types.NodeIO",
                 "description": "The output of the node"
             }
         },
