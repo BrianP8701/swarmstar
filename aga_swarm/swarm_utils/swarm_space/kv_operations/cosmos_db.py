@@ -20,7 +20,7 @@ from typing import Any
 
 from aga_swarm.swarm.types import Swarm
 
-def upload_swarm_space_kv_document(swarm: Swarm, category: str, key: str, document: dict):
+def upload_swarm_space_kv_pair(swarm: Swarm, category: str, key: str, value: dict):
     url = swarm.configs.azure_cosmos_db_url
     cosmos_key = swarm.configs.azure_cosmos_db_key
     container_name = swarm.configs.azure_cosmos_db_container_name
@@ -29,18 +29,18 @@ def upload_swarm_space_kv_document(swarm: Swarm, category: str, key: str, docume
     container = database_name.get_container_client(container_name)
     
     # Add partiton keys and id field. CosmosDB expects all values to be inside the dict.
-    document['id'] = key
-    document['category'] = category
-    document['user_id'] = swarm.user_id
-    document['swarm_id'] = swarm.swarm_id
+    value['id'] = key
+    value['category'] = category
+    value['user_id'] = swarm.user_id
+    value['swarm_id'] = swarm.swarm_id
     
     try:
-        container.upsert_item(document)
+        container.upsert_item(value)
         return {'success': True, 'error_message': ''}
     except Exception as e:
         return {'success': False, 'error_message': str(e)}
 
-def retrieve_swarm_space_kv_document(swarm: Swarm, category: str, key: str):
+def retrieve_swarm_space_kv_value(swarm: Swarm, category: str, key: str):
     url = swarm.configs.azure_cosmos_db_url
     cosmos_key = swarm.configs.azure_cosmos_db_key
     container_name = swarm.configs.azure_cosmos_db_container_name
@@ -56,7 +56,7 @@ def retrieve_swarm_space_kv_document(swarm: Swarm, category: str, key: str):
     except Exception as e:
         return {'success': False, 'error_message': str(e)}
 
-def delete_swarm_space_kv_document(swarm: Swarm, category: str, key: str):
+def delete_swarm_space_kv_pair(swarm: Swarm, category: str, key: str):
     url = swarm.configs.azure_cosmos_db_url
     cosmos_key = swarm.configs.azure_cosmos_db_key
     container_name = swarm.configs.azure_cosmos_db_container_name

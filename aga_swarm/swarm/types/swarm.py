@@ -30,6 +30,7 @@ class Configs(BaseModel):
     azure_cosmos_db_key: str
     azure_cosmos_db_database_name: str
     azure_cosmos_db_container_name: str
+    sqlite3_db_path: str
     
 
 class Platform(Enum):
