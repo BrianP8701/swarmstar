@@ -1,126 +1,81 @@
+'''
+Azure Blob Storage doesen't have a concept of folders. It has a flat
+structure and uses the '/' character in the blob name to simulate a folder.
+
+For a common interface to folder operations I've still implemented these, but
+make_folder() does nothing and rename_folder() and move_folder() are the
+same thing.
+'''
 from azure.storage.blob import BlobServiceClient
 
 from aga_swarm.swarm.types import Swarm
 
 def delete_folder(swarm: Swarm, folder_path: str) -> dict:
-    storage_account_name = swarm.configs.azure_blob_storage_account_name
-    storage_account_key = swarm.configs.azure_blob_storage_account_key
-    container_name = swarm.configs.azure_blob_storage_container_name
-    
     try:
-        # Create a blob service client
         blob_service_client = BlobServiceClient(
-            account_url=f"https://{storage_account_name}.blob.core.windows.net/",
-            credential=storage_account_key
+            account_url=f"https://{swarm.configs.azure_blob_storage_account_name}.blob.core.windows.net/",
+            credential=swarm.configs.azure_blob_storage_account_key
         )
+        container_client = blob_service_client.get_container_client(swarm.configs.azure_blob_storage_container_name)
 
-        # Get a client to interact with the specified container
-        container_client = blob_service_client.get_container_client(container_name)
-
-        # Delete the blob
-        container_client.delete_blob(folder_path)
-        print(f"Blob {folder_path} deleted from container {container_name}.")
+        blobs_list = list(container_client.list_blobs(name_starts_with=folder_path))
+        for blob in blobs_list:
+            container_client.delete_blob(blob.name)
+        return {'success': True, 'error_message': ''}
     except Exception as e:
-        print(f"An error occurred: {e}")
         return {'success': False, 'error_message': str(e)}
-    return {'success': True, 'error_message': ''}
+    
+
 
 def list_folder(swarm: Swarm, folder_path: str) -> dict:
-    storage_account_name = swarm.configs.azure_blob_storage_account_name
-    storage_account_key = swarm.configs.azure_blob_storage_account_key
-    container_name = swarm.configs.azure_blob_storage_container_name
-    
     try:
-        # Create a blob service client
         blob_service_client = BlobServiceClient(
-            account_url=f"https://{storage_account_name}.blob.core.windows.net/",
-            credential=storage_account_key
+            account_url=f"https://{swarm.configs.azure_blob_storage_account_name}.blob.core.windows.net/",
+            credential=swarm.configs.azure_blob_storage_account_key
         )
+        container_client = blob_service_client.get_container_client(swarm.configs.azure_blob_storage_container_name)
 
-        # Get a client to interact with the specified container
-        container_client = blob_service_client.get_container_client(container_name)
+        # Ensure folder_path ends with a '/' to properly simulate a folder structure
+        if not folder_path.endswith('/'):
+            folder_path += '/'
 
-        # List the blobs in the container
         blob_list = container_client.list_blobs(name_starts_with=folder_path)
-        print(f"Blobs in folder {folder_path}:")
+        paths = []
         for blob in blob_list:
-            print(blob.name)
+            # Split the blob name by '/' and filter out those that are more than one level deep
+            if blob.name[len(folder_path):].count('/') == 0:
+                paths.append(blob.name)
+        return {'success': True, 'error_message': '', 'paths': paths}
     except Exception as e:
-        print(f"An error occurred: {e}")
-        return {'success': False, 'error_message': str(e)}
-    return {'success': True, 'error_message': ''}
+        return {'success': False, 'error_message': str(e), 'paths': []}
+    
+
 
 def make_folder(swarm: Swarm, folder_path: str) -> dict:
-    storage_account_name = swarm.configs.azure_blob_storage_account_name
-    storage_account_key = swarm.configs.azure_blob_storage_account_key
-    container_name = swarm.configs.azure_blob_storage_container_name
-    
+    return {'success': True, 'error_message': ''}
+
+def move_folder(swarm: Swarm, folder_path: str, new_folder_name: str) -> dict:
+    return rename_folder(swarm, folder_path, new_folder_name)
+
+def rename_folder(swarm: Swarm, folder_path: str, new_folder_path: str) -> dict:
     try:
-        # Create a blob service client
         blob_service_client = BlobServiceClient(
-            account_url=f"https://{storage_account_name}.blob.core.windows.net/",
-            credential=storage_account_key
+            account_url=f"https://{swarm.configs.azure_blob_storage_account_name}.blob.core.windows.net/",
+            credential=swarm.configs.azure_blob_storage_account_key
         )
+        container_client = blob_service_client.get_container_client(swarm.configs.azure_blob_storage_container_name)
 
-        # Get a client to interact with the specified container
-        container_client = blob_service_client.get_container_client(container_name)
+        blobs = list(container_client.list_blobs(name_starts_with=folder_path))
+        for blob in blobs:
+            # Construct the new blob name
+            new_blob_name = new_folder_path + blob.name[len(folder_path):]
 
-        # Create a blob
-        container_client.upload_blob(name=folder_path)
-        print(f"Blob {folder_path} created in container {container_name}.")
+            # Copy the blob to the new location
+            copied_blob = container_client.get_blob_client(new_blob_name)
+            copied_blob.start_copy_from_url(blob.url)
+
+            container_client.delete_blob(blob.name)
+        return {'success': True, 'error_message': ''}
     except Exception as e:
-        print(f"An error occurred: {e}")
         return {'success': False, 'error_message': str(e)}
-    return {'success': True, 'error_message': ''}
-
-def move_folder(swarm: Swarm, folder_path: str, new_folder_path: str) -> dict:
-    storage_account_name = swarm.configs.azure_blob_storage_account_name
-    storage_account_key = swarm.configs.azure_blob_storage_account_key
-    container_name = swarm.configs.azure_blob_storage_container_name
     
-    try:
-        # Create a blob service client
-        blob_service_client = BlobServiceClient(
-            account_url=f"https://{storage_account_name}.blob.core.windows.net/",
-            credential=storage_account_key
-        )
-
-        # Get a client to interact with the specified container
-        container_client = blob_service_client.get_container_client(container_name)
-
-        # Get a blob client to interact with the specified blob
-        blob_client = container_client.get_blob_client(folder_path)
-
-        # Copy the blob
-        blob_client.start_copy_from_url(new_folder_path)
-        print(f"Blob {folder_path} copied to {new_folder_path} in container {container_name}.")
-    except Exception as e:
-        print(f"An error occurred: {e}")
-        return {'success': False, 'error_message': str(e)}
-    return {'success': True, 'error_message': ''}
-
-def rename_folder(swarm: Swarm, folder_path: str, new_folder_name: str) -> dict:
-    storage_account_name = swarm.configs.azure_blob_storage_account_name
-    storage_account_key = swarm.configs.azure_blob_storage_account_key
-    container_name = swarm.configs.azure_blob_storage_container_name
-
-    try: 
-        # Create a blob service client
-        blob_service_client = BlobServiceClient(
-            account_url=f"https://{storage_account_name}.blob.core.windows.net/",
-            credential=storage_account_key
-        )
-
-        # Get a client to interact with the specified container
-        container_client = blob_service_client.get_container_client(container_name)
-
-        # Get a blob client to interact with the specified blob
-        blob_client = container_client.get_blob_client(folder_path)
-
-        # Rename the blob
-        blob_client.rename_blob(new_folder_name)
-        print(f"Blob {folder_path} renamed to {new_folder_name} in container {container_name}.")
-    except Exception as e:
-        print(f"An error occurred: {e}")
-        return {'success': False, 'error_message': str(e)}
-    return {'success': True, 'error_message': ''}

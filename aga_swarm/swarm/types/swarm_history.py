@@ -7,11 +7,12 @@ point in time.
 from typing import List
 from pydantic import BaseModel, RootModel
 
-from aga_swarm.swarm.types.swarm_lifecycle import LifecycleCommand
+from aga_swarm.swarm.types.swarm_lifecycle import SwarmNode, LifecycleCommand
+
 
 class SwarmEvent(BaseModel):
     lifecycle_command: LifecycleCommand
-    node_id: str
+    node: SwarmNode
     
 class SwarmHistory(RootModel):
     root: List[SwarmEvent]

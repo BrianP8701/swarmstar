@@ -1,8 +1,8 @@
 '''
 This is a common interface to KV stores for the swarm space.
 
-Things like action space, util space and memory space metadata, swarm state
-and more will be stored in KV stores.
+Things like action, util and memory space metadata, swarm state, 
+swarm history and more will be stored in KV stores.
 '''
 
 from typing import Any

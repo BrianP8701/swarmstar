@@ -12,10 +12,11 @@ def delete_folder(folder_path: str) -> dict:
     
 def list_folder(folder_path: str) -> dict:
     try:
-        files = os.listdir(folder_path)
-        return {'success': True, 'error_message': '', 'data': files}
+        entries = os.listdir(folder_path)
+        full_paths = [os.path.join(folder_path, entry) for entry in entries]
+        return {'success': True, 'error_message': '', 'paths': full_paths}
     except Exception as e:
-        return {'success': False, 'error_message': str(e), 'data': None}
+        return {'success': False, 'error_message': str(e), 'paths': None}
     
 def make_folder(folder_path: str) -> dict:
     try:

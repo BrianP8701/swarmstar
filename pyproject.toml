@@ -12,6 +12,11 @@ pydantic = "^2.5.3"
 openai = "^1.9.0"
 instructor = "^0.4.8"
 azure-cosmos = "^4.5.1"
+azure-storage-blob = "^12.19.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.0"
+python-dotenv = "^1.0.1"
 
 [build-system]
 requires = ["poetry-core"]

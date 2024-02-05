@@ -10,7 +10,6 @@ could be decoupled and stateless. This is important for scalability.
 
 from enum import Enum
 from pydantic import BaseModel
-import json
 from typing import Union
 
 from aga_swarm.swarm.types.memory_metadata import MemorySpaceMetadata, MemoryMetadata, MemoryFolder
@@ -23,31 +22,24 @@ from aga_swarm.swarm_utils.internal_package.get_resources import import_internal
 class Configs(BaseModel):
     openai_key: str
     frontend_url: str
-    azure_blob_storage_account_name: str
-    azure_blob_storage_account_key: str
-    azure_blob_storage_container_name: str
-    azure_comsos_db_url: str
-    azure_cosmos_db_key: str
-    azure_cosmos_db_database_name: str
-    azure_cosmos_db_container_name: str
-    sqlite3_db_path: str
-    
+    azure_blob_storage_account_name: str = None
+    azure_blob_storage_account_key: str = None
+    azure_blob_storage_container_name: str = None
+    azure_cosmos_db_url: str = None
+    azure_cosmos_db_key: str = None
+    azure_cosmos_db_database_name: str = None
+    azure_cosmos_db_container_name: str = None
+    sqlite3_db_path: str = None
+    user_id: str = None
+    swarm_id: str = None
 
 class Platform(Enum):
-    MAC = 'mac'
+    MAC = 'mac'    
     AZURE = 'azure'
 
 class Swarm(BaseModel):
-    user_id: str
-    swarm_id: str
-    instance_path: str
-    swarm_space_root_path: str
+    root_path: str
     platform: Platform
-    action_space_metadata_path: str
-    memory_space_metadata_path: str
-    stage_path: str
-    state_path: str
-    history_path: str
     configs: Configs
 
     def get_action(self, action_id) -> Union[ActionSpaceMetadata, ActionFolder]:

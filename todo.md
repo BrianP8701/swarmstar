@@ -59,6 +59,7 @@ So a lot of the goals outlined above have actually been rendered irrelevant beca
 Cloud Optimizations:
 - [ ] in cloud functions decouple blocking openai calls. decouple all blocking calls in cloud functions. or look into durable azure functions
 - [ ] consider sql for some data
+- [ ] when cosmosdb python sdk supports it, use hierarchical partition keys: user_id/swarm_id/category with id for query
 
 User input needed at:
 - aga_swarm/actions/swarm/manager/manager.py
