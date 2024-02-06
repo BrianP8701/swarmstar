@@ -15,6 +15,8 @@ from pydantic import BaseModel, Field, RootModel
 from typing import Dict, List, Optional, Union, Literal
 from enum import Enum
 
+from aga_swarm.swarm.types.swarm import Swarm
+
 class ConsumerMetadataType(Enum):
     ACTION = 'action'
     UTIL = 'util'
@@ -43,10 +45,7 @@ class SwarmFunctionMetadata(BaseModel):
     output_schema: BaseModel
     
 class SwarmUtilSpaceMetadata(RootModel):
-    root: Dict[str, Union[SwarmFunctionMetadata, SwarmUtilFolder]]
-
-    def __iter__(self):
-        return iter(self.root)
+    swarm: Swarm
     
     def __getitem__(self, util_id: str) -> Union[SwarmFunctionMetadata, SwarmUtilFolder]:
         util_metadata = self.root[util_id]

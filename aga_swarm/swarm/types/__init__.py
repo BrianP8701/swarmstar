@@ -30,6 +30,6 @@ from .swarm_lifecycle import (
     LifecycleCommand,
     SwarmNode,
     SwarmCommand,
-    NodeIO,
+    NodeOutput,
     BlockingOperation
 )

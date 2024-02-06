@@ -7,7 +7,7 @@ All file operations will happen within the swarm space root path.
 from importlib import import_module
 
 from aga_swarm.swarm.types.swarm import Swarm
-from aga_swarm.swarm_utils.swarm_space.paths import validate_and_adjust_swarm_space_path
+from aga_swarm.utils.data.paths import validate_and_adjust_swarm_space_path
 
 
 platform_map = {

@@ -1,7 +1,7 @@
 import os
 import pytest
 
-from aga_swarm.swarm.setup_swarm import setup_swarm_space
+from aga_swarm.swarm.swarm_setup import setup_swarm_space
 
 @pytest.mark.local
 def test_setup_swarm_space():

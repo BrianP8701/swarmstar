@@ -54,3 +54,24 @@ The memory space is for searching for the right memory/information to use.
 
 ### Swarm Util Space
 The util space is for searching for the right util to use. 
+
+
+
+
+
+categories in kv_store
+kv_store is stored at {root_path}/swarm_default_kv_store.db on local, or cosmosdb on azure
+
+on local keys follow: {category}_{key}
+action_space_{action_id} = ActionMetadata
+memory_space_{memory_id} = MemoryMetadata
+util_space_{util_id} = SwarmUtilMetadata
+swarm_state_{node_id} = SwarmNode
+swarm_history_current_frame = int
+swarm_history_{frame} = SwarmEvent
+
+
+
+on cosmosdb keys follow: {user_id}_{swarm_id}_{category}_{key}
+same as above but with user_id and swarm_id in front
+

@@ -3,12 +3,10 @@ When the swarm object is created a single sqlite3 database is created for the sw
 
 This database is used to store all kv store data with the key being the category and the key.
 '''
-from typing import Any
 import sqlite3
 import json
 
 from aga_swarm.swarm.types import Swarm
-from aga_swarm.swarm_utils.swarm_space.paths import validate_and_adjust_swarm_space_path
 
 def create_or_open_kv_db(db_path: str) -> None:
     try:

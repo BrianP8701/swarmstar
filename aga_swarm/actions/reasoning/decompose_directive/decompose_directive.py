@@ -3,36 +3,21 @@ import traceback
 from typing import List
 
 from aga_swarm.swarm.types import NodeIO, Swarm, SwarmCommand, LifecycleCommand, NodeIO, BlockingOperation
-from aga_swarm.swarm_utils.ai.openai_instructor import completion
+from aga_swarm.utils.ai.openai_instructor import completion
 
 
 class DecomposeDirective(BaseModel):
-    subdirectives: List[str] = Field(..., description="Decompose the directive into subdirectives")
+    subdirectives: List[str] = Field(..., description="List of subdirectives to be executed in parallel.")
 
 
 def main(swarm: Swarm, node_id: str, directive: str) -> NodeIO:
 
         
-    system_instructions = '''You play a pivotal role in navigating complex goals across various levels in domains like software 
-    development, engineering, and research. Your operations within this multi-tiered system 
-    include:\n\nIterative Goal Interpretation and Decomposition: In the swarm hierarchy, you'll 
-    handle goals at different completion stages. Your primary task is to break down these goals 
-    into smaller, actionable sub-goals. This process involves one critical pathway:\n\nDirect 
-    Subgoal Generation: Based on the existing information, proceed to generate and output a list 
-    of subgoals.\n\nSubgoal Contextualization and Assignment: When formulating subgoals, ensure 
-    each one is bundled with all relevant and available information. Strive for a balance between 
-    providing enough detail for effective downstream execution and maintaining overall resource 
-    efficiency.\n\nParallel Goal Output: Focus on identifying subgoals that can be pursued 
-    immediately and in parallel, independent of other tasks. Your output should exclusively 
-    list these parallelizable subgoals, omitting any that are sequential or reliant on the 
-    completion of others. Sequential or dependent goals will be formulated in subsequent phases 
-    once the immediate parallel tasks are completed.\n\nDynamic Routing and Task Delegation: Your 
-    formulated subgoals are routed to the 'router' agent. This agent is responsible for assigning 
-    tasks to suitable subagents, who will execute actions like coding, further goal decomposition, 
-    research and more.\n\nCost-Efficiency and Operations: Uphold cost-efficiency at every management 
-    level. Ensure that the subgoals you provide are detailed yet concise, adhering to the context 
-    window and budgetary constraints.'''
-    
+    system_instructions = ('Generate subgoals based on available information, ensuring they are independent '
+                           'and can be pursued simultaneously. Equip each subgoal with necessary details for '
+                           'execution. Identify and list subgoals that can operate concurrently, excluding '
+                           'sequential or interdependent tasks. This approach facilitates immediate parallel '
+                           'execution and efficiency.')
     messages = [
         {
             "role": "system",

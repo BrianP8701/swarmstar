@@ -15,7 +15,7 @@ from typing import Union
 from aga_swarm.swarm.types.memory_metadata import MemorySpaceMetadata, MemoryMetadata, MemoryFolder
 from aga_swarm.swarm.types.swarm_state import SwarmState
 from aga_swarm.swarm.types.swarm_history import SwarmHistory, SwarmEvent
-from aga_swarm.swarm_utils.internal_package.get_resources import import_internal_python_action
+from aga_swarm.utils.data.internal_operations import import_internal_python_main
 
 class Configs(BaseModel):
     openai_key: str

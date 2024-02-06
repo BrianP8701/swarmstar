@@ -1,8 +1,15 @@
 from typing import Any, Dict
 
 from aga_swarm.swarm.types import *
-from aga_swarm.swarm_utils.internal_package.get_resources import import_internal_python_action
 
+def import_internal_python_main(module_name):
+    module_name = module_name.replace('/', '.')
+    module_name = module_name.replace('.py', '')
+    module = import_module(module_name)
+    main = getattr(module, 'main', None)  
+    if main is None:
+        raise AttributeError(f"No main function found in the script {module_name}")
+    return main
 
 def execute_action(action_id: str, swarm: Swarm, params: Dict[str, Any]) -> Dict[str, Any]:
     '''
@@ -66,5 +73,5 @@ def _execute_internal_python_action(action_metadata: ActionMetadata, params: Dic
                 raise ValueError(f"Invalid value {params[param_name]} for parameter {param_name} for action {action_metadata.name}.")
         if type(params[param_name]).__name__ != param_metadata.type:
             raise ValueError(f"Invalid type: {type(params[param_name]).__name__}, for parameter: {param_name}, for action: {action_metadata.name}. Expected: {param_metadata.type}.")
-    action = import_internal_python_action(action_metadata.script_path)
+    action = import_internal_python_main(action_metadata.script_path)
     return action(**params)

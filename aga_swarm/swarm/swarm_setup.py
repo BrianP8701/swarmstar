@@ -13,6 +13,7 @@ import os
 
 from aga_swarm.swarm.types import Swarm, Platform, Configs
 from aga_swarm.utils.data.kv_operations.sqlite3 import create_or_open_kv_db
+from aga_swarm.utils.data.kv_operations.main import upload_swarm_space_kv_pair
 
 def setup_swarm_space(openai_key: str, frontend_url: str, root_path: str, platform: str, **kwargs) -> Swarm:
     try:
@@ -21,13 +22,18 @@ def setup_swarm_space(openai_key: str, frontend_url: str, root_path: str, platfo
         raise ValueError(f'Invalid platform: {platform}')
     
     platform_map = {
-        'mac': setup_mac_swarm_space,
-        'azure': setup_azure_swarm_space,
+        'mac': _setup_mac_swarm_space,
+        'azure': _setup_azure_swarm_space,
     }
     
-    return platform_map[platform.value](openai_key, frontend_url, root_path, **kwargs)
+    swarm = platform_map[platform.value](openai_key, frontend_url, root_path, **kwargs)
+    upload_swarm_space_kv_pair(swarm, 'swarm_history', 'current_frame', 0)
     
-def setup_mac_swarm_space(openai_key: str, frontend_url: str, root_path: str, **kwargs) -> Swarm:
+    return swarm
+    
+    
+
+def _setup_mac_swarm_space(openai_key: str, frontend_url: str, root_path: str, **kwargs) -> Swarm:
     if os.path.exists(root_path):
         if os.listdir(root_path):
             raise ValueError(f'Root path folder must be empty: {root_path}')
@@ -47,7 +53,7 @@ def setup_mac_swarm_space(openai_key: str, frontend_url: str, root_path: str, **
         )
     )
 
-def setup_azure_swarm_space(openai_key: str, frontend_url: str, root_path: str, **kwargs) -> Swarm:
+def _setup_azure_swarm_space(openai_key: str, frontend_url: str, root_path: str, **kwargs) -> Swarm:
     # Test connection to Azure Blob Storage
     from azure.storage.blob import BlobServiceClient
     storage_account_name = kwargs['azure_blob_storage_account_name']

@@ -24,7 +24,8 @@ from typing import Dict, List, Optional, Union
 from enum import Enum
 
 from aga_swarm.swarm.types.swarm import Swarm
-from aga_swarm.swarm_utils.swarm_space.kv_operations.main import retrieve_swarm_space_kv_value, upload_swarm_space_kv_pair, delete_swarm_space_kv_pair
+from aga_swarm.utils.data.kv_operations.main import retrieve_swarm_space_kv_value
+from aga_swarm.utils.data.internal_operations import get_internal_action_metadata
 
 class ActionType(Enum):
     INTERNAL_FOLDER = 'internal_folder'                             # Folder inside the package
@@ -50,19 +51,23 @@ class ActionMetadata(BaseModel):
     execution_metadata: Optional[Dict[str, str]] = None       # further metadata to define custom behavior for this action
 
 class ActionSpace(RootModel):
-    root: Dict[str, Union[ActionMetadata, ActionFolder]]
-
-    def __iter__(self):
-        return iter(self.root)
-
-    def __getitem__(self, action_id: str) -> Union[ActionMetadata, ActionFolder]:
-        action_metadata = self.root[action_id]
-        if action_metadata is None:
-            raise ValueError(f"This action id {action_id} does not exist.")
-        return action_metadata
+    '''
+    The action space metadata is stored in the swarm's kv store as:
     
-    def get_action(swarm: Swarm, action_id: str):
-        return retrieve_swarm_space_kv_value(swarm, 'action_space', action_id)
+        action_id: Union[ActionMetadata, ActionFolder]
+    '''
+    swarm: Swarm
+    
+    def __getitem__(self, action_id: str) -> Union[ActionMetadata, ActionFolder]:
+        try:
+            internal_action_metadata = get_internal_action_metadata(action_id)
+            return internal_action_metadata
+        except Exception:
+            external_action_metadata = retrieve_swarm_space_kv_value(self.swarm, 'action_space', action_id)
+            if external_action_metadata is not None:
+                return external_action_metadata
+            else:
+                raise ValueError(f"This action id: `{action_id}` does not exist.")
     
     def add_action_space_node(action_id: str, action_metadata: ActionMetadata) -> None:
         '''

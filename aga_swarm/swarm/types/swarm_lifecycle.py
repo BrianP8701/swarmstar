@@ -15,34 +15,33 @@ from enum import Enum
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 
-from aga_swarm.swarm.types.swarm import Swarm
-
 class LifecycleCommand(Enum):
     SPAWN= "spawn"
-    EXECUTE = "execute"
     TERMINATE = "terminate"
     NODE_FAILURE = "node_failure"
+    BLOCKING_OPERATION = "blocking_operation"
+
+class SwarmNode(BaseModel):
+    node_id: str
+    parent_id: Optional[str] = None
+    children_ids: List[str]
+    action_id: str
+    directive: str
+    report: Optional[str] = None
+    alive: bool
 
 class SwarmCommand(BaseModel):
     action_id: str
     directive: str
     
-class NodeIO(BaseModel):
+class NodeOutput(BaseModel):
     lifecycle_command: LifecycleCommand
-    swarm_commands: List[SwarmCommand]
+    action_inputs: List[SwarmCommand]
     report: str
     
 class BlockingOperation(BaseModel):
+    lifecycle_command: LifecycleCommand.BLOCKING_OPERATION
     node_id: str
-    swarm: Swarm
     type: str
     args: Dict[str, Any]
     next_function_to_call: str
-    
-class SwarmNode(BaseModel):
-    node_id: str
-    parent_id: Optional[str] = None
-    children_ids: List[str]
-    swarm_command: SwarmCommand
-    report: Optional[str] = None
-    alive: bool

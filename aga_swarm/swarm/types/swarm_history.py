@@ -8,21 +8,21 @@ from typing import List
 from pydantic import BaseModel, RootModel
 
 from aga_swarm.swarm.types.swarm_lifecycle import SwarmNode, LifecycleCommand
-
+from aga_swarm.swarm.types.swarm import Swarm
+from aga_swarm.utils.data.kv_operations.main import retrieve_swarm_space_kv_value, upload_swarm_space_kv_pair
 
 class SwarmEvent(BaseModel):
     lifecycle_command: LifecycleCommand
     node: SwarmNode
     
 class SwarmHistory(RootModel):
-    root: List[SwarmEvent]
-    
-    def __iter__(self):
-        return iter(self.root)
-    
-    def __getitem__(self, index: int) -> SwarmEvent:
-        return self.root[index]
+    swarm: Swarm
+
+    def __getitem__(self, frame: int) -> SwarmEvent:
+        return SwarmEvent.model_validate(retrieve_swarm_space_kv_value(self.swarm, 'swarm_history', frame))
     
     def add_event(self, lifecycle_command: LifecycleCommand, node: SwarmNode):
-        self.root.append(SwarmEvent(lifecycle_command=lifecycle_command, node=node))
+        current_frame = retrieve_swarm_space_kv_value(self.swarm, 'swarm_history', 'current_frame')
+        upload_swarm_space_kv_pair(self.swarm, 'swarm_history', current_frame, SwarmEvent(lifecycle_command=lifecycle_command, node=node).model_dump_json())
+        upload_swarm_space_kv_pair(self.swarm, 'swarm_history', 'current_frame', current_frame + 1)
 
