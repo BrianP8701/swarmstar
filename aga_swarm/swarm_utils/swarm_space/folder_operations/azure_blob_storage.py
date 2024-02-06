@@ -7,6 +7,7 @@ make_folder() does nothing and rename_folder() and move_folder() are the
 same thing.
 '''
 from azure.storage.blob import BlobServiceClient
+from types import List
 
 from aga_swarm.swarm.types import Swarm
 
@@ -21,13 +22,10 @@ def delete_folder(swarm: Swarm, folder_path: str) -> dict:
         blobs_list = list(container_client.list_blobs(name_starts_with=folder_path))
         for blob in blobs_list:
             container_client.delete_blob(blob.name)
-        return {'success': True, 'error_message': ''}
     except Exception as e:
-        return {'success': False, 'error_message': str(e)}
-    
+        raise ValueError(f'Failed to delete folder: {str(e)}')
 
-
-def list_folder(swarm: Swarm, folder_path: str) -> dict:
+def list_folder(swarm: Swarm, folder_path: str) -> List[str]:
     try:
         blob_service_client = BlobServiceClient(
             account_url=f"https://{swarm.configs.azure_blob_storage_account_name}.blob.core.windows.net/",
@@ -45,19 +43,19 @@ def list_folder(swarm: Swarm, folder_path: str) -> dict:
             # Split the blob name by '/' and filter out those that are more than one level deep
             if blob.name[len(folder_path):].count('/') == 0:
                 paths.append(blob.name)
-        return {'success': True, 'error_message': '', 'paths': paths}
     except Exception as e:
-        return {'success': False, 'error_message': str(e), 'paths': []}
-    
+        raise ValueError(f'Failed to list folder: {str(e)}')
 
+def make_folder(swarm: Swarm, folder_path: str) -> None:
+    return None
 
-def make_folder(swarm: Swarm, folder_path: str) -> dict:
-    return {'success': True, 'error_message': ''}
+def move_folder(swarm: Swarm, folder_path: str, new_folder_name: str) -> None:
+    try:
+        rename_folder(swarm, folder_path, new_folder_name)
+    except Exception as e:
+        raise ValueError(f'Failed to move folder: {str(e)}')
 
-def move_folder(swarm: Swarm, folder_path: str, new_folder_name: str) -> dict:
-    return rename_folder(swarm, folder_path, new_folder_name)
-
-def rename_folder(swarm: Swarm, folder_path: str, new_folder_path: str) -> dict:
+def rename_folder(swarm: Swarm, folder_path: str, new_folder_path: str) -> None:
     try:
         blob_service_client = BlobServiceClient(
             account_url=f"https://{swarm.configs.azure_blob_storage_account_name}.blob.core.windows.net/",
@@ -75,7 +73,6 @@ def rename_folder(swarm: Swarm, folder_path: str, new_folder_path: str) -> dict:
             copied_blob.start_copy_from_url(blob.url)
 
             container_client.delete_blob(blob.name)
-        return {'success': True, 'error_message': ''}
     except Exception as e:
-        return {'success': False, 'error_message': str(e)}
+        raise ValueError(f'Failed to rename folder: {str(e)}')
     

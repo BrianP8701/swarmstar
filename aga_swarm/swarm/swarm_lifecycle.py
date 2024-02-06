@@ -6,7 +6,7 @@ from aga_swarm.swarm_utils.misc.uuid import generate_uuid
 from aga_swarm.swarm.executor import execute_action
 
 @validate_call
-def swarm_master(swarm, swarm_node: SwarmNode) -> List[SwarmNode]:
+def swarm_master(swarm: Swarm, swarm_node: SwarmNode) -> List[SwarmNode]:
     node_output: NodeIO = _execute_node(swarm, swarm_node)
     swarm_node.report = node_output.report
     lifecycle_command = node_output.lifecycle_command.value
@@ -21,8 +21,6 @@ def swarm_master(swarm, swarm_node: SwarmNode) -> List[SwarmNode]:
         print(f"Node failure: {swarm_node.report}")
     else:
         raise Exception(f"Unknown action_id: {lifecycle_command}")
-
-
 
 '''
 Private methods

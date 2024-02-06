@@ -1,7 +1,8 @@
 from typing import Any, Dict
 
 from aga_swarm.swarm.types import *
-from aga_swarm.utils.internal_swarm_utils import import_internal_python_action
+from aga_swarm.swarm_utils.internal_package.get_resources import import_internal_python_action
+
 
 def execute_action(action_id: str, swarm: Swarm, params: Dict[str, Any]) -> Dict[str, Any]:
     '''
@@ -19,7 +20,7 @@ def execute_action(action_id: str, swarm: Swarm, params: Dict[str, Any]) -> Dict
         - dict: 
             The result of the action.
     '''
-    action_space_metadata = swarm.get_action_space_metadata()
+    action_metadata = 
     action_metadata = action_space_metadata.root[action_id]
     if action_metadata is None:
         raise ValueError(f"This action id {action_id} does not exist.")

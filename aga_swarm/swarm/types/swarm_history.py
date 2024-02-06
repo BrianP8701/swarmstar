@@ -23,6 +23,6 @@ class SwarmHistory(RootModel):
     def __getitem__(self, index: int) -> SwarmEvent:
         return self.root[index]
     
-    def add_event(self, event: SwarmEvent):
-        self.root.append(event)
+    def add_event(self, lifecycle_command: LifecycleCommand, node: SwarmNode):
+        self.root.append(SwarmEvent(lifecycle_command=lifecycle_command, node=node))
 

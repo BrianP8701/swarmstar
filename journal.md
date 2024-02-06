@@ -1671,92 +1671,51 @@ Local:
     - uses LevelDB for kv and local file system for file storage
     - uses subproccesses to create dynamic enviroments for generated code
 
+# Concern about further decoupling actions
+Actions need to be further decoupled for blocking actions within them. Currently actions are the smallest unit a cloud function can take on. I do quite enjoy and believe logically within the swarm that is the correct abstraction. However, this cannot be when deployed on cloud serverless. take the situations where an action needs user input in the middle, or when they make openai calls, or when they need to make a call to a database. These are all blocking calls. I think the solution is to have a "blocking" action that can be called from within an action. This action will be able to take on the blocking calls.
 
+First of all, i want to answer for once and for all - do all actions have the same IO? Merely the passing around of a directive? The only communication between nodes is language? this genuinely sounds crazy. Lets draw out some crazy swarm scenarios that cant happen today but that we want to happen in the future
 
-## Chatgpts response on dynamically creating docker instances on clopud for generated code
+manager breaks down directive
+researcher browses the internet and does analysis and passes results to memory keeper
+memory keeper saves the analysis and sources to the appropriate place in memory
+requirements analysis software agent takes direvtive and makes sure we have all relevant context before passing to coder. it asks and talks to the user and the research agent some more
+coder takes specifications and requirements and writes code
+code tester takes context of newly written code and ! here is where we need more than just a directive comminucated. we need the tester to actually have the path to the code. but in this scenario we can bypass this by packing the coder and tester into one action. it is afterall packed together. tester tests code, based off results feedback loop happens until success and termination or asking for user input. If user input happens user will come in and fix problem manually and set the node to terminate or will have to do some traceback and swarm debugging.
+action creator receives request to write action to document entire github repo, crawling through it and going through connections and iterating through the documentation. 
+Gets passed to user to define alot of specifications. agent gets spawned to create pydantic models for instructor with user. models get saved to blob storage and termination. next phase begins. user interaction again. i describe the workflow i want generally for reading through the codebase and writing the documentation. the swarm writes code. DISTRACTION. I tell this branch of the swarm to spawn a new directive to focus on. i want a new feature to be added to the swarm. i want to select the lines i want the swarm to edit and the lines i want to share with it for context, and have it output only those lines, which shall be replaced. I add this logic to the backend with the swarm. We refresh the backend. We then go add a way to do this in the frontend. We pause and resume the swarm with the changes. or actually we dont have to we can continue with the new swarm actions saved in external swarm memory, code saved in blob storage with the appropriate metadata in comsosdb and we need to make changes to the frontend and test the new frontend seperately in a different enviroment. If the frontend works we'lll then have to refresh the swarm. We need to have automated CI/CD pipelines. the swarm makes changes to a fork of the frontend code. we test it. if it works and we like it while communicating with the swarm we merge the changes. after all this the distraction ends and we go back to what we were doing before. 
 
-To achieve this, you'll need a process that involves several steps, integrating Azure Functions, Docker, and possibly Azure Container Instances (ACI) or another container orchestration service like Kubernetes if you're looking for scalability and manageability. Here's a high-level overview of how you can implement such a system:
+blah blah blah. anyway the point is - yes between action nodes it is just language being communicated. everything inside a node is predetermined. And there is a lot more user input then i expected or previously imagined. the engineer is very involved but his work is sped up even more than previously possible than with just chatgpt because now the ai is writing saving, deploying testing the code, clicking the buttons and the user gets to remain on a single interface without jumping back and forth. which admittedly might get quite boring, but if theres a lot of stuff the swarm is doing, we should lots of visualizations for all processes which might keep the engineer more engaged. this is the future of coding. its a lot to implement but when i get the ball rolling this is true acceleration. i will become somebody. i wont be a nobody -  a loser. a ghost in history to die and be unknown. ill have done something in the universe with my allocated consciousness
 
-### Step 1: Azure Function to Receive Script and Dependencies
+secondly - decoupling the actions further. so clearly we just decided that the action as we imagine it now is the fundamental unit. it is to be what occupies the action space as it is. but we just need breakpoints. right now we pass the action id, args to an executor who will execute it in its entirety. i suppose we might have an action that is broken up amongst its blocking calls. so instead of an action being an entire script, we can have a folder. when we call the action with the executor itll execute the first part. when it reaches its first blocking operation, itll return a new object (ill have to define this) with the args and the next step to call within the folder. okey dokey problem solved
 
-- **Input:** This Azure Function is triggered by some event (e.g., an HTTP request, a message on an Azure Queue, etc.) and receives the script along with its dependencies and parameters for execution.
-- **Process:** It parses the input to extract the script, its dependencies, and execution parameters.
-- **Output:** Passes this information to the next step.
+so unfortunately we do need to redefine the action space metadata for like the thousandth time alread bruh. ope wait nope we dont have to. i got a different solution.... yessirski this is more clean. call the main as we do normally. when a blocking operation happens we will return the next function to call inside that script along with params. thats it. then the handler local or cloud will see "oh okay this isnt a NodeIO, we gotta just call this function at the script with the given params again" and boom itll do that
 
-### Step 2: Dynamic Docker Container Creation
+expect ofc its more complex than that. lets walk through some scenarios. uh this project man just keeps growing bigger and bigger.... and im like stuck implementing the same shit. i guess - or at least im telling myself - i need to constantly adjust the groundwork of this system as i discover more of the requirements and needs of the system. once i do reach a point where the groundwork is laid out.... oof thats fucking takeoff boy.
 
-You have a few options to dynamically create a Docker container:
+alright so requirements analysis agent receives a directive. it decides it needs user input. it outputs: 
+{
+    "node_id": "",
+    "type": "user_input",
+    "args": {
+        "agent_message": "...",
+        "swarm": swarm
+    },
+    "next_function_to_call": ""             This is the next function to call within the same script this action is in. 
+}
+{
+    "node_id": "",
+    "type": "openai_instructor_completion",
+    "args": {
+        "model" : BaseModel,
+        "messages": List[str],
+        "swarm": swarm
+    }
+}
 
-#### Option A: Use Azure Container Instances (ACI) directly from Azure Function
+so actions always start from the main function but then can be broken down in this manner
 
-- **Process:**
-  - The Azure Function uses the Azure SDK to programmatically create an ACI instance.
-  - You define a Docker image that serves as a base image with a common set of dependencies pre-installed. For any additional dependencies, you could either:
-    - Use a script within the container to install these dependencies dynamically upon container startup.
-    - Generate a Dockerfile dynamically that includes the additional `RUN pip install` commands for Python libraries or equivalent for other languages, build the Docker image, and then deploy it to ACI.
+so what is that thing above, "user_input" or "openai_instructor_completion"? Is that a util? I suppose it is. yeah i mean it is thats fine that works. wait a second doonk u stupid bitch wait what oh shit yeah no it is a blocking function
 
-#### Option B: Use a Docker Host
+also what if the thing being passed around is not serializable?
 
-- **Infrastructure Setup:** Have a Docker host running (could be a VM in Azure) with Docker installed and an API endpoint exposed for container management.
-- **Process:**
-  - The Azure Function sends a command to this Docker host to create a new container based on a base image.
-  - The command includes running a script (could be a bash script or another small program) that:
-    1. Dynamically installs the dependencies listed.
-    2. Adds the script to the container.
-    3. Executes the script with the provided parameters.
-
-### Step 3: Trigger Next Azure Function After Execution
-
-- **Execution Monitoring:** You'll need to monitor the execution of the script within the Docker container. This could be done through logs or by monitoring the process directly.
-- **Trigger Next Step:** Once the script execution is complete, the system needs to trigger the next Azure Function. This could be done through:
-  - Direct API call to the next Azure Function if it's exposed through HTTP.
-  - Placing a message in an Azure Queue or a topic in Azure Service Bus, which the next Azure Function is listening to.
-
-### Implementation Considerations:
-
-- **Security:** Ensure that the execution environment is secure, especially if executing arbitrary code.
-- **Error Handling:** Implement robust error handling and logging, particularly for the dynamic installation of dependencies and execution of the script.
-- **Resource Cleanup:** Ensure that the Docker containers are stopped and deleted after execution to avoid unnecessary costs and resource usage.
-
-### Example Code Skeleton:
-
-For the dynamic Docker container creation (Option A), using Python and Azure SDK:
-
-```python
-from azure.identity import DefaultAzureCredential
-from azure.mgmt.containerinstance import ContainerInstanceManagementClient
-from azure.mgmt.containerinstance.models import ContainerGroup, Container, ContainerPort, EnvironmentVariable, ImageRegistryCredential, IpAddress, OperatingSystemTypes, Port, ResourceRequests, ResourceRequirements
-
-# Replace these variables with your actual settings
-resource_group_name = "yourResourceGroupName"
-container_group_name = "yourContainerGroupName"
-location = "yourLocation"
-image_name = "python:3.8-slim"  # Base image
-container_name = "yourContainerName"
-cpu_requirement = 1.0
-memory_requirement = 1.5
-environment_variables = [EnvironmentVariable(name="MY_ENV_VAR", value="my_value")]  # Add your script execution parameters here
-
-credentials = DefaultAzureCredential()
-client = ContainerInstanceManagementClient(credentials, subscription_id)
-
-container_resource_requirements = ResourceRequirements(requests=ResourceRequests(memory_in_gb=memory_requirement, cpu=cpu_requirement))
-
-container_instance = Container(name=container_name, image=image_name, resources=container_resource_requirements, environment_variables=environment_variables)
-
-# Optionally define ports if your container needs to be accessible over the network
-ports = [ContainerPort(port=80)]
-ip_address = IpAddress(ports=[Port(protocol="TCP", port=80)], type="Public")
-
-container_group = ContainerGroup(location=location, containers=[container_instance], os_type=OperatingSystemTypes.linux, ip_address=ip_address)
-
-response = client.container_groups.begin_create_or_update(resource_group_name, container_group_name, container_group)
-response.result()
-
-# After creation, use Azure SDK or CLI to monitor logs and trigger the next function
-```
-
-This is a basic outline. The actual implementation will depend on your specific requirements, such as how the script and its dependencies are formatted and passed to the Azure Function, how parameters for the script's execution are defined, and how you plan to manage Docker images and containers.
-
-
-I need to seperate the internal package from things that may differ in local and cloud. this is simple as leaving external actions, memories and utils to be handled and implemented outside of the package.

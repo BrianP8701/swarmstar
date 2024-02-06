@@ -1,21 +1,17 @@
-import json
-from pydantic import validate_call, BaseModel, Field
+from pydantic import BaseModel, Field
 import traceback
 from typing import List
 
-from aga_swarm.swarm.types import NodeIO, Swarm, SwarmCommand, LifecycleCommand, NodeIO
-from aga_swarm.utils.llm import completion
+from aga_swarm.swarm.types import NodeIO, Swarm, SwarmCommand, LifecycleCommand, NodeIO, BlockingOperation
+from aga_swarm.swarm_utils.ai.openai_instructor import completion
 
-class Input(BaseModel):
-    directive: str
-    swarm: Swarm
-    
-Output = NodeIO    
 
-def decompose_directive(input: Input) -> NodeIO:
-    
-    class DecomposeDirective(BaseModel):
-        subdirectives: List[str] = Field(..., description="Decompose the directive into subdirectives")
+class DecomposeDirective(BaseModel):
+    subdirectives: List[str] = Field(..., description="Decompose the directive into subdirectives")
+
+
+def main(swarm: Swarm, node_id: str, directive: str) -> NodeIO:
+
         
     system_instructions = '''You play a pivotal role in navigating complex goals across various levels in domains like software 
     development, engineering, and research. Your operations within this multi-tiered system 
@@ -44,18 +40,25 @@ def decompose_directive(input: Input) -> NodeIO:
         },
         {
             "role": "user",
-            "content": f'Directive: \n`{input.directive}`'
+            "content": f'Directive: \n`{directive}`'
         }
     ]
     
-    try:
-        subdirectives = completion(messages, input.swarm.configs.openai_key, DecomposeDirective, max_retries=2).subdirectives
-    except Exception as e:
-        return NodeIO(
-            lifecycle_command=LifecycleCommand.NODE_FAILURE,
-            swarm_commands=[],
-            report=str(e) + "\nTraceback:\n" + traceback.format_exc()
-        )
+    return BlockingOperation(
+        node_id=node_id,
+        swarm=swarm,
+        type="openai_instructor_completion",
+        args={
+            "messages": messages,
+            "model": DecomposeDirective,
+            "swarm": swarm
+        },
+        next_function_to_call="subdirectives_to_swarm_commands"
+    )
+    
+
+def subdirectives_to_swarm_commands(swarm: Swarm, node_id: str, directive: str, model: DecomposeDirective) -> NodeIO:
+    subdirectives = model.subdirectives
 
     swarm_commands = []
     for subdirective in subdirectives:
@@ -63,7 +66,7 @@ def decompose_directive(input: Input) -> NodeIO:
             action_id='aga_swarm/actions/swarm/actions/route_to_action',
             params = {
                 'directive': subdirective,
-                'swarm': input.swarm
+                'swarm': swarm
             }
         )
         swarm_commands.append(swarm_command)
@@ -71,9 +74,5 @@ def decompose_directive(input: Input) -> NodeIO:
     return NodeIO(
         lifecycle_command=LifecycleCommand.SPAWN,
         swarm_commands=swarm_commands,
-        report=f'Directive: {input.directive}\n\nSubdirectives:\n' + '\n'.join(subdirectives)
+        report=f'Decomposed directive: \n`{directive}`\n\nInto subdirectives:\n' + '\n'.join(subdirectives)
     )
-
-@validate_call
-def main(directive: str, swarm: Swarm) -> NodeIO:
-    return decompose_directive(directive, swarm)

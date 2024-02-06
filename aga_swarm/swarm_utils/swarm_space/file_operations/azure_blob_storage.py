@@ -2,7 +2,7 @@ from azure.storage.blob import BlobServiceClient
 
 from aga_swarm.swarm.types import Swarm
 
-def delete_file(swarm: Swarm, file_path: str) -> dict:
+def delete_file(swarm: Swarm, file_path: str) -> None:
     storage_account_name = swarm.configs.azure_blob_storage_account_name
     storage_account_key = swarm.configs.azure_blob_storage_account_key
     container_name = swarm.configs.azure_blob_storage_container_name
@@ -19,13 +19,10 @@ def delete_file(swarm: Swarm, file_path: str) -> dict:
 
         # Delete the blob
         container_client.delete_blob(file_path)
-        print(f"Blob {file_path} deleted from container {container_name}.")
     except Exception as e:
-        print(f"An error occurred: {e}")
-        return {'success': False, 'error_message': str(e)}
-    return {'success': True, 'error_message': ''}
+        raise ValueError(f'Failed to delete file: {str(e)}')
     
-def move_file(swarm: Swarm, file_path: str, new_file_path: str) -> dict:
+def move_file(swarm: Swarm, file_path: str, new_file_path: str) -> None:
     storage_account_name = swarm.configs.azure_blob_storage_account_name
     storage_account_key = swarm.configs.azure_blob_storage_account_key
     container_name = swarm.configs.azure_blob_storage_container_name
@@ -45,13 +42,10 @@ def move_file(swarm: Swarm, file_path: str, new_file_path: str) -> dict:
 
         # Copy the blob
         blob_client.start_copy_from_url(new_file_path)
-        print(f"Blob {file_path} copied to {new_file_path} in container {container_name}.")
     except Exception as e:
-        print(f"An error occurred: {e}")
-        return {'success': False, 'error_message': str(e)}
-    return {'success': True, 'error_message': ''}
+        raise ValueError(f'Failed to move file: {str(e)}')
     
-def rename_file(swarm: Swarm, file_path: str, new_file_name: str) -> dict:
+def rename_file(swarm: Swarm, file_path: str, new_file_name: str) -> None:
     storage_account_name = swarm.configs.azure_blob_storage_account_name
     storage_account_key = swarm.configs.azure_blob_storage_account_key
     container_name = swarm.configs.azure_blob_storage_container_name
@@ -71,13 +65,10 @@ def rename_file(swarm: Swarm, file_path: str, new_file_name: str) -> dict:
 
         # Rename the blob
         blob_client.rename_blob(new_file_name)
-        print(f"Blob {file_path} renamed to {new_file_name} in container {container_name}.")
     except Exception as e:
-        print(f"An error occurred: {e}")
-        return {'success': False, 'error_message': str(e)}
-    return {'success': True, 'error_message': ''}
+        raise ValueError(f'Failed to rename file: {str(e)}')
 
-def upload_file(swarm: Swarm, file_path: str, file_bytes: bytes) -> dict:
+def upload_file(swarm: Swarm, file_path: str, file_bytes: bytes) -> None:
     storage_account_name = swarm.configs.azure_blob_storage_account_name
     storage_account_key = swarm.configs.azure_blob_storage_account_key
     container_name = swarm.configs.azure_blob_storage_container_name
@@ -100,13 +91,10 @@ def upload_file(swarm: Swarm, file_path: str, file_bytes: bytes) -> dict:
 
         # Upload the file
         blob_client.upload_blob(file_bytes, overwrite=True)
-        print(f"File uploaded to blob {file_path} in container {container_name}.")
     except Exception as e:
-        print(f"An error occurred: {e}")
-        return {'success': False, 'error_message': str(e)}
-    return {'success': True, 'error_message': ''}
+        raise ValueError(f'Failed to upload file: {str(e)}')
 
-def retrieve_file(swarm: Swarm, file_path: str) -> dict:
+def retrieve_file(swarm: Swarm, file_path: str) -> bytes:
     storage_account_name = swarm.configs.azure_blob_storage_account_name
     storage_account_key = swarm.configs.azure_blob_storage_account_key
     container_name = swarm.configs.azure_blob_storage_container_name
@@ -125,9 +113,7 @@ def retrieve_file(swarm: Swarm, file_path: str) -> dict:
         blob_client = container_client.get_blob_client(file_path)
 
         # Download the blob
-        file_bytes = blob_client.download_blob().readall()
-        print(f"Blob {file_path} downloaded from container {container_name}.")
+        return blob_client.download_blob().readall()
+        
     except Exception as e:
-        print(f"An error occurred: {e}")
-        return {'success': False, 'error_message': str(e), 'data': None}
-    return {'success': True, 'error_message': '', 'data': file_bytes}
+        raise ValueError(f'Failed to retrieve file: {str(e)}')

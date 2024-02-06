@@ -29,7 +29,7 @@ So a lot of the goals outlined above have actually been rendered irrelevant beca
 - [ ] get new swarm architecture working locally across the entire lifecycle of a swarm
 - [ ] automate the process of manually adding swarm actions
 - [ ] create action creator
-- [ ] use new swarm architecture to add all cloud storage and file storage operations
+- [half did this?? i did it manually. impossible to have swarm do stuff without thes operations] use new swarm architecture to add all cloud storage and file storage operations
 - [x] decouple and make core stateless
 - [x] make node ids uuids
 - [ ] add consistency for read-write operations to swarm space
@@ -38,7 +38,8 @@ So a lot of the goals outlined above have actually been rendered irrelevant beca
 - [x] add pydantic models to action space
 - [x] replace all tools with instructor
 - [ ] make executor do validation
-- [ ]
+- [ ] decouple openai calls from actions
+- [ ] add ACI spin up for external python functions with different dependencies
 - [ ] build memory space
 - [ ] add config functions to add custom data to memory and action space
 - [ ] test with multiple enviroments

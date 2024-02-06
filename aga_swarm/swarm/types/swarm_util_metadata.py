@@ -2,8 +2,8 @@
 The swarm util space metadata has a simlar but different role to 
 the action space metadata:
 
-(1) To allow the swarm to organize and search for utils
-(2) Describe how to interact with the utils
+    (1) To allow the swarm to organize and search for utils
+    (2) Describe how to interact with the utils
 
 Swarm utils are just swarm specific functions. They may be
 used in the construction of actions.

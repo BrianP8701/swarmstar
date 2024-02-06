@@ -1,7 +1,7 @@
 from .action_metadata import (
     ActionMetadata,
     ActionFolder,
-    ActionSpaceMetadata
+    ActionSpace
 )
 
 from .memory_metadata import (
@@ -30,5 +30,6 @@ from .swarm_lifecycle import (
     LifecycleCommand,
     SwarmNode,
     SwarmCommand,
-    NodeIO
+    NodeIO,
+    BlockingOperation
 )

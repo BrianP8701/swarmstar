@@ -3,41 +3,38 @@ import shutil
 
 from aga_swarm.swarm.types import Swarm
 
-def delete_file(swarm: Swarm, file_path: str) -> dict:
+def delete_file(swarm: Swarm, file_path: str) -> None:
     try:
         os.remove(file_path)
-        return {'success': True, 'error_message': ''}
     except Exception as e:
-        return {'success': False, 'error_message': str(e)}
+        raise ValueError(f'Failed to delete file: {str(e)}')
     
-def move_file(swarm: Swarm, file_path: str, new_file_path: str) -> dict:
+def move_file(swarm: Swarm, file_path: str, new_file_path: str) -> None:
     try:
         shutil.move(file_path, new_file_path)
-        return {'success': True, 'error_message': ''}
     except Exception as e:
-        return {'success': False, 'error_message': str(e)}
+        raise ValueError(f'Failed to move file: {str(e)}')
     
-def rename_file(swarm: Swarm, file_path: str, new_file_name: str) -> dict:
+def rename_file(swarm: Swarm, file_path: str, new_file_name: str) -> None:
     try:
         directory = os.path.dirname(file_path)
         new_file_path = os.path.join(directory, new_file_name)
         os.rename(file_path, new_file_path)
-        return {'success': True, 'error_message': ''}
     except Exception as e:
-        return {'success': False, 'error_message': str(e)}
+        raise ValueError(f'Failed to rename file: {str(e)}')
     
-def upload_file(swarm: Swarm, file_path: str, file_bytes: bytes) -> dict:
+def upload_file(swarm: Swarm, file_path: str, file_bytes: bytes) -> None:
     try:
         with open(file_path, 'wb') as file:
             file.write(file_bytes)
-        return {'success': True, 'error_message': ''}
     except Exception as e:
-        return {'success': False, 'error_message': str(e)}
+        raise ValueError(f'Failed to upload file: {str(e)}')
     
-def retrieve_file(swarm: Swarm, file_path: str) -> dict:
+def retrieve_file(swarm: Swarm, file_path: str) -> bytes:
     try:
         with open(file_path, 'rb') as file:
             file_bytes = file.read()
-        return {'success': True, 'error_message': '', 'data': file_bytes}
+        return file_bytes
     except Exception as e:
-        return {'success': False, 'error_message': str(e), 'data': None}
+        raise ValueError(f'Failed to retrieve file: {str(e)}')
+

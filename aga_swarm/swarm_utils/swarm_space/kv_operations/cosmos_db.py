@@ -18,12 +18,12 @@ For now cosmosdb python sdk doesen't support hierarchical partitions. So we'll a
 partition keys into a single string and use it as the partition key and id for now
 '''
 
-from azure.cosmos import CosmosClient, PartitionKey
+from azure.cosmos import CosmosClient
 from typing import Any
 
 from aga_swarm.swarm.types import Swarm
 
-def upload_swarm_space_kv_pair(swarm: Swarm, category: str, key: str, value: dict):
+def upload_swarm_space_kv_pair(swarm: Swarm, category: str, key: str, value: dict) -> None:
     url = swarm.configs.azure_cosmos_db_url
     cosmos_key = swarm.configs.azure_cosmos_db_key
     container_name = swarm.configs.azure_cosmos_db_container_name
@@ -37,9 +37,9 @@ def upload_swarm_space_kv_pair(swarm: Swarm, category: str, key: str, value: dic
     
     try:
         container.upsert_item(value)
-        return {'success': True, 'error_message': ''}
     except Exception as e:
-        return {'success': False, 'error_message': str(e)}
+        raise ValueError(f'Failed to upload to cosmosdb: {str(e)}')
+
 
 def retrieve_swarm_space_kv_value(swarm: Swarm, category: str, key: str):
     url = swarm.configs.azure_cosmos_db_url
@@ -52,9 +52,9 @@ def retrieve_swarm_space_kv_value(swarm: Swarm, category: str, key: str):
     
     try:
         document = container.read_item(item=id, partition_key=id)
-        return {'success': True, 'error_message': '', 'data': document}
+        return document
     except Exception as e:
-        return {'success': False, 'error_message': str(e)}
+        raise ValueError(f'Failed to retrieve from cosmosdb: {str(e)}')
 
 def delete_swarm_space_kv_pair(swarm: Swarm, category: str, key: str):
     url = swarm.configs.azure_cosmos_db_url
@@ -67,11 +67,9 @@ def delete_swarm_space_kv_pair(swarm: Swarm, category: str, key: str):
     
     try:
         container.delete_item(item=id, partition_key=id)
-        return {'success': True, 'error_message': ''}
     except Exception as e:
-        return {'success': False, 'error_message': str(e)}
-
-
+        raise ValueError(f'Failed to delete from cosmosdb: {str(e)}')
+        
 
 
 '''

@@ -1,5 +1,0 @@
-{
-    "name": "memory_router",
-    "type": "action",
-    "description": "Finds the best place to store data in memory"
-}

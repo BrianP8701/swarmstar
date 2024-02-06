@@ -13,7 +13,9 @@ The swarm node is the fundamental unit of the swarm.
 
 from enum import Enum
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
+
+from aga_swarm.swarm.types.swarm import Swarm
 
 class LifecycleCommand(Enum):
     SPAWN= "spawn"
@@ -29,6 +31,13 @@ class NodeIO(BaseModel):
     lifecycle_command: LifecycleCommand
     swarm_commands: List[SwarmCommand]
     report: str
+    
+class BlockingOperation(BaseModel):
+    node_id: str
+    swarm: Swarm
+    type: str
+    args: Dict[str, Any]
+    next_function_to_call: str
     
 class SwarmNode(BaseModel):
     node_id: str
