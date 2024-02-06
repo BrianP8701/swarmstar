@@ -17,6 +17,7 @@ from typing import List, Optional, Dict, Any
 
 class LifecycleCommand(Enum):
     SPAWN= "spawn"
+    EXECUTE = "execute"
     TERMINATE = "terminate"
     NODE_FAILURE = "node_failure"
     BLOCKING_OPERATION = "blocking_operation"
@@ -26,18 +27,13 @@ class SwarmNode(BaseModel):
     parent_id: Optional[str] = None
     children_ids: List[str]
     action_id: str
-    directive: str
+    message: str
     report: Optional[str] = None
     alive: bool
 
 class SwarmCommand(BaseModel):
     action_id: str
-    directive: str
-    
-class NodeOutput(BaseModel):
-    lifecycle_command: LifecycleCommand
-    action_inputs: List[SwarmCommand]
-    report: str
+    message: str
     
 class BlockingOperation(BaseModel):
     lifecycle_command: LifecycleCommand.BLOCKING_OPERATION
@@ -45,3 +41,8 @@ class BlockingOperation(BaseModel):
     type: str
     args: Dict[str, Any]
     next_function_to_call: str
+
+class NodeOutput(BaseModel):
+    lifecycle_command: LifecycleCommand
+    swarm_commands: List[SwarmCommand]
+    report: str

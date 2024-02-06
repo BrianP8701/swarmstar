@@ -16,6 +16,8 @@ from typing import Dict, List, Optional, Union, Literal
 from enum import Enum
 
 from aga_swarm.swarm.types.swarm import Swarm
+from aga_swarm.utils.data.internal_operations import get_internal_util_metadata
+from aga_swarm.utils.data.kv_operations.main import retrieve_swarm_space_kv_value
 
 class ConsumerMetadataType(Enum):
     ACTION = 'action'
@@ -25,30 +27,38 @@ class ConsumerMetadata(BaseModel):
     type: ConsumerMetadataType
     consumer_id: str
 
-class SwarmUtilFolder(BaseModel):
-    type: Literal['folder'] = Field('folder', Literal=True)
+class UtilType(Enum):
+    INTERNAL_FOLDER = 'internal_folder'
+    INTERNAL_FUNCTION = 'internal_function'
+
+class UtilFolder(BaseModel):
+    type: UtilType
     name: str
     description: str
     children: List[str] = []
     parent: Optional[str] = None
-    folder_path: str    
+    folder_metadata: Optional[Dict[str, str]] = None 
 
-class SwarmFunctionMetadata(BaseModel):
-    type: Literal['function'] = Field('function', Literal=True) 
+class UtilMetadata(BaseModel):
+    type: UtilType
     name: str
     description: str
     parent: str
     consumers: List[ConsumerMetadata]
-    import_path: str
-    function_name: str
     input_schema: BaseModel
     output_schema: BaseModel
+    function_metadata: Optional[Dict[str, str]] = None
     
 class SwarmUtilSpaceMetadata(RootModel):
     swarm: Swarm
     
-    def __getitem__(self, util_id: str) -> Union[SwarmFunctionMetadata, SwarmUtilFolder]:
-        util_metadata = self.root[util_id]
-        if util_metadata is None:
-            raise ValueError(f"This util id {util_id} does not exist.")
-        return util_metadata
+    def __getitem__(self, util_id: str) -> Union[UtilMetadata, UtilFolder]:
+        try:
+            internal_util_metadata = get_internal_util_metadata(util_id)
+            return internal_util_metadata
+        except Exception:
+            external_util_metadata = retrieve_swarm_space_kv_value(self.swarm, 'util_space', util_id)
+            if external_util_metadata is not None:
+                return external_util_metadata
+            else:
+                raise ValueError(f"This util id: `{util_id}` does not exist.")

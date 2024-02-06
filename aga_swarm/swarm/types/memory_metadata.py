@@ -7,7 +7,7 @@ routers can search over the space effectively.
 
 Secondly, data can take on many forms. Internal package documentation,
 cloud blob storage, local file systems, vector databases and more.
-All of these require very different types of interaction. The memory 
+All of these require different types of interaction. The memory 
 metadata labels the memory so the swarm knows how to interact with it.
 '''
 
@@ -15,9 +15,17 @@ from enum import Enum
 from typing import List, Optional, Dict, Union, Any
 from pydantic import BaseModel, RootModel
 
+from aga_swarm.swarm.types.swarm import Swarm
+from aga_swarm.utils.data.internal_operations import get_internal_memory_metadata
+from aga_swarm.utils.data.kv_operations.main import retrieve_swarm_space_kv_value
+
 class MemoryType(Enum):
+    INTERNAL_FOLDER = "internal_folder"
+    INTERNAL_PYTHON_FILE = "internal_python_file"
+    INTERNAL_MARKDOWN_FILE = "internal_markdown_file"
     LOCAL_FOLDER = "local_folder"
     LOCAL_PYTHON_FILE = "local_python_file"
+    LOCAL_MARKDOWN_FILE = "local_markdown_file"
     LOCAL_JSON = "local_json"
     AZURE_COSMOS_DB_CONTAINER = "azure_cosmos_db_container"
     AZURE_BLOB = "azure_blob"
@@ -26,30 +34,30 @@ class MemoryFolder(BaseModel):
     type: MemoryType
     name: str
     description: str
-    parent: Optional[str] = None
     children: List[str]
-    folder_path: str
-    internal: bool
+    parent: Optional[str] = None
+    folder_metadata: Optional[Dict[str, str]] = None
 
 class MemoryMetadata(BaseModel):
     type: MemoryType
     name: str
     description: str
-    internal: bool
     parent: str
     metadata: Optional[Dict[str, str]] = None      # further metadata to define custom behavior for this memory
     
 class MemorySpaceMetadata(RootModel):
-    root: Dict[str, Union[MemoryMetadata, MemoryFolder]]
+    swarm: Swarm
 
-    def __iter__(self):
-        return iter(self.root)
-    
     def __getitem__(self, memory_id: str) -> Union[MemoryMetadata, MemoryFolder]:
-        memory_metadata = self.root[memory_id]
-        if memory_metadata is None:
-            raise ValueError(f"This memory id {memory_id} does not exist.")
-        return memory_metadata
+        try:
+            internal_memory_metadata = get_internal_memory_metadata(memory_id)
+            return internal_memory_metadata
+        except Exception:
+            external_memory_metadata = retrieve_swarm_space_kv_value(self.swarm, 'memory_space', memory_id)
+            if external_memory_metadata is not None:
+                return external_memory_metadata
+            else:
+                raise ValueError(f"This memory id: `{memory_id}` does not exist.")
     
 '''
 Below is just documentation for what is expected in execution_metadata given a memory_type

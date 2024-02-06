@@ -19,6 +19,6 @@ class SwarmState(RootModel):
         node = SwarmNode.model_validate(retrieve_swarm_space_kv_value(self.swarm, 'swarm_state', node_id))
         return node
         
-    def update_node(self, node: SwarmNode):
+    def update_state(self, node: SwarmNode):
         upload_swarm_space_kv_pair(self.swarm, 'swarm_state', node.node_id, node.model_dump_json())
     

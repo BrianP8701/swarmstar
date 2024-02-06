@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 import traceback
 from typing import List
 
-from aga_swarm.swarm.types import NodeIO, Swarm, SwarmCommand, LifecycleCommand, NodeIO, BlockingOperation
+from aga_swarm.swarm.types import Swarm, SwarmCommand, LifecycleCommand, BlockingOperation, NodeOutput
 from aga_swarm.utils.ai.openai_instructor import completion
 
 
@@ -10,7 +10,7 @@ class DecomposeDirective(BaseModel):
     subdirectives: List[str] = Field(..., description="List of subdirectives to be executed in parallel.")
 
 
-def main(swarm: Swarm, node_id: str, directive: str) -> NodeIO:
+def main(swarm: Swarm, node_id: str, message: str) -> BlockingOperation:
 
         
     system_instructions = ('Generate subgoals based on available information, ensuring they are independent '
@@ -25,13 +25,13 @@ def main(swarm: Swarm, node_id: str, directive: str) -> NodeIO:
         },
         {
             "role": "user",
-            "content": f'Directive: \n`{directive}`'
+            "content": f'Directive: \n`{message}`'
         }
     ]
     
     return BlockingOperation(
+        lifecycle_command=LifecycleCommand.BLOCKING_OPERATION,
         node_id=node_id,
-        swarm=swarm,
         type="openai_instructor_completion",
         args={
             "messages": messages,
@@ -42,22 +42,19 @@ def main(swarm: Swarm, node_id: str, directive: str) -> NodeIO:
     )
     
 
-def subdirectives_to_swarm_commands(swarm: Swarm, node_id: str, directive: str, model: DecomposeDirective) -> NodeIO:
+def subdirectives_to_swarm_commands(swarm: Swarm, node_id: str, message: str, model: DecomposeDirective) -> NodeOutput:
     subdirectives = model.subdirectives
 
     swarm_commands = []
     for subdirective in subdirectives:
         swarm_command = SwarmCommand(
             action_id='aga_swarm/actions/swarm/actions/route_to_action',
-            params = {
-                'directive': subdirective,
-                'swarm': swarm
-            }
+            directive= subdirective
         )
         swarm_commands.append(swarm_command)
     
-    return NodeIO(
+    return NodeOutput(
         lifecycle_command=LifecycleCommand.SPAWN,
         swarm_commands=swarm_commands,
-        report=f'Decomposed directive: \n`{directive}`\n\nInto subdirectives:\n' + '\n'.join(subdirectives)
+        report=f'Decomposed directive: \n`{message}`\n\nInto subdirectives:\n' + '\n'.join(subdirectives)
     )

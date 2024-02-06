@@ -1,8 +1,9 @@
-from pydantic import validate_call
 from typing import List, Union
+import json
 
 from aga_swarm.swarm.types import *
 from aga_swarm.utils.misc.uuid import generate_uuid
+from aga_swarm.utils.action_utils.execute_action.main import execute_node_action
 
 def spawn_node(swarm: Swarm, swarm_command: SwarmCommand, parent_id: Union[str, None] = None) -> SwarmNode:
     action_space = ActionSpace(swarm=swarm)
@@ -13,64 +14,117 @@ def spawn_node(swarm: Swarm, swarm_command: SwarmCommand, parent_id: Union[str, 
         parent_id=parent_id,
         children_ids=[],
         action_id=swarm_command.action_id,
-        directive=swarm_command.directive,
+        message=swarm_command.message,
         report=None,
         alive=True
     )
-    swarm_state.update_node(node.node_id, node)
-    swarm_history.update_history(LifecycleCommand.SPAWN, node.node_id)
+    swarm_state.update_state(node)
+    swarm_history.add_event(LifecycleCommand.SPAWN, node.node_id)
     return node
 
-def execute_node(swarm: Swarm, swarm_node: SwarmNode):
-    node_output = _execute_node_action(swarm, swarm_node)
+def execute_node(swarm: Swarm, node: SwarmNode) -> Union[List[SwarmNode], BlockingOperation]:
+    node_output: Union[NodeOutput, BlockingOperation] = execute_node_action(swarm, node)
     
     if node_output.lifecycle_command == LifecycleCommand.BLOCKING_OPERATION:
-        return node_output
+        return BlockingOperation(node_output)
     elif node_output.lifecycle_command == LifecycleCommand.SPAWN:
-        return _spawn_children(swarm, swarm_node, node_output)
+        return _spawn_children(swarm, node, NodeOutput(node_output))
     elif node_output.lifecycle_command == LifecycleCommand.TERMINATE:
-        return _terminate_node(swarm, swarm_node, node_output)
+        return _terminate_node(swarm, node, node_output)
     elif node_output.lifecycle_command == LifecycleCommand.NODE_FAILURE:
-        return _handle_node_failure(swarm, swarm_node, node_output)
+        return _handle_node_failure(swarm, node, node_output)
     else:
         raise ValueError("Unexpected output type")
 
-def execute_blocking_operation(swarm: Swarm, blocking_operation: BlockingOperation):
-    # TODO Make execute_blocking_operation work properly
-    pass
 
 '''
 Private methods
 '''
 
-def _spawn_children(swarm: Swarm, swarm_node: SwarmNode, node_output: NodeOutput) -> List[SwarmNode]:
-    child_nodes = []
+def _spawn_children(swarm: Swarm, parent: SwarmNode, node_output: NodeOutput) -> List[SwarmNode]:
+    parent.report = node_output.report
+    children = []
     for swarm_command in node_output.swarm_commands:
-        child_node = spawn_node(swarm, swarm_command, swarm_node.node_id)
-        swarm_node.children_ids.append(child_node.node_id)
-        child_nodes.append(child_node)
-        
-    swarm.update_state(swarm_node)
-    swarm.update_history(LifecycleCommand.EXECUTE, swarm_node.node_id)
-    return child_nodes
-
-def _execute_node_action(swarm: Swarm, node: SwarmNode) -> NodeIO:
-    # TODO Make execute node work properly
-    node_output = execute_action(
-        action_id=node.swarm_command.action_id, 
-        directive=node.swarm_command.directive,
-        node_id=node.node_id,
-        swarm=swarm)
+        child_node = spawn_node(swarm, swarm_command, parent.node_id)
+        parent.children_ids.append(child_node.node_id)
+        children.append(child_node)
     
-    if not isinstance(node_output, NodeIO):
-        raise TypeError("Expected action() to return a NodeIO instance")
+    swarm_state = SwarmState(swarm=swarm)
+    swarm_history = SwarmHistory(swarm=swarm)
+    swarm_state.update_state(parent)
+    swarm_history.add_event(LifecycleCommand.EXECUTE, parent)
+
+    return children
+
+def _terminate_node(swarm: Swarm, node: SwarmNode, node_output: NodeOutput) -> dict:
+    '''
+    1. Terminate the node
+    2. Recursively terminate parents until we find a manager or root node
+        a. If we reach the root, we are done
+        b. If the parent is a manager, we need to check it's other children
+            - If any children are alive, we will exit and not terminate the manager
+            - If all children are dead, and the manager has been reviewed, we will terminate the manager
+            - If all the children are dead and none of them reviewed the manager, we will spawn a review reports node
+    '''
+    swarm_state = SwarmState(swarm=swarm)
+    node.report = node_output.report
+    _node_funeral(swarm, node)    
     
-    return node_output
+    while node.parent_id is not None:
+        node = swarm_state[node.parent_id]
+        if node.action_id == 'aga_swarm/actions/reasoning/decompose_directive':
+            is_node_reviewed = False
+            for child_id in node.children_ids:
+                child_node = swarm_state[child_id]
+                if child_node.alive:
+                    return None
+                else:
+                    if child_node.action_id == 'aga_swarm/actions/reasoning/review_reports':
+                        is_node_reviewed = True
+            if not is_node_reviewed:
+                reports = _get_reports_of_children(swarm, node)
+                return spawn_node(
+                    swarm, 
+                    SwarmCommand(
+                        action_id='aga_swarm/actions/reasoning/review_reports', 
+                        message=json.dumps(reports)
+                    ), 
+                    node.node_id
+                )
+            else: 
+                _node_funeral(swarm, node)
+        else:
+            _node_funeral(swarm, node)
 
+    return None
 
-def _terminate_node(swarm_command: SwarmCommand) -> dict:
-    # We need the review reports action here
-    pass
+def _get_reports_of_children(swarm: Swarm, parent: SwarmNode) -> List[List[str]]:
+    reports = []
+    swarm_state = SwarmState(swarm=swarm)
+    # Visit all branches of this node
+    for branch in parent.children_ids:
+        node = swarm_state[branch]
+        this_branch_reports = []
+        this_branch_reports.append(node.report)
+        # Iterate until branch ends or we encounter a manager
+        while node.children_ids != []:
+            node = swarm_state[node.children_ids[0]]
+            if node.action_id == 'aga_swarm/actions/reasoning/decompose_directive':
+                this_branch_reports.append(node.report)
+                break
+            else:
+                this_branch_reports.append(node.report)
+                
+        reports.append(this_branch_reports)
+    return reports
+
+def _node_funeral(swarm: Swarm, node: SwarmNode) -> SwarmNode:
+    # R.I.P my boy    #LongLiveNode #NodeLivesMatterToo  
+    node.alive = False
+    swarm_state = SwarmState(swarm=swarm)
+    swarm_history = SwarmHistory(swarm=swarm)
+    swarm_state.update_state(node)
+    swarm_history.add_event(LifecycleCommand.TERMINATE, node)
 
 def _handle_node_failure(swarm: Swarm, node: SwarmNode) -> SwarmNode:
     pass

@@ -56,6 +56,8 @@ So a lot of the goals outlined above have actually been rendered irrelevant beca
 - [ ] ensure consistency in operations that write to swarm space
 - [ ] add feature to pause and resume the swarm
 - [ ] allow devs to implement their own env configuration
+- [ ] have swarm fill in util space metadata
+- [ ] have swarm fill in util space consumer metadata
 
 Cloud Optimizations:
 - [ ] in cloud functions decouple blocking openai calls. decouple all blocking calls in cloud functions. or look into durable azure functions
