@@ -29,7 +29,7 @@
         "description": "Decompose directives into immediate parralel sub-directives.",
         "parent": "aga_swarm/actions/reasoning",
         "execution_metadata": {
-            "script_path": "aga_swarm/actions/reasoning/decompose_directive/decompose_directive.py"
+            "script_path": "aga_swarm/actions/reasoning/decompose_directive.py"
         }
     }
 }

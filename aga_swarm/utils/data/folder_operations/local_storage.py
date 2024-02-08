@@ -1,8 +1,10 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING, List
 import os
 import shutil
-from typing import List
 
-from aga_swarm.swarm.types import Swarm
+if TYPE_CHECKING:
+    from aga_swarm.swarm.types import Swarm
 
 def delete_folder(folder_path: str) -> dict:
     try:

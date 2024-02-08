@@ -3,10 +3,13 @@ When the swarm object is created a single sqlite3 database is created for the sw
 
 This database is used to store all kv store data with the key being the category and the key.
 '''
+from __future__ import annotations
+from typing import TYPE_CHECKING
 import sqlite3
 import json
 
-from aga_swarm.swarm.types import Swarm
+if TYPE_CHECKING:
+    from aga_swarm.swarm.types import Swarm
 
 def create_or_open_kv_db(db_path: str) -> None:
     try:
@@ -22,7 +25,7 @@ def upload_swarm_space_kv_pair(swarm: Swarm, category: str, key: str, value: dic
         conn = sqlite3.connect(swarm.sqlite3_db_path)
         cursor = conn.cursor()
         key = f'{category}_{key}'
-        value = json.dumps(value)
+        if type(value) != str: value = json.dumps(value)        
         cursor.execute('INSERT OR REPLACE INTO kv_store (key, value) VALUES (?, ?)', (key, value))
         conn.commit()
     except Exception as e:

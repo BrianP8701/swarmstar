@@ -17,11 +17,12 @@ In this manner we have good logical partitions and can provide a standard interf
 For now cosmosdb python sdk doesen't support hierarchical partitions. So we'll append all the
 partition keys into a single string and use it as the partition key and id for now
 '''
-
+from __future__ import annotations
+from typing import TYPE_CHECKING
 from azure.cosmos import CosmosClient
-from typing import Any
 
-from aga_swarm.swarm.types import Swarm
+if TYPE_CHECKING:   
+    from aga_swarm.swarm.types import Swarm
 
 def upload_swarm_space_kv_pair(swarm: Swarm, category: str, key: str, value: dict) -> None:
     url = swarm.configs.azure_cosmos_db_url

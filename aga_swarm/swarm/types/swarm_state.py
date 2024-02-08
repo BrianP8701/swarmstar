@@ -3,16 +3,17 @@ The swarm state is a record of the current state of the swarm. It
 simply stores a dictionary of all nodes. This state can be deconstructed
 and reconstructed from the history.
 '''
+from __future__ import annotations
+from pydantic import BaseModel
+from typing import TYPE_CHECKING
 
-from typing import Dict
-from pydantic import RootModel
-import json
-
-from aga_swarm.swarm.types.swarm_lifecycle import SwarmNode
-from aga_swarm.swarm.types.swarm import Swarm
 from aga_swarm.utils.data.kv_operations.main import retrieve_swarm_space_kv_value, upload_swarm_space_kv_pair
 
-class SwarmState(RootModel):
+if TYPE_CHECKING:
+    from aga_swarm.swarm.types.swarm import Swarm
+    from aga_swarm.swarm.types.swarm_lifecycle import SwarmNode
+
+class SwarmState(BaseModel):
     swarm: Swarm
     
     def __getitem__(self, node_id: str) -> SwarmNode:

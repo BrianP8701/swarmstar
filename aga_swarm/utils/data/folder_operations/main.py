@@ -3,13 +3,14 @@ This is a common interface for folder operations for the swarm space.
 
 All folder operations will happen within the swarm space root path.
 '''
-
+from __future__ import annotations
+from typing import TYPE_CHECKING, List
 from importlib import import_module
-from typing import List
 
-from aga_swarm.swarm.types.swarm import Swarm
 from aga_swarm.utils.data.paths import validate_and_adjust_swarm_space_path
 
+if TYPE_CHECKING:
+    from aga_swarm.swarm.types import Swarm
 
 platform_map = {
     'local': 'aga_swarm.swarm_utils.swarm_space_utils.folder_operations.local_storage',

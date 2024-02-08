@@ -1,7 +1,7 @@
 from typing import List, Union
 import json
 
-from aga_swarm.swarm.types import *
+from aga_swarm.swarm.types import Swarm, ActionSpace, SwarmCommand, SwarmNode, SwarmState, SwarmHistory, BlockingOperation, NodeOutput, LifecycleCommand
 from aga_swarm.utils.misc.uuid import generate_uuid
 from aga_swarm.utils.action_utils.execute_action.main import execute_node_action
 
@@ -58,13 +58,15 @@ def _spawn_children(swarm: Swarm, parent: SwarmNode, node_output: NodeOutput) ->
 
 def _terminate_node(swarm: Swarm, node: SwarmNode, node_output: NodeOutput) -> dict:
     '''
-    1. Terminate the node
-    2. Recursively terminate parents until we find a manager or root node
-        a. If we reach the root, we are done
-        b. If the parent is a manager, we need to check it's other children
-            - If any children are alive, we will exit and not terminate the manager
-            - If all children are dead, and the manager has been reviewed, we will terminate the manager
-            - If all the children are dead and none of them reviewed the manager, we will spawn a review reports node
+        Terminates a node and recursively terminates its parent nodes until a manager or root node is encountered.
+
+        1. Directly terminate the specified node.
+        2. Recursively check and potentially terminate parent nodes:
+        - Termination stops at the root node.
+        - For a manager node:
+            - If any child nodes are alive, termination of the manager is halted.
+            - If all child nodes are dead and the manager has been reviewed, the manager is terminated.
+            - If all child nodes are dead but the manager hasn't been reviewed, initiate a review reports node for all child reports.
     '''
     swarm_state = SwarmState(swarm=swarm)
     node.report = node_output.report

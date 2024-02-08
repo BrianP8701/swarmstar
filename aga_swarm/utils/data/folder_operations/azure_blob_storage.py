@@ -6,10 +6,12 @@ For a common interface to folder operations I've still implemented these, but
 make_folder() does nothing and rename_folder() and move_folder() are the
 same thing.
 '''
+from __future__ import annotations
+from typing import TYPE_CHECKING, List
 from azure.storage.blob import BlobServiceClient
-from types import List
 
-from aga_swarm.swarm.types import Swarm
+if TYPE_CHECKING:
+    from aga_swarm.swarm.types import Swarm
 
 def delete_folder(swarm: Swarm, folder_path: str) -> dict:
     try:

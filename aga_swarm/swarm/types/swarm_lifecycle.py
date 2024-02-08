@@ -36,7 +36,7 @@ class SwarmCommand(BaseModel):
     message: str
     
 class BlockingOperation(BaseModel):
-    lifecycle_command: LifecycleCommand.BLOCKING_OPERATION
+    lifecycle_command: LifecycleCommand = LifecycleCommand.BLOCKING_OPERATION
     node_id: str
     type: str
     args: Dict[str, Any]

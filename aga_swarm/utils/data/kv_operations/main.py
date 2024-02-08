@@ -4,9 +4,13 @@ This is a common interface to KV stores for the swarm space.
 Things like action, util and memory space metadata, swarm state, 
 swarm history and more will be stored in KV stores.
 '''
-
+from __future__ import annotations
+from typing import TYPE_CHECKING
 from importlib import import_module
-from aga_swarm.swarm.types import Swarm
+
+if TYPE_CHECKING:
+    from aga_swarm.swarm.types.swarm import Swarm
+    
 
 platform_map = {
     'local': 'aga_swarm.swarm_utils.swarm_space.kv_operations.sqlite3',

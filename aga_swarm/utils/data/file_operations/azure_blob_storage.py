@@ -1,6 +1,9 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
 from azure.storage.blob import BlobServiceClient
 
-from aga_swarm.swarm.types import Swarm
+if TYPE_CHECKING:
+    from aga_swarm.swarm.types import Swarm
 
 def delete_file(swarm: Swarm, file_path: str) -> None:
     storage_account_name = swarm.configs.azure_blob_storage_account_name

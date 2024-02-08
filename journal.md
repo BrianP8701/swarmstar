@@ -1719,3 +1719,14 @@ so what is that thing above, "user_input" or "openai_instructor_completion"? Is 
 
 also what if the thing being passed around is not serializable?
 
+Today: manually fill out util space metadata, handle node failure, review reports action, python coder action, requirements analysis action, add get user input blocking operations, action router
+Tomorrow: memory router, connect swarm package with frontend and run it
+
+
+# Abstract syntax tree
+we want to add further context to the util space metadata. specifically when debugging, or wanting to retrieve the code as context we dont want to ahve to retrieve the entire file string and oput it into gpt as we might not need all the context. we can use AST to mark out the precise lines of the function we want. in fact we can actually not include this in the metadata. we can perform this operation dynamically when we perform retrieval. since we have the file and the name of the object we want we already ahve enough information to perform this operation. this is my first time hearing of or thinking of ASTs. we can use this to perform tracebacks throught the swarms code i think and use it for more prercise surgical retrieval
+
+# Pausing and resuming a swarm run
+pausing a swarm is easier now because the swarm is decoupled. lets say the swarm is running. we have some nodes waiting on blocking operations from the user, some nodes in the midst of watiing for a reply from openai, some nodes
+
+well whats the actual swarm master process? The swarm master will pass us one of two things. A blocking operation or a list of nodes. and then we execute that. We simply add an extra step before a cloud function executes to check if the swarm is still active. if not nothing happens. actually something does happen, the blocking operation or node gets added to a buffer for that swarm. when that swarm gets resumed, it can simply retrieve all of those

@@ -10,12 +10,6 @@ could be decoupled and stateless. This is important for scalability.
 
 from enum import Enum
 from pydantic import BaseModel
-from typing import Union
-
-from aga_swarm.swarm.types.memory_metadata import MemorySpaceMetadata, MemoryMetadata, MemoryFolder
-from aga_swarm.swarm.types.swarm_state import SwarmState
-from aga_swarm.swarm.types.swarm_history import SwarmHistory, SwarmEvent
-from aga_swarm.utils.data.internal_operations import import_internal_python_main
 
 class Configs(BaseModel):
     openai_key: str
@@ -39,15 +33,3 @@ class Swarm(BaseModel):
     root_path: str
     platform: Platform
     configs: Configs
-
-    def get_memory(self, memory_id) -> Union[MemorySpaceMetadata, MemoryFolder]:
-        pass    
-    
-    def get_state(self) -> SwarmState:
-        pass
-    
-    def get_history(self) -> SwarmHistory:
-        pass
-
-    def get_memory_space_metadata(self) -> MemorySpaceMetadata:
-        pass

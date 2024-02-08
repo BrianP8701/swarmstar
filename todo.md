@@ -38,7 +38,7 @@ So a lot of the goals outlined above have actually been rendered irrelevant beca
 - [x] add pydantic models to action space
 - [x] replace all tools with instructor
 - [ ] make executor do validation
-- [ ] decouple openai calls from actions
+- [x] decouple openai calls from actions
 - [ ] add ACI spin up for external python functions with different dependencies
 - [ ] build memory space
 - [ ] add config functions to add custom data to memory and action space

@@ -1,3 +1,46 @@
+from typing import Union
+import json
+import sqlite3
+
+from aga_swarm.swarm.types import ActionMetadata, ActionFolder, ActionType
+
+def change_action_space_metadata(key: str, metadata: Union[ActionFolder, ActionMetadata]):
+    json_path = 'aga_swarm/actions/action_space_metadata.json'
+    sqlite3_path = 'aga_swarm/actions/action_space_metadata.sqlite3'
+    
+    # Change the key value pair in both files
+    with open(json_path, 'r') as f:
+        action_space_metadata = json.load(f)
+    action_space_metadata[key] = metadata
+    with open(json_path, 'w') as f:
+        json.dump(action_space_metadata, f)
+
+    conn = sqlite3.connect(sqlite3_path)
+    c = conn.cursor()
+    c.execute("UPDATE kv_store SET key = ? WHERE key = 1", (metadata,))
+    conn.commit()
+    conn.close()
+
+action_id = "aga_swarm/actions/reasoning/decompose_directive"
+
+
+dict_version = {
+    "type": "internal_python_main",
+    "name": "decompose_directive.py",
+    "description": "Decompose directives into immediate parralel sub-directives.",
+    "parent": "aga_swarm/actions/reasoning",
+    "execution_metadata": {
+        "script_path": "aga_swarm/actions/reasoning/decompose_directive.py"
+    }
+}
+
+metadata = ActionMetadata.model_validate(dict_version)
+
+
+
+
+change_action_space_metadata('aga_swarm/actions/reasoning/decompose_directive', dict_version)
+
 
 
 # def add_action_space_node(action_id: str, action_metadata: ActionMetadata) -> None:

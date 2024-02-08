@@ -1,7 +1,9 @@
+from __future__ import annotations
 from importlib import import_module
-from typing import Dict, Any
+from typing import Dict, Any, TYPE_CHECKING
 
-from aga_swarm.swarm.types import Swarm, ActionMetadata
+if TYPE_CHECKING:
+    from aga_swarm.swarm.types import Swarm, ActionMetadata
 
 def execute_action(swarm: Swarm, action_metadata: ActionMetadata, node_id: str, message: str):
     script_path = action_metadata.execution_metadata['script_path']
