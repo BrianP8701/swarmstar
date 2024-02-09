@@ -24,8 +24,7 @@ def main(swarm: Swarm, node_id: str, message: str) -> BlockingOperation:
         type="openai_instructor_completion",
         args={
             "messages": messages,
-            "model": NextActionPath,
-            "swarm": swarm
+            "instructor_model": NextActionPath
         },
         context = {
             "parent_action_id": 'aga_swarm/actions',
@@ -35,15 +34,15 @@ def main(swarm: Swarm, node_id: str, message: str) -> BlockingOperation:
     )
     
     
-def route_goal(swarm: Swarm, next_action_path: NextActionPath, parent_action_id: str, goal: str) -> Union[BlockingOperation, NodeOutput]:
+def route_goal(swarm: Swarm, completion: NextActionPath, parent_action_id: str, goal: str) -> Union[BlockingOperation, NodeOutput]:
     '''
     action_id, next_action_index or failure message
     -> 
     '''
-    if next_action_path.index is not None:
+    if completion.index is not None:
         action_space = ActionSpace(swarm=swarm)
         parent_action_metadata = action_space[parent_action_id]
-        next_action_id = parent_action_metadata.children[next_action_path.index]
+        next_action_id = parent_action_metadata.children[completion.index]
         action_metadata = action_space[next_action_id]
         if action_metadata.is_folder:
             children_descriptions = get_children_descriptions(action_space, action_metadata)

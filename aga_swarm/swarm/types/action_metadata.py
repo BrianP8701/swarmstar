@@ -34,6 +34,7 @@ class ActionType(Enum):
     INTERNAL_FOLDER = 'internal_folder'                             # Folder inside the package
     AZURE_BLOB_STORAGE_FOLDER = 'azure_blob_storage_folder'         # Folder inside azure blob storage
     INTERNAL_PYTHON_MAIN = 'internal_python_main'                   # Python file with main function inside package
+    INTERNAL_PYTHON_FUNCTION = 'internal_python_function'           # Python file with function name in execution_metadata
     SUBPROCESS_MAIN = 'subprocess_main'                             # Python file with main function outside package stored locally
     AZURE_BLOB_STORAGE_SCRIPT = 'azure_blob_storage_script'         # Python file with main function inside azure blob storage
     AZURE_BLOB_STORAGE_PACKAGE = 'azure_blob_storage_package'       # Package inside azure blob storage
@@ -80,8 +81,11 @@ Below is just documentation for what is expected in execution_metadata given an 
 
 # For action_type INTERNAL_PYTHON_MAIN_FUNCTION
 class InternalPythonMainFunctionMetadata(BaseModel):
-    import_path: str
-    content_path: str
+    script_path: str
+
+class InternalPythonFunctionMetadata(BaseModel):
+    script_path: str
+    function_name: str
     
 # For action_type SUBPROCESS_MAIN_FUNCTION
 class SubprocessMainFunctionMetadata(BaseModel):

@@ -1730,3 +1730,8 @@ we want to add further context to the util space metadata. specifically when deb
 pausing a swarm is easier now because the swarm is decoupled. lets say the swarm is running. we have some nodes waiting on blocking operations from the user, some nodes in the midst of watiing for a reply from openai, some nodes
 
 well whats the actual swarm master process? The swarm master will pass us one of two things. A blocking operation or a list of nodes. and then we execute that. We simply add an extra step before a cloud function executes to check if the swarm is still active. if not nothing happens. actually something does happen, the blocking operation or node gets added to a buffer for that swarm. when that swarm gets resumed, it can simply retrieve all of those
+
+
+# Blocking operations vs actions vs nodes
+
+so ive definitely found the right thing, execute action, decouple along blocking operation, pass context between blocking operations. between nodes we just pass messages. oh i suppose a blocking operation just passes back a blocking operation. yeah.

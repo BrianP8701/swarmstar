@@ -3,7 +3,7 @@ from typing import List, Dict, Type
 from pydantic import BaseModel
 import instructor
 
-def completion(messages: List[Dict[str, str]], openai_key: str, model: Type[BaseModel], max_retries: int) -> Type[BaseModel]:
+def completion(messages: List[Dict[str, str]], openai_key: str, model: Type[BaseModel], max_retries: int = 3) -> Type[BaseModel]:
     '''
     Most of you are likely familiar with tool calling with GPT4.
     
