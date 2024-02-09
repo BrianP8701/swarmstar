@@ -6,7 +6,6 @@ from .swarm import (
 
 from .action_metadata import (
     ActionMetadata,
-    ActionFolder,
     ActionSpace,
     ActionType,
     

@@ -1,9 +1,7 @@
 from pydantic import BaseModel, Field
-import traceback
 from typing import List
 
 from aga_swarm.swarm.types import Swarm, SwarmCommand, LifecycleCommand, BlockingOperation, NodeOutput
-from aga_swarm.utils.ai.openai_instructor import completion
 
 
 class DecomposeDirective(BaseModel):
@@ -14,10 +12,13 @@ def main(swarm: Swarm, node_id: str, message: str) -> BlockingOperation:
 
         
     system_instructions = ('Generate subgoals based on available information, ensuring they are independent '
-                           'and can be pursued simultaneously. Equip each subgoal with necessary details for '
+                           'and can be pursued simultaneously without relying on the completion of other goals. '
+                           'Equip each subgoal with necessary details for immediate and independent'
                            'execution. Identify and list subgoals that can operate concurrently, excluding '
                            'sequential or interdependent tasks. This approach facilitates immediate parallel '
-                           'execution and efficiency.')
+                           'execution and efficiency. Subgoals may be complex goals that need to be further '
+                           'broken down. Specific subgoals can include anything, from asking the user questions, '
+                           'writing code, doing research, browsing the internet etc.')
     messages = [
         {
             "role": "system",

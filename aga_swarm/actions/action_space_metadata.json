@@ -1,5 +1,6 @@
 {
     "aga_swarm/actions": {
+        "is_folder": "True",
         "type": "internal_folder",
         "name": "actions",
         "description": "This is the root of the action space",
@@ -12,6 +13,7 @@
         }
     },
     "aga_swarm/actions/reasoning": {
+        "is_folder": "True",
         "type": "internal_folder",
         "name": "reasoning",
         "description": "This folder contains all actions pertaining to reasoning operations. It currently only contains an action that decomposes a directive into immediate sub-directives.",
@@ -24,6 +26,7 @@
         }
     },
     "aga_swarm/actions/reasoning/decompose_directive": {
+        "is_folder": "False",
         "type": "internal_python_main",
         "name": "decompose_directive.py",
         "description": "Decompose directives into immediate parralel sub-directives.",

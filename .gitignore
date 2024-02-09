@@ -10,8 +10,7 @@ __pycache__/
 .DS_Store
 reference/
 temp.txt
-z/
-
+my_swarms/
 # C extensions
 *.so
 

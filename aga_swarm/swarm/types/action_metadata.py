@@ -38,30 +38,25 @@ class ActionType(Enum):
     AZURE_BLOB_STORAGE_SCRIPT = 'azure_blob_storage_script'         # Python file with main function inside azure blob storage
     AZURE_BLOB_STORAGE_PACKAGE = 'azure_blob_storage_package'       # Package inside azure blob storage
 
-class ActionFolder(BaseModel):
+class ActionMetadata(BaseModel):
+    is_folder: bool
     type: ActionType        
     name: str       
     description: str                                             
-    children: List[str] = []                                      
+    children: Optional[List[str]] = None                                      
     parent: Optional[str] = None                           
     folder_metadata: Optional[Dict[str, str]] = None
-    
-class ActionMetadata(BaseModel):
-    type: ActionType       
-    name: str                   
-    description: str     
-    parent: str                                                                              
-    execution_metadata: Optional[Dict[str, str]] = None       # further metadata to define custom behavior for this action
+    execution_metadata: Optional[Dict[str, str]] = None
 
 class ActionSpace(BaseModel):
     '''
     The action space metadata is stored in the swarm's kv store as:
     
-        action_id: Union[ActionMetadata, ActionFolder]
+        action_id: ActionMetadata
     '''
     swarm: Swarm
     
-    def __getitem__(self, action_id: str) -> Union[ActionMetadata, ActionFolder]:
+    def __getitem__(self, action_id: str) -> ActionMetadata:
         try:
             internal_action_metadata = get_internal_action_metadata(action_id)
             return internal_action_metadata
@@ -71,6 +66,9 @@ class ActionSpace(BaseModel):
                 return external_action_metadata
             else:
                 raise ValueError(f"This action id: `{action_id}` does not exist.")
+            
+    def get_root(self) -> ActionMetadata:
+        return self['aga_swarm/actions']
     
 
 

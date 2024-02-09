@@ -40,6 +40,7 @@ class BlockingOperation(BaseModel):
     node_id: str
     type: str
     args: Dict[str, Any]
+    context: Optional[Dict[str, Any]] = None
     next_function_to_call: str
 
 class NodeOutput(BaseModel):
