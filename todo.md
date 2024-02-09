@@ -54,13 +54,13 @@ So a lot of the goals outlined above have actually been rendered irrelevant beca
 - [ ] visualize the memory and action space
 - [ ] visualize the swarm state and history
 - [ ] ensure consistency in operations that write to swarm space
-- [ ] add feature to pause and resume the swarm
+- [x] add feature to pause and resume the swarm
 - [ ] allow devs to implement their own env configuration
 - [ ] have swarm fill in util space metadata
 - [ ] have swarm fill in util space consumer metadata
 
 Cloud Optimizations:
-- [ ] in cloud functions decouple blocking openai calls. decouple all blocking calls in cloud functions. or look into durable azure functions
+- [x] in cloud functions decouple blocking openai calls. decouple all blocking calls in cloud functions. or look into durable azure functions
 - [ ] consider sql for some data
 - [ ] when cosmosdb python sdk supports it, use hierarchical partition keys: user_id/swarm_id/category with id for query
 

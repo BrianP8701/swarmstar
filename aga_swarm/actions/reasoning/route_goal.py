@@ -10,9 +10,7 @@ class NextActionPath(BaseModel):
     
 def main(swarm: Swarm, node_id: str, message: str) -> BlockingOperation:
     '''
-    okay the action router takes the goal. it starts at the root space of the action space
-    
-    get all the children and their descriptions. pass those along with the goal to instructor have it choose.
+    The main function begins the process of routing the action space from the root node.
     '''
     action_space = ActionSpace(swarm=swarm)
     root: ActionMetadata = action_space['aga_swarm/actions']
@@ -36,8 +34,7 @@ def main(swarm: Swarm, node_id: str, message: str) -> BlockingOperation:
     
 def route_goal(swarm: Swarm, completion: NextActionPath, parent_action_id: str, goal: str) -> Union[BlockingOperation, NodeOutput]:
     '''
-    action_id, next_action_index or failure message
-    -> 
+    This function gets called over and over again until we reach a leaf node, aka an action.
     '''
     if completion.index is not None:
         action_space = ActionSpace(swarm=swarm)
@@ -75,7 +72,7 @@ def route_goal(swarm: Swarm, completion: NextActionPath, parent_action_id: str, 
             )
     else:
         pass
-        # Handle failure message. Pass to action creator or user for review
+        # TODO Handle failure message. Pass to action creator or user for review
     
     
 def build_messages(goal: str, children_descriptions: List[str]) -> List[Dict[str, str]]:
@@ -100,7 +97,6 @@ def build_messages(goal: str, children_descriptions: List[str]) -> List[Dict[str
             "content": action_path_descriptions
         }
     ]
-    
     return messages
     
 def get_children_descriptions(action_space: ActionSpace, action_folder: ActionMetadata) -> List[str]:
@@ -109,4 +105,3 @@ def get_children_descriptions(action_space: ActionSpace, action_folder: ActionMe
         child_metadata = action_space[child]
         children.append(child_metadata.description)
     return children
-

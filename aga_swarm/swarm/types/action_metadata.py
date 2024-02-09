@@ -31,10 +31,8 @@ if TYPE_CHECKING:
     from aga_swarm.swarm.types.swarm import Swarm
     
 class ActionType(Enum):
-    INTERNAL_FOLDER = 'internal_folder'                             # Folder inside the package
     AZURE_BLOB_STORAGE_FOLDER = 'azure_blob_storage_folder'         # Folder inside azure blob storage
     INTERNAL_PYTHON_MAIN = 'internal_python_main'                   # Python file with main function inside package
-    INTERNAL_PYTHON_FUNCTION = 'internal_python_function'           # Python file with function name in execution_metadata
     SUBPROCESS_MAIN = 'subprocess_main'                             # Python file with main function outside package stored locally
     AZURE_BLOB_STORAGE_SCRIPT = 'azure_blob_storage_script'         # Python file with main function inside azure blob storage
     AZURE_BLOB_STORAGE_PACKAGE = 'azure_blob_storage_package'       # Package inside azure blob storage

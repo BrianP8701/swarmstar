@@ -4,6 +4,7 @@ import json
 from aga_swarm.swarm.types import Swarm, ActionSpace, SwarmCommand, SwarmNode, SwarmState, SwarmHistory, BlockingOperation, NodeOutput, LifecycleCommand
 from aga_swarm.utils.misc.uuid import generate_uuid
 from aga_swarm.utils.action_utils.execute_action.main import execute_node_action
+from aga_swarm.utils.action_utils.execute_blocking_operation.internal_action import execute_blocking_operation as _execute_blocking_operation
 
 def spawn_node(swarm: Swarm, swarm_command: SwarmCommand, parent_id: Union[str, None] = None) -> SwarmNode:
     action_space = ActionSpace(swarm=swarm)
@@ -36,6 +37,8 @@ def execute_node(swarm: Swarm, node: SwarmNode) -> Union[List[SwarmNode], Blocki
     else:
         raise ValueError("Unexpected output type")
 
+def execute_blocking_operation(swarm: Swarm, blocking_operation: BlockingOperation) -> Union[List[SwarmNode], NodeOutput]:
+    return _execute_blocking_operation(swarm, blocking_operation)
 
 '''
 Private methods

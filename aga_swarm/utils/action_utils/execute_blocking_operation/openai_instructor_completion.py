@@ -17,7 +17,7 @@ def execute_blocking_operation(swarm: Swarm, blocking_operation: BlockingOperati
     messages = blocking_operation.args['messages']
     instructor_model = blocking_operation.args['instructor_model']
     
-    response = completion(messages=messages, openai_key=swarm.configs.openai_key, model=instructor_model)
+    response = completion(messages=messages, openai_key=swarm.configs.openai_key, instructor_model=instructor_model)
     
     return BlockingOperation(
         lifecycle_command=blocking_operation.lifecycle_command,
