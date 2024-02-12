@@ -1735,3 +1735,22 @@ well whats the actual swarm master process? The swarm master will pass us one of
 # Blocking operations vs actions vs nodes
 
 so ive definitely found the right thing, execute action, decouple along blocking operation, pass context between blocking operations. between nodes we just pass messages. oh i suppose a blocking operation just passes back a blocking operation. yeah.
+
+
+# User communication action
+    This will go like this. we are given a list of things we need to determine. 
+    1. We send a first message asking for the user to provide the information we need.
+    2. The user provides the information.
+    3. We check off things that we have determined. We generate a next message asking for the remaining information, and potentially further questions that have arised from the previous information.
+    4. Repeat until all information has been determined.
+    5. When all information has been determined we terminate this node.
+    
+    Now we have a bit of an issue
+
+the issue being i suppose... no no i suppose this works. in things like the python coder we have a thing where it will double check and performa similar thing... uh wait. itll generate a list ot context/requirements it needs. then it will pass it to a retrieval agent who will be tasked with passing it to user or other retrieval methods like memory retrieval plus AST parsing to get specific pieces of code, web browsing etc.
+
+what im realizing now is the interaction between nodes might be more complex than i initially expected. this should have been obvious in hindsight, that it wouldnt be as simple as terminate, spawn and the termination crawls up until we see a manager node at which point we do the manager review process. Every node needs to have a unique termination process. For example the node who spawned a user input node needs to take the... wait a second no the architecture still works. because the manager will receive the user comm node report and make a decision with that. Any specific nodes that have user input loops will have that happen inside itself for itself. okay so so far the architecture remains good.
+
+Although one worry i have is the unnecesariness sometimes of passing swarm and node_id to a node. but as ive already seen and done that can be handled by context.  maybe only context and args - yes thats the way.
+
+Also now i definitely see something i want to store in the user info section of the frontend. For example, with a user input node, display the persisted context, unknowns and current report for the user to see.

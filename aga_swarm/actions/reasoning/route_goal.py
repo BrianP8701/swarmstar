@@ -25,6 +25,8 @@ def main(swarm: Swarm, node_id: str, message: str) -> BlockingOperation:
             "instructor_model": NextActionPath
         },
         context = {
+            "swarm": swarm,
+            "node_id": node_id,
             "parent_action_id": 'aga_swarm/actions',
             "goal": message
         },
@@ -32,7 +34,7 @@ def main(swarm: Swarm, node_id: str, message: str) -> BlockingOperation:
     )
     
     
-def route_goal(swarm: Swarm, completion: NextActionPath, parent_action_id: str, goal: str) -> Union[BlockingOperation, NodeOutput]:
+def route_goal(swarm: Swarm, node_id: str, completion: NextActionPath, parent_action_id: str, goal: str) -> Union[BlockingOperation, NodeOutput]:
     '''
     This function gets called over and over again until we reach a leaf node, aka an action.
     '''
@@ -46,7 +48,7 @@ def route_goal(swarm: Swarm, completion: NextActionPath, parent_action_id: str, 
             messages = build_messages(goal, children_descriptions)
             return BlockingOperation(
                 lifecycle_command=LifecycleCommand.BLOCKING_OPERATION,
-                node_id=next_action_id,
+                node_id=node_id,
                 type="openai_instructor_completion",
                 args={
                     "messages": messages,
@@ -61,7 +63,7 @@ def route_goal(swarm: Swarm, completion: NextActionPath, parent_action_id: str, 
             )
         else:
             return NodeOutput(
-                lifecycle_command=LifecycleCommand.EXECUTE,
+                lifecycle_command=LifecycleCommand.SPAWN,
                 swarm_commands = [
                     SwarmCommand(
                         action_id=next_action_id,

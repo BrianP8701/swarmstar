@@ -36,14 +36,13 @@ def main(swarm: Swarm, node_id: str, message: str) -> BlockingOperation:
         type="openai_instructor_completion",
         args={
             "messages": messages,
-            "model": DecomposeDirective,
-            "swarm": swarm
+            "model": DecomposeDirective
         },
         next_function_to_call="subdirectives_to_swarm_commands"
     )
     
 
-def subdirectives_to_swarm_commands(swarm: Swarm, node_id: str, message: str, model: DecomposeDirective) -> NodeOutput:
+def subdirectives_to_swarm_commands(message: str, model: DecomposeDirective) -> NodeOutput:
     subdirectives = model.subdirectives
 
     swarm_commands = []

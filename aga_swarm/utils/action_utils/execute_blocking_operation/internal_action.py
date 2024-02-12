@@ -24,7 +24,7 @@ def execute_blocking_operation(swarm: Swarm, blocking_operation: BlockingOperati
     script_path = action_metadata.execution_metadata['script_path']
     action_script = import_module(script_path)
     
-    combined_args = {"swarm": swarm}
+    combined_args = {"swarm": swarm, "node_id": node_id}
     combined_args.update(blocking_operation.args)
     if blocking_operation.context is not None:
         combined_args.update(blocking_operation.context)
