@@ -10,17 +10,13 @@ used in the construction of actions.
 
 For now we assume all utils are internal to the package.
 '''
-from __future__ import annotations
 from pydantic import BaseModel
 from typing import Dict, List, Optional, Union
 from enum import Enum
-from typing import TYPE_CHECKING
 
 from aga_swarm.utils.data.internal_operations import get_internal_util_metadata
 from aga_swarm.utils.data.kv_operations.main import retrieve_swarm_space_kv_value
-
-if TYPE_CHECKING:
-    from aga_swarm.swarm.types.swarm import Swarm
+from aga_swarm.swarm.types.swarm import Swarm
 
 class ConsumerMetadataType(Enum):
     ACTION = 'action'

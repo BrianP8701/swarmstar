@@ -28,7 +28,7 @@ def setup_swarm_space(openai_key: str, frontend_url: str, root_path: str, platfo
     
     swarm = platform_map[platform.value](openai_key, frontend_url, root_path, **kwargs)
     upload_swarm_space_kv_pair(swarm, 'swarm_history', 'current_frame', 0)
-    
+    upload_swarm_space_kv_pair(swarm, '', 'swarm', swarm.model_dump_json())
     return swarm
     
     
@@ -39,7 +39,7 @@ def _setup_mac_swarm_space(openai_key: str, frontend_url: str, root_path: str, *
             raise ValueError(f'Root path folder must be empty: {root_path}')
     else:
         os.makedirs(root_path)
-    sqlite3_db_path = f'{root_path}/swarm_default_kv_store.db'
+    sqlite3_db_path = f'{root_path}/swarm_default_kv_store.sqlite3'
     create_or_open_kv_db(sqlite3_db_path)
     
     return Swarm(

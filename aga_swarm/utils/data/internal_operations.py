@@ -7,13 +7,13 @@ from typing import Any, BinaryIO
 import sqlite3
 
 def get_internal_action_metadata(action_id: str) -> dict:
-    return get_internal_sqlite3_value('aga_swarm/action', 'action_space_metadata', action_id)
+    return get_internal_sqlite3_value('aga_swarm.actions', 'action_space_metadata', action_id)
 
 def get_internal_memory_metadata(memory_id: str) -> dict:
-    return get_internal_sqlite3_value('aga_swarm/memory', 'memory_space_metadata', memory_id)
+    return get_internal_sqlite3_value('aga_swarm.memory', 'memory_space_metadata', memory_id)
 
 def get_internal_util_metadata(util_id: str) -> dict:
-    return get_internal_sqlite3_value('aga_swarm/utils', 'util_space_metadata', util_id)
+    return get_internal_sqlite3_value('aga_swarm.utils', 'util_space_metadata', util_id)
 
 def get_internal_sqlite3_value(path: str, category: str, key: str) -> dict:
     with resources.path(path, f'{category}.sqlite3') as db_path:
@@ -23,7 +23,7 @@ def get_internal_sqlite3_value(path: str, category: str, key: str) -> dict:
                 cursor.execute('SELECT value FROM kv_store WHERE key = ?', (key,))
                 result = cursor.fetchone()
                 if result:
-                    return result[0]
+                    return json.loads(result[0])
                 else:
                     raise ValueError(f"Key: `{key}` does not exist in category {category}.")
         except Exception as e:

@@ -18,17 +18,15 @@ we might need to dynamically spin up a docker container and execute a function.
 The execution_metadata provides a place to store the information to be passed
 to the executor who handles this action_type.
 '''
-from __future__ import annotations
 from pydantic import BaseModel
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional
 from enum import Enum
-from typing import TYPE_CHECKING
 
 from aga_swarm.utils.data.kv_operations.main import retrieve_swarm_space_kv_value
 from aga_swarm.utils.data.internal_operations import get_internal_action_metadata
 
-if TYPE_CHECKING:
-    from aga_swarm.swarm.types.swarm import Swarm
+
+from aga_swarm.swarm.types.swarm import Swarm
     
 class ActionType(Enum):
     AZURE_BLOB_STORAGE_FOLDER = 'azure_blob_storage_folder'         # Folder inside azure blob storage
@@ -58,18 +56,17 @@ class ActionSpace(BaseModel):
     def __getitem__(self, action_id: str) -> ActionMetadata:
         try:
             internal_action_metadata = get_internal_action_metadata(action_id)
-            return internal_action_metadata
+            return ActionMetadata(**internal_action_metadata)
         except Exception:
             external_action_metadata = retrieve_swarm_space_kv_value(self.swarm, 'action_space', action_id)
             if external_action_metadata is not None:
-                return external_action_metadata
+                return ActionMetadata(**external_action_metadata)
             else:
                 raise ValueError(f"This action id: `{action_id}` does not exist.")
             
     def get_root(self) -> ActionMetadata:
         return self['aga_swarm/actions']
     
-
 
 
 

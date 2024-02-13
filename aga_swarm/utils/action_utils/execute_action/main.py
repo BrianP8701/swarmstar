@@ -29,7 +29,7 @@ def execute_node_action(swarm: Swarm, swarm_node: SwarmNode) -> Union[NodeOutput
     message = swarm_node.message
     action_space = ActionSpace(swarm=swarm)
     action_metadata = action_space[action_id]
-    action_type = action_metadata.type
+    action_type = action_metadata.type.value
     
     if action_type not in action_type_map:
         raise ValueError(f"Action type: `{action_type}` from action id: `{action_id}` is not supported yet.")

@@ -11,7 +11,7 @@ def spawn_node(swarm: Swarm, swarm_command: SwarmCommand, parent_id: Union[str, 
     swarm_state = SwarmState(swarm=swarm)
     swarm_history = SwarmHistory(swarm=swarm)
     node = SwarmNode(
-        node_id=generate_uuid(action_space[swarm_command.action_id]),
+        node_id=generate_uuid(action_space[swarm_command.action_id].name),
         parent_id=parent_id,
         children_ids=[],
         action_id=swarm_command.action_id,
@@ -20,14 +20,14 @@ def spawn_node(swarm: Swarm, swarm_command: SwarmCommand, parent_id: Union[str, 
         alive=True
     )
     swarm_state.update_state(node)
-    swarm_history.add_event(LifecycleCommand.SPAWN, node.node_id)
+    swarm_history.add_event(LifecycleCommand.SPAWN, node)
     return node
 
 def execute_node(swarm: Swarm, node: SwarmNode) -> Union[List[SwarmNode], BlockingOperation]:
     node_output: Union[NodeOutput, BlockingOperation] = execute_node_action(swarm, node)
     
     if node_output.lifecycle_command == LifecycleCommand.BLOCKING_OPERATION:
-        return BlockingOperation(node_output)
+        return node_output
     elif node_output.lifecycle_command == LifecycleCommand.SPAWN:
         return _spawn_children(swarm, node, NodeOutput(node_output))
     elif node_output.lifecycle_command == LifecycleCommand.TERMINATE:
@@ -132,4 +132,5 @@ def _node_funeral(swarm: Swarm, node: SwarmNode) -> SwarmNode:
     swarm_history.add_event(LifecycleCommand.TERMINATE, node)
 
 def _handle_node_failure(swarm: Swarm, node: SwarmNode) -> SwarmNode:
+    raise ValueError("Node failed to execute. Didnt write logic to handle node failure yet so this error isnt a bad thing") # TODO: Implement this
     pass

@@ -25,7 +25,7 @@ class LifecycleCommand(Enum):
 class SwarmNode(BaseModel):
     node_id: str
     parent_id: Optional[str] = None
-    children_ids: List[str]
+    children_ids: Optional[List[str]] = None
     action_id: str
     message: str
     report: Optional[str] = None

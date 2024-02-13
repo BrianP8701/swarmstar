@@ -21,8 +21,8 @@ def execute_blocking_operation(swarm: Swarm, blocking_operation: BlockingOperati
     '''
     
     blocking_operation_type_map = {
-        'openai_instructor_completion': 'aga_swarm/utils/action_utils/execute_blocking_operation/openai_instructor_completion.py',
-        'internal_action': 'aga_swarm/utils/action_utils/execute_blocking_operation/internal_action.py'
+        'openai_instructor_completion': 'aga_swarm.utils.action_utils.execute_blocking_operation.openai_instructor_completion',
+        'internal_action': 'aga_swarm.utils.action_utils.execute_blocking_operation.internal_action'
     }
     
     blocking_operation_type = blocking_operation.type
@@ -31,6 +31,7 @@ def execute_blocking_operation(swarm: Swarm, blocking_operation: BlockingOperati
         raise ValueError(f"Blocking operation type: `{blocking_operation_type.type}` is not supported.")
     else:
         pass
+    
     blocking_operation_type_module = import_module(blocking_operation_type_map[blocking_operation_type])
     
     return blocking_operation_type_module.execute_blocking_operation(swarm, blocking_operation)

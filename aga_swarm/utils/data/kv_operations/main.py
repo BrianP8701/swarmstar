@@ -13,8 +13,8 @@ if TYPE_CHECKING:
     
 
 platform_map = {
-    'local': 'aga_swarm.swarm_utils.swarm_space.kv_operations.sqlite3',
-    'azure': 'aga_swarm.swarm_utils.swarm_space.kv_operations.cosmos_db',
+    'mac': 'aga_swarm.utils.data.kv_operations.sqlite3',
+    'azure': 'aga_swarm.utils.data.kv_operations.cosmos_db',
 }
 
 def upload_swarm_space_kv_pair(swarm: Swarm, category: str, key: str, value: dict) -> None:

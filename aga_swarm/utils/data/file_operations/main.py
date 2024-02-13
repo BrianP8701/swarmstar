@@ -13,8 +13,8 @@ if TYPE_CHECKING:
     from aga_swarm.swarm.types import Swarm
 
 platform_map = {
-    'local': 'aga_swarm.swarm_utils.swarm_space_utils.file_operations.local_storage',
-    'azure': 'aga_swarm.swarm_utils.swarm_space_utils.file_operations.azure_blob_storage',
+    'mac': 'aga_swarm.utils.data.file_operations.local_storage',
+    'azure': 'aga_swarm.utils.data.file_operations.azure_blob_storage',
 }
 
 def delete_swarm_space_file(swarm: Swarm, file_path: str) -> None:

@@ -10,18 +10,13 @@ cloud blob storage, local file systems, vector databases and more.
 All of these require different types of interaction. The memory 
 metadata labels the memory so the swarm knows how to interact with it.
 '''
-
-from __future__ import annotations
 from enum import Enum
 from typing import List, Optional, Dict, Union
 from pydantic import BaseModel
-from typing import TYPE_CHECKING
 
 from aga_swarm.utils.data.internal_operations import get_internal_memory_metadata
 from aga_swarm.utils.data.kv_operations.main import retrieve_swarm_space_kv_value
-
-if TYPE_CHECKING:
-    from aga_swarm.swarm.types import Swarm
+from aga_swarm.swarm.types import Swarm
     
 class MemoryType(Enum):
     INTERNAL_FOLDER = "internal_folder"

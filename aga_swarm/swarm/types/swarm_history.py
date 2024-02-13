@@ -5,13 +5,10 @@ point in time.
 '''
 from __future__ import annotations
 from pydantic import BaseModel
-from typing import TYPE_CHECKING
 
 from aga_swarm.utils.data.kv_operations.main import retrieve_swarm_space_kv_value, upload_swarm_space_kv_pair
-
-if TYPE_CHECKING:
-    from aga_swarm.swarm.types.swarm import Swarm
-    from aga_swarm.swarm.types.swarm_lifecycle import SwarmNode, LifecycleCommand
+from aga_swarm.swarm.types.swarm import Swarm
+from aga_swarm.swarm.types.swarm_lifecycle import SwarmNode, LifecycleCommand
     
 class SwarmEvent(BaseModel):
     lifecycle_command: LifecycleCommand
