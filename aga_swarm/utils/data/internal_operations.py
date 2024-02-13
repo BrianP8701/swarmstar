@@ -4,30 +4,21 @@ This module contains functions to load resources from within the package.
 import json
 from importlib import resources
 from typing import Any, BinaryIO
-import sqlite3
 
-def get_internal_action_metadata(action_id: str) -> dict:
-    return get_internal_sqlite3_value('aga_swarm.actions', 'action_space_metadata', action_id)
+from aga_swarm.utils.data.kv_operations.main import retrieve_swarm_space_kv_value
+from aga_swarm.swarm.types import Swarm
 
-def get_internal_memory_metadata(memory_id: str) -> dict:
-    return get_internal_sqlite3_value('aga_swarm.memory', 'memory_space_metadata', memory_id)
+def get_internal_action_metadata(swarm: Swarm, action_id: str) -> dict:
+    return get_internal_mongodb_value(swarm, 'action_space', action_id)
 
-def get_internal_util_metadata(util_id: str) -> dict:
-    return get_internal_sqlite3_value('aga_swarm.utils', 'util_space_metadata', util_id)
+def get_internal_memory_metadata(swarm: Swarm, memory_id: str) -> dict:
+    return get_internal_mongodb_value(swarm, 'memory_space', memory_id)
 
-def get_internal_sqlite3_value(path: str, category: str, key: str) -> dict:
-    with resources.path(path, f'{category}.sqlite3') as db_path:
-        try:
-            with sqlite3.connect(str(db_path)) as conn:
-                cursor = conn.cursor()
-                cursor.execute('SELECT value FROM kv_store WHERE key = ?', (key,))
-                result = cursor.fetchone()
-                if result:
-                    return json.loads(result[0])
-                else:
-                    raise ValueError(f"Key: `{key}` does not exist in category {category}.")
-        except Exception as e:
-            raise ValueError(f'Failed to retrieve value from SQLite3: {str(e)}')
+def get_internal_util_metadata(swarm: Swarm, util_id: str) -> dict:
+    return get_internal_mongodb_value(swarm, 'util_space', util_id)
+
+def get_internal_mongodb_value(swarm: Swarm, category: str, key: str) -> dict:
+    retrieve_swarm_space_kv_value(swarm, category, key)
 
 def get_json_data(package: str, resource_name: str) -> Any:
     with resources.open_text(package, resource_name) as file:

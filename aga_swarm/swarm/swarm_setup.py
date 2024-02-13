@@ -12,7 +12,7 @@ passed around between every node and action. Keep it safe and private!
 import os
 
 from aga_swarm.swarm.types import Swarm, Platform, Configs
-from aga_swarm.utils.data.kv_operations.sqlite3 import create_or_open_kv_db
+from aga_swarm.utils.data.kv_operations.mongodb import restore_database, create_collection_with_unique_index
 from aga_swarm.utils.data.kv_operations.main import upload_swarm_space_kv_pair
 
 def setup_swarm_space(openai_key: str, frontend_url: str, root_path: str, platform: str, **kwargs) -> Swarm:
@@ -39,8 +39,9 @@ def _setup_mac_swarm_space(openai_key: str, frontend_url: str, root_path: str, *
             raise ValueError(f'Root path folder must be empty: {root_path}')
     else:
         os.makedirs(root_path)
-    sqlite3_db_path = f'{root_path}/swarm_default_kv_store.sqlite3'
-    create_or_open_kv_db(sqlite3_db_path)
+    
+    # TODO - add the correct path
+    restore_database('add the proper path', kwargs['mongodb_uri'], kwargs['mongodb_db_name'])
     
     return Swarm(
         swarm_space_root_path=root_path,
@@ -49,7 +50,8 @@ def _setup_mac_swarm_space(openai_key: str, frontend_url: str, root_path: str, *
         configs=Configs(
             openai_key=openai_key,
             frontend_url=frontend_url,
-            sqlite3_db_path=sqlite3_db_path
+            mongodb_uri=kwargs['mongodb_uri'],
+            mongodb_db_name=kwargs['mongodb_db_name']
         )
     )
 

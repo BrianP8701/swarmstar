@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     
 
 platform_map = {
-    'mac': 'aga_swarm.utils.data.kv_operations.sqlite3',
+    'mac': 'aga_swarm/utils/data/kv_operations/mongodb.py',
     'azure': 'aga_swarm.utils.data.kv_operations.cosmos_db',
 }
 

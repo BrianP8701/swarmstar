@@ -24,6 +24,8 @@ class Configs(BaseModel):
     sqlite3_db_path: str = None
     user_id: str = None
     swarm_id: str = None
+    mongodb_uri: str = None
+    mongodb_db_name: str = None
 
 class Platform(Enum):
     MAC = 'mac'    
