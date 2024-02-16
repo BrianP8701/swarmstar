@@ -1,7 +1,7 @@
 from typing import List, Union
 import json
 
-from tree_swarm.swarm.types import Swarm, ActionSpace, SwarmCommand, SwarmNode, SwarmState, SwarmHistory, BlockingOperation, NodeOutput, LifecycleCommand
+from tree_swarm.swarm.types import Swarm, ActionSpace, SwarmCommand, SwarmNode, SwarmState, SwarmHistory, BlockingOperation, NodeOutput
 from tree_swarm.utils.misc.uuid import generate_uuid
 from tree_swarm.utils.action_utils.execute_action.main import execute_node_action
 from tree_swarm.utils.action_utils.execute_blocking_operation.main import execute_blocking_operation as _execute_blocking_operation
@@ -20,19 +20,19 @@ def spawn_node(swarm: Swarm, swarm_command: SwarmCommand, parent_id: Union[str, 
         alive=True
     )
     swarm_state.update_state(node)
-    swarm_history.add_event(LifecycleCommand.SPAWN, node)
+    swarm_history.add_event('spawn', node)
     return node
 
 def execute_node(swarm: Swarm, node: SwarmNode) -> Union[List[SwarmNode], BlockingOperation]:
     node_output: Union[NodeOutput, BlockingOperation] = execute_node_action(swarm, node)
     
-    if node_output.lifecycle_command == LifecycleCommand.BLOCKING_OPERATION:
+    if node_output.lifecycle_command == 'blocking_operation':
         return node_output
-    elif node_output.lifecycle_command == LifecycleCommand.SPAWN:
+    elif node_output.lifecycle_command == 'spawn':
         return _spawn_children(swarm, node, NodeOutput(node_output))
-    elif node_output.lifecycle_command == LifecycleCommand.TERMINATE:
+    elif node_output.lifecycle_command == 'terminate':
         return _terminate_node(swarm, node, node_output)
-    elif node_output.lifecycle_command == LifecycleCommand.NODE_FAILURE:
+    elif node_output.lifecycle_command == 'node_failure':
         return _handle_node_failure(swarm, node, node_output)
     else:
         raise ValueError("Unexpected output type")
@@ -55,7 +55,7 @@ def _spawn_children(swarm: Swarm, parent: SwarmNode, node_output: NodeOutput) ->
     swarm_state = SwarmState(swarm=swarm)
     swarm_history = SwarmHistory(swarm=swarm)
     swarm_state.update_state(parent)
-    swarm_history.add_event(LifecycleCommand.EXECUTE, parent)
+    swarm_history.add_event('execute', parent)
 
     return children
 
@@ -129,7 +129,7 @@ def _node_funeral(swarm: Swarm, node: SwarmNode) -> SwarmNode:
     swarm_state = SwarmState(swarm=swarm)
     swarm_history = SwarmHistory(swarm=swarm)
     swarm_state.update_state(node)
-    swarm_history.add_event(LifecycleCommand.TERMINATE, node)
+    swarm_history.add_event('terminate', node)
 
 def _handle_node_failure(swarm: Swarm, node: SwarmNode) -> SwarmNode:
     raise ValueError("Node failed to execute. Didnt write logic to handle node failure yet so this error isnt a bad thing") # TODO: Implement this

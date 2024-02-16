@@ -8,9 +8,9 @@ from tree_swarm.utils.ai.openai_instructor import completion
 from tree_swarm.swarm.types import ActionMetadata, ActionType
 
 load_dotenv()  # Load environment variables from .env file
-openai_key = os.getenv('OPENAI_API_KEY')
+openai_key = os.getenv('OPENAI_KEY')
 if not openai_key:
-    raise ValueError("OPENAI_API_KEY not found in .env file.")
+    raise ValueError("OPENAI_KEY not found in .env file.")
 
 def save_script_action_to_internal_action_space(script_path: str):
     # Ensure the script_path is relative to 'tree_swarm/actions' and format it accordingly
@@ -67,7 +67,7 @@ def save_script_action_to_internal_action_space(script_path: str):
     # cursor.execute('INSERT INTO kv_store (key, value) VALUES (?, ?)', (script_path, action_metadata.model_dump_json()))
     
     action_metadata = action_metadata.model_dump()
-    action_metadata['type'] = action_metadata['type'].value
+    action_metadata['type'] = action_metadata['type']
     
     with open('tree_swarm/actions/action_space_metadata.json', 'r+') as file:
         data = json.load(file)

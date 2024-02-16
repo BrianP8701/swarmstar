@@ -1,7 +1,7 @@
 from typing import List, Optional, Union
 from pydantic import BaseModel, Field, Dict
 
-from tree_swarm.swarm.types import Swarm, BlockingOperation, ActionSpace, LifecycleCommand, ActionMetadata, NodeOutput, SwarmCommand
+from tree_swarm.swarm.types import Swarm, BlockingOperation, ActionSpace, ActionMetadata, NodeOutput, SwarmCommand
 
 class NextActionPath(BaseModel):
     index: Optional[int] = Field(None, description="Index of the best action path to take")
@@ -17,7 +17,7 @@ def main(swarm: Swarm, node_id: str, message: str) -> BlockingOperation:
     root_children_descriptions = get_children_descriptions(action_space, root)
     messages = build_messages(message, root_children_descriptions)
     return BlockingOperation(
-        lifecycle_command=LifecycleCommand.BLOCKING_OPERATION,
+        lifecycle_command='blocking_operation',
         node_id=node_id,
         type="openai_instructor_completion",
         args={
@@ -47,7 +47,7 @@ def route_goal(swarm: Swarm, node_id: str, completion: NextActionPath, parent_ac
             children_descriptions = get_children_descriptions(action_space, action_metadata)
             messages = build_messages(goal, children_descriptions)
             return BlockingOperation(
-                lifecycle_command=LifecycleCommand.BLOCKING_OPERATION,
+                lifecycle_command='blocking_operation',
                 node_id=node_id,
                 type="openai_instructor_completion",
                 args={
@@ -63,7 +63,7 @@ def route_goal(swarm: Swarm, node_id: str, completion: NextActionPath, parent_ac
             )
         else:
             return NodeOutput(
-                lifecycle_command=LifecycleCommand.SPAWN,
+                lifecycle_command='spawn',
                 swarm_commands = [
                     SwarmCommand(
                         action_id=next_action_id,

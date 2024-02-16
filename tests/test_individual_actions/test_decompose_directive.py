@@ -15,7 +15,7 @@ def check_path_exists(base_path: str, suffix: str = '') -> str:
         i += 1
 
 def test_decompose_directive():
-    openai_key = os.environ.get('OPENAI_API_KEY')
+    openai_key = os.environ.get('OPENAI_KEY')
     path = check_path_exists('/Users/brianprzezdziecki/Code/autonomous-general-agent-swarm/my_swarms/test_2_12_24__', '_')
     swarm = setup_swarm_space(openai_key, 'blank for now', path, 'mac')
     message = 'We need to add a thing to the swarm interface so in the agent chat section, when the agent outputs codeblock we can actually see like a nice code block in the interface. like black background, some colored text, like a code editor. You know, like when chatgpt generates code they actually make a code block for visual.... cuz its visually appealing.'

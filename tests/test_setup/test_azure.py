@@ -8,7 +8,7 @@ from tree_swarm.swarm.setup import setup_swarm_space
 def test_setup_swarm_space():
     load_dotenv()
     # GEt openai key from env
-    openai_key = os.environ.get('OPENAI_API_KEY')
+    openai_key = os.environ.get('OPENAI_KEY')
     # get all values from .env
     azure_cosmos_db_url = os.environ.get('AZURE_COSMOS_DB_URL')
     azure_cosmos_db_key = os.environ.get('AZURE_COSMOS_DB_KEY')

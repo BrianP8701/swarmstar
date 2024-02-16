@@ -27,7 +27,6 @@ from .swarm_state import (
 )
 
 from .swarm_lifecycle import (
-    LifecycleCommand,
     SwarmNode,
     SwarmCommand,
     NodeOutput,
@@ -36,7 +35,6 @@ from .swarm_lifecycle import (
 
 from .util_metadata import (
     UtilSpace,
-    UtilFolder,
     UtilMetadata,
     ConsumerMetadata,
     ConsumerMetadataType,

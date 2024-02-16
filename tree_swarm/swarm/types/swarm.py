@@ -10,6 +10,11 @@ could be decoupled and stateless. This is important for scalability.
 
 from enum import Enum
 from pydantic import BaseModel
+from typing_extensions import Literal
+
+class Platform(Enum):
+    MAC = 'mac'
+    AZURE = 'azure'
 
 class Configs(BaseModel):
     openai_key: str
@@ -28,5 +33,5 @@ class Configs(BaseModel):
 
 class Swarm(BaseModel):
     root_path: str
-    platform: str
+    platform: Literal['mac', 'azure']
     configs: Configs

@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import List
-from tree_swarm.swarm.types import Swarm, BlockingOperation, LifecycleCommand, NodeOutput
+from tree_swarm.swarm.types import Swarm, BlockingOperation, NodeOutput
 
 # TODO we need to handle cases where the persisted context or report gets too large
 
@@ -78,7 +78,7 @@ def analyze_goal(node_id: str, goal: str):
     ]
     
     return BlockingOperation(
-        lifecycle_command=LifecycleCommand.BLOCKING_OPERATION,
+        lifecycle_command='blocking_operation',
         node_id=node_id,
         type="openai_instructor_completion",
         args={
@@ -94,7 +94,7 @@ def make_first_user_input_request(node_id: str, completion: ConversationState):
     The first message gets sent to the user and we await the response.
     '''
     return BlockingOperation(
-        lifecycle_command=LifecycleCommand.BLOCKING_OPERATION,
+        lifecycle_command='blocking_operation',
         node_id=node_id,
         type="initiate_conversation_with_user",
         args={
@@ -128,7 +128,7 @@ def analyze_user_input(node_id: str, conversation_id: str, user_input: str, ques
         }
     ]
     return BlockingOperation(
-        lifecycle_command=LifecycleCommand.BLOCKING_OPERATION,
+        lifecycle_command='blocking_operation',
         node_id=node_id,
         type="openai_instructor_completion",
         args={
@@ -164,7 +164,7 @@ def update_conversation_state(node_id: str, conversation_id: str, completion: Co
             }
         ]
         return BlockingOperation(
-            lifecycle_command=LifecycleCommand.BLOCKING_OPERATION,
+            lifecycle_command='blocking_operation',
             node_id=node_id,
             type="openai_instructor_completion",
             args={
@@ -182,7 +182,7 @@ def update_conversation_state(node_id: str, conversation_id: str, completion: Co
     
 def make_user_input_request(node_id: str, conversation_id: str, completion: AgentMessage, questions: List[str], persisted_context: List[str], reports: List[str]):
     return BlockingOperation(
-        lifecycle_command=LifecycleCommand.BLOCKING_OPERATION,
+        lifecycle_command='blocking_operation',
         node_id=node_id,
         type="request_user_input",
         args={
@@ -213,7 +213,7 @@ def finalize_report(node_id: str, reports: List[str]):
         }
     ]
     return BlockingOperation(
-        lifecycle_command=LifecycleCommand.BLOCKING_OPERATION,
+        lifecycle_command='blocking_operation',
         node_id=node_id,
         type="openai_instructor_completion",
         args={
@@ -226,7 +226,7 @@ def finalize_report(node_id: str, reports: List[str]):
     
 def terminate_conversation(node_id: str, completion: AgentMessage):
     return NodeOutput(
-        lifecycle_command=LifecycleCommand.TERMINATE,
+        lifecycle_command='terminate',
         swarm_commands = [],
         report=completion.content
     )

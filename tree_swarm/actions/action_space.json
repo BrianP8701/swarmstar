@@ -5,10 +5,11 @@
         "name": "actions",
         "description": "This is the root of the action space",
         "children": [
-            "tree_swarm/actions/reasoning"
+            "tree_swarm/actions/reasoning",
+            "tree_swarm/actions/communication"
         ],
         "parent": null,
-        "folder_metadata": {
+        "metadata": {
             "folder_path": "tree_swarm/actions"
         }
     },
@@ -19,11 +20,10 @@
         "description": "This folder contains all actions pertaining to reasoning operations. It currently only contains an action that decomposes a directive into immediate sub-directives.",
         "children": [
             "tree_swarm/actions/reasoning/decompose_directive",
-            "tree_swarm/actions/reasoning/route_goal.py",
-            "tree_swarm/actions/reasoning/route_goal.py"
+            "tree_swarm/actions/reasoning/route_goal"
         ],
         "parent": "tree_swarm/actions",
-        "folder_metadata": {
+        "metadata": {
             "folder_path": "tree_swarm/actions/reasoning"
         }
     },
@@ -33,11 +33,11 @@
         "name": "decompose_directive.py",
         "description": "Decompose directives into immediate parralel sub-directives.",
         "parent": "tree_swarm/actions/reasoning",
-        "execution_metadata": {
+        "metadata": {
             "script_path": "tree_swarm.actions.reasoning.decompose_directive"
         }
     },
-    "tree_swarm/actions/reasoning/route_goal.py": {
+    "tree_swarm/actions/reasoning/route_goal": {
         "is_folder": false,
         "type": "internal_python_main",
         "name": "route_goal",
@@ -45,8 +45,19 @@
         "children": null,
         "parent": "tree_swarm/actions/reasoning",
         "folder_metadata": null,
-        "execution_metadata": {
+        "metadata": {
             "script_path": "reasoning.route_goal"
+        }
+    },
+    "tree_swarm/actions/communication": {
+        "is_folder": true,
+        "type": "internal_folder",
+        "name": "communication",
+        "description": "Contains actions to interact with the user",
+        "children": [],
+        "parent": "tree_swarm/actions",
+        "metadata": {
+            "script_path": "tree_swarm.actions"
         }
     }
 }

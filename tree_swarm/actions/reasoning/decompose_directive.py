@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import List
 
-from tree_swarm.swarm.types import Swarm, SwarmCommand, LifecycleCommand, BlockingOperation, NodeOutput
+from tree_swarm.swarm.types import Swarm, SwarmCommand, BlockingOperation, NodeOutput
 
 
 class DecomposeDirective(BaseModel):
@@ -33,7 +33,7 @@ def main(swarm: Swarm, node_id: str, message: str) -> BlockingOperation:
     ]
     
     return BlockingOperation(
-        lifecycle_command=LifecycleCommand.BLOCKING_OPERATION,
+        lifecycle_command='blocking_operation',
         node_id=node_id,
         type="openai_instructor_completion",
         args={
@@ -59,7 +59,7 @@ def subdirectives_to_swarm_commands(directive: str, completion: DecomposeDirecti
         swarm_commands.append(swarm_command)
     
     return NodeOutput(
-        lifecycle_command=LifecycleCommand.SPAWN,
+        lifecycle_command='spawn',
         swarm_commands=swarm_commands,
         report=f'Decomposed directive: \n`{directive}`\n\nInto subdirectives:\n' + '\n'.join(subdirectives)
     )

@@ -14,6 +14,7 @@ The swarm node is the fundamental unit of the swarm.
 from enum import Enum
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
+from typing_extensions import Literal
 
 class LifecycleCommand(Enum):
     SPAWN= "spawn"
@@ -36,7 +37,7 @@ class SwarmCommand(BaseModel):
     message: str
     
 class BlockingOperation(BaseModel):
-    lifecycle_command: LifecycleCommand = LifecycleCommand.BLOCKING_OPERATION
+    lifecycle_command: Literal['blocking_operation']
     node_id: str
     type: str
     args: Dict[str, Any]
@@ -44,6 +45,6 @@ class BlockingOperation(BaseModel):
     next_function_to_call: str
 
 class NodeOutput(BaseModel):
-    lifecycle_command: LifecycleCommand
+    lifecycle_command: Literal['spawn', 'execute', 'terminate', 'node_failure', 'blocking_operation']
     swarm_commands: List[SwarmCommand]
     report: str

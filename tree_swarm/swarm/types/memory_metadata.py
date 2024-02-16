@@ -13,6 +13,7 @@ metadata labels the memory so the swarm knows how to interact with it.
 from enum import Enum
 from typing import List, Optional, Dict, Union
 from pydantic import BaseModel
+from typing_extensions import Literal
 
 from tree_swarm.utils.data.internal_operations import get_internal_memory_metadata
 from tree_swarm.utils.data.kv_operations.main import get_kv
@@ -30,7 +31,7 @@ class MemoryType(Enum):
     AZURE_BLOB = "azure_blob"
     
 class MemoryFolder(BaseModel):
-    type: MemoryType
+    type: Literal['internal_folder', 'local_folder', 'azure_blob']
     name: str
     description: str
     children: List[str]
@@ -49,7 +50,7 @@ class MemorySpace(BaseModel):
 
     def __getitem__(self, memory_id: str) -> Union[MemoryMetadata, MemoryFolder]:
         try:
-            internal_memory_metadata = get_internal_memory_metadata(memory_id)
+            internal_memory_metadata = get_internal_memory_metadata(self.swarm, memory_id)
             return internal_memory_metadata
         except Exception:
             external_memory_metadata = get_kv(self.swarm, 'memory_space', memory_id)

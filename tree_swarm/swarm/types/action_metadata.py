@@ -21,6 +21,7 @@ to the executor who handles this action_type.
 from pydantic import BaseModel
 from typing import Dict, List, Optional
 from enum import Enum
+from typing_extensions import Literal
 
 from tree_swarm.utils.data.kv_operations.main import get_kv
 from tree_swarm.utils.data.internal_operations import get_internal_action_metadata
@@ -34,16 +35,16 @@ class ActionType(Enum):
     SUBPROCESS_MAIN = 'subprocess_main'                             # Python file with main function outside package stored locally
     AZURE_BLOB_STORAGE_SCRIPT = 'azure_blob_storage_script'         # Python file with main function inside azure blob storage
     AZURE_BLOB_STORAGE_PACKAGE = 'azure_blob_storage_package'       # Package inside azure blob storage
+    INTERNAL_FOLDER = 'internal_folder'                             # Folder inside package
 
 class ActionMetadata(BaseModel):
     is_folder: bool
-    type: ActionType        
+    type: Literal['azure_blob_storage_folder', 'internal_python_main', 'subprocess_main', 'azure_blob_storage_script', 'azure_blob_storage_package', 'internal_folder']   
     name: str       
     description: str                                             
     children: Optional[List[str]] = None                                      
     parent: Optional[str] = None                           
-    folder_metadata: Optional[Dict[str, str]] = None
-    execution_metadata: Optional[Dict[str, str]] = None
+    metadata: Dict[str, str]
 
 class ActionSpace(BaseModel):
     '''
@@ -55,7 +56,7 @@ class ActionSpace(BaseModel):
     
     def __getitem__(self, action_id: str) -> ActionMetadata:
         try:
-            internal_action_metadata = get_internal_action_metadata(action_id)
+            internal_action_metadata = get_internal_action_metadata(self.swarm, action_id)
             return ActionMetadata(**internal_action_metadata)
         except Exception:
             external_action_metadata = get_kv(self.swarm, 'action_space', action_id)

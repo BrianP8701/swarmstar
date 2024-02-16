@@ -13,6 +13,7 @@ For now we assume all utils are internal to the package.
 from pydantic import BaseModel
 from typing import Dict, List, Optional, Union
 from enum import Enum
+from typing_extensions import Literal
 
 from tree_swarm.utils.data.internal_operations import get_internal_util_metadata
 from tree_swarm.utils.data.kv_operations.main import get_kv
@@ -30,30 +31,20 @@ class UtilType(Enum):
     INTERNAL_FOLDER = 'internal_folder'
     INTERNAL_FUNCTION = 'internal_function'
 
-class UtilFolder(BaseModel):
-    type: UtilType
-    name: str
-    description: str
-    children: List[str] = []
-    parent: Optional[str] = None
-    folder_metadata: Optional[Dict[str, str]] = None 
-
 class UtilMetadata(BaseModel):
-    type: UtilType
+    type: Literal['internal_folder', 'internal_function']
     name: str
     description: str
-    parent: str
-    consumers: List[ConsumerMetadata]
-    input_schema: BaseModel
-    output_schema: BaseModel
-    function_metadata: Optional[Dict[str, str]] = None
+    parent: Optional[str] = None
+    children: List[str] = []
+    metadata: Optional[Dict[str, str]] = None 
     
 class UtilSpace(BaseModel):
     swarm: Swarm
     
-    def __getitem__(self, util_id: str) -> Union[UtilMetadata, UtilFolder]:
+    def __getitem__(self, util_id: str) -> UtilMetadata:
         try:
-            internal_util_metadata = get_internal_util_metadata(util_id)
+            internal_util_metadata = get_internal_util_metadata(self.swarm, util_id)
             return internal_util_metadata
         except Exception:
             external_util_metadata = get_kv(self.swarm, 'util_space', util_id)

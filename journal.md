@@ -1753,4 +1753,15 @@ what im realizing now is the interaction between nodes might be more complex tha
 
 Although one worry i have is the unnecesariness sometimes of passing swarm and node_id to a node. but as ive already seen and done that can be handled by context.  maybe only context and args - yes thats the way.
 
-Also now i definitely see something i want to store in the user info section of the frontend. For example, with a user input node, display the persisted context, unknowns and current report for the user to see.
+Also now i definitely see something i want to store in the user info section of the frontend. For example, with a user input node, display the persisted context, unknowns and current report for the user to see. 
+
+
+# Goal 
+okay we now have the interface with the spawn and chat done. lets define a concrete first goal for the swarm. we want the swarm to help build itself out more. Lets list a bunch of things we want the swarm to be able to do locally first. 
+
+we need to start with a problem that is genuinely quite simple in a coupled system. we can just try to have the swarm create a web scraping tool for itself. although a web scraping tool probably requires a web scraping tool... huh. well. does a web scraping tool require a web scraping tool? Idk we'll figure it out. we'll have it build a first version. itll test on a website. if it works itll move on to a js rendered website, itll keep on trying different websites encountering errors, data parsing errors and refining itself. and then it needs to add it to the action space. 
+
+how might this process work? We want a general predefined framework that can handle multiple types of problems not just this one. 
+
+should we generate a plan first or just go straight into breaking down the goal? I suppose it should be more dynamic. uh fuck. when we have a problem... damn. 
+no. we can give the breakdown directive person a scrap paper area to make a plan
