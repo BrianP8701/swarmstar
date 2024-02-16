@@ -1,6 +1,6 @@
 [tool.poetry]
-name = "aga_swarm"
-version = "0.1.2"
+name = "tree_swarm"
+version = "0.1.0"
 description = ""
 authors = ["BrianP8701 <brianp8701@gmail.com>"]
 readme = "README.md"
@@ -22,3 +22,5 @@ python-dotenv = "^1.0.1"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+include = ["tree_swarm/metadata/mongodb/action_space.bson"]

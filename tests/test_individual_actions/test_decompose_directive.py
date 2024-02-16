@@ -2,9 +2,9 @@ import os
 import pytest
 from typing import List
 
-from aga_swarm.swarm.swarm_master import execute_blocking_operation, execute_node, spawn_node
-from aga_swarm.swarm.swarm_setup import setup_swarm_space
-from aga_swarm.swarm.types import SwarmCommand, BlockingOperation
+from tree_swarm.swarm.core import execute_blocking_operation, execute_node, spawn_node
+from tree_swarm.swarm.setup import setup_swarm_space
+from tree_swarm.swarm.types import SwarmCommand, BlockingOperation
 
 def check_path_exists(base_path: str, suffix: str = '') -> str:
     i = 0
@@ -22,7 +22,7 @@ def test_decompose_directive():
     node = spawn_node(
         swarm,
         SwarmCommand(
-            action_id='aga_swarm/actions/reasoning/decompose_directive',
+            action_id='tree_swarm/actions/reasoning/decompose_directive',
             message=message
         )
     )

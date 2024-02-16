@@ -2,11 +2,11 @@ from typing import Union
 import json
 import sqlite3
 
-from aga_swarm.swarm.types import ActionMetadata, ActionFolder, ActionType
+from tree_swarm.swarm.types import ActionMetadata, ActionFolder, ActionType
 
 def change_action_space_metadata(key: str, metadata: Union[ActionFolder, ActionMetadata]):
-    json_path = 'aga_swarm/actions/action_space_metadata.json'
-    sqlite3_path = 'aga_swarm/actions/action_space_metadata.sqlite3'
+    json_path = 'tree_swarm/actions/action_space_metadata.json'
+    sqlite3_path = 'tree_swarm/actions/action_space_metadata.sqlite3'
     
     # Change the key value pair in both files
     with open(json_path, 'r') as f:
@@ -27,16 +27,16 @@ def change_action_space_metadata(key: str, metadata: Union[ActionFolder, ActionM
 
 
 
-action_id = "aga_swarm/actions/reasoning/decompose_directive"
+action_id = "tree_swarm/actions/reasoning/decompose_directive"
 
 
 dict_version = {
     "type": "internal_python_main",
     "name": "decompose_directive.py",
     "description": "Decompose directives into immediate parralel sub-directives.",
-    "parent": "aga_swarm/actions/reasoning",
+    "parent": "tree_swarm/actions/reasoning",
     "execution_metadata": {
-        "script_path": "aga_swarm/actions/reasoning/decompose_directive.py"
+        "script_path": "tree_swarm/actions/reasoning/decompose_directive.py"
     }
 }
 
@@ -45,7 +45,7 @@ metadata = ActionMetadata.model_validate(dict_version)
 
 
 
-change_action_space_metadata('aga_swarm/actions/reasoning/decompose_directive', dict_version)
+change_action_space_metadata('tree_swarm/actions/reasoning/decompose_directive', dict_version)
 
 
 

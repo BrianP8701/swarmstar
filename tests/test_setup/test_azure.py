@@ -2,7 +2,7 @@ import os
 import pytest
 from dotenv import load_dotenv
 
-from aga_swarm.swarm.swarm_setup import setup_swarm_space
+from tree_swarm.swarm.setup import setup_swarm_space
 
 @pytest.mark.azure
 def test_setup_swarm_space():
