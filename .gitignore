@@ -13,7 +13,7 @@ temp.txt
 my_swarms/
 # C extensions
 *.so
-
+.envrc
 # Distribution / packaging
 .Python
 build/

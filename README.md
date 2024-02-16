@@ -1,9 +1,11 @@
 # Warning
-**UPDATE. Documentation is not just shit. its not up to date.**
 **Not available yet. Still undergoing development before it's ready for use.**
-**Documentation is also still shit. i dont expect anyone to understand this yet.**
+
 **aiming to have a proper package, web app interface and documentation by February 10 2024**
+
 **failed to meet deadline. package is essentially ready, just need to add some actions which is easy. frontend is taking longer than expected. Lets say done by February 15 2024. I swear on it**
+
+**Im such a fucking failure. im sorry boys the frontend took longer than i expected its my first time. i promise im nearly done with the interface and ill come back to this package**
 
 I think if ur interested in the project a great place to look to understand whats going on is in the types folder. aga_swarm/swarm/types
 

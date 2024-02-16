@@ -56,7 +56,7 @@ def upload_swarm_space_kv_pair(swarm: Swarm, category: str, key: str, value: dic
     db = client[db_name]
     collection = db[collection_name]
     collection.create_index([('key', pymongo.ASCENDING)], unique=True)
-    
+
 
 def retrieve_swarm_space_kv_value(swarm: Swarm, category: str, key: str) -> dict:
     try:    
