@@ -1765,3 +1765,4 @@ how might this process work? We want a general predefined framework that can han
 
 should we generate a plan first or just go straight into breaking down the goal? I suppose it should be more dynamic. uh fuck. when we have a problem... damn. 
 no. we can give the breakdown directive person a scrap paper area to make a plan
+its goal is simple: add a web browsing action to the swarms action space

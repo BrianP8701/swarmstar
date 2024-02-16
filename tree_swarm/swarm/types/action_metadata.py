@@ -19,31 +19,21 @@ The execution_metadata provides a place to store the information to be passed
 to the executor who handles this action_type.
 '''
 from pydantic import BaseModel
-from typing import Dict, List, Optional
-from enum import Enum
+from typing import Dict, List
 from typing_extensions import Literal
 
 from tree_swarm.utils.data.kv_operations.main import get_kv
 from tree_swarm.utils.data.internal_operations import get_internal_action_metadata
-
-
-from tree_swarm.swarm.types.swarm import Swarm
+from tree_swarm.swarm.types.swarm_config import Swarm
     
-class ActionType(Enum):
-    AZURE_BLOB_STORAGE_FOLDER = 'azure_blob_storage_folder'         # Folder inside azure blob storage
-    INTERNAL_PYTHON_MAIN = 'internal_python_main'                   # Python file with main function inside package
-    SUBPROCESS_MAIN = 'subprocess_main'                             # Python file with main function outside package stored locally
-    AZURE_BLOB_STORAGE_SCRIPT = 'azure_blob_storage_script'         # Python file with main function inside azure blob storage
-    AZURE_BLOB_STORAGE_PACKAGE = 'azure_blob_storage_package'       # Package inside azure blob storage
-    INTERNAL_FOLDER = 'internal_folder'                             # Folder inside package
 
 class ActionMetadata(BaseModel):
     is_folder: bool
     type: Literal['azure_blob_storage_folder', 'internal_python_main', 'subprocess_main', 'azure_blob_storage_script', 'azure_blob_storage_package', 'internal_folder']   
     name: str       
     description: str                                             
-    children: Optional[List[str]] = None                                      
-    parent: Optional[str] = None                           
+    children: List[str]                             
+    parent: str                        
     metadata: Dict[str, str]
 
 class ActionSpace(BaseModel):

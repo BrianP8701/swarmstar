@@ -11,40 +11,44 @@ The swarm command and NodeIO are what nodes pass between each other.
 The swarm node is the fundamental unit of the swarm.
 '''
 
-from enum import Enum
 from pydantic import BaseModel
-from typing import List, Optional, Dict, Any
+from typing import List, Dict, Any
 from typing_extensions import Literal
-
-class LifecycleCommand(Enum):
-    SPAWN= "spawn"
-    EXECUTE = "execute"
-    TERMINATE = "terminate"
-    NODE_FAILURE = "node_failure"
-    BLOCKING_OPERATION = "blocking_operation"
 
 class SwarmNode(BaseModel):
     node_id: str
-    parent_id: Optional[str] = None
-    children_ids: Optional[List[str]] = None
+    parent_id: str
+    children_ids: List[str]
     action_id: str
     message: str
-    report: Optional[str] = None
-    alive: bool
-
-class SwarmCommand(BaseModel):
-    action_id: str
-    message: str
-    
-class BlockingOperation(BaseModel):
-    lifecycle_command: Literal['blocking_operation']
-    node_id: str
-    type: str
-    args: Dict[str, Any]
-    context: Optional[Dict[str, Any]] = None
-    next_function_to_call: str
-
-class NodeOutput(BaseModel):
-    lifecycle_command: Literal['spawn', 'execute', 'terminate', 'node_failure', 'blocking_operation']
-    swarm_commands: List[SwarmCommand]
     report: str
+    alive: bool
+    termination_policy: Literal['terminate', 'managerial_review', 'retry_with_comms', 'consolidate_report']
+
+class NodeEmbryo(BaseModel):
+    action_id: str
+    message: str
+
+class SwarmOperation(BaseModel):
+    lifecycle_command: Literal['spawn', 'terminate', 'node_failure', 'blocking_operation']
+
+class BlockingOperation(SwarmOperation):
+    lifecycle_command: Literal['blocking_operation']
+    node_id: str 
+    type: str  
+    args: Dict[str, Any] 
+    next_function_to_call: str 
+
+class SpawnOperation(SwarmOperation):
+    lifecycle_command: Literal['spawn']
+    swarm_commands: List[NodeEmbryo]
+    report: str
+
+class TerminateOperation(SwarmOperation):
+    lifecycle_command: Literal['terminate']
+    report: str
+    
+class FailureOperation(SwarmOperation):
+    lifecycle_command: Literal['node_failure']
+    report: str
+    

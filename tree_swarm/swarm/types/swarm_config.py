@@ -8,13 +8,8 @@ and is passed around between every action. I made this so the swarm
 could be decoupled and stateless. This is important for scalability.
 '''
 
-from enum import Enum
 from pydantic import BaseModel
 from typing_extensions import Literal
-
-class Platform(Enum):
-    MAC = 'mac'
-    AZURE = 'azure'
 
 class Configs(BaseModel):
     openai_key: str
@@ -31,7 +26,7 @@ class Configs(BaseModel):
     mongodb_uri: str = None
     mongodb_db_name: str = None
 
-class Swarm(BaseModel):
+class SwarmConfig(BaseModel):
     root_path: str
     platform: Literal['mac', 'azure']
     configs: Configs

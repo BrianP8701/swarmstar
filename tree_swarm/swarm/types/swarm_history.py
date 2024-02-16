@@ -7,7 +7,7 @@ from __future__ import annotations
 from pydantic import BaseModel
 
 from tree_swarm.utils.data.kv_operations.main import get_kv, add_kv
-from tree_swarm.swarm.types.swarm import Swarm
+from tree_swarm.swarm.types.swarm_config import Swarm
 from tree_swarm.swarm.types.swarm_lifecycle import SwarmNode, LifecycleCommand
     
 class SwarmEvent(BaseModel):

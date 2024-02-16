@@ -11,33 +11,20 @@ used in the construction of actions.
 For now we assume all utils are internal to the package.
 '''
 from pydantic import BaseModel
-from typing import Dict, List, Optional, Union
-from enum import Enum
+from typing import Dict, List
 from typing_extensions import Literal
 
 from tree_swarm.utils.data.internal_operations import get_internal_util_metadata
 from tree_swarm.utils.data.kv_operations.main import get_kv
-from tree_swarm.swarm.types.swarm import Swarm
-
-class ConsumerMetadataType(Enum):
-    ACTION = 'action'
-    UTIL = 'util'
-
-class ConsumerMetadata(BaseModel):
-    type: ConsumerMetadataType
-    consumer_id: str
-
-class UtilType(Enum):
-    INTERNAL_FOLDER = 'internal_folder'
-    INTERNAL_FUNCTION = 'internal_function'
+from tree_swarm.swarm.types.swarm_config import Swarm
 
 class UtilMetadata(BaseModel):
     type: Literal['internal_folder', 'internal_function']
     name: str
     description: str
-    parent: Optional[str] = None
+    parent: str
     children: List[str] = []
-    metadata: Optional[Dict[str, str]] = None 
+    metadata: Dict[str, str]
     
 class UtilSpace(BaseModel):
     swarm: Swarm

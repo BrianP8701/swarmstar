@@ -1,6 +1,6 @@
 from __future__ import annotations
 from importlib import import_module
-from typing import Dict, Any, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from tree_swarm.swarm.types import Swarm, ActionMetadata

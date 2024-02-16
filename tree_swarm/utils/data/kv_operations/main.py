@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 from importlib import import_module
 
 if TYPE_CHECKING:
-    from tree_swarm.swarm.types.swarm import Swarm
+    from tree_swarm.swarm.types.swarm_config import Swarm
     
 
 platform_map = {

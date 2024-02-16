@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import List
+from typing import List, Optional
 from tree_swarm.swarm.types import Swarm, BlockingOperation, NodeOutput
 
 # TODO we need to handle cases where the persisted context or report gets too large
@@ -11,8 +11,9 @@ from tree_swarm.swarm.types import Swarm, BlockingOperation, NodeOutput
 
 # The conversation state is used by the model to generate messages and keep track of the conversation.
 class ConversationState(BaseModel):
+    scrap_paper: Optional[str] = Field(..., 'Scrap paper for notes, planning etc. (optional)')
     questions: List[str] = Field(..., description="List of questions we need answered")
-    persisted_context: str = Field(..., description="A very concise and compact representation of only the necessary information to persist through the conversation.")
+    persisted_context: str = Field(..., description="A concise and compact representation of the necessary information to persist through the conversation.")
     report: str = Field(..., description="Concise and comprehensive report of answers to our questions and supporting context.")
     message: str = Field(..., description="Message to send to user")
     
@@ -21,10 +22,8 @@ class AgentMessage(BaseModel):
     
 
 generate_initial_conversation_state_instructions = '''
-Identify and clarify any unspecified information ("primary questions") from the goal.
-
 Steps:
-1. Review the goal and compile a list of information that needs clarification ("primary questions"). This list should be brief and focused.
+1. Identify the questions that need to be answered.
 2. Persist critical context that is needed for the conversation from the goal. This context should be minimal and directly support the agent in maintaining the conversation.
 3. Craft an initial message to the user that is concise and clear to avoid confusion.
 
