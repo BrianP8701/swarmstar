@@ -55,7 +55,7 @@ def analyze_output(directive: str, parent_id: str, completion: DecomposeDirectiv
             swarm_commands=[
                 NodeEmbryo(
                     action_id='swarm_star/actions/communication/ask_user_questions',
-                    message=message,
+                    message=message
                 )
             ],
             report=f'The agent tasked with decomposing directives decided to ask the user questions about directive: \n`{directive}`\n\nQuestions:\n' + '\n'.join(completion.questions)
@@ -70,7 +70,7 @@ def subdirectives_to_swarm_commands(directive: str, parent_id: str, completion: 
     for subdirective in subdirectives:
         node_embryo = NodeEmbryo(
             action_id='swarm_star/actions/swarm/actions/route_to_action',
-            message=subdirective,
+            message=subdirective
         )
         node_embryos.append(node_embryo)
         

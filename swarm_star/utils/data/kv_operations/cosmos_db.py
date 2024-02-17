@@ -24,16 +24,27 @@ from azure.cosmos import CosmosClient
 if TYPE_CHECKING:   
     from swarm_star.swarm.types import SwarmConfig
 
-def add_kv(swarm: SwarmConfig, category: str, key: str, value: dict) -> None:
-    url = swarm.azure_cosmos_db_url
-    cosmos_key = swarm.azure_cosmos_db_key
-    container_name = swarm.azure_cosmos_db_container_name
-    client = CosmosClient(url, credential=cosmos_key)
-    database_name = client.get_database_client(swarm.azure_cosmos_db_database_name)
-    container = database_name.get_container_client(container_name)
+
+def get_container(swarm: SwarmConfig, category: str):
+    try:
+        url = swarm.azure_cosmos_db_url
+        cosmos_key = swarm.azure_cosmos_db_key
+        container_name = swarm.azure_cosmos_db_container_name
+        client = CosmosClient(url, credential=cosmos_key)
+        database_name = client.get_database_client(swarm.azure_cosmos_db_database_name)
+        container = database_name.get_container_client(container_name)
+        return container
+    except Exception as e:
+        raise ValueError(f'Failed to connect to cosmosdb: {str(e)}')
     
-    id = f'{swarm.user_id}-{swarm.swarm_id}-{category}-{key}'
-    # Add partiton keys and id field. CosmosDB expects all values to be inside the dict.
+def build_id(swarm: SwarmConfig, category: str, key: str) -> str:
+    return f'{swarm.user_id}_{swarm.swarm_id}_{category}_{key}'
+    
+    
+def add_kv(swarm: SwarmConfig, category: str, key: str, value: dict) -> None:
+    container = get_container(swarm, category)
+    
+    id = build_id(swarm, category, key)
     value['id'] = id
     
     try:
@@ -43,14 +54,8 @@ def add_kv(swarm: SwarmConfig, category: str, key: str, value: dict) -> None:
 
 
 def get_kv(swarm: SwarmConfig, category: str, key: str):
-    url = swarm.azure_cosmos_db_url
-    cosmos_key = swarm.azure_cosmos_db_key
-    container_name = swarm.azure_cosmos_db_container_name
-    client = CosmosClient(url, credential=cosmos_key)
-    database_name = client.get_database_client(swarm.azure_cosmos_db_database_name)
-    container = database_name.get_container_client(container_name)
-    id = f'{swarm.user_id}-{swarm.swarm_id}-{category}-{key}'
-    
+    container = get_container(swarm, category)
+    id = build_id(swarm, category, key)
     try:
         document = container.read_item(item=id, partition_key=id)
         return document
@@ -58,13 +63,8 @@ def get_kv(swarm: SwarmConfig, category: str, key: str):
         raise ValueError(f'Failed to retrieve from cosmosdb: {str(e)}')
 
 def delete_kv(swarm: SwarmConfig, category: str, key: str):
-    url = swarm.azure_cosmos_db_url
-    cosmos_key = swarm.azure_cosmos_db_key
-    container_name = swarm.azure_cosmos_db_container_name
-    client = CosmosClient(url, credential=cosmos_key)
-    database_name = client.get_database_client(swarm.azure_cosmos_db_database_name)
-    container = database_name.get_container_client(container_name)
-    id = f'{swarm.user_id}-{swarm.swarm_id}-{category}-{key}'
+    container = get_container(swarm, category)
+    id = build_id(swarm, category, key)
     
     try:
         container.delete_item(item=id, partition_key=id)
@@ -72,13 +72,8 @@ def delete_kv(swarm: SwarmConfig, category: str, key: str):
         raise ValueError(f'Failed to delete from cosmosdb: {str(e)}')
         
 def update_kv(swarm: SwarmConfig, category: str, key: str, value: dict) -> None:
-    url = swarm.azure_cosmos_db_url
-    cosmos_key = swarm.azure_cosmos_db_key
-    container_name = swarm.azure_cosmos_db_container_name
-    client = CosmosClient(url, credential=cosmos_key)
-    database_name = client.get_database_client(swarm.azure_cosmos_db_database_name)
-    container = database_name.get_container_client(container_name)
-    id = f'{swarm.user_id}-{swarm.swarm_id}-{category}-{key}'
+    container = get_container(swarm, category)
+    id = build_id(swarm, category, key)
     
     try:
         # Read the existing item
@@ -90,6 +85,16 @@ def update_kv(swarm: SwarmConfig, category: str, key: str, value: dict) -> None:
         container.upsert_item(item)
     except Exception as e:
         raise ValueError(f'Failed to update in cosmosdb: {str(e)}')
+
+
+
+
+
+
+
+
+
+
 
 
 

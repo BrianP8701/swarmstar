@@ -7,7 +7,7 @@ def execute_termination_operation(swarm: SwarmConfig, termination_operation: Ter
     termination_operation_type_map = {
         'simple_termination': 'swarm_star.utils.swarm_utils.termination_operations.simple_termination',
         'parallel_review_termination': 'swarm_star.utils.swarm_utils.termination_operations.parallel_review_termination',
-        'recursive_self_spawn_termination': 'swarm_star.utils.swarm_utils.termination_operations.recursive_self_spawn_termination'
+        'clone_with_reports': 'swarm_star.utils.swarm_utils.termination_operations.recursive_self_spawn_termination'
     }
     
     termination_operation_type = termination_operation.type

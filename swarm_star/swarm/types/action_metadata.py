@@ -19,22 +19,44 @@ The execution_metadata provides a place to store the information to be passed
 to the executor who handles this action_type.
 '''
 from pydantic import BaseModel
-from typing import Dict, List
+from typing import List
 from typing_extensions import Literal
 
 from swarm_star.utils.data.kv_operations.main import get_kv
 from swarm_star.utils.data.internal_operations import get_internal_action_metadata
 from swarm_star.swarm.types.swarm_config import SwarmConfig
     
-
-class ActionMetadata(BaseModel):
+class ActionNode(BaseModel):
     is_folder: bool
-    type: Literal['azure_blob_storage_folder', 'internal_action', 'subprocess_main', 'azure_blob_storage_script', 'azure_blob_storage_package', 'internal_folder']   
-    name: str       
-    description: str                                             
-    children: List[str]                             
-    parent: str                        
-    metadata: Dict[str, str]
+    type: Literal['azure_blob_storage_folder', 'internal_folder', 'internal_action', 'azure_blob_action']
+    name: str
+    description: str
+    children: List[str] = None
+    parent: str = None
+    
+class ActionFolder(ActionNode):
+    is_folder: True
+    type: Literal['internal_folder', 'azure_blob_storage_folder']
+    children: List[str]
+    
+class Action(ActionNode):
+    is_folder: False
+    type: Literal['internal_action', 'azure_blob_action']
+    parent: str
+    children = None
+    termination_policy: Literal[
+        'simple',
+        'parallel_review',
+        'clone_with_reports'
+    ]
+
+class InternalAction(Action):
+    type: Literal['internal_action']
+    script_path: str
+
+class InternalFolder(ActionFolder):
+    type: Literal['internal_folder']
+    folder_path: str
 
 class ActionSpace(BaseModel):
     '''
@@ -44,39 +66,31 @@ class ActionSpace(BaseModel):
     '''
     swarm: SwarmConfig
     
-    def __getitem__(self, action_id: str) -> ActionMetadata:
+    def __getitem__(self, action_id: str) -> ActionNode:
         try:
             internal_action_metadata = get_internal_action_metadata(self.swarm, action_id)
-            return ActionMetadata(**internal_action_metadata)
-        except Exception:
-            external_action_metadata = get_kv(self.swarm, 'action_space', action_id)
-            if external_action_metadata is not None:
-                return ActionMetadata(**external_action_metadata)
-            else:
-                raise ValueError(f"This action id: `{action_id}` does not exist.")
+            action_metadata =  ActionNode(**internal_action_metadata)
+        except Exception as e1:
+            try:
+                external_action_metadata = get_kv(self.swarm, 'action_space', action_id)
+                if external_action_metadata is not None:
+                    action_metadata = ActionNode(**external_action_metadata)
+                else:
+                    raise ValueError(f"This action id: `{action_id}` does not exist in external action space.") from e1
+            except Exception as e2:
+                raise ValueError(f"This action id: `{action_id}` does not exist in both internal and external action spaces.") from e2
             
-    def get_root(self) -> ActionMetadata:
+        type_mapping = {
+            'internal_action': InternalAction,
+            'internal_folder': InternalFolder,
+        }
+        
+        action_type = action_metadata.type
+        if action_type in type_mapping:
+            return type_mapping[action_type](**action_metadata)
+        else:
+            return ActionNode(**action_metadata)
+    
+    def get_root(self) -> ActionNode:
         return self['swarm_star/actions']
     
-
-
-
-'''
-Below is just documentation for what is expected in execution_metadata given an action_type
-'''
-
-# For action_type internal_action_FUNCTION
-class InternalPythonMainFunctionMetadata(BaseModel):
-    script_path: str
-
-class InternalPythonFunctionMetadata(BaseModel):
-    script_path: str
-    function_name: str
-    
-# For action_type SUBPROCESS_MAIN_FUNCTION
-class SubprocessMainFunctionMetadata(BaseModel):
-    import_path: str
-    content_path: str
-    
-# Idk abt the other ones yet
-# TODO add the other ones

@@ -17,18 +17,16 @@ from typing_extensions import Literal
 
 class SwarmNode(BaseModel):
     node_id: str
-    parent_id: str = ''
+    parent_id: str = None
     children_ids: List[str]
     action_id: str
     message: str
-    report: str = ''
+    report: str = None
     alive: bool
     termination_policy: Literal[
         'simple',
-        'append_reports' 
         'parallel_review', 
-        'clone_self_with_reports',
-        'consolidate_reports'
+        'clone_with_reports'
     ] 
 
 class NodeEmbryo(BaseModel):
@@ -45,7 +43,6 @@ class ExecuteOperation(SwarmOperation):
 
 class BlockingOperation(SwarmOperation):
     operation_type: Literal['blocking']
-    node_id: str 
     blocking_type: str  
     args: Dict[str, Any] = {}
     context: Dict[str, Any] = {}
@@ -53,17 +50,19 @@ class BlockingOperation(SwarmOperation):
 
 class SpawnOperation(SwarmOperation):
     operation_type: Literal['spawn']
-    node_id: str = ''
     node_embryos: List[NodeEmbryo]
     report: str = ''
+    termination_policy_change: Literal[
+        'simple',
+        'parallel_review', 
+        'clone_with_reports'
+    ] = None
 
 class TerminateOperation(SwarmOperation):
     operation_type: Literal['terminate']
-    node_id: str
     report: str
     
 class FailureOperation(SwarmOperation):
     operation_type: Literal['node_failure']
-    node_id: str
     report: str
     
