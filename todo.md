@@ -65,5 +65,5 @@ Cloud Optimizations:
 - [ ] when cosmosdb python sdk supports it, use hierarchical partition keys: user_id/swarm_id/category with id for query
 
 User input needed at:
-- tree_swarm/actions/swarm/manager/manager.py
+- swarm_star/actions/swarm/manager/manager.py
 - all action types (when missing a config var)

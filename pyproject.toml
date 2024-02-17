@@ -1,9 +1,10 @@
 [tool.poetry]
-name = "tree_swarm"
+name = "swarm_star"
 version = "0.1.0"
 description = ""
 authors = ["BrianP8701 <brianp8701@gmail.com>"]
 readme = "README.md"
+include = ["swarm_star/metadata/mongodb/action_space.bson"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -22,5 +23,3 @@ python-dotenv = "^1.0.1"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
-include = ["tree_swarm/metadata/mongodb/action_space.bson"]

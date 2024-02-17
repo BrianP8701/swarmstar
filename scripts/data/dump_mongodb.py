@@ -23,4 +23,4 @@ def dump_database(mongodb_uri: str, db_name: str, dump_folder_path: str):
     except subprocess.CalledProcessError as e:
         raise ValueError(f"Failed to dump database: {e}")
 
-# dump_database('mongodb://localhost:27017', 'metadata', 'tree_swarm')
+# dump_database('mongodb://localhost:27017', 'metadata', 'swarm_star')

@@ -2,8 +2,8 @@ import os
 from dotenv import load_dotenv
 import json
 
-from tree_swarm.utils.ai.openai_instructor import completion
-from tree_swarm.swarm.types import ActionMetadata
+from swarm_star.utils.ai.openai_instructor import completion
+from swarm_star.swarm.types import ActionMetadata
 
 load_dotenv() # Load environment variables from .env file
 
@@ -12,8 +12,8 @@ if not openai_key:
     raise ValueError("OPENAI_KEY not found in .env file.")
 
 def manual_add_folder_to_action_space(folder_path: str, description: str):
-    # Ensure the script_path is relative to 'tree_swarm/actions' and format it accordingly
-    base_path = 'tree_swarm/actions'
+    # Ensure the script_path is relative to 'swarm_star/actions' and format it accordingly
+    base_path = 'swarm_star/actions'
     if folder_path == base_path:
         raise ValueError(f"The folder must be within the '{base_path}' directory.")
     if base_path not in folder_path:
@@ -42,7 +42,7 @@ def manual_add_folder_to_action_space(folder_path: str, description: str):
     )
     
     action_metadata = action_metadata.model_dump()
-    with open('tree_swarm/actions/action_space.json', 'r+') as file:
+    with open('swarm_star/actions/action_space.json', 'r+') as file:
         data = json.load(file)
         data[folder_path] = action_metadata
         data[parent_path]['children'].append(folder_path)
@@ -51,4 +51,4 @@ def manual_add_folder_to_action_space(folder_path: str, description: str):
         file.truncate()
     
 description = 'Contains actions to interact with the user'
-manual_add_folder_to_action_space('tree_swarm/actions/communication', description)
+manual_add_folder_to_action_space('swarm_star/actions/communication', description)

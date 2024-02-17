@@ -36,12 +36,12 @@ def retrieve_value_from_sqlite3(sqlite3_db_path: str, key: str) -> str:
         raise ValueError(f'Failed to retrieve value from SQLite3: {str(e)}')
 
 
-json_path = 'tree_swarm/actions/action_space_metadata.json'
-sqlite3_db_path = 'tree_swarm/actions/action_space_metadata.sqlite3'
+json_path = 'swarm_star/actions/action_space_metadata.json'
+sqlite3_db_path = 'swarm_star/actions/action_space_metadata.sqlite3'
 create_or_open_kv_db(sqlite3_db_path)
 move_json_to_sqlite3(json_path, sqlite3_db_path)
 
-# x = retrieve_value_from_sqlite3(sqlite3_db_path, 'action_space_tree_swarm/actions/reasoning')
+# x = retrieve_value_from_sqlite3(sqlite3_db_path, 'action_space_swarm_star/actions/reasoning')
 
 # print(x)
 # print(type(x))
@@ -51,6 +51,6 @@ move_json_to_sqlite3(json_path, sqlite3_db_path)
 # print(x)
 # print(type(x))
 
-# path = '/Users/brianprzezdziecki/Code/autonomous-general-agent-swarm/tree_swarm/actions/action_space_metadata.sqlite3'
+# path = '/Users/brianprzezdziecki/Code/autonomous-general-agent-swarm/swarm_star/actions/action_space_metadata.sqlite3'
 # create_or_open_kv_db(path)
 

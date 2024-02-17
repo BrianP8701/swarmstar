@@ -26,4 +26,4 @@ def upload_json_to_mongodb(mongodb_uri: str, db_name: str, collection_name: str,
             print(f"Failed to upload {key}: {str(e)}")
 
 
-# upload_json_to_mongodb('mongodb://localhost:27017', 'metadata', 'action_space', 'tree_swarm/actions/action_space_metadata.json')
+# upload_json_to_mongodb('mongodb://localhost:27017', 'metadata', 'action_space', 'swarm_star/actions/action_space_metadata.json')

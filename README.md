@@ -7,11 +7,11 @@
 
 **Im such a fucking failure. im sorry boys the frontend took longer than i expected its my first time. i promise im nearly done with the interface and ill come back to this package**
 
-I think if ur interested in the project a great place to look to understand whats going on is in the types folder. tree_swarm/swarm/types
+I think if ur interested in the project a great place to look to understand whats going on is in the types folder. swarm_star/swarm/types
 
 **reminder to myself. make it clear in the docs when i do them to put the swarm space in gitignore because it holds all your private keys**
 
-# Tree Swarm
+# Swarm Star
 # Non Technical Overview
 ## What is the swarm?
 The swarm's aim is to automate as much as possible. 

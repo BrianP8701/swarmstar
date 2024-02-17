@@ -1543,7 +1543,7 @@ action creator
 
         Then we automate this!!!
 
-One particularly interesting question is how to organize the swarm folder. So the tree_swarm/actions/swarm folder we should contain any actions pertaining to the swarm. this could include action types. i feel like action types is a horrible name. 
+One particularly interesting question is how to organize the swarm folder. So the swarm_star/actions/swarm folder we should contain any actions pertaining to the swarm. this could include action types. i feel like action types is a horrible name. 
 
 10 min later...
 
