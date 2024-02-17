@@ -29,7 +29,7 @@ from swarm_star.swarm.types.swarm_config import SwarmConfig
 
 class ActionMetadata(BaseModel):
     is_folder: bool
-    type: Literal['azure_blob_storage_folder', 'internal_python_main', 'subprocess_main', 'azure_blob_storage_script', 'azure_blob_storage_package', 'internal_folder']   
+    type: Literal['azure_blob_storage_folder', 'internal_action', 'subprocess_main', 'azure_blob_storage_script', 'azure_blob_storage_package', 'internal_folder']   
     name: str       
     description: str                                             
     children: List[str]                             
@@ -65,7 +65,7 @@ class ActionSpace(BaseModel):
 Below is just documentation for what is expected in execution_metadata given an action_type
 '''
 
-# For action_type INTERNAL_PYTHON_MAIN_FUNCTION
+# For action_type internal_action_FUNCTION
 class InternalPythonMainFunctionMetadata(BaseModel):
     script_path: str
 

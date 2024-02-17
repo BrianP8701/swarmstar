@@ -7,15 +7,14 @@ Think of this as the entrypoint back into the action after a blocking operation 
 
 from __future__ import annotations
 from importlib import import_module
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING
 
 from swarm_star.swarm.types import ActionSpace, SwarmState
 
 if TYPE_CHECKING:
-    from swarm_star.swarm.types import Swarm, BlockingOperation, NodeOutput
+    from swarm_star.swarm.types import SwarmConfig, BlockingOperation, SwarmOperation
 
-
-def execute_blocking_operation(swarm: Swarm, blocking_operation: BlockingOperation) -> Union[BlockingOperation, NodeOutput]:
+def execute_blocking_operation(swarm: SwarmConfig, blocking_operation: BlockingOperation) -> SwarmOperation:
     action_space = ActionSpace(swarm=swarm)
     swarm_state = SwarmState(swarm=swarm)
     node_id = blocking_operation.node_id

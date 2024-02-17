@@ -22,7 +22,7 @@ def execute_blocking_operation(swarm: SwarmConfig, blocking_operation: BlockingO
     return BlockingOperation(
         operation_type=blocking_operation.operation_type,
         node_id=blocking_operation.node_id,
-        type='internal_action',
+        blocking_type='internal_action',
         args={
             "completion": response
         },

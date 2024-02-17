@@ -54,7 +54,7 @@ def save_script_action_to_internal_action_space(script_path: str):
     description = response.description
     action_metadata = ActionMetadata(
         is_folder=False,
-        type=ActionType.INTERNAL_PYTHON_MAIN,
+        type=ActionType.internal_action,
         name=os.path.splitext(os.path.basename(relative_script_path))[0],
         description=description,
         parent=parent_id,

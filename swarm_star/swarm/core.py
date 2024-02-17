@@ -1,10 +1,10 @@
-from typing import List, Union
+from typing import List
 import json
 
 from swarm_star.swarm.types import SwarmConfig, ActionSpace, SwarmOperation, SwarmNode, SwarmState, SwarmHistory, BlockingOperation, SpawnOperation, NodeEmbryo, ExecuteOperation, TerminateOperation
 from swarm_star.utils.misc.uuid import generate_uuid
-from swarm_star.utils.swarm_utils.execute_node.main import execute_node_action
-from swarm_star.utils.swarm_utils.execute_blocking_operation.main import execute_blocking_operation as _execute_blocking_operation
+from swarm_star.utils.swarm_utils.action_operations.main import execute_node_action
+from swarm_star.utils.swarm_utils.blocking_operations.main import execute_blocking_operation
 
 def spawn_swarm(goal: str) -> SpawnOperation:
     return SpawnOperation(
@@ -17,50 +17,62 @@ def spawn_swarm(goal: str) -> SpawnOperation:
         ]
     )
 
-def swarm_master(swarm: SwarmConfig, swarm_operation: SwarmOperation) -> List[SwarmOperation]:
+def execute_swarm_operation(swarm: SwarmConfig, swarm_operation: SwarmOperation) -> List[SwarmOperation]:
     if swarm_operation.operation_type == 'spawn':
-        nodes = _execute_spawn_operation(swarm, swarm_operation)
-        execute_operations = []
-        for node in nodes:
-            execute_operations.append(ExecuteOperation(
-                operation_type='execute',
-                node=node
-            ))
-        return execute_operations
+        output = execute_spawn_operation(swarm, swarm_operation)
+    elif swarm_operation.operation_type == 'execute':
+        output = execute_node_action(swarm, swarm_operation)
     elif swarm_operation.operation_type == 'blocking_operation':
-        return _execute_blocking_operation(swarm, swarm_operation)
+        output = execute_blocking_operation(swarm, swarm_operation)
     elif swarm_operation.operation_type == 'terminate':
-        return _execute_terminate_operation(swarm, swarm_operation)
+        output = _execute_terminate_operation(swarm, swarm_operation)
     elif swarm_operation.operation_type == 'node_failure':
-        return _handle_node_failure(swarm, swarm_operation)
+        output = _handle_node_failure(swarm, swarm_operation)
     else:
         raise ValueError("Unexpected output type")
-
-
-
     
-def execute_swarm_operation(swarm: SwarmConfig, swarm_operation) -> SwarmOperation:
-    if swarm_operation.operation_type == 'blocking_operation':
-        return execute_blocking_operation(swarm, swarm_operation)
-    elif swarm_operation.operation_type == 'spawn':
-        return spawn_node(swarm, swarm_operation)
-    elif swarm_operation.operation_type == 'terminate':
-        return _terminate_node(swarm, swarm_operation)
-    elif swarm_operation.operation_type == 'node_failure':
-        return _handle_node_failure(swarm, swarm_operation)
-    else:
-        raise ValueError("Unexpected output type")
+    if not isinstance(output, list):
+        output = [output]
+    return output
 
-'''
-Private methods
-'''
-
-def _execute_spawn_operation(swarm: SwarmConfig, spawn_operation: SpawnOperation) -> List[SwarmNode]:
+def execute_spawn_operation(swarm: SwarmConfig, spawn_operation: SpawnOperation) -> List[SwarmNode]:
+    swarm_state = SwarmState(swarm=swarm)
+    swarm_history = SwarmHistory(swarm=swarm)
+    parent_node = swarm_state[spawn_operation.node_id]
+    parent_node.report = spawn_operation.report
+    
     nodes = []
     for node_embryo in spawn_operation.node_embryos:
         node = _spawn_node(swarm, node_embryo, spawn_operation.node_id)
         nodes.append(node)
-    return nodes
+        parent_node.children_ids.append(node.node_id)
+        
+    swarm_state.update_state(parent_node)
+    
+    execute_operations = []
+    for node in nodes:
+        execute_operations.append(ExecuteOperation(
+            operation_type='execute',
+            node=node
+        ))
+    
+    swarm_history.add_event(spawn_operation)
+    return execute_operations
+
+
+def _spawn_node(swarm: SwarmConfig, node_embryo: NodeEmbryo, parent_id: str) -> SwarmNode:
+    action_space = ActionSpace(swarm=swarm)
+    swarm_state = SwarmState(swarm=swarm)
+    node_embryo = NodeEmbryo.model_validate(node_embryo)
+    node = SwarmNode(
+        node_id=generate_uuid(action_space[node_embryo.action_id].name),
+        parent_id=parent_id,
+        action_id=node_embryo.action_id,
+        message=node_embryo.message,
+        alive=True
+    )
+    swarm_state.update_state(node)
+    return node
 
 
 def _execute_terminate_operation(swarm: SwarmConfig, terminate_operation: TerminateOperation) -> dict:
@@ -76,11 +88,8 @@ def _execute_terminate_operation(swarm: SwarmConfig, terminate_operation: Termin
             - If all child nodes are dead but the manager hasn't been reviewed, initiate a review reports node for all child reports.
     '''
     swarm_state = SwarmState(swarm=swarm)
-    swarm_history = SwarmHistory(swarm=swarm)
-
     node.report = terminate_operation.report
     _node_funeral(swarm, node)    
-    swarm_history.add_event(terminate_operation)
     
     while node.parent_id is not None:
         node = swarm_state[node.parent_id]
@@ -116,37 +125,6 @@ def _execute_terminate_operation(swarm: SwarmConfig, terminate_operation: Termin
     return None
 
 
-def _spawn_node(swarm: SwarmConfig, node_embryo: NodeEmbryo, parent_id: str) -> SwarmNode:
-    action_space = ActionSpace(swarm=swarm)
-    swarm_state = SwarmState(swarm=swarm)
-    swarm_history = SwarmHistory(swarm=swarm)
-    node_embryo = NodeEmbryo.model_validate(node_embryo)
-    node = SwarmNode(
-        node_id=generate_uuid(action_space[node_embryo.action_id].name),
-        parent_id=parent_id,
-        action_id=node_embryo.action_id,
-        message=node_embryo.message,
-        alive=True
-    )
-    swarm_state.update_state(node)
-    swarm_history.add_event('spawn', node)
-    return node
-
-def _spawn_children(swarm: SwarmConfig, parent: SwarmNode, node_output: NodeOutput) -> List[SwarmNode]:
-    parent.report = node_output.report
-    children = []
-    for swarm_command in node_output.swarm_commands:
-        child_node = spawn_node(swarm, swarm_command, parent.node_id)
-        parent.children_ids.append(child_node.node_id)
-        children.append(child_node)
-    
-    swarm_state = SwarmState(swarm=swarm)
-    swarm_history = SwarmHistory(swarm=swarm)
-    swarm_state.update_state(parent)
-    swarm_history.add_event('execute', parent)
-
-    return children
-
 
 def _get_reports_of_children(swarm: SwarmConfig, parent: SwarmNode) -> List[List[str]]:
     reports = []
@@ -168,11 +146,19 @@ def _get_reports_of_children(swarm: SwarmConfig, parent: SwarmNode) -> List[List
         reports.append(this_branch_reports)
     return reports
 
-def _node_funeral(swarm: SwarmConfig, node: SwarmNode) -> SwarmNode:
+def _node_funeral(swarm: SwarmConfig, node: SwarmNode) -> SwarmNode: # rip node
     node.alive = False
     swarm_state = SwarmState(swarm=swarm)
+    swarm_history = SwarmHistory(swarm=swarm)
+    termination_operation = TerminateOperation(
+        operation_type='terminate',
+        node_id=node.node_id,
+        report=node.report
+    )
+    swarm_history.add_event(termination_operation)
     swarm_state.update_state(node)
 
 def _handle_node_failure(swarm: SwarmConfig, node: SwarmNode) -> SwarmNode:
     raise ValueError("Node failed to execute. Didnt write logic to handle node failure yet so this error isnt a bad thing") # TODO: Implement this
     pass
+

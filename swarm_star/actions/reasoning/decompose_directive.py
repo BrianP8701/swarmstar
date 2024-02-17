@@ -17,7 +17,7 @@ system_instructions = (
     'must be independent and parallel.\n\nChoose one of the options and proceed. Do not ask questions and decompose the directive at the same time.'
     )
 
-def main(node_id: str, message: str) -> BlockingOperation:
+def main(node_id: str, message: str, **kwargs) -> BlockingOperation:
     messages = [
         {
             "role": "system",

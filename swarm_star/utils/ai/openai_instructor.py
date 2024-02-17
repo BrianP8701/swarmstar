@@ -26,9 +26,11 @@ def completion(messages: List[Dict[str, str]], openai_key: str, instructor_model
     - Type[BaseModel]: The Pydantic model
     '''
     client = instructor.patch(OpenAI(api_key=openai_key))
-    return client.chat.completions.create(model='gpt-4-1106-preview', 
-                                          messages=messages, 
-                                          response_model=instructor_model, 
-                                          temperature=0.0, 
-                                          seed=69, 
-                                          max_retries=max_retries)
+    return client.chat.completions.create(
+        model='gpt-4-1106-preview', 
+        messages=messages, 
+        response_model=instructor_model, 
+        temperature=0.0, 
+        seed=69, 
+        max_retries=max_retries
+    )

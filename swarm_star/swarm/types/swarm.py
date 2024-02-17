@@ -5,6 +5,7 @@ The NodeEmbryo is what a node outputs to spawn children.
 
 Nodes can perform 1 of 4 "SwarmOperations":
     - SpawnOperation
+    - ExecuteOperation
     - TerminateOperation
     - FailureOperation
     - BlockingOperation
@@ -22,7 +23,13 @@ class SwarmNode(BaseModel):
     message: str
     report: str = ''
     alive: bool
-    termination_policy: Literal['terminate', 'managerial_review', 'retry_with_comms', 'consolidate_report'] = 'terminate'
+    termination_policy: Literal[
+        'simple',
+        'append_reports' 
+        'parallel_review', 
+        'clone_self_with_reports',
+        'consolidate_reports'
+    ] 
 
 class NodeEmbryo(BaseModel):
     action_id: str

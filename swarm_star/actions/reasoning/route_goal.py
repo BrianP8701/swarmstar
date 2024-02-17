@@ -12,7 +12,7 @@ system_instructions = (
     'If there is no good action path to take, describe what type of action is needed in detail.'
     )
     
-def main(swarm: SwarmConfig, node_id: str, message: str) -> BlockingOperation:
+def main(swarm: SwarmConfig, node_id: str, message: str, **kwargs) -> BlockingOperation:
     '''
     The main function begins the process of routing the action space from the root node.
     '''

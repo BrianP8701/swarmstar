@@ -6,8 +6,8 @@ Throughout the conversation we maintain a "Conversation State" which is a data s
 '''
 
 from pydantic import BaseModel, Field
-from typing import List, Optional
-from swarm_star.swarm.types import BlockingOperation, SwarmOperation, TerminateOperation
+from typing import List
+from swarm_star.swarm.types import BlockingOperation, TerminateOperation
 
 
 
@@ -56,7 +56,7 @@ finalize_report_instructions = (
 
 
 
-def main(node_id: str, message: str):
+def main(node_id: str, message: str, **kwargs):
     generate_initial_conversation_state(node_id, message)
     
 def generate_initial_conversation_state(node_id: str, message: str):
