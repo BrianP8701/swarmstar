@@ -26,25 +26,25 @@ def spawn_node(swarm: SwarmConfig, swarm_command: SwarmCommand, parent_id: Union
 def execute_node(swarm: SwarmConfig, node: SwarmNode) -> Union[List[SwarmNode], BlockingOperation]:
     node_output: Union[NodeOutput, BlockingOperation] = execute_node_action(swarm, node)
     
-    if node_output.lifecycle_command == 'blocking_operation':
+    if node_output.operation_type == 'blocking_operation':
         return node_output
-    elif node_output.lifecycle_command == 'spawn':
+    elif node_output.operation_type == 'spawn':
         return _spawn_children(swarm, node, NodeOutput(node_output))
-    elif node_output.lifecycle_command == 'terminate':
+    elif node_output.operation_type == 'terminate':
         return _terminate_node(swarm, node, node_output)
-    elif node_output.lifecycle_command == 'node_failure':
+    elif node_output.operation_type == 'node_failure':
         return _handle_node_failure(swarm, node, node_output)
     else:
         raise ValueError("Unexpected output type")
     
 def execute_swarm_operation(swarm: SwarmConfig, swarm_operation) -> SwarmOperation:
-    if swarm_operation.lifecycle_command == 'blocking_operation':
+    if swarm_operation.operation_type == 'blocking_operation':
         return execute_blocking_operation(swarm, swarm_operation)
-    elif swarm_operation.lifecycle_command == 'spawn':
+    elif swarm_operation.operation_type == 'spawn':
         return spawn_node(swarm, swarm_operation)
-    elif swarm_operation.lifecycle_command == 'terminate':
+    elif swarm_operation.operation_type == 'terminate':
         return _terminate_node(swarm, swarm_operation)
-    elif swarm_operation.lifecycle_command == 'node_failure':
+    elif swarm_operation.operation_type == 'node_failure':
         return _handle_node_failure(swarm, swarm_operation)
     else:
         raise ValueError("Unexpected output type")

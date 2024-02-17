@@ -21,7 +21,7 @@ So a lot of the goals outlined above have actually been rendered irrelevant beca
 - [x] test manager
 - [x] integration test
 - [x] add handling for termination in core
-- [x] change all node executions to output report and lifecycle_command instead of just "output"
+- [x] change all node executions to output report and operation_type instead of just "output"
 - [x] add manager_supervisor agent
 - [x] integration test with termination
 - [ ] add action router

@@ -22,7 +22,7 @@ from .swarm_state import (
     SwarmState
 )
 
-from .swarm_lifecycle import (
+from .swarm import (
     SwarmNode,
     NodeEmbryo,
     SwarmOperation,

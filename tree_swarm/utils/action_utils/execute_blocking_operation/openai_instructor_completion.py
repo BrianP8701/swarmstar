@@ -20,7 +20,7 @@ def execute_blocking_operation(swarm: Swarm, blocking_operation: BlockingOperati
     response = completion(messages=messages, openai_key=swarm.configs.openai_key, instructor_model=instructor_model)
     
     return BlockingOperation(
-        lifecycle_command=blocking_operation.lifecycle_command,
+        operation_type=blocking_operation.operation_type,
         node_id=blocking_operation.node_id,
         type='internal_action',
         args={

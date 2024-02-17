@@ -1442,7 +1442,7 @@ run it with:
 - spawn or terminate
 
 {
-    "lifecycle_command": "spawn or terminate",
+    "operation_type": "spawn or terminate",
     "action" : {
         "id": "",
         "args": {}

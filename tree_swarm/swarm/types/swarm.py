@@ -1,14 +1,13 @@
 '''
-Here we define the smaller components that make up the swarm.
+The swarm consists of nodes. Each node is given a message and a preassigned action they must execute.
 
-The lifecycle command describes the only 4 commands that an action
-can send to the swarm. Spawn children nodes to take more actions,
-execute itself, terminate itself if it completed its directive and 
-needs no more children, or failure.
+The NodeEmbryo is what a node outputs to spawn children.
 
-The swarm command and NodeIO are what nodes pass between each other.
-
-The swarm node is the fundamental unit of the swarm.
+Nodes can perform 1 of 4 "SwarmOperations":
+    - SpawnOperation
+    - TerminateOperation
+    - FailureOperation
+    - BlockingOperation
 '''
 
 from pydantic import BaseModel
@@ -30,25 +29,30 @@ class NodeEmbryo(BaseModel):
     message: str
 
 class SwarmOperation(BaseModel):
-    lifecycle_command: Literal['spawn', 'terminate', 'node_failure', 'blocking_operation']
+    operation_type: Literal['spawn', 'terminate', 'node_failure', 'blocking']
+    node_id: str
 
 class BlockingOperation(SwarmOperation):
-    lifecycle_command: Literal['blocking_operation']
+    operation_type: Literal['blocking']
     node_id: str 
-    type: str  
+    blocking_type: str  
     args: Dict[str, Any] 
+    context: Dict[str, Any]
     next_function_to_call: str 
 
 class SpawnOperation(SwarmOperation):
-    lifecycle_command: Literal['spawn']
-    swarm_commands: List[NodeEmbryo]
+    operation_type: Literal['spawn']
+    node_id: str
+    node_embryos: List[NodeEmbryo]
     report: str
 
 class TerminateOperation(SwarmOperation):
-    lifecycle_command: Literal['terminate']
+    operation_type: Literal['terminate']
+    node_id: str
     report: str
     
 class FailureOperation(SwarmOperation):
-    lifecycle_command: Literal['node_failure']
+    operation_type: Literal['node_failure']
+    node_id: str
     report: str
     

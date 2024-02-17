@@ -7,20 +7,17 @@ from __future__ import annotations
 from pydantic import BaseModel
 
 from tree_swarm.utils.data.kv_operations.main import get_kv, add_kv
-from tree_swarm.swarm.types.swarm_config import Swarm
-from tree_swarm.swarm.types.swarm_lifecycle import SwarmNode, LifecycleCommand
+from tree_swarm.swarm.types.swarm_config import SwarmConfig
+from tree_swarm.swarm.types.swarm import SwarmNode, SwarmOperation
     
-class SwarmEvent(BaseModel):
-    lifecycle_command: LifecycleCommand
-    node: SwarmNode
     
 class SwarmHistory(BaseModel):
-    swarm: Swarm
+    swarm: SwarmConfig
 
-    def __getitem__(self, frame: int) -> SwarmEvent:
-        return SwarmEvent.model_validate(get_kv(self.swarm, 'swarm_history', frame))
+    def __getitem__(self, frame: int) -> SwarmOperation:
+        return SwarmOperation.model_validate(get_kv(self.swarm, 'swarm_history', frame))
     
-    def add_event(self, lifecycle_command: LifecycleCommand, node: SwarmNode):
+    def add_event(self, operation: SwarmOperation, node: SwarmNode):
         current_frame = get_kv(self.swarm, 'swarm_history', 'current_frame')
-        add_kv(self.swarm, 'swarm_history', current_frame, SwarmEvent(lifecycle_command=lifecycle_command, node=node).model_dump_json())
-        add_kv(self.swarm, 'swarm_history', 'current_frame', current_frame + 1)
+        add_kv(self.swarm, 'swarm_history', current_frame, operation.model_dump())
+        add_kv(self.swarm, 'swarm_history', 'current_frame', {'frame': current_frame + 1})

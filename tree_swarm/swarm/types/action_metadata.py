@@ -24,7 +24,7 @@ from typing_extensions import Literal
 
 from tree_swarm.utils.data.kv_operations.main import get_kv
 from tree_swarm.utils.data.internal_operations import get_internal_action_metadata
-from tree_swarm.swarm.types.swarm_config import Swarm
+from tree_swarm.swarm.types.swarm_config import SwarmConfig
     
 
 class ActionMetadata(BaseModel):
@@ -42,7 +42,7 @@ class ActionSpace(BaseModel):
     
         action_id: ActionMetadata
     '''
-    swarm: Swarm
+    swarm: SwarmConfig
     
     def __getitem__(self, action_id: str) -> ActionMetadata:
         try:

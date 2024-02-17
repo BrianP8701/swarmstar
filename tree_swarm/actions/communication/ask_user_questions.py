@@ -1,70 +1,65 @@
+'''
+Throughout the conversation we maintain a "Conversation State" which is a data structure that contains the following:
+    - A list of questions that need to be answered.
+    - A concise and compact representation of only the necessary information to persist through the conversation.
+    - A list of reports that is built up throughout the conversation. This report is what will be sent back when the conversation ends.
+'''
+
 from pydantic import BaseModel, Field
 from typing import List, Optional
-from tree_swarm.swarm.types import Swarm, BlockingOperation, NodeOutput
-
-# TODO we need to handle cases where the persisted context or report gets too large
+from tree_swarm.swarm.types import BlockingOperation, SwarmOperation, TerminateOperation
 
 
-'''
-    Instructor models and instructions
-'''
 
-# The conversation state is used by the model to generate messages and keep track of the conversation.
 class ConversationState(BaseModel):
-    scrap_paper: Optional[str] = Field(..., 'Scrap paper for notes, planning etc. (optional)')
     questions: List[str] = Field(..., description="List of questions we need answered")
     persisted_context: str = Field(..., description="A concise and compact representation of the necessary information to persist through the conversation.")
     report: str = Field(..., description="Concise and comprehensive report of answers to our questions and supporting context.")
-    message: str = Field(..., description="Message to send to user")
     
 class AgentMessage(BaseModel):
-    content: str = Field(..., description="The content of the message")
+    content: str = Field(..., description="The message to send to the user.")
     
-
-generate_initial_conversation_state_instructions = '''
-Steps:
-1. Identify the questions that need to be answered.
-2. Persist critical context that is needed for the conversation from the goal. This context should be minimal and directly support the agent in maintaining the conversation.
-3. Craft an initial message to the user that is concise and clear to avoid confusion.
-
-Leave the report field empty. You are initializing the conversation state'''.replace("\n", "\\n")
-
-update_conversation_state_instructions = '''
-Refine the conversation state based on the user's latest response.
-
-Steps:
-1. Update Questions: Review the user's latest message. Adjust the list of questions by removing resolved items and adding new ones as needed.
-2. Update Context: Add relevant new details to the persisted context based off the most recent message. Keep it focused on essential information required for ongoing dialogue. Don't repeat anything already mentioned, what you say will be added to the current persisted context.
-3. Update Reports: Add answers and relevant information to the reports given the users message. This report is what will be sent back when the conversation ends. Keep it brief and actionable yet comprehensive. Don't repeat anything already mentioned, what you say will be added to the current reports.'''.replace("\n", "\\n")
-
-generate_message_instructions = '''
-Generate a message to send to the user based on the current conversation state.
-
-You are given a list of questions that need to be answered. In addition you have context that has been stored throughout the question. Do not stray off topic and only aim to get answers to the questions.'''.replace("\n", "\\n")
-
-finalize_report_instructions = '''Given the list of reports, consolidate it into a single comprehensive yet concise report to return.'''.replace("\n", "\\n")
-
-
-'''
-    Action functions
-'''
-
-
-def main(swarm: Swarm, node_id: str, message: str):
-    analyze_goal(node_id, message)
+class FinalReport(BaseModel):
+    report: str = Field(..., description="Concise and comprehensive report of answers to our questions and supporting context.")
     
-def analyze_goal(node_id: str, goal: str):
-    '''
-    The goal analysis step generates the initial conversation state.
-    - It extracts a list of questions that need to be answered.
-    - It extracts a concise and compact representation of only the necessary information to persist through the conversation.
-    - It generates the first message to send to the user.
+generate_initial_conversation_state_instructions = (
+    'Steps:\n\n'
+    '1. Identify the questions that need to be answered.\n'
+    '2. Persist critical context that is needed for the conversation from the goal. This '
+    'context should be minimal and directly support the agent in maintaining the conversation.\n'
+    '3. Craft an initial message to the user that is concise and clear to avoid confusion.\n\n'
+    'Leave the report field empty. You are initializing the conversation state\n\n'
+    'The reports aren\'t used as context throughout the conversation, so make sure all necessary context is in the persisted context.'
+).replace("\n", "\\n")
+
+update_conversation_state_instructions = (
+    'Refine the conversation state based on the user\'s latest response.\n\n'
+
+    'Steps:\n'
+    '1. Update Questions: Rewrite the list of questions by removing resolved items and adding new ones as needed.\n'
+    '2. Update Context: Rewrite the persisted context based off the most recent message. Keep it focused on essential ' 
+    'information required for ongoing dialogue.\n'
+    '3. Add to Reports: Add answers and relevant information to the reports given the users message. This report is what '
+    'will be sent back when the conversation ends. Keep it brief and actionable yet comprehensive. What you say will be '
+    'added to the current reports.\n\n'
+    'The reports aren\'t used as context throughout the conversation, so make sure all necessary context is in the persisted context.'
+).replace("\n", "\\n")
+
+generate_message_instructions = (
+    'Generate a message to send to the user based on the current conversation state and the user\'s most recent message.\n'
+    'You are given a list of questions that need to be answered. Don\'t stray off topic and aim to get answers to the questions.'
+).replace("\n", "\\n")
+
+finalize_report_instructions = (
+    'Consolidate the list of reports into a final report.'
+).replace("\n", "\\n")
+
+
+
+def main(node_id: str, message: str):
+    generate_initial_conversation_state(node_id, message)
     
-    Throughout the conversation:
-    - It will update the list of questions by removing ones that have been answered and adding new questions that arise throughout the conversation.
-    - It will update the persisted context be adding relevant details that the agent needs to keep in mind during the conversation.
-    - It will update the report with answers and relevant information to the original questions.
-    '''
+def generate_initial_conversation_state(node_id: str, message: str):
     messages = [
         { 
             "role": "system",
@@ -72,46 +67,69 @@ def analyze_goal(node_id: str, goal: str):
         },
         {
             "role": "user",
-            "content": f'Goal:\n{goal}'
+            "content": f'Extract questions from this message:\n`{message}`'
         }
     ]
-    
     return BlockingOperation(
-        lifecycle_command='blocking_operation',
+        operation_type='blocking',
         node_id=node_id,
-        type="openai_instructor_completion",
+        blocking_type="openai_instructor_completion",
         args={
             "messages": messages,
             "instructor_model": ConversationState
         },
-        context = {},
-        next_function_to_call="make_first_user_input_request"
+        context = {
+            "node_id": node_id    
+        },
+        next_function_to_call="generate_first_message"
     )
     
-def make_first_user_input_request(node_id: str, completion: ConversationState):
-    '''
-    The first message gets sent to the user and we await the response.
-    '''
+def generate_first_message(node_id: str, completion: ConversationState):
+    messages = [
+        {
+            "role": "system",
+            "content": generate_message_instructions
+        },
+        {
+            "role": "system",
+            "content": f"Questions: {completion.questions}\n\nContext: {completion.persisted_context}"
+        }
+    ]
     return BlockingOperation(
-        lifecycle_command='blocking_operation',
+        operation_type='blocking',
         node_id=node_id,
-        type="initiate_conversation_with_user",
+        blocking_type="openai_instructor_completion",
         args={
-            "message": completion.message,
+            "messages": messages,
+            "instructor_model": AgentMessage
+        },
+        context = {
+            "node_id": node_id,
+            "questions": completion.questions,
+            "persisted_context": completion.persisted_context, 
+        },
+        next_function_to_call="create_chat"
+    )
+    
+def create_chat(node_id: str, completion: AgentMessage, questions: List[str], persisted_context: str):
+    return BlockingOperation(
+        operation_type='blocking_operation',
+        node_id=node_id,
+        blocking_type="create_chat",
+        args={
+            "ai_message": completion.message,
             "node_id": node_id
         },
         context = {
-            "questions": completion.questions,
-            "persisted_context": [completion.persisted_context],
+            "node_id": node_id,
+            "questions": questions,
+            "persisted_context": persisted_context,
             "reports": []
         },
-        next_function_to_call="analyze_user_input"
+        next_function_to_call="update_conversation_state"
     )
     
-def analyze_user_input(node_id: str, conversation_id: str, user_input: str, questions: List[str], persisted_context: List[str], reports: List[str]):
-    '''
-    This step will analyze the user's input.
-    '''
+def update_conversation_state(node_id: str, questions: List[str], persisted_context: str, reports: List[str], user_response: str,):
     messages = [
         { 
             "role": "system",
@@ -119,39 +137,37 @@ def analyze_user_input(node_id: str, conversation_id: str, user_input: str, ques
         },
         {
             "role": "user",
-            "content": user_input
+            "content": user_response
         },
         {
             "role": "system",
-            "content": f"Update Questions: {questions}\n\nUpdate Context: {persisted_context}\n\nUpdate Report: {reports}"
+            "content": f"Update Questions: {questions}\n\nUpdate Context: {persisted_context}\n\nAdd to Reports: {reports}"
         }
     ]
     return BlockingOperation(
-        lifecycle_command='blocking_operation',
+        operation_type='blocking_operation',
         node_id=node_id,
-        type="openai_instructor_completion",
+        blocking_type="openai_instructor_completion",
         args={
             "messages": messages,
             "instructor_model": ConversationState
         },
         context = {
-            "persisted_context": persisted_context,
+            "node_id": node_id,
             "reports": reports,
-            "conversation_id": conversation_id
+
         },
         next_function_to_call="update_conversation_state"
     )
     
-def update_conversation_state(node_id: str, conversation_id: str, completion: ConversationState, persisted_context: List[str], reports: List[str]):
-    '''
-    This step updates the conversation state given the analysis.
-    '''
-    if len(completion.questions) > 0:
-        reports.append(completion.report)
-        finalize_report(node_id, conversation_id, reports)
+def decide_to_continue_or_end_conversation(node_id: str, reports: List[str], completion: ConversationState):
+    reports.append(completion.report)
+    if (not completion.questions) or (len(completion.questions) > 0):
+        finalize_report(node_id, reports)
     else:
-        persisted_context.append(completion.persisted_context)
-        reports.append(completion.report)
+        questions = completion.questions
+        persisted_context = completion.persisted_context
+        
         messages = [
             { 
                 "role": "system",
@@ -159,48 +175,46 @@ def update_conversation_state(node_id: str, conversation_id: str, completion: Co
             },
             {
                 "role": "system",
-                "content": f"Questions: {completion.questions}\n\nContext: {persisted_context}"
+                "content": f"Questions: {questions}\n\nContext: {persisted_context}"
             }
         ]
+        
         return BlockingOperation(
-            lifecycle_command='blocking_operation',
+            operation_type='blocking_operation',
             node_id=node_id,
-            type="openai_instructor_completion",
+            blocking_type="openai_instructor_completion",
             args={
                 "messages": messages,
                 "instructor_model": AgentMessage
             },
             context = {
+                "node_id": node_id,
+                "questions": questions,
                 "persisted_context": persisted_context,
                 "reports": reports,
-                "conversation_id": conversation_id,
-                "questions": completion.questions
             },
-            next_function_to_call="make_user_input_request"
+            next_function_to_call="generate_message"
         )
     
-def make_user_input_request(node_id: str, conversation_id: str, completion: AgentMessage, questions: List[str], persisted_context: List[str], reports: List[str]):
+def send_message(node_id: str, questions: List[str], persisted_context: str, reports: List[str], completion: AgentMessage):
     return BlockingOperation(
-        lifecycle_command='blocking_operation',
+        operation_type='blocking_operation',
         node_id=node_id,
-        type="request_user_input",
+        blocking_type="send_message",
         args={
-            "message": completion.content,
-            "conversation_id": conversation_id
+            "ai_message": completion.content,
+            "node_id": node_id
         },
         context = {
-            "conversation_id": conversation_id,
+            "node_id": node_id,
             "questions": questions,
             "persisted_context": persisted_context,
             "reports": reports
         },
-        next_function_to_call="analyze_user_input"
+        next_function_to_call="update_conversation_state"
     )
-
+    
 def finalize_report(node_id: str, reports: List[str]):
-    '''
-    This step finalizes the report and terminates the conversation.
-    '''
     messages = [
         { 
             "role": "system",
@@ -212,20 +226,22 @@ def finalize_report(node_id: str, reports: List[str]):
         }
     ]
     return BlockingOperation(
-        lifecycle_command='blocking_operation',
+        operation_type='blocking_operation',
         node_id=node_id,
-        type="openai_instructor_completion",
+        blocking_type="openai_instructor_completion",
         args={
-            "messages": messages,
-            "instructor_model": AgentMessage
+            "message": messages,
+            "instructor_model": FinalReport
         },
-        context = {},
+        context = {
+            "node_id": node_id   
+        },
         next_function_to_call="terminate_conversation"
     )
     
 def terminate_conversation(node_id: str, completion: AgentMessage):
-    return NodeOutput(
-        lifecycle_command='terminate',
-        swarm_commands = [],
+    return TerminateOperation(
+        node_id=node_id,
+        operation_type='terminate',
         report=completion.content
     )
