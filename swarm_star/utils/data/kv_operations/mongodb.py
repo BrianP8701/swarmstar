@@ -80,7 +80,7 @@ def add_kv(swarm: SwarmConfig, category: str, key: str, value: dict) -> None:
         document = {"key": key, **value}
         collection.insert_one(document)
     except pymongo.errors.DuplicateKeyError as e:
-        raise ValueError(f'A document with key {key} already exists.')
+        update_kv(swarm, category, key, value)
     except Exception as e:
         raise ValueError(f'Failed to add to MongoDB collection: {str(e)}')
     

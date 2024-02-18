@@ -7,7 +7,7 @@ Throughout the conversation we maintain a "Conversation State" which is a data s
 
 from pydantic import BaseModel, Field
 from typing import List
-from swarm_star.swarm.types import BlockingOperation, TerminateOperation
+from swarm_star.swarm.types import BlockingOperation, TerminationOperation
 
 
 
@@ -240,7 +240,7 @@ def finalize_report(node_id: str, reports: List[str]):
     )
     
 def terminate_conversation(node_id: str, completion: AgentMessage):
-    return TerminateOperation(
+    return TerminationOperation(
         node_id=node_id,
         operation_type='terminate',
         report=completion.content

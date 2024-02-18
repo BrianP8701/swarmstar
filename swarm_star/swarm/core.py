@@ -1,10 +1,11 @@
-from typing import List
+from typing import List, Union
 import json
 
-from swarm_star.swarm.types import SwarmConfig, ActionSpace, SwarmOperation, SwarmNode, SwarmState, SwarmHistory, BlockingOperation, SpawnOperation, NodeEmbryo, ExecuteOperation, TerminateOperation
+from swarm_star.swarm.types import SwarmConfig, ActionSpace, SwarmOperation, SwarmNode, SwarmState, SwarmHistory, BlockingOperation, SpawnOperation, NodeEmbryo, ExecuteOperation, TerminationOperation
 from swarm_star.utils.misc.uuid import generate_uuid
 from swarm_star.utils.swarm_utils.action_operations.main import execute_node_action
 from swarm_star.utils.swarm_utils.blocking_operations.main import execute_blocking_operation
+from swarm_star.utils.swarm_utils.termination_operations.main import execute_termination_operation
 
 def spawn_swarm(goal: str) -> SpawnOperation:
     return SpawnOperation(
@@ -17,7 +18,7 @@ def spawn_swarm(goal: str) -> SpawnOperation:
         ]
     )
 
-def execute_swarm_operation(swarm: SwarmConfig, swarm_operation: SwarmOperation) -> List[SwarmOperation]:
+def execute_swarm_operation(swarm: SwarmConfig, swarm_operation: SwarmOperation) -> Union[List[SwarmOperation], None]:
     if swarm_operation.operation_type == 'spawn':
         output = execute_spawn_operation(swarm, swarm_operation)
     elif swarm_operation.operation_type == 'execute':
@@ -25,7 +26,7 @@ def execute_swarm_operation(swarm: SwarmConfig, swarm_operation: SwarmOperation)
     elif swarm_operation.operation_type == 'blocking_operation':
         output = execute_blocking_operation(swarm, swarm_operation)
     elif swarm_operation.operation_type == 'terminate':
-        output = _execute_terminate_operation(swarm, swarm_operation)
+        output = execute_termination_operation(swarm, swarm_operation)
     elif swarm_operation.operation_type == 'node_failure':
         output = _handle_node_failure(swarm, swarm_operation)
     else:
@@ -75,7 +76,7 @@ def _spawn_node(swarm: SwarmConfig, node_embryo: NodeEmbryo, parent_id: str) -> 
     return node
 
 
-def _execute_terminate_operation(swarm: SwarmConfig, terminate_operation: TerminateOperation) -> dict:
+def _execute_terminate_operation(swarm: SwarmConfig, terminate_operation: TerminationOperation) -> dict:
     '''
         Terminates a node and recursively terminates its parent nodes until a manager or root node is encountered.
 
@@ -150,7 +151,7 @@ def _node_funeral(swarm: SwarmConfig, node: SwarmNode) -> SwarmNode: # rip node
     node.alive = False
     swarm_state = SwarmState(swarm=swarm)
     swarm_history = SwarmHistory(swarm=swarm)
-    termination_operation = TerminateOperation(
+    termination_operation = TerminationOperation(
         operation_type='terminate',
         node_id=node.node_id,
         report=node.report

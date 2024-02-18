@@ -6,7 +6,11 @@ from .swarm_config import (
 )
 
 from .action_metadata import (
-    ActionMetadata,
+    ActionNode,
+    Action,
+    ActionFolder,
+    InternalAction,
+    InternalFolder,
     ActionSpace,
 )
 
@@ -29,7 +33,7 @@ from .swarm import (
     SwarmOperation,
     BlockingOperation,
     SpawnOperation,
-    TerminateOperation,
+    TerminationOperation,
     FailureOperation,
     ExecuteOperation
 )

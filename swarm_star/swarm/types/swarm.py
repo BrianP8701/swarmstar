@@ -6,7 +6,7 @@ The NodeEmbryo is what a node outputs to spawn children.
 Nodes can perform 1 of 4 "SwarmOperations":
     - SpawnOperation
     - ExecuteOperation
-    - TerminateOperation
+    - TerminationOperation
     - FailureOperation
     - BlockingOperation
 '''
@@ -39,7 +39,7 @@ class SwarmOperation(BaseModel):
 
 class ExecuteOperation(SwarmOperation):
     operation_type: Literal['execute']
-    node: SwarmNode
+    node_id: str
 
 class BlockingOperation(SwarmOperation):
     operation_type: Literal['blocking']
@@ -47,6 +47,7 @@ class BlockingOperation(SwarmOperation):
     args: Dict[str, Any] = {}
     context: Dict[str, Any] = {}
     next_function_to_call: str 
+    node_id: str
 
 class SpawnOperation(SwarmOperation):
     operation_type: Literal['spawn']
@@ -57,12 +58,14 @@ class SpawnOperation(SwarmOperation):
         'parallel_review', 
         'clone_with_reports'
     ] = None
+    node_id: str
 
-class TerminateOperation(SwarmOperation):
+class TerminationOperation(SwarmOperation):
     operation_type: Literal['terminate']
     report: str
-    
+    node_id: str
+
 class FailureOperation(SwarmOperation):
     operation_type: Literal['node_failure']
     report: str
-    
+    node_id: str

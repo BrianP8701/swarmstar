@@ -8,10 +8,7 @@
             "swarm_star/actions/reasoning",
             "swarm_star/actions/communication"
         ],
-        "parent": null,
-        "metadata": {
-            "folder_path": "swarm_star/actions"
-        }
+        "internal_folder_path": "swarm_star/actions"
     },
     "swarm_star/actions/reasoning": {
         "is_folder": "True",
@@ -23,31 +20,7 @@
             "swarm_star/actions/reasoning/route_goal"
         ],
         "parent": "swarm_star/actions",
-        "metadata": {
-            "folder_path": "swarm_star/actions/reasoning"
-        }
-    },
-    "swarm_star/actions/reasoning/decompose_directive": {
-        "is_folder": "False",
-        "type": "internal_action",
-        "name": "decompose_directive.py",
-        "description": "Decompose directives into immediate parralel sub-directives.",
-        "parent": "swarm_star/actions/reasoning",
-        "metadata": {
-            "script_path": "swarm_star.actions.reasoning.decompose_directive"
-        }
-    },
-    "swarm_star/actions/reasoning/route_goal": {
-        "is_folder": false,
-        "type": "internal_action",
-        "name": "route_goal",
-        "description": "The provided action script defines a process for routing a goal through an action space within a swarm system. The script includes a main function and several helper functions that work together to navigate through the action space and determine the appropriate action to execute based on the provided goal.\n\nThe `main` function initializes the routing process by creating an `ActionSpace` object from the given `Swarm` and identifying the root action metadata. It then retrieves descriptions of the root's child actions and constructs a series of messages to guide the decision-making process. These messages are used to create a `BlockingOperation` object, which specifies the next function to call (`route_goal`) and includes the necessary arguments and context for further processing.\n\nThe `route_goal` function is called repeatedly to navigate through the action space. If a valid index is provided in the `NextActionPath` completion object, the function identifies the next action to take. If the next action is a folder, it recursively calls itself with updated context. If it is a leaf node (an actual action), it creates a `NodeOutput` object to execute the action. If no valid index is provided, the function is expected to handle the failure, although this part of the script is marked as TODO and not implemented.\n\nThe `build_messages` function generates a list of messages that include system instructions, the user's goal, and a list of possible action paths. The `get_children_descriptions` function retrieves descriptions of child actions from a given action folder within the action space.\n\nOverall, the script is designed to interact with an AI instructor model to determine the best course of action within a swarm system based on a user-defined goal, and to execute that action once determined.",
-        "children": null,
-        "parent": "swarm_star/actions/reasoning",
-        "folder_metadata": null,
-        "metadata": {
-            "script_path": "reasoning.route_goal"
-        }
+        "internal_folder_path": "swarm_star/actions/reasoning"
     },
     "swarm_star/actions/communication": {
         "is_folder": true,
@@ -56,8 +29,24 @@
         "description": "Contains actions to interact with the user",
         "children": [],
         "parent": "swarm_star/actions",
-        "metadata": {
-            "script_path": "swarm_star.actions"
-        }
+        "internal_folder_path": "swarm_star.actions.communication"
+    },
+    "swarm_star/actions/reasoning/decompose_directive": {
+        "is_folder": "False",
+        "type": "internal_action",
+        "name": "decompose_directive.py",
+        "description": "Decompose directives into immediate parralel sub-directives.",
+        "parent": "swarm_star/actions/reasoning",
+        "internal_action_path": "swarm_star.actions.reasoning.decompose_directive",
+        "termination_policy": "parralel_review"
+    },
+    "swarm_star/actions/reasoning/route_goal": {
+        "is_folder": false,
+        "type": "internal_action",
+        "name": "route_goal",
+        "description": "Decide what action to take given a directive. ",
+        "parent": "swarm_star/actions/reasoning",
+        "internal_action_path": "swarm_star.actions.reasoning.route_goal",
+        "termination_policy": "simple"
     }
 }

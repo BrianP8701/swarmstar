@@ -76,13 +76,7 @@ def update_kv(swarm: SwarmConfig, category: str, key: str, value: dict) -> None:
     id = build_id(swarm, category, key)
     
     try:
-        # Read the existing item
-        item = container.read_item(item=id, partition_key=id)
-        # Update the item with new values
-        for k, v in value.items():
-            item[k] = v
-        # Upsert the updated item
-        container.upsert_item(item)
+        container.upsert_item(value)
     except Exception as e:
         raise ValueError(f'Failed to update in cosmosdb: {str(e)}')
 

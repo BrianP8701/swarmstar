@@ -25,7 +25,7 @@ from typing_extensions import Literal
 from swarm_star.utils.data.kv_operations.main import get_kv
 from swarm_star.utils.data.internal_operations import get_internal_action_metadata
 from swarm_star.swarm.types.swarm_config import SwarmConfig
-    
+
 class ActionNode(BaseModel):
     is_folder: bool
     type: Literal['azure_blob_storage_folder', 'internal_folder', 'internal_action', 'azure_blob_action']
@@ -33,15 +33,20 @@ class ActionNode(BaseModel):
     description: str
     children: List[str] = None
     parent: str = None
-    
+
 class ActionFolder(ActionNode):
     is_folder: True
     type: Literal['internal_folder', 'azure_blob_storage_folder']
+    name: str
+    description: str
     children: List[str]
-    
+    parent: str = None
+
 class Action(ActionNode):
     is_folder: False
     type: Literal['internal_action', 'azure_blob_action']
+    name: str
+    description: str
     parent: str
     children = None
     termination_policy: Literal[
@@ -51,12 +56,27 @@ class Action(ActionNode):
     ]
 
 class InternalAction(Action):
+    is_folder: False
     type: Literal['internal_action']
-    script_path: str
+    name: str
+    description: str
+    children = None
+    parent: str
+    termination_policy: Literal[
+        'simple',
+        'parallel_review',
+        'clone_with_reports'
+    ]
+    internal_action_path: str
 
 class InternalFolder(ActionFolder):
+    is_folder: True
     type: Literal['internal_folder']
-    folder_path: str
+    name: str
+    description: str
+    children: List[str]
+    parent: str = None
+    internal_folder_path: str
 
 class ActionSpace(BaseModel):
     '''
