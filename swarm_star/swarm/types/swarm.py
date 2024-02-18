@@ -37,10 +37,6 @@ class SwarmOperation(BaseModel):
     operation_type: Literal['spawn', 'terminate', 'node_failure', 'blocking', 'execute']
     node_id: str
 
-class ExecuteOperation(SwarmOperation):
-    operation_type: Literal['execute']
-    node_id: str
-
 class BlockingOperation(SwarmOperation):
     operation_type: Literal['blocking']
     blocking_type: str  
@@ -51,7 +47,7 @@ class BlockingOperation(SwarmOperation):
 
 class SpawnOperation(SwarmOperation):
     operation_type: Literal['spawn']
-    node_embryos: List[NodeEmbryo]
+    node_embryo: NodeEmbryo
     report: str = ''
     termination_policy_change: Literal[
         'simple',
@@ -62,7 +58,7 @@ class SpawnOperation(SwarmOperation):
 
 class TerminationOperation(SwarmOperation):
     operation_type: Literal['terminate']
-    report: str
+    report: str = None
     node_id: str
 
 class FailureOperation(SwarmOperation):

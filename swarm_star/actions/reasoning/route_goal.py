@@ -1,7 +1,7 @@
 from typing import List, Optional
 from pydantic import BaseModel, Field, Dict
 
-from swarm_star.swarm.types import SwarmConfig, BlockingOperation, ActionSpace, ActionMetadata, SpawnOperation, NodeEmbryo, SwarmOperation
+from swarm_star.swarm.types import SwarmConfig, BlockingOperation, ActionSpace, ActionNode, SpawnOperation, NodeEmbryo, SwarmOperation, ActionFolder
 
 class NextActionPath(BaseModel):
     index: Optional[int] = Field(None, description="Index of the best action path to take")
@@ -9,7 +9,8 @@ class NextActionPath(BaseModel):
     
 system_instructions = (
     'Decide what action path to take based on the goal and the available actions. '
-    'If there is no good action path to take, describe what type of action is needed in detail.'
+    'If there is no good action path to take, describe what type of action is needed '
+    'in detail in the failure message, and leave index empty.'
     )
     
 def main(swarm: SwarmConfig, node_id: str, message: str, **kwargs) -> BlockingOperation:
@@ -17,11 +18,11 @@ def main(swarm: SwarmConfig, node_id: str, message: str, **kwargs) -> BlockingOp
     The main function begins the process of routing the action space from the root node.
     '''
     action_space = ActionSpace(swarm=swarm)
-    root: ActionMetadata = action_space['swarm_star/actions']
+    root: ActionFolder = action_space['swarm_star/actions']
     root_children_descriptions = get_children_descriptions(action_space, root)
     messages = build_messages(message, root_children_descriptions)
     return BlockingOperation(
-        operation_type='blocking_operation',
+        operation_type='blocking',
         node_id=node_id,
         blocking_type="openai_instructor_completion",
         args={
@@ -51,7 +52,7 @@ def route_goal(swarm: SwarmConfig, node_id: str, parent_action_id: str, goal: st
             children_descriptions = get_children_descriptions(action_space, current_action)
             messages = build_messages(goal, children_descriptions)
             return BlockingOperation(
-                operation_type='blocking_operation',
+                operation_type='blocking',
                 node_id=node_id,
                 blocking_type="openai_instructor_completion",
                 args={
@@ -85,9 +86,12 @@ def route_goal(swarm: SwarmConfig, node_id: str, parent_action_id: str, goal: st
     
     
 def build_messages(goal: str, children_descriptions: List[str]) -> List[Dict[str, str]]:
-    action_path_descriptions = ''
+    goal_and_action_path_options = (
+        f'Decide what action path is best to take to accomplish this goal: {goal}\n\n'
+        f'Options:\n'
+        )
     for i, description in enumerate(children_descriptions):
-        action_path_descriptions += f"{i}. {description}\n"
+        goal_and_action_path_options += f"{i}. {description}\n"
         
     messages = [
         {
@@ -95,17 +99,13 @@ def build_messages(goal: str, children_descriptions: List[str]) -> List[Dict[str
             "content": system_instructions
         },
         {
-            "role": "user",
-            "content": f'Goal: \n`{goal}`'
-        },
-        {
             "role": "system",
-            "content": action_path_descriptions
+            "content": goal_and_action_path_options
         }
     ]
     return messages
     
-def get_children_descriptions(action_space: ActionSpace, action_folder: ActionMetadata) -> List[str]:
+def get_children_descriptions(action_space: ActionSpace, action_folder: ActionFolder) -> List[str]:
     children_descriptions = []
     for child in action_folder.children:
         child_metadata = action_space[child]

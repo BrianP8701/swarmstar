@@ -38,7 +38,7 @@
         "description": "Decompose directives into immediate parralel sub-directives.",
         "parent": "swarm_star/actions/reasoning",
         "internal_action_path": "swarm_star.actions.reasoning.decompose_directive",
-        "termination_policy": "parralel_review"
+        "termination_policy": "parallel_review"
     },
     "swarm_star/actions/reasoning/route_goal": {
         "is_folder": false,

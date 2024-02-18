@@ -24,7 +24,7 @@ So a lot of the goals outlined above have actually been rendered irrelevant beca
 - [x] change all node executions to output report and operation_type instead of just "output"
 - [x] add manager_supervisor agent
 - [x] integration test with termination
-- [ ] add action router
+- [x] add action router
 - [x] define all pydantic schemas and integrate them in the swarm architecture
 - [ ] get new swarm architecture working locally across the entire lifecycle of a swarm
 - [ ] automate the process of manually adding swarm actions
@@ -49,7 +49,7 @@ So a lot of the goals outlined above have actually been rendered irrelevant beca
 - [ ] have swarm add github actions
 - [ ] add multi platform support for autonomous package installation between swarm frames
 - [ ] action space merging
-- [ ] platform interoperable user interaction
+- [x] platform interoperable user interaction
 - [ ] autonomous action/memory space optimization
 - [ ] visualize the memory and action space
 - [ ] visualize the swarm state and history
@@ -58,12 +58,8 @@ So a lot of the goals outlined above have actually been rendered irrelevant beca
 - [ ] allow devs to implement their own env configuration
 - [ ] have swarm fill in util space metadata
 - [ ] have swarm fill in util space consumer metadata
+- [ ] correct all swarm updates and spawn operation
 
 Cloud Optimizations:
 - [x] in cloud functions decouple blocking openai calls. decouple all blocking calls in cloud functions. or look into durable azure functions
-- [ ] consider sql for some data
 - [ ] when cosmosdb python sdk supports it, use hierarchical partition keys: user_id/swarm_id/category with id for query
-
-User input needed at:
-- swarm_star/actions/swarm/manager/manager.py
-- all action types (when missing a config var)

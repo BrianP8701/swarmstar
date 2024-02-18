@@ -34,8 +34,7 @@ from .swarm import (
     BlockingOperation,
     SpawnOperation,
     TerminationOperation,
-    FailureOperation,
-    ExecuteOperation
+    FailureOperation
 )
 
 from .util_metadata import (
