@@ -1543,7 +1543,7 @@ action creator
 
         Then we automate this!!!
 
-One particularly interesting question is how to organize the swarm folder. So the swarm_star/actions/swarm folder we should contain any actions pertaining to the swarm. this could include action types. i feel like action types is a horrible name. 
+One particularly interesting question is how to organize the swarm folder. So the swarmstar/actions/swarm folder we should contain any actions pertaining to the swarm. this could include action types. i feel like action types is a horrible name. 
 
 10 min later...
 
@@ -1785,3 +1785,9 @@ now to think about the comms nodes. well you dont begin life as a clone_with_rep
 i just got distracted and watched the clip of mr meeseeks on youtube. definitely including this when i make a youtube video it encapsulates what i want the agents in my swarm to be like pretty well.
 
 anyway... uhh where was i? So we was like each node has one termination policy. right. rightyo. right right right. so ummm the comm nodes. noone is born a commy. you become a commy when u need help. so this means termination policies CAN change. and where does this change take place? Inside the action. so through the blocking operation .. uh fuck. yea this is the question that matters. so we conclude the termination policy CAN change due to a CHILD node - wait no its not the child node. it is itself. a node can only change its own termination policy. and typically.... well whatever through its output. well lets see the swarm operations and which might change the terimation policy. uh no i cant speculate this hard. but let me try. so spawnoperation definitely yes. failure operation yes. execute operation definitely no. blocking operation? Terminating operation? so idk.... should i add an extra metadata space for all nodes? no i think its much clearer to add them where i need them. i should them the same with the actionmetadata and all its different types.
+
+
+should i move all reporting to within the action? I think this makes much more sense. the reason this became an issue is cuz... ah fuck it no need to explain ima just do it its definitely correct no doubt.
+
+
+review all the actions one more time... start writing docs, review all the actions and write unit tests for actions

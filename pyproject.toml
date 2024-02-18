@@ -1,10 +1,10 @@
 [tool.poetry]
-name = "swarm_star"
+name = "swarmstar"
 version = "0.1.0"
 description = ""
 authors = ["BrianP8701 <brianp8701@gmail.com>"]
 readme = "README.md"
-include = ["swarm_star/metadata/mongodb/action_space.bson"]
+include = ["swarmstar/metadata/mongodb/action_space.bson"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -19,6 +19,12 @@ pymongo = "^4.6.1"
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"
 python-dotenv = "^1.0.1"
+
+[tool.poetry.group.docs.dependencies]
+mkdocs-material = {extras = ["imaging"], version = "^9.5.9"}
+mkdocs = "^1.5.3"
+
+[tool.poetry.group.test-docs.dependencies]
 
 [build-system]
 requires = ["poetry-core"]

@@ -2,9 +2,9 @@ import os
 import pytest
 from typing import List
 
-from swarm_star.swarm.core import execute_blocking_operation, execute_node, spawn_node
-from swarm_star.swarm.setup import setup_swarm_space
-from swarm_star.swarm.types import SwarmCommand, BlockingOperation
+from swarmstar.swarm.core import execute_blocking_operation, execute_node, spawn_node
+from swarmstar.swarm.setup import setup_swarm_space
+from swarmstar.swarm.types import SwarmCommand, BlockingOperation
 
 def check_path_exists(base_path: str, suffix: str = '') -> str:
     i = 0
@@ -22,7 +22,7 @@ def test_decompose_directive():
     node = spawn_node(
         swarm,
         SwarmCommand(
-            action_id='swarm_star/actions/reasoning/decompose_directive',
+            action_id='swarmstar/actions/reasoning/decompose_directive',
             message=message
         )
     )

@@ -1,0 +1,12 @@
+# Architecture
+The swarms purpose is to pursue an arbitrary goal, as autonomously as possible. This hasn't been achieved in any way yet to be clear. Here is an overview of the architecture:
+
+The swarm consists of nodes which each are spawned with a designated directive and action to perform. The swarm starts with a node that breaks down the directive into immediate parallel sub-directives, for which it will spawn a child node for each. Each of these child nodes are tasked with deciding what action to take given it's directive. They may choose to further decompose the directive, write code, ask questions, browse the internet or create a new action if it doesen't exist yet. You can see that this takes on the structure of a tree, branching out from the root node sequentially. Eventually one of these branches will come to an end, a completion or failure, and that leaf node will terminate. This termination will propagate up the branch until it reaches a node that has multiple children, like the nodes that decompose directives. The propagation of the termination will stop if that node still has other branches still alive. If not, remember what I said earlier, the node that decomposes directives: "breaks down the directive into immediate parallel sub-directives". This means the directive assigned to this node might not be complete yet. Thus, it will review all the children's reports and decide whether to create a new set of sub-directives following the previous set and spawn a new set of nodes, or if the goal has been achieved it will terminate and propagate it's termination up the tree. Eventually following this pattern, the root node will termiante signifying completion of the goal assigned to it originally.
+
+
+![Alt text](meeseeks.png)
+
+
+Funnily enough, if you've seen Rick and Morty, this might remind you of Mr. Meeseeks:
+
+"Meeseeks are creatures who are created to serve a singular purpose for which they will go to any length to fulfill. After they serve their purpose, they expire and vanish into the air. Their motivation to help others comes from the fact that existence is painful to a Meeseeks, and the only way to be removed from existence is to complete the task they were called to perform.

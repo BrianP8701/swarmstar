@@ -1,7 +1,7 @@
 import os
 import pytest
 
-from swarm_star.swarm.setup import setup_swarm_space
+from swarmstar.swarm.setup import setup_swarm_space
 
 @pytest.mark.mac
 def test_setup_swarm_space():

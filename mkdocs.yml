@@ -1,0 +1,79 @@
+site_name: Swarmstar
+site_author: Brian Przezdziecki
+site_description: A lightweight library for structured outputs with LLMs.
+repo_name: swarmstar
+repo_url: https://github.com/BrianP8701/swarmstar/
+site_url: https://BrianP8701.github.io/swarmstar/
+edit_uri: edit/main/docs/
+copyright: Copyright &copy; 2024 Brian Przezdziecki
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.instant
+    - navigation.expand
+    - navigation.prune
+    - navigation.indexes
+  palette:
+    - scheme: slate
+      primary: black
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+    - scheme: default
+      primary: black
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+  font:
+    text: Roboto
+
+nav:
+  - index.md
+  - Introduction:
+      - introduction/index.md
+      - Architecture: introduction/architecture.md
+      - Usage: introduction/quick_start.md
+  - Concepts:
+      - concepts/index.md
+      - Swarm Nodes: concepts/swarm_nodes.md
+      - Swarm Operations:
+          - concepts/swarm_operations/index.md
+          - Spawn Operations: concepts/swarm_operations/spawn_operations.md
+          - Termination Operations: concepts/swarm_operations/termination_operations.md
+          - Blocking Operations: concepts/swarm_operations/blocking_operations.md
+          - Failure Operations: concepts/swarm_operations/failure_operations.md
+      - Action Space: concepts/action_space.md
+      - Memory Space: concepts/memory_space.md
+      - Util Space: concepts/util_space.md
+      - Swarm State: concepts/swarm_state.md
+      - Swarm History: concepts/swarm_history.md
+  - Technical Overview:
+    - technical_overview/index.md
+    - Organization: technical_overview/organization.md
+  - Usage:
+      - usage/index.md
+
+
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+
+plugins:
+  - social
+
+extra_css:
+  - stylesheets/extra.css
+
+extra:
+  social:
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/BrianPrzezdzie2
+    - icon: fontawesome/brands/github
+      link: https://github.com/BrianP8701
+    - icon: fontawesome/brands/youtube
+      link: https://www.youtube.com/channel/UCcGmceRpTIVpIkVhr4gzLdw
