@@ -27,7 +27,9 @@
         "type": "internal_folder",
         "name": "communication",
         "description": "Contains actions to interact with the user",
-        "children": [],
+        "children": [
+            "swarmstar/actions/communication/ask_user_questions"
+        ],
         "parent": "swarmstar/actions",
         "internal_folder_path": "swarmstar.actions.communication"
     },
@@ -44,9 +46,18 @@
         "is_folder": false,
         "type": "internal_action",
         "name": "route_action",
-        "description": "Decide what action to take given a directive. ",
+        "description": "Decide what action to take given a directive. Don't choose this if you are the action router, that'd be dumb and cause an infinite loop.",
         "parent": "swarmstar/actions/reasoning",
         "internal_action_path": "swarmstar.actions.reasoning.route_action",
+        "termination_policy": "simple"
+    },
+    "swarmstar/actions/communication/ask_user_questions": {
+        "is_folder": false,
+        "type": "internal_action",
+        "name": "ask_user_questions",
+        "description": "Ask the user questions.",
+        "parent": "swarmstar/actions/communication",
+        "internal_action_path": "swarmstar.actions.communication.ask_user_questions",
         "termination_policy": "simple"
     }
 }

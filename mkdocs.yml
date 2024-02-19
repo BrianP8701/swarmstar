@@ -1,6 +1,6 @@
 site_name: Swarmstar
 site_author: Brian Przezdziecki
-site_description: A lightweight library for structured outputs with LLMs.
+site_description: Chatgpt on crack
 repo_name: swarmstar
 repo_url: https://github.com/BrianP8701/swarmstar/
 site_url: https://BrianP8701.github.io/swarmstar/
@@ -35,7 +35,6 @@ nav:
   - Introduction:
       - introduction/index.md
       - Architecture: introduction/architecture.md
-      - Usage: introduction/quick_start.md
   - Concepts:
       - concepts/index.md
       - Swarm Nodes: concepts/swarm_nodes.md
@@ -51,12 +50,10 @@ nav:
       - Swarm State: concepts/swarm_state.md
       - Swarm History: concepts/swarm_history.md
   - Technical Overview:
-    - technical_overview/index.md
-    - Organization: technical_overview/organization.md
+      - technical_overview/index.md
+      - Organization: technical_overview/organization.md
   - Usage:
       - usage/index.md
-
-
 
 markdown_extensions:
   - pymdownx.highlight:

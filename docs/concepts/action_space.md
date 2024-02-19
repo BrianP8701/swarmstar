@@ -1,5 +1,4 @@
 # Action Space
-## What is the action space?
 The action space contains all of the swarm's actions. Each node is designated a single action from this space. Action are predefined code, that have varying levels of dynamism sprinkled in from ai or human input. Some examples of actions:
 
     - decompose directive

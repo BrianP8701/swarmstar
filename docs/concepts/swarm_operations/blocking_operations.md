@@ -1,5 +1,4 @@
 # Blocking Operations
-## What are blocking operations?
 This operation exists for technical reasons. Blocking operations are things that block the execution of the action, like making a request to openai, waiting for user input or performing any CPU or I/O bound task. 
 
 <span class="pathname">swarmstar/swarm/types/swarm.py</span>

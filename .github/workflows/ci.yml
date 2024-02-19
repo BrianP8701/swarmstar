@@ -11,6 +11,8 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      cache_id: ${{ github.run_number }}
     steps:
       - uses: actions/checkout@v4
       - name: Configure Git Credentials

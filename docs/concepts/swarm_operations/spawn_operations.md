@@ -1,5 +1,4 @@
 # Spawn Operation
-## What is a spawn operation?
 The spawn operation will spawn and begin execution of a node. It creates a swarm object from the NodeEmbryo and adds it to the [Swarm State](../swarm_state.md).
 
 <span class="pathname">swarmstar/swarm/types/swarm.py</span>

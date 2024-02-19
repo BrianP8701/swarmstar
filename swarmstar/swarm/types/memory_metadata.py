@@ -17,7 +17,7 @@ from typing_extensions import Literal
 
 from swarmstar.utils.data.internal_operations import get_internal_memory_metadata
 from swarmstar.utils.data.kv_operations.main import get_kv
-from swarmstar.swarm.types import Swarm
+from swarmstar.swarm.types import SwarmConfig
 
 class MemoryMetadata(BaseModel):
     type: Literal['internal_folder', 'local_folder', 'azure_blob']
@@ -28,7 +28,7 @@ class MemoryMetadata(BaseModel):
     metadata: Dict[str, str]
     
 class MemorySpace(BaseModel):
-    swarm: Swarm
+    swarm: SwarmConfig
 
     def __getitem__(self, memory_id: str) -> MemoryMetadata:
         try:

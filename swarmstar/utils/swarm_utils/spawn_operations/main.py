@@ -7,29 +7,33 @@ def execute_spawn_operation(swarm: SwarmConfig, spawn_operation: SpawnOperation)
     action_type_map = {
         'internal_action': 'swarmstar.utils.swarm_utils.action_operations.internal_action',
     }
+    
     swarm_state = SwarmState(swarm=swarm)
     swarm_history = SwarmHistory(swarm=swarm)
 
-    parent_id = spawn_operation.parent_id
+    parent_id = spawn_operation.node_id
     parent_node = swarm_state[parent_id]
     parent_node.report = spawn_operation.report
     swarm_state.update_state(parent_node)
+        
+    action_id = spawn_operation.node_embryo.action_id
+    action_space = ActionSpace(swarm=swarm)
+    action_metadata = action_space[action_id]
+    action_type = action_metadata.type
+    termination_policy = action_metadata.termination_policy
     
-    node_embryo = spawn_operation.node_embryo
-    action_id = node_embryo.action_id
     node = SwarmNode(
         node_id=generate_uuid(action_space[action_id].name),
         parent_id=parent_id,
         action_id=action_id,
-        message=node_embryo.message,
-        alive=True
+        message=spawn_operation.node_embryo.message,
+        alive=True,
+        termination_policy=termination_policy
     )
     swarm_state.update_state(node)
     swarm_history.add_event(spawn_operation)
     
-    action_space = ActionSpace(swarm=swarm)
-    action_metadata = action_space[action_id]
-    action_type = action_metadata.type
+
     
     if action_type not in action_type_map:
         raise ValueError(f"Action type: `{action_type}` from action id: `{action_id}` is not supported yet.")

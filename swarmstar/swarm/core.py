@@ -6,7 +6,7 @@ from swarmstar.utils.swarm_utils.blocking_operations.main import execute_blockin
 from swarmstar.utils.swarm_utils.termination_operations.main import execute_termination_operation
 from swarmstar.utils.swarm_utils.failure_operations.main import execute_failure_operation
 
-def spawn_swarm(goal: str) -> SpawnOperation:
+def create_first_spawn_operation(goal: str) -> SpawnOperation:
     return SpawnOperation(
         operation_type='spawn',
         node_embedding=[

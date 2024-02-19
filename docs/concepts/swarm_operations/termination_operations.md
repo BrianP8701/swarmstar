@@ -1,5 +1,4 @@
 # Termination Operations
-## What is a termination operation?
 Nodes terminate upon completion of their task. Crucially a node cannot terminate until all of it's children have terminated. 
 
 <span class="pathname">swarmstar/swarm/types/swarm.py</span>

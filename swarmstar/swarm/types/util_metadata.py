@@ -16,7 +16,7 @@ from typing_extensions import Literal
 
 from swarmstar.utils.data.internal_operations import get_internal_util_metadata
 from swarmstar.utils.data.kv_operations.main import get_kv
-from swarmstar.swarm.types.swarm_config import Swarm
+from swarmstar.swarm.types.swarm_config import SwarmConfig
 
 class UtilMetadata(BaseModel):
     type: Literal['internal_folder', 'internal_function']
@@ -27,7 +27,7 @@ class UtilMetadata(BaseModel):
     metadata: Dict[str, str]
     
 class UtilSpace(BaseModel):
-    swarm: Swarm
+    swarm: SwarmConfig
     
     def __getitem__(self, util_id: str) -> UtilMetadata:
         try:

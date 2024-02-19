@@ -1,3 +1,2 @@
 # Concepts
-
-This section is meant to be a relatively untechnical read to understand what the swarm is.
+This section is nontechnical and introduces the components at a high level. It's meant to be a quick and easy read to get started.

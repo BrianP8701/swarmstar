@@ -66,7 +66,6 @@ def create_collection(swarm: SwarmConfig, category: str) -> None:
     collection = db[category]
     collection.create_index([('key', pymongo.ASCENDING)], unique=True)
 
-
 def add_kv(swarm: SwarmConfig, category: str, key: str, value: dict) -> None:
     try:
         db_name = swarm.mongodb_db_name
@@ -84,7 +83,6 @@ def add_kv(swarm: SwarmConfig, category: str, key: str, value: dict) -> None:
     except Exception as e:
         raise ValueError(f'Failed to add to MongoDB collection: {str(e)}')
     
-
 def get_kv(swarm: SwarmConfig, category: str, key: str) -> dict:
     try:    
         uri = swarm.mongodb_uri
@@ -98,6 +96,8 @@ def get_kv(swarm: SwarmConfig, category: str, key: str) -> dict:
         result = collection.find_one({"key": key})
         if result is None:
             raise ValueError(f'Key {key} not found in MongoDB collection.')
+        result.pop('_id')
+        result.pop('key')
         return result
     except Exception as e:
         raise ValueError(f'Failed to get from MongoDB collection: {str(e)}')

@@ -1,5 +1,4 @@
 # Swarm Nodes
-## What is a swarm node?
 The swarm node is the fundamental unit of the swarm. You can think of each node as an **agent** or **action**.
 
 <span class="pathname">swarmstar/swarm/types/swarm.py</span>

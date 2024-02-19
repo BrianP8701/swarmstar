@@ -34,7 +34,7 @@ class NodeEmbryo(BaseModel):
     message: str
 
 class SwarmOperation(BaseModel):
-    operation_type: Literal['spawn', 'terminate', 'node_failure', 'blocking', 'execute']
+    operation_type: Literal['spawn', 'terminate', 'node_failure', 'blocking']
     node_id: str
 
 class BlockingOperation(SwarmOperation):

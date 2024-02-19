@@ -7,6 +7,6 @@ The swarm consists of nodes which each are spawned with a designated directive a
 ![Alt text](meeseeks.png)
 
 
-Funnily enough, if you've seen Rick and Morty, this might remind you of Mr. Meeseeks:
+If you've seen Rick and Morty, this might remind you of Mr. Meeseeks:
 
 "Meeseeks are creatures who are created to serve a singular purpose for which they will go to any length to fulfill. After they serve their purpose, they expire and vanish into the air. Their motivation to help others comes from the fact that existence is painful to a Meeseeks, and the only way to be removed from existence is to complete the task they were called to perform.

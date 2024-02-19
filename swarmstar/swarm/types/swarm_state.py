@@ -10,7 +10,7 @@ from swarmstar.swarm.types.swarm_config import SwarmConfig
 from swarmstar.swarm.types.swarm import SwarmNode
 
 class SwarmState(BaseModel):
-    swarm: SwarmConfig
+    swarm: 'SwarmConfig'
     
     def __getitem__(self, node_id: str) -> SwarmNode:
         node = SwarmNode.model_validate(get_kv(self.swarm, 'swarm_state', node_id))

@@ -32,7 +32,6 @@ def configure_swarm(openai_key: str, root_path: str, platform: str, **kwargs) ->
     add_kv(swarm, 'swarm', 'swarm', swarm.model_dump())
     return swarm
     
-    
 
 def _setup_mac_swarm_space(openai_key: str, root_path: str, **kwargs) -> SwarmConfig:
     
@@ -48,16 +47,13 @@ def _setup_mac_swarm_space(openai_key: str, root_path: str, **kwargs) -> SwarmCo
         os.makedirs(root_path)
     
     check_and_create_database(kwargs['mongodb_uri'], kwargs['mongodb_db_name'])
-    restore_database('swarmstar/metadata', kwargs['mongodb_uri'], kwargs['mongodb_db_name'])
-    
+    restore_database('swarmstar/internal_metadata', kwargs['mongodb_uri'], kwargs['mongodb_db_name'])
     return SwarmConfig(
         openai_key=openai_key,
         root_path=root_path,
-        configs=LocalConfig(
-            platform='mac',
-            mongodb_uri=kwargs['mongodb_uri'],
-            mongodb_db_name=kwargs['mongodb_db_name']
-        )
+        platform='mac',
+        mongodb_uri=kwargs['mongodb_uri'],
+        mongodb_db_name=kwargs['mongodb_db_name']
     )
 
 def _setup_azure_swarm_space(openai_key: str, root_path: str, **kwargs) -> SwarmConfig:
@@ -91,15 +87,15 @@ def _setup_azure_swarm_space(openai_key: str, root_path: str, **kwargs) -> Swarm
     return SwarmConfig(
         openai_key=openai_key,
         root_path=root_path,
-        configs=AzureConfig(
-            platform='azure',
-            azure_blob_storage_account_name=kwargs['azure_blob_storage_account_name'],
-            azure_blob_storage_account_key=kwargs['azure_blob_storage_account_key'],
-            azure_blob_storage_container_name=kwargs['azure_blob_storage_container_name'],
-            azure_cosmos_db_url=kwargs['azure_cosmos_db_url'],
-            azure_cosmos_db_key=kwargs['azure_cosmos_db_key'],
-            azure_cosmos_db_database_name=kwargs['azure_cosmos_db_database_name'],
-            azure_cosmos_db_container_name=kwargs.get('azure_cosmos_db_container_name'),
-        )
+        platform='azure',
+        user_id=kwargs['user_id'],
+        swarm_id=kwargs['swarm_id'],
+        azure_blob_storage_account_name=kwargs['azure_blob_storage_account_name'],
+        azure_blob_storage_account_key=kwargs['azure_blob_storage_account_key'],
+        azure_blob_storage_container_name=kwargs['azure_blob_storage_container_name'],
+        azure_cosmos_db_url=kwargs['azure_cosmos_db_url'],
+        azure_cosmos_db_key=kwargs['azure_cosmos_db_key'],
+        azure_cosmos_db_database_name=kwargs['azure_cosmos_db_database_name'],
+        azure_cosmos_db_container_name=kwargs.get('azure_cosmos_db_container_name'),
     )
 
