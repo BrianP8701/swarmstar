@@ -8,7 +8,7 @@ Throughout the conversation we maintain a "Conversation State" which is a data s
 from pydantic import BaseModel, Field
 from typing import List
 
-from swarmstar.swarm.types import BlockingOperation, TerminationOperation, SwarmConfig, SwarmState
+from swarmstar.swarm.types import BlockingOperation, TerminationOperation, SwarmConfig
 
 
 
@@ -72,7 +72,6 @@ def generate_initial_conversation_state(swarm: SwarmConfig, node_id: str, messag
         }
     ]
     return BlockingOperation(
-        operation_type='blocking',
         node_id=node_id,
         blocking_type="openai_instructor_completion",
         args={
@@ -98,7 +97,6 @@ def generate_first_message(swarm: SwarmConfig, node_id: str, completion: Convers
         }
     ]
     return BlockingOperation(
-        operation_type='blocking',
         node_id=node_id,
         blocking_type="openai_instructor_completion",
         args={
@@ -116,7 +114,6 @@ def generate_first_message(swarm: SwarmConfig, node_id: str, completion: Convers
     
 def create_chat(swarm: SwarmConfig, node_id: str, completion: AgentMessage, questions: List[str], persisted_context: str):
     return BlockingOperation(
-        operation_type='blocking',
         node_id=node_id,
         blocking_type="create_chat",
         args={
@@ -149,7 +146,6 @@ def update_conversation_state(swarm: SwarmConfig, node_id: str, questions: List[
         }
     ]
     return BlockingOperation(
-        operation_type='blocking',
         node_id=node_id,
         blocking_type="openai_instructor_completion",
         args={
@@ -185,7 +181,6 @@ def decide_to_continue_or_end_conversation(swarm: SwarmConfig, node_id: str, rep
         ]
         
         return BlockingOperation(
-            operation_type='blocking',
             node_id=node_id,
             blocking_type="openai_instructor_completion",
             args={
@@ -204,7 +199,6 @@ def decide_to_continue_or_end_conversation(swarm: SwarmConfig, node_id: str, rep
     
 def send_message(swarm: SwarmConfig, node_id: str, questions: List[str], persisted_context: str, reports: List[str], completion: AgentMessage):
     return BlockingOperation(
-        operation_type='blocking',
         node_id=node_id,
         blocking_type="send_message",
         args={
@@ -233,7 +227,6 @@ def finalize_report(swarm: SwarmConfig, node_id: str, reports: List[str]):
         }
     ]
     return BlockingOperation(
-        operation_type='blocking',
         node_id=node_id,
         blocking_type="openai_instructor_completion",
         args={
@@ -248,10 +241,7 @@ def finalize_report(swarm: SwarmConfig, node_id: str, reports: List[str]):
     )
     
 def terminate_conversation(swarm: SwarmConfig, node_id: str, completion: FinalReport):
-    swarm_state = SwarmState(swarm=swarm)
-    node = swarm_state[node_id]
-    node.report = completion.report
     return TerminationOperation(
         node_id=node_id,
-        operation_type='terminate'
+        report=completion.report
     )

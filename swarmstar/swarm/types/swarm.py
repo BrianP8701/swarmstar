@@ -11,14 +11,14 @@ Nodes can perform 1 of 4 "SwarmOperations":
     - BlockingOperation
 '''
 
-from pydantic import BaseModel
-from typing import List, Dict, Any
+from pydantic import BaseModel, Field
+from typing import List, Dict, Any, Optional
 from typing_extensions import Literal
 
 class SwarmNode(BaseModel):
     node_id: str
-    parent_id: str = None
-    children_ids: List[str]
+    parent_id: Optional[str] = None
+    children_ids: List[str] = []
     action_id: str
     message: str
     report: str = None
@@ -38,7 +38,7 @@ class SwarmOperation(BaseModel):
     node_id: str
 
 class BlockingOperation(SwarmOperation):
-    operation_type: Literal['blocking']
+    operation_type: Literal['blocking'] = Field(default='blocking')
     node_id: str
     blocking_type: str  
     args: Dict[str, Any] = {}
@@ -46,19 +46,22 @@ class BlockingOperation(SwarmOperation):
     next_function_to_call: str 
 
 class SpawnOperation(SwarmOperation):
-    operation_type: Literal['spawn']
+    operation_type: Literal['spawn'] = Field(default='spawn')
     node_embryo: NodeEmbryo
     termination_policy_change: Literal[
         'simple',
         'parallel_review', 
         'clone_with_reports'
     ] = None
-    node_id: str
+    node_id: str = None
+    report: str = None
 
 class TerminationOperation(SwarmOperation):
-    operation_type: Literal['terminate']
+    operation_type: Literal['terminate'] = Field(default='terminate')
     node_id: str
+    report: Optional[str] = None
 
 class FailureOperation(SwarmOperation):
-    operation_type: Literal['node_failure']
+    operation_type: Literal['node_failure'] = Field(default='node_failure')
     node_id: str
+    report: str

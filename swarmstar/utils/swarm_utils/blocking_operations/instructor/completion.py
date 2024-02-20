@@ -5,17 +5,25 @@ which will call the next_function_to_call of the node's action with the completi
 and context.
 '''
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Dict
+from pydantic import BaseModel
+from importlib import import_module
 
 from swarmstar.utils.ai.openai_instructor import completion
 from swarmstar.swarm.types import BlockingOperation
 
 if TYPE_CHECKING:
     from swarmstar.swarm.types import SwarmConfig
+    
+def expected_args(BaseModel):
+    messages: List[Dict[str, str]]             # This should be a list of dictionaries with the keys 'role' and 'content'
+    instructor_model_name: str                 # This should point to a pydnatic model in the swarmstar.utils.ai.openai_instructor.models module
 
 def execute_blocking_operation(swarm: SwarmConfig, blocking_operation: BlockingOperation):
     messages = blocking_operation.args['messages']
-    instructor_model = blocking_operation.args['instructor_model']
+    instructor_model_name = blocking_operation.args['instructor_model_name']
+    
+    instructor_model = import_module('swarmstar.utils.ai.openai_instructor.models').instructor_model_name
     
     response = completion(messages=messages, openai_key=swarm.openai_key, instructor_model=instructor_model)
     

@@ -35,7 +35,7 @@ class ActionNode(BaseModel):
     parent: Optional[str] = None  
 
 class ActionFolder(ActionNode):
-    is_folder: Literal[True] = True
+    is_folder: Literal[True] = Field(default=True)
     type: Literal['internal_folder', 'azure_blob_storage_folder']
     name: str
     description: str
@@ -43,7 +43,7 @@ class ActionFolder(ActionNode):
     parent: Optional[str] = None 
 
 class Action(ActionNode):
-    is_folder: Literal[False] = False
+    is_folder: Literal[False] = Field(default=False)
     type: Literal['internal_action', 'azure_blob_action']
     name: str
     description: str
@@ -57,7 +57,7 @@ class Action(ActionNode):
     
 class InternalAction(Action):
     is_folder: Literal[False]
-    type: Literal['internal_action']
+    type: Literal['internal_action'] = Field(default='internal_action')
     name: str
     description: str
     children_ids: Optional[List[str]] = Field(default=None)  
@@ -71,7 +71,7 @@ class InternalAction(Action):
 
 class InternalFolder(ActionFolder):
     is_folder: Literal[True]
-    type: Literal['internal_folder']
+    type: Literal['internal_folder'] = Field(default='internal_folder')
     name: str
     description: str
     children_ids: List[str]
@@ -88,14 +88,13 @@ class ActionSpace(BaseModel):
     
     def __getitem__(self, action_id: str) -> ActionNode:
         try:
-            internal_action_metadata = get_internal_action_metadata(self.swarm, action_id)
-            action_metadata =  ActionNode(**internal_action_metadata)
+            action_metadata = get_internal_action_metadata(self.swarm, action_id)
+            if action_metadata is None:
+                raise ValueError(f"This action id: `{action_id}` does not exist in internal action space.")
         except Exception as e1:
             try:
-                external_action_metadata = get_kv(self.swarm, 'action_space', action_id)
-                if external_action_metadata is not None:
-                    action_metadata = ActionNode(**external_action_metadata)
-                else:
+                action_metadata = get_kv(self.swarm, 'action_space', action_id)
+                if action_metadata is None:
                     raise ValueError(f"This action id: `{action_id}` does not exist in external action space.") from e1
             except Exception as e2:
                 raise ValueError(f"This action id: `{action_id}` does not exist in both internal and external action spaces.") from e2
@@ -104,8 +103,7 @@ class ActionSpace(BaseModel):
             'internal_action': InternalAction,
             'internal_folder': InternalFolder,
         }
-        
-        action_type = action_metadata.type
+        action_type = action_metadata['type']
         if action_type in type_mapping:
             return type_mapping[action_type](**action_metadata)
         else:

@@ -1791,3 +1791,9 @@ should i move all reporting to within the action? I think this makes much more s
 
 
 review all the actions one more time... start writing docs, review all the actions and write unit tests for actions
+
+
+# Simplification
+i really want to simplify, create some sort of common structure reusable shit for the actions. it appears that most actions consist of instructor calls, user input padded with some logic. 
+
+So every action contains defined pydantic models, system instructions and then a chain or loop of logic. i can create a base class with a reusable method for creating messages. it can include a decorator for setting reports. So all reporting happens within the action. the abstract base class can set and just fucking hold the swarmconfig, node_id and message. 

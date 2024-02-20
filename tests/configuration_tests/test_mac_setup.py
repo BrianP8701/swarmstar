@@ -12,4 +12,4 @@ def test_setup_swarm_space():
     mongodb_db_name = 'swarmstar_unit_tests'
     swarm = configure_swarm(openai_key, root_path, 'mac', mongodb_uri=mongodb_uri, mongodb_db_name=mongodb_db_name)
     
-# test_setup_swarm_space()
+test_setup_swarm_space()

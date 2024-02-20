@@ -18,6 +18,6 @@ class SwarmHistory(BaseModel):
         return SwarmOperation.model_validate(get_kv(self.swarm, 'swarm_history', frame))
     
     def add_event(self, operation: SwarmOperation):
-        current_frame = get_kv(self.swarm, 'swarm_history', 'current_frame')
+        current_frame = get_kv(self.swarm, 'swarm_history', 'current_frame')['frame']
         add_kv(self.swarm, 'swarm_history', current_frame, operation.model_dump())
         add_kv(self.swarm, 'swarm_history', 'current_frame', {'frame': current_frame + 1})

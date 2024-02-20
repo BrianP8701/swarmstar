@@ -21,6 +21,8 @@ class SwarmConfig(BaseModel):
     azure_cosmos_db_container_name: Optional[str] = None
     mongodb_uri: Optional[str] = None
     mongodb_db_name: Optional[str] = None
+   
+# The types below aren't actually used in the codebase, but they are used in the documentation.
     
 class PlatformConfig(BaseModel):
     platform: Literal['mac', 'azure']

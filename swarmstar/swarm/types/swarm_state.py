@@ -17,5 +17,5 @@ class SwarmState(BaseModel):
         return node
         
     def update_state(self, node: SwarmNode):
-        add_kv(self.swarm, 'swarm_state', node.node_id, node.model_dump_json())
+        add_kv(self.swarm, 'swarm_state', node.node_id, node.model_dump())
     

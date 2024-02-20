@@ -1,6 +1,6 @@
 {
     "swarmstar/actions": {
-        "is_folder": "True",
+        "is_folder": true,
         "type": "internal_folder",
         "name": "actions",
         "description": "This is the root of the action space",
@@ -11,7 +11,7 @@
         "internal_folder_path": "swarmstar/actions"
     },
     "swarmstar/actions/reasoning": {
-        "is_folder": "True",
+        "is_folder": true,
         "type": "internal_folder",
         "name": "reasoning",
         "description": "This folder contains all actions pertaining to reasoning operations. It currently only contains an action that decomposes a directive into immediate sub-directives.",
@@ -34,7 +34,7 @@
         "internal_folder_path": "swarmstar.actions.communication"
     },
     "swarmstar/actions/reasoning/decompose_directive": {
-        "is_folder": "False",
+        "is_folder": false,
         "type": "internal_action",
         "name": "decompose_directive.py",
         "description": "Decompose directives into immediate parralel sub-directives.",

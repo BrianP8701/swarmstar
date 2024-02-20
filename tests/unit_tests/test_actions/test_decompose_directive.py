@@ -14,7 +14,6 @@ def test_decompose_directive():
     swarm = get_swarm_config('swarmstar_unit_tests')
     spawn_decompose_directive_node = SpawnOperation(
         operation_type='spawn',
-        node_id=generate_uuid('decompose_directives'),
         node_embryo=NodeEmbryo(
             action_id='swarmstar/actions/reasoning/decompose_directive',
             message='Create and add a web browsing action to the swarm\'s action space. The action name should be "browse_web".'
@@ -22,11 +21,14 @@ def test_decompose_directive():
     )
     
     next_swarm_operation = execute_swarm_operation(swarm, spawn_decompose_directive_node)
-    add_swarm_operation(results_file, next_swarm_operation)
-    while next_swarm_operation.operation_type != 'spawn':
-        next_swarm_operation = execute_swarm_operation(swarm, next_swarm_operation)
-        add_swarm_operation(results_file, next_swarm_operation)
-    add_swarm_operation(results_file, next_swarm_operation)
+    add_swarm_operation(results_file, next_swarm_operation[0])
+    while next_swarm_operation[0].operation_type != 'spawn':
+        next_swarm_operation = execute_swarm_operation(swarm, next_swarm_operation[0])
+        for swarm_operation in next_swarm_operation:
+            add_swarm_operation(results_file, swarm_operation)
+            
+    for swarm_operation in next_swarm_operation:
+        add_swarm_operation(results_file, swarm_operation)
     
 
 test_decompose_directive()

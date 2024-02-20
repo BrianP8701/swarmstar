@@ -25,6 +25,7 @@ def add_swarm_operation(file_name, swarm_operation):
     '''
     with open(file_name, 'r') as file:
         data = json.load(file)
+    
     data.append(swarm_operation.model_dump_json(indent=4))
     with open(file_name, 'w') as file:
         json.dump(data, file)
