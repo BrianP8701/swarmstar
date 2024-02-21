@@ -23,6 +23,7 @@ class SwarmNode(BaseModel):
     message: str
     report: str = None
     alive: bool
+    journal: List[Dict[str, Any]] = []
     termination_policy: Literal[
         'simple',
         'parallel_review', 

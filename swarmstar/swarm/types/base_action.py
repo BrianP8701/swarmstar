@@ -4,13 +4,22 @@ This base class:
 
     - Provides some common methods that actions use.
     - Provides a metaclass to apply an error handling decorator to all methods of the action.
+    - Provides a decorator to handle journaling of actions.
+    
+When a new action is created, it should subclass BaseAction and implement the main method.
+
+All action functions will automatically be wrapped with the error handling decorator, which 
+will catch any exceptions and return a FailureOperation with a report of the error.
+
+All action functions may optionally return a journal entry, which will be appended to the node's journal.
+
+    return swarm_operation, journal_entry
+
 
 '''
-from abc import ABCMeta, abstractmethod, ABC
+from abc import ABCMeta, abstractmethod
 from functools import wraps
 import traceback
-
-from typing import List, Dict
 
 from swarmstar.swarm.types import SwarmConfig, SwarmOperation, SwarmNode, SwarmState, FailureOperation
 
@@ -25,7 +34,7 @@ def error_handling_decorator(func):
             # Capturing the full traceback
             tb_str = traceback.format_exc()
             # Optionally, you can include function parameters in the report
-            params_str = f"Parameters: args={args[1:]}, kwargs={kwargs}"
+            params_str = f"node_id: {self.node.id}\nParams: {kwargs}"
             report = f"Error in {func.__name__}:\n{str(e)}\n\n{tb_str}\n\n{params_str}"
             return FailureOperation(
                 node_id=self.node.id,
@@ -33,12 +42,32 @@ def error_handling_decorator(func):
             )
     return wrapper
 
+def journal_handling_decorator(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            result, journal_entry = func(*args, **kwargs)
+            self = args[0]
+            if journal_entry:
+                self.node.journal.append(journal_entry)
+                swarm_state = SwarmState(swarm=self.swarm)
+                swarm_state.update_node(self.node)
+            return result
+        except Exception as e:
+            raise e
+    return wrapper
+
 class ErrorHandlingMeta(ABCMeta):
     def __new__(cls, name, bases, dct):
         new_cls = super().__new__(cls, name, bases, dct)
         for attr_name, attr_value in dct.items():
-            if callable(attr_value):
-                setattr(new_cls, attr_name, error_handling_decorator(attr_value))
+            if callable(attr_value) and not attr_name.startswith('__'):
+                # First, wrap the method with the journal_handling_decorator
+                journal_wrapped = journal_handling_decorator(attr_value)
+                # Then, wrap the journal-decorated method with the error_handling_decorator
+                error_wrapped = error_handling_decorator(journal_wrapped)
+                # Set the doubly wrapped method on the new class
+                setattr(new_cls, attr_name, error_wrapped)
         return new_cls
 
 class BaseAction(metaclass=ErrorHandlingMeta):
@@ -67,10 +96,4 @@ class BaseAction(metaclass=ErrorHandlingMeta):
         self.node.termination_policy = termination_policy
         swarm_state = SwarmState(swarm=self.swarm)
         swarm_state.update_node(self.node)
-    
-    def handle_failure(func):
-        def wrapper(self, *args, **kwargs):
-            # Now 'self' is explicitly available here, and you can use it.
-            print(f"Method {func.__name__} of {self.__class__.__name__}")
-            return func(self, *args, **kwargs)
-        return wrapper
+
