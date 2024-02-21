@@ -2,7 +2,9 @@ from typing import Any, Dict, Union, List
 from importlib import import_module
 
 from swarmstar.swarm.types import SwarmConfig, SwarmOperation, BlockingOperation, SwarmHistory
+from swarmstar.swarm.decorators import swarmstar_decorator
 
+@swarmstar_decorator
 def execute_blocking_operation(swarm: SwarmConfig, blocking_operation: BlockingOperation) -> Union[SwarmOperation, List[SwarmOperation]]:
     blocking_operation_type_map = {
         'openai_instructor_completion': 'swarmstar.utils.swarm_utils.blocking_operations.instructor.completion',

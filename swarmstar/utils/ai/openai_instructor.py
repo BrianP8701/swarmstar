@@ -32,5 +32,5 @@ def completion(messages: List[Dict[str, str]], openai_key: str, instructor_model
         response_model=instructor_model, 
         temperature=0.0, 
         seed=69, 
-        max_retries=max_retries
+        max_retries=max_retries,
     )

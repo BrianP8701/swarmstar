@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "swarmstar"
-version = "0.1.0"
+version = "0.0.0"
 description = ""
 authors = ["BrianP8701 <brianp8701@gmail.com>"]
 readme = "README.md"
@@ -19,6 +19,7 @@ pymongo = "^4.6.1"
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"
 python-dotenv = "^1.0.1"
+coverage = "^7.4.2"
 
 [tool.poetry.group.docs.dependencies]
 mkdocs-material = {extras = ["imaging"], version = "^9.5.9"}

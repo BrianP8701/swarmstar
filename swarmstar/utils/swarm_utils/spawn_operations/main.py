@@ -6,7 +6,9 @@ from typing import List, Union
 
 from swarmstar.swarm.types import SwarmConfig, SwarmState, SwarmOperation, SpawnOperation, ActionSpace, SwarmNode, SwarmHistory
 from swarmstar.utils.misc.uuid import generate_uuid
+from swarmstar.swarm.decorators import swarmstar_decorator
 
+@swarmstar_decorator
 def execute_spawn_operation(swarm: SwarmConfig, spawn_operation: SpawnOperation) ->  Union[SwarmOperation, List[SwarmOperation]]:
     
     swarm_state = SwarmState(swarm=swarm)

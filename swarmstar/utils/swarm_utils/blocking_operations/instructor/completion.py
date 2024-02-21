@@ -6,7 +6,6 @@ and context.
 '''
 from __future__ import annotations
 from typing import TYPE_CHECKING, List, Dict
-from pydantic import BaseModel
 from importlib import import_module
 
 from swarmstar.utils.ai.openai_instructor import completion
@@ -24,7 +23,8 @@ def execute_blocking_operation(swarm: SwarmConfig, blocking_operation: BlockingO
     messages = blocking_operation.args['messages']
     instructor_model_name = blocking_operation.args['instructor_model_name']
     
-    instructor_model = import_module('swarmstar.utils.ai.openai_instructor.models').instructor_model_name
+    models_module = import_module('swarmstar.utils.swarm_utils.blocking_operations.instructor.pydantic_models')
+    instructor_model = getattr(models_module, instructor_model_name)
     
     response = completion(messages=messages, openai_key=swarm.openai_key, instructor_model=instructor_model)
     

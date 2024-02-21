@@ -1797,3 +1797,9 @@ review all the actions one more time... start writing docs, review all the actio
 i really want to simplify, create some sort of common structure reusable shit for the actions. it appears that most actions consist of instructor calls, user input padded with some logic. 
 
 So every action contains defined pydantic models, system instructions and then a chain or loop of logic. i can create a base class with a reusable method for creating messages. it can include a decorator for setting reports. So all reporting happens within the action. the abstract base class can set and just fucking hold the swarmconfig, node_id and message. 
+
+
+
+# Logging not just action functions
+
+right now we added decorators and wrappers to handle errors and do journalling for action functions. however we want to apply the exact same failure handling and logging process for all termination and blocking operations. this means i kinda wanna take those a level up and reapply them from some more common place. 

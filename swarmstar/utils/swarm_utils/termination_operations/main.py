@@ -2,7 +2,9 @@ from importlib import import_module
 from typing import Union, List
 
 from swarmstar.swarm.types import SwarmConfig, SwarmOperation, TerminationOperation, SwarmHistory, SwarmState
+from swarmstar.swarm.decorators import swarmstar_decorator
 
+@swarmstar_decorator
 def execute_termination_operation(swarm: SwarmConfig, termination_operation: TerminationOperation) ->  Union[TerminationOperation, None]:
     termination_policy_map = {
         'simple': 'swarmstar.utils.swarm_utils.termination_operations.simple',
