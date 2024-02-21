@@ -1705,7 +1705,7 @@ alright so requirements analysis agent receives a directive. it decides it needs
 }
 {
     "node_id": "",
-    "type": "openai_instructor_completion",
+    "type": "instructor_completion",
     "args": {
         "model" : BaseModel,
         "messages": List[str],
@@ -1715,7 +1715,7 @@ alright so requirements analysis agent receives a directive. it decides it needs
 
 so actions always start from the main function but then can be broken down in this manner
 
-so what is that thing above, "user_input" or "openai_instructor_completion"? Is that a util? I suppose it is. yeah i mean it is thats fine that works. wait a second doonk u stupid bitch wait what oh shit yeah no it is a blocking function
+so what is that thing above, "user_input" or "instructor_completion"? Is that a util? I suppose it is. yeah i mean it is thats fine that works. wait a second doonk u stupid bitch wait what oh shit yeah no it is a blocking function
 
 also what if the thing being passed around is not serializable?
 

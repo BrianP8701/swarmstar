@@ -13,6 +13,7 @@ will catch any exceptions and return a FailureOperation with a report of the err
 from abc import ABCMeta, abstractmethod
 from functools import wraps
 import traceback
+from typing import Any, Dict
 
 from swarmstar.swarm.types import SwarmConfig, SwarmOperation, SwarmNode, SwarmState, FailureOperation
 
@@ -66,7 +67,7 @@ class BaseAction(metaclass=ErrorHandlingMeta):
         swarm_state = SwarmState(swarm=self.swarm)
         swarm_state.update_node(self.node)
         
-    def add_journal_entry(self, journal_entry: str):
+    def add_journal_entry(self, journal_entry: Dict[str, Any]):
         self.node.journal.append(journal_entry)
         swarm_state = SwarmState(swarm=self.swarm)
         swarm_state.update_node(self.node)

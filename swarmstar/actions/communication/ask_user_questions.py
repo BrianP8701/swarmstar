@@ -9,10 +9,11 @@ from pydantic import BaseModel, Field
 from typing import List
 
 from swarmstar.swarm.types import BlockingOperation, TerminationOperation, SwarmConfig
+from swarmstar.swarm.types.base_action import BaseAction
 
 
 
-class ConversationState(BaseModel):
+class QuestionAskerConversationState(BaseModel):
     questions: List[str] = Field(..., description="List of questions we need answered")
     persisted_context: str = Field(..., description="A concise and compact representation of the necessary information to persist through the conversation.")
     report: str = Field(..., description="Concise and comprehensive report of answers to our questions and supporting context.")
@@ -55,193 +56,140 @@ finalize_report_instructions = (
     'Consolidate the list of reports into a final report.'
 ).replace("\n", "\\n")
 
-
-
-def main(swarm: SwarmConfig, node_id: str, message: str, **kwargs):
-    generate_initial_conversation_state(swarm, node_id, message)
+class AskUserQuestions(BaseAction):
+    def main(self):
+        self.generate_initial_conversation_state()
     
-def generate_initial_conversation_state(swarm: SwarmConfig, node_id: str, message: str):
-    messages = [
-        { 
-            "role": "system",
-            "content": generate_initial_conversation_state_instructions
-        },
-        {
-            "role": "user",
-            "content": f'Extract questions from this message:\n`{message}`'
-        }
-    ]
-    return BlockingOperation(
-        node_id=node_id,
-        blocking_type="openai_instructor_completion",
-        args={
-            "messages": messages,
-            "instructor_model": ConversationState
-        },
-        context = {
-            "node_id": node_id    ,
-            "swarm": swarm
-        },
-        next_function_to_call="generate_first_message"
-    )
-    
-def generate_first_message(swarm: SwarmConfig, node_id: str, completion: ConversationState):
-    messages = [
-        {
-            "role": "system",
-            "content": generate_message_instructions
-        },
-        {
-            "role": "system",
-            "content": f"Questions: {completion.questions}\n\nContext: {completion.persisted_context}"
-        }
-    ]
-    return BlockingOperation(
-        node_id=node_id,
-        blocking_type="openai_instructor_completion",
-        args={
-            "messages": messages,
-            "instructor_model": AgentMessage
-        },
-        context = {
-            "node_id": node_id,
-            "swarm": swarm,
-            "questions": completion.questions,
-            "persisted_context": completion.persisted_context, 
-        },
-        next_function_to_call="create_chat"
-    )
-    
-def create_chat(swarm: SwarmConfig, node_id: str, completion: AgentMessage, questions: List[str], persisted_context: str):
-    return BlockingOperation(
-        node_id=node_id,
-        blocking_type="create_chat",
-        args={
-            "ai_message": completion.message,
-            "node_id": node_id
-        },
-        context = {
-            "node_id": node_id,
-            "swarm": swarm,
-            "questions": questions,
-            "persisted_context": persisted_context,
-            "reports": []
-        },
-        next_function_to_call="update_conversation_state"
-    )
-    
-def update_conversation_state(swarm: SwarmConfig, node_id: str, questions: List[str], persisted_context: str, reports: List[str], user_response: str,):
-    messages = [
-        { 
-            "role": "system",
-            "content": update_conversation_state_instructions
-        },
-        {
-            "role": "user",
-            "content": user_response
-        },
-        {
-            "role": "system",
-            "content": f"Update Questions: {questions}\n\nUpdate Context: {persisted_context}\n\nAdd to Reports: {reports}"
-        }
-    ]
-    return BlockingOperation(
-        node_id=node_id,
-        blocking_type="openai_instructor_completion",
-        args={
-            "messages": messages,
-            "instructor_model": ConversationState
-        },
-        context = {
-            "node_id": node_id,
-            "swarm": swarm,
-            "reports": reports,
-
-        },
-        next_function_to_call="update_conversation_state"
-    )
-    
-def decide_to_continue_or_end_conversation(swarm: SwarmConfig, node_id: str, reports: List[str], completion: ConversationState):
-    reports.append(completion.report)
-    if (not completion.questions) or (len(completion.questions) > 0):
-        finalize_report(node_id, reports)
-    else:
-        questions = completion.questions
-        persisted_context = completion.persisted_context
-        
+    def generate_initial_conversation_state(self):
         messages = [
             { 
+                "role": "system",
+                "content": generate_initial_conversation_state_instructions
+            },
+            {
+                "role": "user",
+                "content": f'Extract questions from this message:\n`{self.node.message}`'
+            }
+        ]
+        return BlockingOperation(
+            node_id=self.node.node_id,
+            blocking_type="instructor_completion",
+            args={
+                "messages": messages,
+                "instructor_model_name": "QuestionAskerConversationState"
+            },
+            context = {
+                "user_message": "Ask me questions, the conversation just started."    
+            },
+            next_function_to_call="generate_and_send_message"
+        )
+    
+    def generate_and_send_message(self, user_message: str, completion: QuestionAskerConversationState):
+        messages = [
+            {
                 "role": "system",
                 "content": generate_message_instructions
             },
             {
                 "role": "system",
-                "content": f"Questions: {questions}\n\nContext: {persisted_context}"
+                "content": (
+                    f"Questions: {completion.questions}\n\n"
+                    f"Context: {completion.persisted_context}\n\n"
+                    f"User's most recent message: {user_message}"
+                )
             }
         ]
-        
         return BlockingOperation(
-            node_id=node_id,
-            blocking_type="openai_instructor_completion",
+            node_id=self.node.node_id,
+            blocking_type="send_user_message",
             args={
                 "messages": messages,
-                "instructor_model": AgentMessage
+                "instructor_model": "AgentMessage"
             },
             context = {
-                "node_id": node_id,
-                "swarm": swarm,
+                "questions": completion.questions,
+                "persisted_context": completion.persisted_context, 
+                "reports": completion.reports or []
+            },
+            next_function_to_call="create_chat"
+        )
+        
+    def create_chat(self, completion: AgentMessage, questions: List[str], persisted_context: str, reports: List[str]):
+        return BlockingOperation(
+            node_id=self.node.node_id,
+            blocking_type="create_chat",
+            args={
+                "ai_message": completion.message,
+                "node_id": self.node.node_id
+            },
+            context = {
                 "questions": questions,
                 "persisted_context": persisted_context,
-                "reports": reports,
+                "reports": []
             },
-            next_function_to_call="generate_message"
+            next_function_to_call="update_conversation_state"
         )
     
-def send_message(swarm: SwarmConfig, node_id: str, questions: List[str], persisted_context: str, reports: List[str], completion: AgentMessage):
-    return BlockingOperation(
-        node_id=node_id,
-        blocking_type="send_message",
-        args={
-            "ai_message": completion.content,
-            "node_id": node_id
-        },
-        context = {
-            "node_id": node_id,
-            "swarm": swarm,
-            "questions": questions,
-            "persisted_context": persisted_context,
-            "reports": reports
-        },
-        next_function_to_call="update_conversation_state"
-    )
-    
-def finalize_report(swarm: SwarmConfig, node_id: str, reports: List[str]):
-    messages = [
-        { 
-            "role": "system",
-            "content": finalize_report_instructions
-        },
-        {
-            "role": "system",
-            "content": f"Reports: {reports}"
-        }
-    ]
-    return BlockingOperation(
-        node_id=node_id,
-        blocking_type="openai_instructor_completion",
-        args={
-            "message": messages,
-            "instructor_model": FinalReport
-        },
-        context = {
-            "swarm": swarm,
-            "node_id": node_id   
-        },
-        next_function_to_call="terminate_conversation"
-    )
-    
-def terminate_conversation(swarm: SwarmConfig, node_id: str, completion: FinalReport):
-    return TerminationOperation(
-        node_id=node_id,
-        report=completion.report
-    )
+    def update_conversation_state(self, questions: List[str], persisted_context: str, reports: List[str], user_response: str,):
+        messages = [
+            { 
+                "role": "system",
+                "content": update_conversation_state_instructions
+            },
+            {
+                "role": "user",
+                "content": user_response
+            },
+            {
+                "role": "system",
+                "content": f"Update Questions: {questions}\n\nUpdate Context: {persisted_context}\n\nAdd to Reports: {reports}"
+            }
+        ]
+        return BlockingOperation(
+            node_id=self.node.node_id,
+            blocking_type="instructor_completion",
+            args={
+                "messages": messages,
+                "instructor_model_name": "QuestionAskerConversationState"
+            },
+            context = {
+                "reports": reports,
+                "user_response": user_response
+            },
+            next_function_to_call="decide_to_continue_or_end_conversation"
+        )
+        
+    def decide_to_continue_or_end_conversation(self, reports: List[str], user_response: str, completion: QuestionAskerConversationState):
+        reports.append(completion.report)
+        if (not completion.questions) or (len(completion.questions) > 0):
+            self.finalize_report(reports)
+        else:
+            self.generate_and_send_message(user_response, completion)
+                    
+    def finalize_report(self, reports: List[str]):
+        messages = [
+            { 
+                "role": "system",
+                "content": finalize_report_instructions
+            },
+            {
+                "role": "system",
+                "content": f"Reports: {reports}"
+            }
+        ]
+        return BlockingOperation(
+            node_id=self.node.node_id,
+            blocking_type="instructor_completion",
+            args={
+                "message": messages,
+                "instructor_model_name": "FinalReport"
+            },
+            context = {},
+            next_function_to_call="terminate_conversation"
+        )
+        
+    def terminate_conversation(self, completion: FinalReport):
+        return TerminationOperation(
+            node_id=self.node.node_id,
+            report=completion.report
+        )

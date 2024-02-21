@@ -7,7 +7,7 @@ from swarmstar.swarm.decorators import swarmstar_decorator
 @swarmstar_decorator
 def execute_blocking_operation(swarm: SwarmConfig, blocking_operation: BlockingOperation) -> Union[SwarmOperation, List[SwarmOperation]]:
     blocking_operation_type_map = {
-        'openai_instructor_completion': 'swarmstar.utils.swarm_utils.blocking_operations.instructor.completion',
+        'instructor_completion': 'swarmstar.utils.swarm_utils.blocking_operations.instructor.completion',
         'internal_action': 'swarmstar.utils.swarm_utils.blocking_operations.internal_action'
     }
     
