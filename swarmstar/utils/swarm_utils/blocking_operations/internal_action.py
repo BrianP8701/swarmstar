@@ -7,14 +7,18 @@ Think of this as the entrypoint back into the action after a blocking operation 
 
 from __future__ import annotations
 from importlib import import_module
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union, List
 
 from swarmstar.swarm.types import ActionSpace, SwarmState
 
 if TYPE_CHECKING:
     from swarmstar.swarm.types import SwarmConfig, BlockingOperation, SwarmOperation
 
-def execute_blocking_operation(swarm: SwarmConfig, blocking_operation: BlockingOperation) -> SwarmOperation:
+# This blocking operation doesn't have set args, it will just pass the args and context to the next function to call
+def expected_args(BaseModel):
+    pass
+
+def execute_blocking_operation(swarm: SwarmConfig, blocking_operation: BlockingOperation) -> Union[SwarmOperation, List[SwarmOperation]]:
     action_space = ActionSpace(swarm=swarm)
     swarm_state = SwarmState(swarm=swarm)
     node_id = blocking_operation.node_id

@@ -1,4 +1,4 @@
 # Swarm History
-The swarm history allows us to see how the swarm got to it's current state. It's a list of all the swarm operations and the corresponding node that performed it in chronological order.
+The swarm is broken up into discrete "[swarm operations](swarm_operations/index.md)". The swarm history stores all swarm operations that have already been performed. 
 
-We can use this to backtrack and debug, move back in time and see each step of the swarm's lifecycle.
+    Note: It is up to the user to decide how to handle the swarm operations that are waiting to be executed. I left this blank so you may choose to adopt a method that suits your preferences and scale. 

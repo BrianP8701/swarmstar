@@ -1,9 +1,9 @@
-from typing import Any, Dict, Union
+from typing import Any, Dict, Union, List
 from importlib import import_module
 
-from swarmstar.swarm.types import SwarmConfig, SwarmOperation, BlockingOperation, ActionSpace, SwarmHistory
+from swarmstar.swarm.types import SwarmConfig, SwarmOperation, BlockingOperation, SwarmHistory
 
-def execute_blocking_operation(swarm: SwarmConfig, blocking_operation: BlockingOperation) -> SwarmOperation:
+def execute_blocking_operation(swarm: SwarmConfig, blocking_operation: BlockingOperation) -> Union[SwarmOperation, List[SwarmOperation]]:
     blocking_operation_type_map = {
         'openai_instructor_completion': 'swarmstar.utils.swarm_utils.blocking_operations.instructor.completion',
         'internal_action': 'swarmstar.utils.swarm_utils.blocking_operations.internal_action'
@@ -17,9 +17,9 @@ def execute_blocking_operation(swarm: SwarmConfig, blocking_operation: BlockingO
         pass
     
     blocking_operation_type_module = import_module(blocking_operation_type_map[blocking_operation_type])
+    output: SwarmOperation = blocking_operation_type_module.execute_blocking_operation(swarm, blocking_operation)
     
-    blocking_operation_output = blocking_operation_type_module.execute_blocking_operation(swarm, blocking_operation)
     swarm_history = SwarmHistory(swarm=swarm)
-    swarm_history.add_event(blocking_operation)
+    swarm_history.add_operation(blocking_operation)
     
-    return blocking_operation_output
+    return output

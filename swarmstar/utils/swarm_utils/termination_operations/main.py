@@ -1,9 +1,9 @@
 from importlib import import_module
-from typing import Union
+from typing import Union, List
 
 from swarmstar.swarm.types import SwarmConfig, SwarmOperation, TerminationOperation, SwarmHistory, SwarmState
 
-def execute_termination_operation(swarm: SwarmConfig, termination_operation: TerminationOperation) -> Union[SwarmOperation, None]:
+def execute_termination_operation(swarm: SwarmConfig, termination_operation: TerminationOperation) ->  Union[TerminationOperation, None]:
     termination_policy_map = {
         'simple': 'swarmstar.utils.swarm_utils.termination_operations.simple',
         'parallel_review': 'swarmstar.utils.swarm_utils.termination_operations.parallel_review',
@@ -22,8 +22,8 @@ def execute_termination_operation(swarm: SwarmConfig, termination_operation: Ter
     
     termination_policy_module = import_module(termination_policy_map[termination_policy])
     
-    termination_operation_output = termination_policy_module.execute_termination_operation(swarm, termination_operation)
+    output = termination_policy_module.execute_termination_operation(swarm, termination_operation)
     swarm_history = SwarmHistory(swarm=swarm)
     swarm_history.add_event(termination_operation)
     
-    return termination_operation_output
+    return output

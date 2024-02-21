@@ -8,8 +8,6 @@ from pydantic import BaseModel, Field, Dict
 
 from swarmstar.swarm.types import SwarmConfig, BlockingOperation, ActionSpace, SpawnOperation, NodeEmbryo, SwarmOperation, ActionFolder
 
-
-
 class NextActionPath(BaseModel):
     index: Optional[int] = Field(None, description="Index of the best action path to take")
     failure_message: Optional[str] = Field(None, description="There's no good action path to take. Describe what type of action is needed in detail.")

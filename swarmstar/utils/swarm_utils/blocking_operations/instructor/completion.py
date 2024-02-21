@@ -15,11 +15,12 @@ from swarmstar.swarm.types import BlockingOperation
 if TYPE_CHECKING:
     from swarmstar.swarm.types import SwarmConfig
     
+# This is the expected format of the args param for this blocking operation
 def expected_args(BaseModel):
     messages: List[Dict[str, str]]             # This should be a list of dictionaries with the keys 'role' and 'content'
     instructor_model_name: str                 # This should point to a pydnatic model in the swarmstar.utils.ai.openai_instructor.models module
 
-def execute_blocking_operation(swarm: SwarmConfig, blocking_operation: BlockingOperation):
+def execute_blocking_operation(swarm: SwarmConfig, blocking_operation: BlockingOperation) -> BlockingOperation:
     messages = blocking_operation.args['messages']
     instructor_model_name = blocking_operation.args['instructor_model_name']
     
