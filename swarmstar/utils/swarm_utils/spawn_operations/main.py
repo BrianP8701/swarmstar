@@ -6,10 +6,8 @@ from typing import List, Union
 
 from swarmstar.swarm.types import SwarmConfig, SwarmState, SwarmOperation, SpawnOperation, ActionSpace, SwarmNode, SwarmHistory
 from swarmstar.utils.misc.uuid import generate_uuid
-from swarmstar.swarm.decorators import swarmstar_decorator
 
 def spawn(swarm: SwarmConfig, spawn_operation: SpawnOperation) ->  Union[SwarmOperation, List[SwarmOperation]]:
-    
     swarm_state = SwarmState(swarm=swarm)
     action_space = ActionSpace(swarm=swarm)
     
@@ -38,9 +36,7 @@ def spawn(swarm: SwarmConfig, spawn_operation: SpawnOperation) ->  Union[SwarmOp
 
     swarm_history = SwarmHistory(swarm=swarm)
     swarm_history.add_event(spawn_operation)
-
     output = execute_node_action(swarm, node, action_metadata)
-    
     return output
 
 def execute_node_action(swarm: SwarmConfig, node: SwarmNode, action_metadata) ->  Union[SwarmOperation, List[SwarmOperation]]:
@@ -55,5 +51,4 @@ def execute_node_action(swarm: SwarmConfig, node: SwarmNode, action_metadata) ->
     
     action_type_module = import_module(action_type_map[action_type])
     action_output = action_type_module.execute_action(swarm, node, action_metadata)
-    
     return action_output

@@ -32,7 +32,6 @@ def blocking(swarm: SwarmConfig, blocking_operation: BlockingOperation) -> Block
     response = completion(messages=messages, openai_key=swarm.openai_key, instructor_model=instructor_model)
     
     return BlockingOperation(
-        operation_type=blocking_operation.operation_type,
         node_id=blocking_operation.node_id,
         blocking_type='internal_action',
         args={

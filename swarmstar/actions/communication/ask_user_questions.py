@@ -8,7 +8,7 @@ Throughout the conversation we maintain a "Conversation State" which is a data s
 from pydantic import BaseModel, Field
 from typing import List
 
-from swarmstar.swarm.types import BlockingOperation, TerminationOperation, SwarmConfig
+from swarmstar.swarm.types import BlockingOperation, TerminationOperation
 from swarmstar.swarm.types.base_action import BaseAction
 
 
@@ -43,7 +43,7 @@ update_conversation_state_instructions = (
     'information required for ongoing dialogue.\n'
     '3. Add to Reports: Add answers and relevant information to the reports given the users message. This report is what '
     'will be sent back when the conversation ends. Keep it brief and actionable yet comprehensive. What you say will be '
-    'added to the current reports.\n\n'
+    'appended to the current reports so do not repeat stuff already mentioned.\n\n'
     'The reports aren\'t used as context throughout the conversation, so make sure all necessary context is in the persisted context.'
 ).replace("\n", "\\n")
 
@@ -58,7 +58,7 @@ finalize_report_instructions = (
 
 class AskUserQuestions(BaseAction):
     def main(self):
-        self.generate_initial_conversation_state()
+        return self.generate_initial_conversation_state()
     
     def generate_initial_conversation_state(self):
         messages = [
@@ -68,7 +68,7 @@ class AskUserQuestions(BaseAction):
             },
             {
                 "role": "user",
-                "content": f'Extract questions from this message:\n`{self.node.message}`'
+                "content": f'You are initializing the conversation state. Extract questions and context from this message:\n`{self.node.message}`'
             }
         ]
         
@@ -77,7 +77,7 @@ class AskUserQuestions(BaseAction):
             "messages": messages,
             "instructor_model_name": "QuestionAskerConversationState"
         })
-        
+                
         return BlockingOperation(
             node_id=self.node.node_id,
             blocking_type="instructor_completion",
@@ -86,12 +86,14 @@ class AskUserQuestions(BaseAction):
                 "instructor_model_name": "QuestionAskerConversationState"
             },
             context = {
-                "user_message": "Ask me questions, the conversation just started."    
+                "user_message": "User has no messages, the convo is just starting.",
+                "recent_ai_message": "No messages yet, the convo is just starting.",
+                "reports": []
             },
-            next_function_to_call="generate_and_send_message"
+            next_function_to_call="generate_message"
         )
     
-    def generate_and_send_message(self, user_message: str, completion: QuestionAskerConversationState):
+    def generate_message(self, user_message: str, recent_ai_message: str, reports: List[str], completion: QuestionAskerConversationState):
         messages = [
             {
                 "role": "system",
@@ -103,6 +105,7 @@ class AskUserQuestions(BaseAction):
                     f"Questions: {completion.questions}\n\n"
                     f"Context: {completion.persisted_context}\n\n"
                     f"User's most recent message: {user_message}"
+                    f"Your most recent message: {recent_ai_message}"
                 )
             }
         ]
@@ -112,23 +115,40 @@ class AskUserQuestions(BaseAction):
             "messages": messages,
             "instructor_model_name": "AgentMessage"
         })
-        
+    
         return BlockingOperation(
             node_id=self.node.node_id,
-            blocking_type="send_user_message",
+            blocking_type="instructor_completion",
             args={
                 "messages": messages,
-                "instructor_model": "AgentMessage"
+                "instructor_model_name": "AgentMessage"
             },
             context = {
                 "questions": completion.questions,
                 "persisted_context": completion.persisted_context, 
-                "reports": completion.reports or []
+                "reports": reports
+            },
+            next_function_to_call="send_user_message"
+        )
+        
+    def send_user_message(self, questions: List[str], persisted_context: str, reports: List[str], completion: AgentMessage):
+        return BlockingOperation(
+            node_id=self.node.node_id,
+            blocking_type="send_user_message",
+            args={
+                'message': completion.content,
+            },
+            context={
+                "questions": questions,
+                "persisted_context": persisted_context,
+                "reports": reports,
+                "recent_ai_message": completion.content
             },
             next_function_to_call="update_conversation_state"
         )
-    
-    def update_conversation_state(self, questions: List[str], persisted_context: str, reports: List[str], user_response: str,):
+        
+
+    def update_conversation_state(self, questions: List[str], persisted_context: str, reports: List[str], recent_ai_message: str, user_response: str):
         messages = [
             { 
                 "role": "system",
@@ -136,11 +156,11 @@ class AskUserQuestions(BaseAction):
             },
             {
                 "role": "user",
-                "content": user_response
+                "content": f'Your most recent message: {recent_ai_message}\n\nUsers most recent message: {user_response}'
             },
             {
                 "role": "system",
-                "content": f"Update Questions: {questions}\n\nUpdate Context: {persisted_context}\n\nAdd to Reports: {reports}"
+                "content": f"Update Questions: {questions}\n\nUpdate Context: {persisted_context}\n\nAdd to Reports. Do not repeat things that are already mentioned: {reports}"
             }
         ]
         
@@ -159,17 +179,18 @@ class AskUserQuestions(BaseAction):
             },
             context = {
                 "reports": reports,
-                "user_response": user_response
+                "user_response": user_response,
+                "recent_ai_message": recent_ai_message
             },
             next_function_to_call="decide_to_continue_or_end_conversation"
         )
         
-    def decide_to_continue_or_end_conversation(self, reports: List[str], user_response: str, completion: QuestionAskerConversationState):
+    def decide_to_continue_or_end_conversation(self, reports: List[str], user_response: str, recent_ai_message: str, completion: QuestionAskerConversationState):
         reports.append(completion.report)
-        if (not completion.questions) or (len(completion.questions) > 0):
-            self.finalize_report(reports)
+        if (not completion.questions) or (len(completion.questions) == 0):
+            return self.finalize_report(reports)
         else:
-            self.generate_and_send_message(user_response, completion)
+            return self.generate_message(user_response, recent_ai_message, reports, completion)
                     
     def finalize_report(self, reports: List[str]):
         messages = [
@@ -193,7 +214,7 @@ class AskUserQuestions(BaseAction):
             node_id=self.node.node_id,
             blocking_type="instructor_completion",
             args={
-                "message": messages,
+                "messages": messages,
                 "instructor_model_name": "FinalReport"
             },
             context = {},

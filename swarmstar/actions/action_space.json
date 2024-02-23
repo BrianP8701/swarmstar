@@ -4,7 +4,7 @@
         "type": "internal_folder",
         "name": "actions",
         "description": "This is the root of the action space",
-        "children": [
+        "children_ids": [
             "swarmstar/actions/reasoning",
             "swarmstar/actions/communication"
         ],
@@ -15,7 +15,7 @@
         "type": "internal_folder",
         "name": "reasoning",
         "description": "This folder contains all actions pertaining to reasoning operations. It currently only contains an action that decomposes a directive into immediate sub-directives.",
-        "children": [
+        "children_ids": [
             "swarmstar/actions/reasoning/decompose_directive",
             "swarmstar/actions/reasoning/route_action"
         ],
@@ -27,7 +27,7 @@
         "type": "internal_folder",
         "name": "communication",
         "description": "Contains actions to interact with the user",
-        "children": [
+        "children_ids": [
             "swarmstar/actions/communication/ask_user_questions"
         ],
         "parent": "swarmstar/actions",

@@ -19,7 +19,7 @@ class NextActionPath(BaseModel):
     index: Optional[int] = Field(None, description="Index of the best action path to take")
     failure_message: Optional[str] = Field(None, description="There's no good action path to take. Describe what type of action is needed in detail.")
     
-class ConversationState(BaseModel):
+class QuestionAskerConversationState(BaseModel):
     questions: List[str] = Field(..., description="List of questions we need answered")
     persisted_context: str = Field(..., description="A concise and compact representation of the necessary information to persist through the conversation.")
     report: str = Field(..., description="Concise and comprehensive report of answers to our questions and supporting context.")

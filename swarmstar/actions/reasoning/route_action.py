@@ -1,5 +1,5 @@
-from typing import List, Optional
-from pydantic import BaseModel, Field, Dict
+from typing import List, Optional, Dict
+from pydantic import BaseModel, Field
 
 from swarmstar.swarm.types import BlockingOperation, ActionSpace, SpawnOperation, NodeEmbryo, SwarmOperation, ActionFolder
 from swarmstar.swarm.types.base_action import BaseAction
@@ -34,17 +34,19 @@ class RouteAction(BaseAction):
                 "messages": messages,
                 "instructor_model_name": "NextActionPath"
             },
-            context = {},
+            context = {
+                "parent_action_id": 'swarmstar/actions'  
+            },
             next_function_to_call="route_goal"
         )
     
-    def route_goal(self, completion: NextActionPath) -> SwarmOperation:
+    def route_goal(self, completion: NextActionPath, parent_action_id: str) -> SwarmOperation:
         '''
         This function gets called over and over again until we reach a leaf node, aka an action.
         '''
         if completion.index is not None:
             action_space = ActionSpace(swarm=self.swarm)
-            parent_action = action_space[self.node.node_id]
+            parent_action = action_space[parent_action_id]
             next_action_id = parent_action.children_ids[completion.index]
             current_action = action_space[next_action_id]
             
@@ -58,7 +60,9 @@ class RouteAction(BaseAction):
                         "messages": messages,
                         "instructor_model_name": "NextActionPath",
                     },
-                    context = {},
+                    context = {
+                        "parent_action_id": next_action_id
+                    },
                     next_function_to_call="route_goal"
                 )
             else:
@@ -76,7 +80,7 @@ class RouteAction(BaseAction):
             # TODO Handle failure message. Pass to action creator or user for review
 
         
-    def build_route_messages(goal: str, children_descriptions: List[str]) -> List[Dict[str, str]]:
+    def build_route_messages(self, goal: str, children_descriptions: List[str]) -> List[Dict[str, str]]:
         goal_and_action_path_options = (
             f'Decide what action path is best to take to accomplish this goal: {goal}\n\n'
             f'Options:\n'
@@ -96,7 +100,7 @@ class RouteAction(BaseAction):
         ]
         return messages
 
-    def get_children_descriptions(action_space: ActionSpace, action_folder: ActionFolder) -> List[str]:
+    def get_children_descriptions(self, action_space: ActionSpace, action_folder: ActionFolder) -> List[str]:
         children_descriptions = []
         for child_id in action_folder.children_ids:
             child_metadata = action_space[child_id]

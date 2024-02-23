@@ -25,11 +25,12 @@ def error_handling_decorator(func):
             return func(*args, **kwargs)
         except Exception as e:
             self = args[0]  # Assuming the first argument is always 'self' for instance methods
-            # Capturing the full traceback
             tb_str = traceback.format_exc()
-            # Optionally, you can include function parameters in the report
             params_str = f"node_id: {self.node.node_id}\nParams: {kwargs}"
-            report = f"Error in {func.__name__}:\n{str(e)}\n\n{tb_str}\n\n{params_str}"
+            
+            error_message = f"Error in {func.__name__}:\n{str(e)}\n\n{tb_str}\n\n{params_str}"
+            raise Exception(error_message)
+
             return FailureOperation(
                 node_id=self.node.node_id,
                 report=report,
@@ -60,20 +61,20 @@ class BaseAction(metaclass=ErrorHandlingMeta):
     def overwrite_report(self, report: str):
         self.node.report = report
         swarm_state = SwarmState(swarm=self.swarm)
-        swarm_state.update_node(self.node)
+        swarm_state.update_state(self.node)
         
     def append_report(self, report: str):
         self.node.report += f"\n\n{report}"
         swarm_state = SwarmState(swarm=self.swarm)
-        swarm_state.update_node(self.node)
+        swarm_state.update_state(self.node)
         
     def add_journal_entry(self, journal_entry: Dict[str, Any]):
         self.node.journal.append(journal_entry)
         swarm_state = SwarmState(swarm=self.swarm)
-        swarm_state.update_node(self.node)
+        swarm_state.update_state(self.node)
         
     def update_termination_policy(self, termination_policy: str):
         self.node.termination_policy = termination_policy
         swarm_state = SwarmState(swarm=self.swarm)
-        swarm_state.update_node(self.node)
+        swarm_state.update_state(self.node)
 
