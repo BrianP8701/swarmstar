@@ -1,6 +1,4 @@
 '''
-The swarm consists of nodes. Each node is given a message and a preassigned action they must execute.
-
 The NodeEmbryo is what a node outputs to spawn children.
 
 Nodes can perform 1 of 4 "SwarmOperations":
@@ -10,25 +8,8 @@ Nodes can perform 1 of 4 "SwarmOperations":
     - FailureOperation
     - BlockingOperation
 '''
-
+from typing import Any, Dict, Literal, Optional
 from pydantic import BaseModel, Field
-from typing import List, Dict, Any, Optional
-from typing_extensions import Literal
-
-class SwarmNode(BaseModel):
-    node_id: str
-    parent_id: Optional[str] = None
-    children_ids: List[str] = []
-    action_id: str
-    message: str
-    report: str = None
-    alive: bool
-    journal: List[Dict[str, Any]] = []
-    termination_policy: Literal[
-        'simple',
-        'parallel_review', 
-        'clone_with_reports'
-    ] 
 
 class NodeEmbryo(BaseModel):
     action_id: str
@@ -64,5 +45,5 @@ class TerminationOperation(SwarmOperation):
 
 class FailureOperation(SwarmOperation):
     operation_type: Literal['node_failure'] = Field(default='node_failure')
-    node_id: str
+    node_id: Optional[str] = None
     report: str

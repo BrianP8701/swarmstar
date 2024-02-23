@@ -27,17 +27,24 @@ from .swarm_state import (
     SwarmState
 )
 
-from .swarm import (
+from .swarm_nodes import (
     SwarmNode,
-    NodeEmbryo,
-    SwarmOperation,
-    BlockingOperation,
-    SpawnOperation,
-    TerminationOperation,
-    FailureOperation
 )
 
 from .util_metadata import (
     UtilSpace,
     UtilMetadata
+)
+
+from .swarm_operations import (
+    SwarmOperation,
+    SpawnOperation,
+    TerminationOperation,
+    FailureOperation,
+    BlockingOperation,
+    NodeEmbryo
+)   
+
+from .base_action import (
+    BaseAction
 )

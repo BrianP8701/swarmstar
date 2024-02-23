@@ -36,7 +36,7 @@
     "swarmstar/actions/reasoning/decompose_directive": {
         "is_folder": false,
         "type": "internal_action",
-        "name": "decompose_directive.py",
+        "name": "DecomposeDirective.py",
         "description": "Decompose directives into immediate parralel sub-directives.",
         "parent": "swarmstar/actions/reasoning",
         "internal_action_path": "swarmstar.actions.reasoning.decompose_directive",
@@ -45,7 +45,7 @@
     "swarmstar/actions/reasoning/route_action": {
         "is_folder": false,
         "type": "internal_action",
-        "name": "route_action",
+        "name": "RouteAction",
         "description": "Decide what action to take given a directive. Don't choose this if you are the action router, that'd be dumb and cause an infinite loop.",
         "parent": "swarmstar/actions/reasoning",
         "internal_action_path": "swarmstar.actions.reasoning.route_action",
@@ -54,7 +54,7 @@
     "swarmstar/actions/communication/ask_user_questions": {
         "is_folder": false,
         "type": "internal_action",
-        "name": "ask_user_questions",
+        "name": "AskUserQuestions",
         "description": "Ask the user questions.",
         "parent": "swarmstar/actions/communication",
         "internal_action_path": "swarmstar.actions.communication.ask_user_questions",

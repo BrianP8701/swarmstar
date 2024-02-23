@@ -7,7 +7,7 @@ from pydantic import BaseModel
 
 from swarmstar.utils.data.kv_operations.main import get_kv, add_kv
 from swarmstar.swarm.types.swarm_config import SwarmConfig
-from swarmstar.swarm.types.swarm import SwarmNode
+from swarmstar.swarm.types.swarm_nodes import SwarmNode
 
 class SwarmState(BaseModel):
     swarm: 'SwarmConfig'

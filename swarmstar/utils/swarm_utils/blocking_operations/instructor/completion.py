@@ -10,16 +10,19 @@ from importlib import import_module
 
 from swarmstar.utils.ai.openai_instructor import completion
 from swarmstar.swarm.types import BlockingOperation
+from swarmstar.swarm.decorators import swarmstar_decorator
 
 if TYPE_CHECKING:
     from swarmstar.swarm.types import SwarmConfig
     
-# This is the expected format of the args param for this blocking operation
+
 def expected_args(BaseModel):
     messages: List[Dict[str, str]]             # This should be a list of dictionaries with the keys 'role' and 'content'
     instructor_model_name: str                 # This should point to a pydnatic model in the swarmstar.utils.ai.openai_instructor.models module
 
-def execute_blocking_operation(swarm: SwarmConfig, blocking_operation: BlockingOperation) -> BlockingOperation:
+ 
+@swarmstar_decorator
+def blocking(swarm: SwarmConfig, blocking_operation: BlockingOperation) -> BlockingOperation:
     messages = blocking_operation.args['messages']
     instructor_model_name = blocking_operation.args['instructor_model_name']
     
@@ -37,4 +40,7 @@ def execute_blocking_operation(swarm: SwarmConfig, blocking_operation: BlockingO
         },
         context=blocking_operation.context,
         next_function_to_call=blocking_operation.next_function_to_call
-    )
+    ), {
+        "type": "instructor_completion_response",
+        "response": response.model_dump()
+    }

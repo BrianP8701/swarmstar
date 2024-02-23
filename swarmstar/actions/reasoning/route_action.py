@@ -20,6 +20,13 @@ class RouteAction(BaseAction):
         root: ActionFolder = action_space['swarmstar/actions']
         root_children_descriptions = self.get_children_descriptions(action_space, root)
         messages = self.build_route_messages(self.node.message, root_children_descriptions)
+        
+        self.add_journal_entry({
+                "type": "instructor_completion_request",
+                "messages": messages,
+                "instructor_model_name": "NextActionPath"
+        })
+        
         return BlockingOperation(
             node_id=self.node.node_id,
             blocking_type="instructor_completion",
@@ -40,6 +47,7 @@ class RouteAction(BaseAction):
             parent_action = action_space[self.node.node_id]
             next_action_id = parent_action.children_ids[completion.index]
             current_action = action_space[next_action_id]
+            
             if current_action.is_folder:
                 children_descriptions = self.get_children_descriptions(action_space, current_action)
                 messages = self.build_route_messages(self.node.message, children_descriptions)

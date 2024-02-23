@@ -18,18 +18,21 @@ if TYPE_CHECKING:
 def expected_args(BaseModel):
     pass
 
-def execute_blocking_operation(swarm: SwarmConfig, blocking_operation: BlockingOperation) -> Union[SwarmOperation, List[SwarmOperation]]:
+def blocking(swarm: SwarmConfig, blocking_operation: BlockingOperation) -> Union[SwarmOperation, List[SwarmOperation]]:
     action_space = ActionSpace(swarm=swarm)
     swarm_state = SwarmState(swarm=swarm)
     node_id = blocking_operation.node_id
     node = swarm_state[node_id]
     action_metadata = action_space[node.action_id]
-    script_path = action_metadata.execution_metadata['script_path']
-    action_script = import_module(script_path)
+    action_name = action_metadata.name
+    script_path = action_metadata.internal_action_path
+    action_file = import_module(script_path)
     
     combined_args = {}
     combined_args.update(blocking_operation.args)
     if blocking_operation.context is not None:
         combined_args.update(blocking_operation.context)
     
-    return getattr(action_script, blocking_operation.next_function_to_call)(**combined_args)
+    action_class = getattr(action_file, action_name)
+    action_instance = action_class(swarm=swarm, node=node)
+    return getattr(action_instance, blocking_operation.next_function_to_call)(**combined_args)

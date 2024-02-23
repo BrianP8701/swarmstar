@@ -28,10 +28,10 @@ def error_handling_decorator(func):
             # Capturing the full traceback
             tb_str = traceback.format_exc()
             # Optionally, you can include function parameters in the report
-            params_str = f"node_id: {self.node.id}\nParams: {kwargs}"
+            params_str = f"node_id: {self.node.node_id}\nParams: {kwargs}"
             report = f"Error in {func.__name__}:\n{str(e)}\n\n{tb_str}\n\n{params_str}"
             return FailureOperation(
-                node_id=self.node.id,
+                node_id=self.node.node_id,
                 report=report,
             )
     return wrapper

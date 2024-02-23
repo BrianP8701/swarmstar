@@ -5,8 +5,10 @@
 from typing import Union
 
 from swarmstar.swarm.types import SwarmConfig, TerminationOperation, SwarmState
+from swarmstar.swarm.decorators import swarmstar_decorator
 
-def execute_termination_operation(swarm: SwarmConfig, termination_operation: TerminationOperation) -> Union[TerminationOperation, None]:
+@swarmstar_decorator
+def terminate(swarm: SwarmConfig, termination_operation: TerminationOperation) -> Union[TerminationOperation, None]:
     node_id = termination_operation.node_id
     swarm_state = SwarmState(swarm=swarm)
     node = swarm_state[node_id]
@@ -22,4 +24,6 @@ def execute_termination_operation(swarm: SwarmConfig, termination_operation: Ter
         operation_type='terminate',
         node_id=parent_node.node_id,
         report=''
-    )
+    ), {
+        "type": "leaf_termination"
+    }

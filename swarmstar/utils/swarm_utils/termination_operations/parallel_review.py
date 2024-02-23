@@ -16,8 +16,10 @@
 from typing import Union
 
 from swarmstar.swarm.types import SwarmConfig, TerminationOperation, SwarmState, SpawnOperation, NodeEmbryo
+from swarmstar.swarm.decorators import swarmstar_decorator
 
-def execute_termination_operation(swarm: SwarmConfig, termination_operation: TerminationOperation) -> Union[TerminationOperation, None]:
+ 
+def terminate(swarm: SwarmConfig, termination_operation: TerminationOperation) -> Union[TerminationOperation, None]:
     node_id = termination_operation.node_id
     swarm_state = SwarmState(swarm=swarm)
     node = swarm_state[node_id]
@@ -40,13 +42,11 @@ def execute_termination_operation(swarm: SwarmConfig, termination_operation: Ter
         return SpawnOperation(
             operation_type='spawn',
             node_id=node_id,
-            node_embryos=[
-                NodeEmbryo(
+            node_embryo=NodeEmbryo(
                     node_id=node_id,
                     action_id='swarmstar/actions/reasoning/confirm_completion',
                     message=''
-                )    
-            ],
+                ),
         )
     else:
         if reports_consolidated == False:

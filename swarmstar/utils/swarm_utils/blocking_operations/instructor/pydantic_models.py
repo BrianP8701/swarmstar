@@ -12,8 +12,8 @@ from pydantic import BaseModel, Field
 
 class DecomposeDirectiveModel(BaseModel):
     scrap_paper: Optional[str] = Field(None, description='Scrap paper for notes, planning etc. Use this space to think step by step. (optional)')
-    questions: Optional[List[str]] = Field(..., description="Questions you need answered before decomposition.")
-    subdirectives: Optional[List[str]] = Field(..., description="List of subdirectives to be executed in parallel, if you have no questions.")
+    questions: Optional[List[str]] = Field(None, description="Questions you need answered before decomposition.")
+    subdirectives: Optional[List[str]] = Field(None, description="List of subdirectives to be executed in parallel, if you have no questions.")
     
 class NextActionPath(BaseModel):
     index: Optional[int] = Field(None, description="Index of the best action path to take")

@@ -71,6 +71,13 @@ class AskUserQuestions(BaseAction):
                 "content": f'Extract questions from this message:\n`{self.node.message}`'
             }
         ]
+        
+        self.add_journal_entry({
+            "type": "instructor_completion_request",
+            "messages": messages,
+            "instructor_model_name": "QuestionAskerConversationState"
+        })
+        
         return BlockingOperation(
             node_id=self.node.node_id,
             blocking_type="instructor_completion",
@@ -99,6 +106,13 @@ class AskUserQuestions(BaseAction):
                 )
             }
         ]
+        
+        self.add_journal_entry({
+            "type": "instructor_completion_request",
+            "messages": messages,
+            "instructor_model_name": "AgentMessage"
+        })
+        
         return BlockingOperation(
             node_id=self.node.node_id,
             blocking_type="send_user_message",
@@ -110,22 +124,6 @@ class AskUserQuestions(BaseAction):
                 "questions": completion.questions,
                 "persisted_context": completion.persisted_context, 
                 "reports": completion.reports or []
-            },
-            next_function_to_call="create_chat"
-        )
-        
-    def create_chat(self, completion: AgentMessage, questions: List[str], persisted_context: str, reports: List[str]):
-        return BlockingOperation(
-            node_id=self.node.node_id,
-            blocking_type="create_chat",
-            args={
-                "ai_message": completion.message,
-                "node_id": self.node.node_id
-            },
-            context = {
-                "questions": questions,
-                "persisted_context": persisted_context,
-                "reports": []
             },
             next_function_to_call="update_conversation_state"
         )
@@ -145,6 +143,13 @@ class AskUserQuestions(BaseAction):
                 "content": f"Update Questions: {questions}\n\nUpdate Context: {persisted_context}\n\nAdd to Reports: {reports}"
             }
         ]
+        
+        self.add_journal_entry({    
+            "type": "instructor_completion_request",
+            "messages": messages,
+            "instructor_model_name": "QuestionAskerConversationState"
+        })
+        
         return BlockingOperation(
             node_id=self.node.node_id,
             blocking_type="instructor_completion",
@@ -177,6 +182,13 @@ class AskUserQuestions(BaseAction):
                 "content": f"Reports: {reports}"
             }
         ]
+        
+        self.add_journal_entry({    
+            "type": "instructor_completion_request",
+            "messages": messages,
+            "instructor_model_name": "FinalReport"
+        })
+        
         return BlockingOperation(
             node_id=self.node.node_id,
             blocking_type="instructor_completion",

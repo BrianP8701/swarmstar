@@ -1803,3 +1803,24 @@ So every action contains defined pydantic models, system instructions and then a
 # Logging not just action functions
 
 right now we added decorators and wrappers to handle errors and do journalling for action functions. however we want to apply the exact same failure handling and logging process for all termination and blocking operations. this means i kinda wanna take those a level up and reapply them from some more common place. 
+
+Whats supposed to be in the journal? I really just want to be able to look at a journal and understand and be able to see everything that node did. god what did i introduce that made everything so complex and messy? I added error handling, journal logging and an abstract base class for actions. this should all make my code better later. it should give us more insight into the behavior of the swarm and each node. 
+
+
+Action
+
+    Function (perform logic, write to journal) -> all wrapped by failure handling
+
+Blocking operations come from actions. blocking operations should similarly be imagined as just a function expect it happens outside in the util space. it performs logic, writes to journal and is all wrapped by failure handling. 
+
+The spawn and termination operation can be seen in a similar light. 
+
+lets review the entire swarm lifecycle including logging, failure capture, journaling, state and history updates, blocking spawn and termination operations and the levels at which all of these happen.
+
+So we first create the initial spawn operation, spawning the first decompose directive node. nothing gets logged, updated or created because the operation hasnt been executed yet, just created.
+
+Then we pass the spawn operation to the swarm god. The swarm god will spawn the node. the node object gets added to the swarm state. right after the node object gets created and added to state we should immediately add the spawn operation to history.
+
+We then proceed to call and execute the main function in the action script. This will return a blocking operation. the swarm god simply returns the blocking operation. In the action we should journal. Do we assume the swarm god doesent mess up? yes. yes we do. We have failure operation handling inside on the action functions. 
+
+Now when we get a blocking operation we handle and execute it outside of the action function. yet we should still do all journaling inside the action function function right? Or no? No we shouldnt we should be able to raise failure operations and journal from within blocking operations. indeed. the blocking operation always gets the swarm and node_id anyway.

@@ -3,12 +3,11 @@ The swarm history is a record of all the events that have occurred in the swarm.
 It stores all the information needed to reconstruct the state of the swarm at any
 point in time.
 '''
-from __future__ import annotations
 from pydantic import BaseModel
 
 from swarmstar.utils.data.kv_operations.main import get_kv, add_kv
 from swarmstar.swarm.types.swarm_config import SwarmConfig
-from swarmstar.swarm.types.swarm import SwarmOperation
+from swarmstar.swarm.types.swarm_operations import SwarmOperation
     
     
 class SwarmHistory(BaseModel):

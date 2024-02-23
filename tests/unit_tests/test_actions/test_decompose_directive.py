@@ -1,8 +1,8 @@
 # pytest tests/unit_tests/test_actions/test_decompose_directive.py
 import pytest
 
-from swarmstar.swarm.core import execute_swarm_operation
-from swarmstar.swarm.types import SpawnOperation, NodeEmbryo, SwarmConfig, LocalConfig
+from swarmstar.swarm.core import swarmstar_god
+from swarmstar.swarm.types import SpawnOperation, NodeEmbryo
 from swarmstar.utils.misc.uuid import generate_uuid
 
 from tests.utils.get_local_swarm_config import get_swarm_config
@@ -20,15 +20,15 @@ def test_decompose_directive():
         )
     )
     
-    next_swarm_operation = execute_swarm_operation(swarm, spawn_decompose_directive_node)
+    next_swarm_operation = swarmstar_god(swarm, spawn_decompose_directive_node)
+    print(next_swarm_operation)
     add_swarm_operation(results_file, next_swarm_operation[0])
     while next_swarm_operation[0].operation_type != 'spawn':
-        next_swarm_operation = execute_swarm_operation(swarm, next_swarm_operation[0])
+        next_swarm_operation = swarmstar_god(swarm, next_swarm_operation[0])
+        print(next_swarm_operation)
         for swarm_operation in next_swarm_operation:
             add_swarm_operation(results_file, swarm_operation)
-            
-    for swarm_operation in next_swarm_operation:
-        add_swarm_operation(results_file, swarm_operation)
+
     
 
 test_decompose_directive()

@@ -8,23 +8,24 @@ from swarmstar.swarm.types import SwarmConfig, SwarmState, SwarmOperation, Spawn
 from swarmstar.utils.misc.uuid import generate_uuid
 from swarmstar.swarm.decorators import swarmstar_decorator
 
-@swarmstar_decorator
-def execute_spawn_operation(swarm: SwarmConfig, spawn_operation: SpawnOperation) ->  Union[SwarmOperation, List[SwarmOperation]]:
+def spawn(swarm: SwarmConfig, spawn_operation: SpawnOperation) ->  Union[SwarmOperation, List[SwarmOperation]]:
     
     swarm_state = SwarmState(swarm=swarm)
     action_space = ActionSpace(swarm=swarm)
     
     parent_id = spawn_operation.node_id
-    action_id = spawn_operation.node_embryo.action_id
+    node_embryo = spawn_operation.node_embryo
+    action_id = node_embryo.action_id
     
     action_metadata = action_space[action_id]
     termination_policy = action_metadata.termination_policy
-    
+    if spawn_operation.termination_policy_change is not None:
+        termination_policy = spawn_operation.termination_policy_change
     node = SwarmNode(
         node_id=generate_uuid(action_space[action_id].name),
         parent_id=parent_id,
         action_id=action_id,
-        message=spawn_operation.node_embryo.message,
+        message=node_embryo.message,
         alive=True,
         termination_policy=termination_policy
     )
@@ -35,11 +36,11 @@ def execute_spawn_operation(swarm: SwarmConfig, spawn_operation: SpawnOperation)
         parent_node.children_ids.append(node.node_id)
         swarm_state.update_state(parent_node)
 
+    swarm_history = SwarmHistory(swarm=swarm)
+    swarm_history.add_event(spawn_operation)
 
     output = execute_node_action(swarm, node, action_metadata)
     
-    swarm_history = SwarmHistory(swarm=swarm)
-    swarm_history.add_operation(spawn_operation)
     return output
 
 def execute_node_action(swarm: SwarmConfig, node: SwarmNode, action_metadata) ->  Union[SwarmOperation, List[SwarmOperation]]:

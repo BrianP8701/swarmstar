@@ -4,8 +4,10 @@
 from typing import Union
 
 from swarmstar.swarm.types import SwarmConfig, TerminationOperation, SwarmState
+from swarmstar.swarm.decorators import swarmstar_decorator
 
-def execute_termination_operation(swarm: SwarmConfig, termination_operation: TerminationOperation) -> Union[TerminationOperation, None]:
+ 
+def terminate(swarm: SwarmConfig, termination_operation: TerminationOperation) -> Union[TerminationOperation, None]:
     node_id = termination_operation.node_id
     swarm_state = SwarmState(swarm=swarm)
     node = swarm_state[node_id]

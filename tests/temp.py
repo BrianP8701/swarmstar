@@ -1,43 +1,34 @@
-from typing import Dict, Any, Literal, Optional, List
-from pydantic import BaseModel, Field
-from swarmstar.utils.retrieval.get_code_as_string import get_class_as_string
-class NodeEmbryo(BaseModel):
-    action_id: str
-    message: str
+from pydantic import BaseModel, Field, ConfigDict, field_validator, field_serializer
+
+from enum import Enum
+
+class Fruits(str, Enum):
+    apple = 'apple'
+    banana = 'banana'
+    orange = 'orange'
+
+class Example(BaseModel):
+    model_config = ConfigDict(use_enum_values=True, validate_default=True)
+
+    field1: str
+    field2: int
+    field3: Fruits
     
-class SwarmOperation(BaseModel):
-    operation_type: Literal['spawn', 'terminate', 'node_failure', 'blocking']
-    node_id: str
-
-class BlockingOperation(SwarmOperation):
-    operation_type: Literal['blocking']
-    node_id: str
-    blocking_type: str  
-    args: Dict[str, Any] = {}
-    context: Dict[str, Any] = {}
-    next_function_to_call: str 
-
-class SpawnOperation(SwarmOperation):
-    operation_type: Literal['spawn']
-    node_embryo: NodeEmbryo
-    termination_policy_change: Literal[
-        'simple',
-        'parallel_review', 
-        'clone_with_reports'
-    ] = None
-    node_id: str = None
-    report: str = None
+    @field_validator('field3')
+    def validate_field3(cls, v):
+        if v == 'banana':
+            return Fruits.banana
+        elif v == 'apple':
+            return Fruits.apple
+        elif v == 'orange':
+            return Fruits.orange
     
-model = get_class_as_string('swarmstar/actions/reasoning/decompose_directive.py', 'DecomposeDirectiveModel')
+    
+    
+example = Example(field1='hello', field2=1, field3='banana')
+
+dump = example.model_dump()
 
 
-exec(model)
-
-something = DecomposeDirectiveModel(
-    questions = ['What is the meaning of life?'],
-    subdirectives = ['Go to the store', 'Buy some milk'],
-    scrap_paper = 'I need to buy some milk'
-)
-
-print(something)
+print(dump)
 

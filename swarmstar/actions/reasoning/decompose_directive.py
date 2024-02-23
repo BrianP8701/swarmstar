@@ -92,7 +92,6 @@ class DecomposeDirective(BaseAction):
             self.add_journal_entry(
                 {
                     "type": "successfully_decomposed_directive",
-                    "directive": self.node.message,
                     "subdirectives": subdirectives
                 }
             )
