@@ -1,9 +1,4 @@
-from .swarm_config import (
-    SwarmConfig,
-    PlatformConfig,
-    AzureConfig,
-    LocalConfig
-)
+from .swarm_config import SwarmConfig, PlatformConfig, AzureConfig, LocalConfig
 
 from .action_metadata import (
     ActionNode,
@@ -14,27 +9,17 @@ from .action_metadata import (
     ActionSpace,
 )
 
-from .memory_metadata import (
-    MemoryMetadata,
-    MemorySpace
-)
+from .memory_metadata import MemoryMetadata, MemorySpace
 
-from .swarm_history import (
-    SwarmHistory
-)
+from .swarm_history import SwarmHistory
 
-from .swarm_state import (
-    SwarmState
-)
+from .swarm_state import SwarmState
 
 from .swarm_nodes import (
     SwarmNode,
 )
 
-from .util_metadata import (
-    UtilSpace,
-    UtilMetadata
-)
+from .util_metadata import UtilSpace, UtilMetadata
 
 from .swarm_operations import (
     SwarmOperation,
@@ -42,9 +27,7 @@ from .swarm_operations import (
     TerminationOperation,
     FailureOperation,
     BlockingOperation,
-    NodeEmbryo
-)   
-
-from .base_action import (
-    BaseAction
+    NodeEmbryo,
 )
+
+from .base_action import BaseAction

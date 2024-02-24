@@ -3,6 +3,7 @@ import importlib
 from swarmstar.utils.retrieval.ast_chunking import find_class_start_end_lines
 from swarmstar.utils.retrieval.get_lines import get_lines
 
+
 def get_class_as_string(file_path: str, class_name: str) -> str:
     """
     Extracts the code for a class from a file.
@@ -23,6 +24,7 @@ def get_class_as_string(file_path: str, class_name: str) -> str:
 
     return class_code
 
+
 def get_class_from_module(module_path: str, class_name: str):
     """
     Dynamically imports a class from a given module path and class name.
@@ -41,7 +43,10 @@ def get_class_from_module(module_path: str, class_name: str):
     except ImportError as e:
         raise ImportError(f"Could not import module {module_path}: {e}") from None
     except AttributeError as e:
-        raise AttributeError(f"Class {class_name} not found in module {module_path}: {e}") from None
+        raise AttributeError(
+            f"Class {class_name} not found in module {module_path}: {e}"
+        ) from None
+
 
 # Example usage:
 # Assuming there's a class MyClass in the module_path 'my_package.my_module'

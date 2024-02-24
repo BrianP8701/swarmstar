@@ -1,4 +1,4 @@
-'''
+"""
 This module contains the base class for all actions.
 This base class: 
 
@@ -9,13 +9,19 @@ When a new action is created, it should subclass BaseAction and implement the ma
 
 All action functions will automatically be wrapped with the error handling decorator, which 
 will catch any exceptions and return a FailureOperation with a report of the error.
-'''
+"""
 from abc import ABCMeta, abstractmethod
 from functools import wraps
 import traceback
 from typing import Any, Dict
 
-from swarmstar.swarm.types import SwarmConfig, SwarmOperation, SwarmNode, SwarmState, FailureOperation
+from swarmstar.swarm.types import (
+    SwarmConfig,
+    SwarmOperation,
+    SwarmNode,
+    SwarmState,
+    FailureOperation,
+)
 
 
 def error_handling_decorator(func):
@@ -24,57 +30,64 @@ def error_handling_decorator(func):
         try:
             return func(*args, **kwargs)
         except Exception as e:
-            self = args[0]  # Assuming the first argument is always 'self' for instance methods
+            self = args[
+                0
+            ]  # Assuming the first argument is always 'self' for instance methods
             tb_str = traceback.format_exc()
             params_str = f"node_id: {self.node.node_id}\nParams: {kwargs}"
-            
-            error_message = f"Error in {func.__name__}:\n{str(e)}\n\n{tb_str}\n\n{params_str}"
+
+            error_message = (
+                f"Error in {func.__name__}:\n{str(e)}\n\n{tb_str}\n\n{params_str}"
+            )
             raise Exception(error_message)
 
-            return FailureOperation(
-                node_id=self.node.node_id,
-                report=report,
-            )
+            # return FailureOperation(
+            #     node_id=self.node.node_id,
+            #     report=report,
+            # )
+
     return wrapper
+
 
 class ErrorHandlingMeta(ABCMeta):
     def __new__(cls, name, bases, dct):
         new_cls = super().__new__(cls, name, bases, dct)
         for attr_name, attr_value in dct.items():
-            if callable(attr_value) and not attr_name.startswith('__'):
+            if callable(attr_value) and not attr_name.startswith("__"):
                 error_wrapped = error_handling_decorator(attr_value)
                 setattr(new_cls, attr_name, error_wrapped)
         return new_cls
 
+
 class BaseAction(metaclass=ErrorHandlingMeta):
-    '''
+    """
     All actions should subclass this class.
-    '''    
+    """
+
     def __init__(self, swarm: SwarmConfig, node: SwarmNode):
         self.swarm = swarm
         self.node = node
-    
+
     @abstractmethod
     def main(self, **kwargs) -> SwarmOperation:
         pass
-    
+
     def overwrite_report(self, report: str):
         self.node.report = report
         swarm_state = SwarmState(swarm=self.swarm)
         swarm_state.update_state(self.node)
-        
+
     def append_report(self, report: str):
         self.node.report += f"\n\n{report}"
         swarm_state = SwarmState(swarm=self.swarm)
         swarm_state.update_state(self.node)
-        
+
     def add_journal_entry(self, journal_entry: Dict[str, Any]):
         self.node.journal.append(journal_entry)
         swarm_state = SwarmState(swarm=self.swarm)
         swarm_state.update_state(self.node)
-        
+
     def update_termination_policy(self, termination_policy: str):
         self.node.termination_policy = termination_policy
         swarm_state = SwarmState(swarm=self.swarm)
         swarm_state.update_state(self.node)
-

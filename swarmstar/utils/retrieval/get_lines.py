@@ -12,7 +12,7 @@ def get_lines(file_path, line_range):
     start_line, end_line = line_range
     extracted_code = ""
 
-    with open(file_path, 'r') as file:
+    with open(file_path, "r") as file:
         for current_line_number, line in enumerate(file, start=1):
             if start_line <= current_line_number <= end_line:
                 extracted_code += line

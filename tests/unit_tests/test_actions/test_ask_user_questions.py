@@ -36,6 +36,5 @@ def test_ask_user_questions():
             )]
         else:
             raise ValueError(f"Unexpected blocking type: {next_swarm_operation[0].blocking_type}")
-
-    
-test_ask_user_questions()
+        
+    assert next_swarm_operation[0].operation_type == 'terminate'
