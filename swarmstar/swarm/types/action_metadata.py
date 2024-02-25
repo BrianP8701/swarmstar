@@ -62,7 +62,6 @@ class Action(ActionNode):
 
 
 class InternalAction(Action):
-    is_folder: Literal[False]
     type: Literal["internal_action"] = Field(default="internal_action")
     name: str
     description: str
@@ -73,7 +72,6 @@ class InternalAction(Action):
 
 
 class InternalFolder(ActionFolder):
-    is_folder: Literal[True]
     type: Literal["internal_folder"] = Field(default="internal_folder")
     name: str
     description: str

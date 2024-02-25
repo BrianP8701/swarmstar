@@ -17,7 +17,8 @@
         "description": "This folder contains all actions pertaining to reasoning operations. It currently only contains an action that decomposes a directive into immediate sub-directives.",
         "children_ids": [
             "swarmstar/actions/reasoning/decompose_directive",
-            "swarmstar/actions/reasoning/route_action"
+            "swarmstar/actions/reasoning/route_action",
+            "swarmstar/actions/reasoning/confirm_completion"
         ],
         "parent": "swarmstar/actions",
         "internal_folder_path": "swarmstar/actions/reasoning"
@@ -59,5 +60,14 @@
         "parent": "swarmstar/actions/communication",
         "internal_action_path": "swarmstar.actions.communication.ask_user_questions",
         "termination_policy": "simple"
+    },
+    "swarmstar/actions/reasoning/confirm_completion": {
+        "is_folder": false,
+        "type": "internal_action",
+        "name": "ConfirmCompletion",
+        "description": "This agent is called when all the children of a 'DecomposeDirective' node have terminated.\n\nIt is crucial to note, the 'DecomposeDirective' node breaks a directive into parallel subdirectives to be executed independently. There may still be further steps that need to be taken following the completion of this set of subdirectives.\n\nThis agent will confirm the completion of the directive. If complete, it will terminate and signal the parent node to terminate as well. Otherwise, it will spawn a new 'Decompose Directive' node to continue the process.",
+        "parent": "swarmstar/actions/reasoning",
+        "termination_policy": "simple",
+        "internal_action_path": "swarmstar.actions.reasoning.confirm_completion"
     }
 }
