@@ -1,5 +1,6 @@
 import os
 
+
 def find_next_available_swarm_folder():
     base_path = "tests/my_swarms/swarm_"
     x = 0

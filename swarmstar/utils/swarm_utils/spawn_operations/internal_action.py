@@ -1,7 +1,7 @@
 from importlib import import_module
-from typing import Union, List
+from typing import List, Union
 
-from swarmstar.swarm.types import SwarmConfig, SwarmNode, Action, SwarmOperation
+from swarmstar.swarm.types import Action, SwarmConfig, SwarmNode, SwarmOperation
 
 
 def execute_action(

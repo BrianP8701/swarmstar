@@ -1,0 +1,20 @@
+[
+    {
+        "node_id": null,
+        "operation_type": "spawn",
+        "action_id": "swarmstar/actions/reasoning/decompose_directive",
+        "message": "I want you to create a web app with 3 sections:\n1. A section where you can enter your goal and press spawn\n2. A section where you can talk to multiple agents at once\n3. A section where you can visualize the swarm's state"
+    },
+    {
+        "node_id": null,
+        "operation_type": "spawn",
+        "action_id": "swarmstar/actions/reasoning/decompose_directive",
+        "message": "I want you to create a web app with 3 sections:\n1. A section where you can enter your goal and press spawn\n2. A section where you can talk to multiple agents at once\n3. A section where you can visualize the swarm's state"
+    },
+    {
+        "node_id": null,
+        "operation_type": "spawn",
+        "action_id": "swarmstar/actions/reasoning/decompose_directive",
+        "message": "I want you to create a web app with 3 sections:\n1. A section where you can enter your goal and press spawn\n2. A section where you can talk to multiple agents at once\n3. A section where you can visualize the swarm's state"
+    }
+]

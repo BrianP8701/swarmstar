@@ -13,7 +13,7 @@ class SpawnOperation(SwarmOperation):
     termination_policy_change: Literal[
         'simple',
         'parallel_review', 
-        'clone_with_reports'
+        'clone_with_questions_answered'
     ] = None
     node_id: str
 ```

@@ -4,8 +4,9 @@ This is a common interface for folder operations for the swarm space.
 All folder operations will happen within the swarm space root path.
 """
 from __future__ import annotations
-from typing import TYPE_CHECKING, List
+
 from importlib import import_module
+from typing import TYPE_CHECKING, List
 
 from swarmstar.utils.data.paths import validate_and_adjust_swarm_space_path
 

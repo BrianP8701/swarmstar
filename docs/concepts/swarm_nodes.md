@@ -14,7 +14,7 @@ class SwarmNode(BaseModel):
     termination_policy: Literal[
         'simple',
         'parallel_review', 
-        'clone_with_reports'
+        'clone_with_questions_answered'
     ] 
 ```
 Nodes are classified by their action_id (defined in [Action Space](action_space.md)) which is assigned at spawn. The node executes the predefined action given the message. The message comes from the parent node, or in the case of the root node the user. The message contains the directive and context. 

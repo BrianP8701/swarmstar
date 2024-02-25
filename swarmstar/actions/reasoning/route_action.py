@@ -1,13 +1,14 @@
-from typing import List, Optional, Dict
+from typing import Dict, List, Optional
+
 from pydantic import BaseModel, Field
 
 from swarmstar.swarm.types import (
-    BlockingOperation,
-    ActionSpace,
-    SpawnOperation,
-    NodeEmbryo,
-    SwarmOperation,
     ActionFolder,
+    ActionSpace,
+    BlockingOperation,
+    NodeEmbryo,
+    SpawnOperation,
+    SwarmOperation,
 )
 from swarmstar.swarm.types.base_action import BaseAction
 
@@ -22,7 +23,7 @@ class NextActionPath(BaseModel):
     )
 
 
-system_instructions = (
+ROUTE_ACTION_INSTRUCTIONS = (
     "Decide what action path to take based on the goal and the available actions. "
     "If there is no good action path to take, describe what type of action is needed "
     "in detail in the failure message, and leave index empty."
@@ -40,9 +41,8 @@ class RouteAction(BaseAction):
 
         self.add_journal_entry(
             {
-                "type": "instructor_completion_request",
-                "messages": messages,
-                "instructor_model_name": "NextActionPath",
+                "header": "Decideing what action to take given directive",
+                "content": self.node.message
             }
         )
 
@@ -58,8 +58,10 @@ class RouteAction(BaseAction):
         self, completion: NextActionPath, parent_action_id: str
     ) -> SwarmOperation:
         """
-        This function gets called over and over again until we reach a leaf node, aka an action.
+        This function gets called over and over again 
+        until we reach a leaf node, aka an action.
         """
+        
         if completion.index is not None:
             action_space = ActionSpace(swarm=self.swarm)
             parent_action = action_space[parent_action_id]
@@ -84,12 +86,15 @@ class RouteAction(BaseAction):
                     next_function_to_call="route_goal",
                 )
             else:
+                self.add_journal_entry({
+                    "header": "Successfully routed action",
+                    "content": f"Routed goal: {self.node.message} to {next_action_id}"
+                })
                 return SpawnOperation(
                     node_id=self.node.node_id,
                     node_embryo=NodeEmbryo(
                         action_id=next_action_id, message=self.node.message
-                    ),
-                    report=f"Routed goal: {self.node.message} to {next_action_id}",
+                    )
                 )
         else:
             failure_message = completion.failure_message
@@ -109,7 +114,7 @@ class RouteAction(BaseAction):
             goal_and_action_path_options += f"{i}. {description}\n"
 
         messages = [
-            {"role": "system", "content": system_instructions},
+            {"role": "system", "content": ROUTE_ACTION_INSTRUCTIONS},
             {"role": "system", "content": goal_and_action_path_options},
         ]
         return messages

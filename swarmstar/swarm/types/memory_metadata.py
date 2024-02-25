@@ -11,13 +11,14 @@ All of these require different types of interaction. The memory
 metadata labels the memory so the swarm knows how to interact with it.
 """
 
-from typing import List, Dict
+from typing import Dict, List
+
 from pydantic import BaseModel
 from typing_extensions import Literal
 
+from swarmstar.swarm.types.swarm_config import SwarmConfig
 from swarmstar.utils.data.internal_operations import get_internal_memory_metadata
 from swarmstar.utils.data.kv_operations.main import get_kv
-from swarmstar.swarm.types import SwarmConfig
 
 
 class MemoryMetadata(BaseModel):

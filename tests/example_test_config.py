@@ -1,1 +1,1 @@
-SWARMSTAR_UNIT_TESTS_MONGODB_DB_NAME = 'swarmstar_unit_tests'
+SWARMSTAR_UNIT_TESTS_MONGODB_DB_NAME = "swarmstar_unit_tests"

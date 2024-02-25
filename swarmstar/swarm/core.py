@@ -1,10 +1,10 @@
 from typing import List, Union
 
 from swarmstar.swarm.types import SwarmConfig, SwarmOperation
-from swarmstar.utils.swarm_utils.spawn_operations.main import spawn
 from swarmstar.utils.swarm_utils.blocking_operations.main import blocking
-from swarmstar.utils.swarm_utils.termination_operations.main import terminate
 from swarmstar.utils.swarm_utils.failure_operations.main import failure
+from swarmstar.utils.swarm_utils.spawn_operations.main import spawn
+from swarmstar.utils.swarm_utils.termination_operations.main import terminate
 
 
 def swarmstar_god(

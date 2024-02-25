@@ -5,13 +5,13 @@ from importlib import import_module
 from typing import List, Union
 
 from swarmstar.swarm.types import (
-    SwarmConfig,
-    SwarmState,
-    SwarmOperation,
-    SpawnOperation,
     ActionSpace,
-    SwarmNode,
+    SpawnOperation,
+    SwarmConfig,
     SwarmHistory,
+    SwarmNode,
+    SwarmOperation,
+    SwarmState,
 )
 from swarmstar.utils.misc.uuid import generate_uuid
 
@@ -36,7 +36,7 @@ def spawn(
         action_id=action_id,
         message=node_embryo.message,
         alive=True,
-        termination_policy=termination_policy,
+        termination_policy=termination_policy
     )
     swarm_state.update_state(node)
 
@@ -47,6 +47,7 @@ def spawn(
 
     swarm_history = SwarmHistory(swarm=swarm)
     swarm_history.add_event(spawn_operation)
+    print(action_metadata)
     output = execute_node_action(swarm, node, action_metadata)
     return output
 

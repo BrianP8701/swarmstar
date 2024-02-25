@@ -1,7 +1,8 @@
-from openai import OpenAI
-from typing import List, Dict, Type
-from pydantic import BaseModel
+from typing import Dict, List, Type
+
 import instructor
+from openai import OpenAI
+from pydantic import BaseModel
 
 
 def completion(

@@ -5,9 +5,9 @@ and reconstructed from the history.
 """
 from pydantic import BaseModel
 
-from swarmstar.utils.data.kv_operations.main import get_kv, add_kv
 from swarmstar.swarm.types.swarm_config import SwarmConfig
 from swarmstar.swarm.types.swarm_nodes import SwarmNode
+from swarmstar.utils.data.kv_operations.main import add_kv, get_kv
 
 
 class SwarmState(BaseModel):

@@ -18,13 +18,14 @@ we might need to dynamically spin up a docker container and execute a function.
 The execution_metadata provides a place to store the information to be passed
 to the executor who handles this action_type.
 """
-from pydantic import BaseModel, Field
 from typing import List, Optional
+
+from pydantic import BaseModel, Field
 from typing_extensions import Literal
 
-from swarmstar.utils.data.kv_operations.main import get_kv
-from swarmstar.utils.data.internal_operations import get_internal_action_metadata
 from swarmstar.swarm.types.swarm_config import SwarmConfig
+from swarmstar.utils.data.internal_operations import get_internal_action_metadata
+from swarmstar.utils.data.kv_operations.main import get_kv
 
 
 class ActionNode(BaseModel):
@@ -57,7 +58,7 @@ class Action(ActionNode):
     description: str
     parent: str
     children_ids: Optional[List[str]] = Field(default=None)
-    termination_policy: Literal["simple", "parallel_review", "clone_with_reports"]
+    termination_policy: Literal["simple", "parallel_review", "clone_with_questions_answered"]
 
 
 class InternalAction(Action):
@@ -67,7 +68,7 @@ class InternalAction(Action):
     description: str
     children_ids: Optional[List[str]] = Field(default=None)
     parent: str
-    termination_policy: Literal["simple", "parallel_review", "clone_with_reports"]
+    termination_policy: Literal["simple", "parallel_review", "clone_with_questions_answered"]
     internal_action_path: str
 
 
@@ -116,8 +117,7 @@ class ActionSpace(BaseModel):
         action_type = action_metadata["type"]
         if action_type in type_mapping:
             return type_mapping[action_type](**action_metadata)
-        else:
-            return ActionNode(**action_metadata)
+        return ActionNode(**action_metadata)
 
     def get_root(self) -> ActionNode:
         return self["swarmstar/actions"]

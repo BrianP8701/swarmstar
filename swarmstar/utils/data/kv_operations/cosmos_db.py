@@ -18,7 +18,9 @@ For now cosmosdb python sdk doesen't support hierarchical partitions. So we'll a
 partition keys into a single string and use it as the partition key and id for now
 """
 from __future__ import annotations
+
 from typing import TYPE_CHECKING
+
 from azure.cosmos import CosmosClient
 
 if TYPE_CHECKING:
@@ -35,7 +37,7 @@ def get_container(swarm: SwarmConfig, category: str):
         container = database_name.get_container_client(container_name)
         return container
     except Exception as e:
-        raise ValueError(f"Failed to connect to cosmosdb: {str(e)}")
+        raise ValueError(f"Failed to connect to cosmosdb: {str(e)}") from e
 
 
 def build_id(swarm: SwarmConfig, category: str, key: str) -> str:
@@ -51,7 +53,7 @@ def add_kv(swarm: SwarmConfig, category: str, key: str, value: dict) -> None:
     try:
         container.upsert_item(value)
     except Exception as e:
-        raise ValueError(f"Failed to upload to cosmosdb: {str(e)}")
+        raise ValueError(f"Failed to upload to cosmosdb: {str(e)}") from e
 
 
 def get_kv(swarm: SwarmConfig, category: str, key: str):
@@ -61,7 +63,7 @@ def get_kv(swarm: SwarmConfig, category: str, key: str):
         document = container.read_item(item=id, partition_key=id)
         return document
     except Exception as e:
-        raise ValueError(f"Failed to retrieve from cosmosdb: {str(e)}")
+        raise ValueError(f"Failed to retrieve from cosmosdb: {str(e)}") from e
 
 
 def delete_kv(swarm: SwarmConfig, category: str, key: str):
@@ -71,17 +73,17 @@ def delete_kv(swarm: SwarmConfig, category: str, key: str):
     try:
         container.delete_item(item=id, partition_key=id)
     except Exception as e:
-        raise ValueError(f"Failed to delete from cosmosdb: {str(e)}")
+        raise ValueError(f"Failed to delete from cosmosdb: {str(e)}") from e
 
 
 def update_kv(swarm: SwarmConfig, category: str, key: str, value: dict) -> None:
     container = get_container(swarm, category)
-    id = build_id(swarm, category, key)
+    build_id(swarm, category, key)
 
     try:
         container.upsert_item(value)
     except Exception as e:
-        raise ValueError(f"Failed to update in cosmosdb: {str(e)}")
+        raise ValueError(f"Failed to update in cosmosdb: {str(e)}") from e
 
 
 """

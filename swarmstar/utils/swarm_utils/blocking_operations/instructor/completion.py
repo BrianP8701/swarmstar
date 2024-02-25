@@ -5,31 +5,36 @@ which will call the next_function_to_call of the node's action with the completi
 and context.
 """
 from __future__ import annotations
-from typing import TYPE_CHECKING, List, Dict
-from importlib import import_module
 
+from importlib import import_module
+from typing import TYPE_CHECKING, Dict, List
+
+from pydantic import BaseModel
+
+from swarmstar.swarm.types import BlockingOperation, SwarmState
 from swarmstar.utils.ai.openai_instructor import completion
-from swarmstar.swarm.types import BlockingOperation
-from swarmstar.swarm.decorators import swarmstar_decorator
 
 if TYPE_CHECKING:
     from swarmstar.swarm.types import SwarmConfig
 
 
-def expected_args(BaseModel):
+class expected_args(BaseModel):
     messages: List[
         Dict[str, str]
     ]  # This should be a list of dictionaries with the keys 'role' and 'content'
     instructor_model_name: str  # This should point to a pydnatic model in the swarmstar.utils.ai.openai_instructor.models module
 
 
-@swarmstar_decorator
 def blocking(
     swarm: SwarmConfig, blocking_operation: BlockingOperation
 ) -> BlockingOperation:
     messages = blocking_operation.args["messages"]
     instructor_model_name = blocking_operation.args["instructor_model_name"]
-
+    swarm_state = SwarmState(swarm=swarm)
+    node = swarm_state[blocking_operation.node_id]
+    
+    
+    
     models_module = import_module(
         "swarmstar.utils.swarm_utils.blocking_operations.instructor.pydantic_models"
     )
@@ -41,6 +46,17 @@ def blocking(
         instructor_model=instructor_model,
     )
 
+    node.developer_logs.append({
+        "type": "instructor_request",
+        "messages": messages
+    })
+    node.developer_logs.append({
+        "type": "instructor_completion",
+        "instructor_model_name": instructor_model_name,
+        "completion": completion.model_dump_json(indent=4)
+    })
+    swarm_state.update_state(node)
+    
     return BlockingOperation(
         node_id=blocking_operation.node_id,
         blocking_type="internal_action",

@@ -1,9 +1,11 @@
 """
-The swarm consists of nodes. Each node is given a message and a preassigned action they must execute.
+The swarm consists of nodes. Each node is given a message 
+and a preassigned action they must execute.
 """
 
-from pydantic import BaseModel, Field
-from typing import List, Dict, Any, Optional
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel
 from typing_extensions import Literal
 
 
@@ -13,7 +15,12 @@ class SwarmNode(BaseModel):
     children_ids: List[str] = []
     action_id: str
     message: str
-    report: Optional[str] = None
     alive: bool
+    termination_policy: Literal[
+        "simple",
+        "parallel_review",
+        "clone_with_questions_answered",
+    ]
+    developer_logs: List[Dict[str, Any]] = []
     journal: List[Dict[str, Any]] = []
-    termination_policy: Literal["simple", "parallel_review", "clone_with_reports"]
+    report: Optional[str] = None

@@ -1,8 +1,10 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
-from pymongo import MongoClient
-import pymongo
+
 import subprocess
+from typing import TYPE_CHECKING
+
+import pymongo
+from pymongo import MongoClient
 
 if TYPE_CHECKING:
     from swarmstar.swarm.types import SwarmConfig

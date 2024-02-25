@@ -1,13 +1,12 @@
-from typing import Any, Dict, Union, List
 from importlib import import_module
+from typing import List, Union
 
 from swarmstar.swarm.types import (
-    SwarmConfig,
-    SwarmOperation,
     BlockingOperation,
+    SwarmConfig,
     SwarmHistory,
+    SwarmOperation,
 )
-from swarmstar.swarm.decorators import swarmstar_decorator
 
 
 def blocking(
@@ -24,8 +23,6 @@ def blocking(
         raise ValueError(
             f"Blocking operation type: `{blocking_operation_type.type}` is not supported."
         )
-    else:
-        pass
 
     blocking_operation_type_module = import_module(
         blocking_operation_type_map[blocking_operation_type]

@@ -5,8 +5,9 @@ Throughout the conversation we maintain a "Conversation State" which is a data s
     - A list of reports that is built up throughout the conversation. This report is what will be sent back when the conversation ends.
 """
 
-from pydantic import BaseModel, Field
 from typing import List
+
+from pydantic import BaseModel, Field
 
 from swarmstar.swarm.types import BlockingOperation, TerminationOperation
 from swarmstar.swarm.types.base_action import BaseAction
@@ -35,7 +36,7 @@ class FinalReport(BaseModel):
     )
 
 
-generate_initial_conversation_state_instructions = (
+GENERATE_INITIAL_CONVERSATION_STATE_INSTRUCTIONS = (
     "Steps:\n\n"
     "1. Identify the questions that need to be answered.\n"
     "2. Persist critical context that is needed for the conversation from the goal. This "
@@ -45,7 +46,7 @@ generate_initial_conversation_state_instructions = (
     "The reports aren't used as context throughout the conversation, so make sure all necessary context is in the persisted context."
 ).replace("\n", "\\n")
 
-update_conversation_state_instructions = (
+UPDATE_CONVERSATION_STATE_INSTRUCTIONS = (
     "Refine the conversation state based on the user's latest response.\n\n"
     "Steps:\n"
     "1. Update Questions: Rewrite the list of questions by removing resolved items and adding new ones as needed.\n"
@@ -57,12 +58,12 @@ update_conversation_state_instructions = (
     "The reports aren't used as context throughout the conversation, so make sure all necessary context is in the persisted context."
 ).replace("\n", "\\n")
 
-generate_message_instructions = (
+GENERATE_MESSAGE_INSTRUCTIONS = (
     "Generate a message to send to the user based on the current conversation state and the user's most recent message.\n"
     "You are given a list of questions that need to be answered. Don't stray off topic and aim to get answers to the questions."
 ).replace("\n", "\\n")
 
-finalize_report_instructions = (
+FINALIZE_REPORT_INSTRUCTIONS = (
     "Consolidate the list of reports into a final report."
 ).replace("\n", "\\n")
 
@@ -75,7 +76,7 @@ class AskUserQuestions(BaseAction):
         messages = [
             {
                 "role": "system",
-                "content": generate_initial_conversation_state_instructions,
+                "content": GENERATE_INITIAL_CONVERSATION_STATE_INSTRUCTIONS,
             },
             {
                 "role": "user",
@@ -83,13 +84,10 @@ class AskUserQuestions(BaseAction):
             },
         ]
 
-        self.add_journal_entry(
-            {
-                "type": "instructor_completion_request",
-                "messages": messages,
-                "instructor_model_name": "QuestionAskerConversationState",
-            }
-        )
+        self.add_journal_entry({
+                "header": "Asking User Questions",
+                "content": self.node.message,   
+        })
 
         return BlockingOperation(
             node_id=self.node.node_id,
@@ -114,7 +112,7 @@ class AskUserQuestions(BaseAction):
         completion: QuestionAskerConversationState,
     ):
         messages = [
-            {"role": "system", "content": generate_message_instructions},
+            {"role": "system", "content": GENERATE_MESSAGE_INSTRUCTIONS},
             {
                 "role": "system",
                 "content": (
@@ -125,14 +123,6 @@ class AskUserQuestions(BaseAction):
                 ),
             },
         ]
-
-        self.add_journal_entry(
-            {
-                "type": "instructor_completion_request",
-                "messages": messages,
-                "instructor_model_name": "AgentMessage",
-            }
-        )
 
         return BlockingOperation(
             node_id=self.node.node_id,
@@ -177,7 +167,7 @@ class AskUserQuestions(BaseAction):
         user_response: str,
     ):
         messages = [
-            {"role": "system", "content": update_conversation_state_instructions},
+            {"role": "system", "content": UPDATE_CONVERSATION_STATE_INSTRUCTIONS},
             {
                 "role": "user",
                 "content": f"Your most recent message: {recent_ai_message}\n\nUsers most recent message: {user_response}",
@@ -187,14 +177,6 @@ class AskUserQuestions(BaseAction):
                 "content": f"Update Questions: {questions}\n\nUpdate Context: {persisted_context}\n\nAdd to Reports. Do not repeat things that are already mentioned: {reports}",
             },
         ]
-
-        self.add_journal_entry(
-            {
-                "type": "instructor_completion_request",
-                "messages": messages,
-                "instructor_model_name": "QuestionAskerConversationState",
-            }
-        )
 
         return BlockingOperation(
             node_id=self.node.node_id,
@@ -228,17 +210,9 @@ class AskUserQuestions(BaseAction):
 
     def finalize_report(self, reports: List[str]):
         messages = [
-            {"role": "system", "content": finalize_report_instructions},
+            {"role": "system", "content": FINALIZE_REPORT_INSTRUCTIONS},
             {"role": "system", "content": f"Reports: {reports}"},
         ]
-
-        self.add_journal_entry(
-            {
-                "type": "instructor_completion_request",
-                "messages": messages,
-                "instructor_model_name": "FinalReport",
-            }
-        )
 
         return BlockingOperation(
             node_id=self.node.node_id,
@@ -249,4 +223,10 @@ class AskUserQuestions(BaseAction):
         )
 
     def terminate_conversation(self, completion: FinalReport):
-        return TerminationOperation(node_id=self.node.node_id, report=completion.report)
+        self.add_journal_entry(
+            {
+                "header": "Final Report",
+                "content": completion.report,
+            }
+        )
+        return TerminationOperation(node_id=self.node.node_id)

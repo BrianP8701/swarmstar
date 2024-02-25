@@ -1,14 +1,12 @@
 from importlib import import_module
-from typing import Union, List
+from typing import Union
 
 from swarmstar.swarm.types import (
     SwarmConfig,
-    SwarmOperation,
-    TerminationOperation,
     SwarmHistory,
     SwarmState,
+    TerminationOperation,
 )
-from swarmstar.swarm.decorators import swarmstar_decorator
 
 
 def terminate(
@@ -17,7 +15,7 @@ def terminate(
     termination_policy_map = {
         "simple": "swarmstar.utils.swarm_utils.termination_operations.simple",
         "parallel_review": "swarmstar.utils.swarm_utils.termination_operations.parallel_review",
-        "clone_with_reports": "swarmstar.utils.swarm_utils.termination_operations.clone_with_reports",
+        "clone_with_questions_answered": "swarmstar.utils.swarm_utils.termination_operations.clone_with_questions_answered",
     }
 
     swarm_state = SwarmState(swarm=swarm)

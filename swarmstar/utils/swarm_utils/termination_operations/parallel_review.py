@@ -16,13 +16,12 @@
 from typing import Union
 
 from swarmstar.swarm.types import (
-    SwarmConfig,
-    TerminationOperation,
-    SwarmState,
-    SpawnOperation,
     NodeEmbryo,
+    SpawnOperation,
+    SwarmConfig,
+    SwarmState,
+    TerminationOperation,
 )
-from swarmstar.swarm.decorators import swarmstar_decorator
 
 
 def terminate(
@@ -76,5 +75,4 @@ def terminate(
             return TerminationOperation(
                 operation_type="terminate",
                 node_id=node_id,
-                report=node_with_final_report.report,
             )

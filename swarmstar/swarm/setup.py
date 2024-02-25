@@ -11,12 +11,12 @@ passed around between every node and action. Keep it safe and private!
 """
 import os
 
-from swarmstar.swarm.types import SwarmConfig, LocalConfig, AzureConfig
-from swarmstar.utils.data.kv_operations.mongodb import (
-    restore_database,
-    check_and_create_database,
-)
+from swarmstar.swarm.types import SwarmConfig
 from swarmstar.utils.data.kv_operations.main import add_kv
+from swarmstar.utils.data.kv_operations.mongodb import (
+    check_and_create_database,
+    restore_database,
+)
 
 
 def configure_swarm(
@@ -90,7 +90,7 @@ def _setup_azure_swarm_space(openai_key: str, root_path: str, **kwargs) -> Swarm
     try:
         cosmos_client = CosmosClient(cosmos_db_url, credential=cosmos_db_key)
         database = cosmos_client.get_database_client(database_name)
-        container = database.get_container_client(container_name)
+        database.get_container_client(container_name)
     except Exception as e:
         raise ValueError(f"Failed to connect to Azure CosmosDB: {str(e)}")
 

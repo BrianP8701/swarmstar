@@ -1780,7 +1780,7 @@ Now eventually as we move down this tree and it gets created a node will eventua
 
 so when is a node assigned its termination policy? Does its termination policy change through time? For example the decompose directive node has 3 steps, 1. wait for all children to die, 2. spawn review node, 3. simple termination and report consolidation when review node dies. So i suppose the termination policy doesent change through time. but one thing is how does the... hmm. i guess we need to think. Where there only ever be one decompose directive node? For all problems in the universe those using the decompose directive action work? It seems like a very bold claim. but what problem doesent need to be broken down? Every problem needs to be broken down. And in what manner can you break a problem down? Well i guess ive answered myself. we only have one decompose directive node. we only have one node for review. 
 
-now to think about the comms nodes. well you dont begin life as a clone_with_reports node. nobody chooses to clone themselves. Nodes dont want to live they want to terminate. my god lmao this just reminded me of mr meeseeks from rick and morty. 
+now to think about the comms nodes. well you dont begin life as a clone_with_questions_answered node. nobody chooses to clone themselves. Nodes dont want to live they want to terminate. my god lmao this just reminded me of mr meeseeks from rick and morty. 
 
 i just got distracted and watched the clip of mr meeseeks on youtube. definitely including this when i make a youtube video it encapsulates what i want the agents in my swarm to be like pretty well.
 
@@ -1824,3 +1824,77 @@ Then we pass the spawn operation to the swarm god. The swarm god will spawn the 
 We then proceed to call and execute the main function in the action script. This will return a blocking operation. the swarm god simply returns the blocking operation. In the action we should journal. Do we assume the swarm god doesent mess up? yes. yes we do. We have failure operation handling inside on the action functions. 
 
 Now when we get a blocking operation we handle and execute it outside of the action function. yet we should still do all journaling inside the action function function right? Or no? No we shouldnt we should be able to raise failure operations and journal from within blocking operations. indeed. the blocking operation always gets the swarm and node_id anyway.
+
+
+
+# What information do we want to store about each node?
+
+We store the node action id name on top
+We then have the message.
+We then need to display the reports in order for what it has performed. this can get quite long. 
+so everything is already stored in node, we just need to have good reporting now.
+
+So we want to make 2 distinctions:
+
+Logging for visualization and logging for debugging. What will both of these logs look like?
+
+
+
+
+
+## Visualization:
+
+For every node:
+    - Display the name
+    - Display the message it was sent along with a prepended string for that action id
+    - Display whether it's alive or dead.
+
+Decompose Directive:
+    - Display the subdirectives it got decomposed into
+
+Action Router:
+    - Display the action it chose to take
+
+Ask User Questions
+    - Display the questions it wants to determine
+    - Display the list of answers it determined 
+
+
+
+## Debugging:
+
+We'll want everything we have above but in addition:
+
+For every node:
+    - Display the name
+    - Display the node_id
+    - Display the action_id -> ?
+    - Display the children_node_ids
+    - Display the termination policy -> ?
+
+Decompose Directive:
+    - Display the Instructor Request
+    - Display the Instructor Response
+    - Display the response from openai
+    - Display the children_node_ids
+
+
+Action Router:
+    - Display the name.
+    - Display the message it was sent to decompose
+    - Display the message sent
+
+
+The thing is we can easily deduce what all these things are simply from the above section. But no, because the AskUserQuestions requires more insight, the conversationstate at each point. So we DO need more information for debugging each node. I suppose for debugging we want it to be easy to see everything thats going on without having to reference the code? So it should be easy for coders to come in here and learn about the system essentially and see whats going on behind the scenes
+
+
+
+okay so what i need to add now is two types of logs for the swarm: journal, and dev_log. So the node now stores three different things:
+    - reports (for internal swarm comms)
+    - journal for easy visualization
+    - developer_logs (for debugging and seeing more about the node)
+
+Im confused cuz... those subdirectives that are generated might not exactly be what was pursued. ah fuck. I feel like for this node to make a good decision it needs to have an idea of what all the branches DID.So during termination, should we propogate and accumulate a report upward? The report is different from the journal. It represents what the node and all it's children have done. This could grow very large. This is notideal. So what should the report contain? Like we can have at nodes that WANT to look at children to consolidate a report by looking at all the node's journals on the spot. Can i think of something better than this right now? When searching down a branch we surely cant go all the way down to a leaf node that'd be insanity.We definitely want to stop at decompose directive nodes and simply gather the report from that node. So that means. That node does need to hold a report? I suppose upon termination you can pass a message up, so each node holds
+a report of what the entire branch below it has done. this report gets built during termination. So we do need a leaf node termination process. The leaf node takes a report and just sets. A node terminate terminates and consolidates the report passed to it with it's own journal.
+
+Okay the whole thing was pursued chronologically down the branch. We just append all the branches last journal entry together for each branch along with the subdirectives. We assume that we'll have stop nodes so this process never gets too large. Currently the only stop node is decompose directive.

@@ -7,7 +7,9 @@ make_folder() does nothing and rename_folder() and move_folder() are the
 same thing.
 """
 from __future__ import annotations
+
 from typing import TYPE_CHECKING, List
+
 from azure.storage.blob import BlobServiceClient
 
 if TYPE_CHECKING:

@@ -3,11 +3,11 @@ Decompose a directive into actionable subdirectives.
 
 The agent will ask questions if it needs more information before decomposing the directive.
 """
-
-from pydantic import BaseModel, Field
 from typing import List, Optional
 
-from swarmstar.swarm.types import NodeEmbryo, BlockingOperation, SpawnOperation
+from pydantic import BaseModel, Field
+
+from swarmstar.swarm.types import BlockingOperation, NodeEmbryo, SpawnOperation
 from swarmstar.swarm.types.base_action import BaseAction
 
 
@@ -25,10 +25,10 @@ class DecomposeDirectiveModel(BaseModel):
     )
 
 
-system_instructions = (
+DECOMPOSE_DIRECTIVE_INSTRUCTIONS = (
     "You are given a directive. You have 2 options:\n"
     "1. Ask questions to get more information or clarification of requirements and intentions.\n"
-    "2. Decompose the directive into actionable subdirectives that will be executed independently and in parralel. "
+    "2. Decompose the directive into actionable subdirectives that will be executed independently and in parallel. "
     "After those are done, youll generate the next set of subdirectives. I stress that the subdirectives "
     "must be independent and parallel.\n\nChoose one of the options and proceed. Do not ask questions and decompose the directive at the same time."
 )
@@ -37,7 +37,7 @@ system_instructions = (
 class DecomposeDirective(BaseAction):
     def main(self) -> BlockingOperation:
         messages = [
-            {"role": "system", "content": system_instructions},
+            {"role": "system", "content": DECOMPOSE_DIRECTIVE_INSTRUCTIONS},
             {
                 "role": "user",
                 "content": f"Directive to decompose: \n`{self.node.message}`",
@@ -46,9 +46,8 @@ class DecomposeDirective(BaseAction):
 
         self.add_journal_entry(
             {
-                "type": "instructor_completion_request",
-                "messages": messages,
-                "instructor_model_name": "DecomposeDirectiveModel",
+                "header": "Directive to decompose",
+                "content": self.node.message,
             }
         )
 
@@ -64,12 +63,21 @@ class DecomposeDirective(BaseAction):
         )
 
     def analyze_output(self, completion: DecomposeDirectiveModel) -> SpawnOperation:
+        '''
+        Depending on the completion, we will either ask questions
+        or spawn child nodes for each subdirective.
+        '''
         if completion.questions and len(completion.questions) > 0:
             message = f"An agent was tasked with decomposing the directive: \n`{self.node.message}`\n\nBefore decomposing, the agent decided it needs the following questions answered first:\n"
             message += "\n".join(completion.questions)
 
-            self.add_journal_entry({"type": "question_request", "message": message})
-
+            self.add_journal_entry(
+                {
+                    "header": "Question Requested",
+                    "content": message
+                }
+            )
+            
             spawn_operation = SpawnOperation(
                 node_id=self.node.node_id,
                 node_embryo=NodeEmbryo(
@@ -85,16 +93,16 @@ class DecomposeDirective(BaseAction):
                 spawn_operation = SpawnOperation(
                     node_id=self.node.node_id,
                     node_embryo=NodeEmbryo(
-                        action_id="swarmstar/actions/reasoning/decompose_directive",
+                        action_id="swarmstar/actions/reasoning/route_action",
                         message=subdirective,
                     ),
                 )
                 spawn_operations.append(spawn_operation)
-
+            subdirectives_str = "\n".join(subdirectives)
             self.add_journal_entry(
                 {
-                    "type": "successfully_decomposed_directive",
-                    "subdirectives": subdirectives,
+                    "header": "Successfully Decomposed Directives",
+                    "content": subdirectives_str,
                 }
             )
 

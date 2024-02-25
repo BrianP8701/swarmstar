@@ -36,7 +36,7 @@
     "swarmstar/actions/reasoning/decompose_directive": {
         "is_folder": false,
         "type": "internal_action",
-        "name": "DecomposeDirective.py",
+        "name": "DecomposeDirective",
         "description": "Decompose directives into immediate parralel sub-directives.",
         "parent": "swarmstar/actions/reasoning",
         "internal_action_path": "swarmstar.actions.reasoning.decompose_directive",

@@ -5,8 +5,8 @@ import json
 from importlib import resources
 from typing import Any, BinaryIO
 
+from swarmstar.swarm.types.swarm_config import SwarmConfig
 from swarmstar.utils.data.kv_operations.main import get_kv
-from swarmstar.swarm.types import SwarmConfig
 
 
 def get_internal_action_metadata(swarm: SwarmConfig, action_id: str) -> dict:

@@ -1,5 +1,7 @@
 from __future__ import annotations
+
 from typing import TYPE_CHECKING
+
 from azure.storage.blob import BlobServiceClient
 
 if TYPE_CHECKING:

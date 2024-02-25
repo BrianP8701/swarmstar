@@ -5,8 +5,9 @@ Things like action, util and memory space metadata, swarm state,
 swarm history and more will be stored in KV stores.
 """
 from __future__ import annotations
-from typing import TYPE_CHECKING
+
 from importlib import import_module
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from swarmstar.swarm.types.swarm_config import SwarmConfig

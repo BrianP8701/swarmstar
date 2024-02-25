@@ -1,5 +1,4 @@
 import ast
-import os
 
 
 def find_class_start_end_lines(file_path, class_name):
