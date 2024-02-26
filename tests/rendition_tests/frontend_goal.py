@@ -1,8 +1,8 @@
 import os
 
-from swarmstar.swarm.core import swarmstar_god
+from swarmstar import Swarmstar
 from swarmstar.swarm.types import NodeEmbryo, SpawnOperation, SwarmConfig
-from swarmstar.swarm.setup import configure_swarm
+from swarmstar.swarm.config import configure_swarm
 from tests.utils.create_local_swarm_space import find_next_available_swarm_folder
 from tests.utils.get_local_swarm_config import get_swarm_config
 from tests.test_config import SWARMSTAR_UNIT_TESTS_MONGODB_DB_NAME
@@ -16,25 +16,20 @@ def test_create_web_app():
         '3. A section where you can visualize the swarm\'s state'
     )
     swarm = get_swarm_config(SWARMSTAR_UNIT_TESTS_MONGODB_DB_NAME)
-
+    ss = Swarmstar(swarm)
     
     results_file_path = find_next_available_results_file('tests/results/')
     
     
-    root_node_spawn = SpawnOperation(
-        node_embryo=NodeEmbryo(
-            action_id='swarmstar/actions/reasoning/decompose_directive',
-            message=goal
-        )
-    )
+    root_node_spawn = ss.spawn_root(goal)
     save_swarm_operation_info(swarm, root_node_spawn, results_file_path)
-    operations_to_execute = swarmstar_god(swarm, root_node_spawn)
+    operations_to_execute = ss.execute(root_node_spawn)
 
     while True:
         next_operations_to_execute = []
         for operation in operations_to_execute:
             save_swarm_operation_info(swarm, operation, results_file_path)
-            next_operations = swarmstar_god(swarm, operation)
+            next_operations = ss.execute(operation)
             next_operations_to_execute.extend(next_operations)
         pause = input('Press enter to continue')
         operations_to_execute = next_operations_to_execute

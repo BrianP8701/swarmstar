@@ -18,7 +18,6 @@ from swarmstar.utils.data.kv_operations.mongodb import (
     restore_database,
 )
 
-
 def configure_swarm(
     openai_key: str, root_path: str, platform: str, **kwargs
 ) -> SwarmConfig:

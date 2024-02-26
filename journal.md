@@ -1898,3 +1898,28 @@ Im confused cuz... those subdirectives that are generated might not exactly be w
 a report of what the entire branch below it has done. this report gets built during termination. So we do need a leaf node termination process. The leaf node takes a report and just sets. A node terminate terminates and consolidates the report passed to it with it's own journal.
 
 Okay the whole thing was pursued chronologically down the branch. We just append all the branches last journal entry together for each branch along with the subdirectives. We assume that we'll have stop nodes so this process never gets too large. Currently the only stop node is decompose directive.
+
+
+
+# Question Router
+
+Now this is a unique action that each user gets to configure. for example people like my mom should get NO technical questions or technical matters brought to them. They may deserve some brief simple explanation of what is needed perhaps so they can understand. on the other hand, me when using the swarm to code i will by the very nature be trying to code something difficult. in fact i will be doing things that by definition i will have to get involved in the technical matters. now quite cool is another part, imagine we have a biologist who cant code. he'll want to work on a different abstraction where he gets, if he so chooses, to receive no code related questions or matters brought to him, but he chooses to oversee and direct the (i have no idea wtf biologists do but whatever tf they do he controls.)
+
+very cool stuff indeed.
+
+
+# easier swarmconfig
+sooo. what is the swarmconfig process? the swarm config process has 3 primary purposes:
+
+1. configure to your platform, whether it be local, cloud etc. provide necessary keys and paths
+2. configure with your custom data
+3. user customizes swarm, things like question router etc. 
+
+rn some things happen everytime u create a swarm config. we'll only think from the local perspective:
+1. a mongodb db gets created. internal metadata gets dumped, like rn the action space.
+
+the swarm config object then forces all action, memory util space, swarm state and history to be stored in that mongodb db. It forces all files to be saved to the specified root path. 
+
+That is it. for every new swarm a user creates we create a new swarmconfig object. we need something using the swarm_id to get the swarmconfig object. how may we do this? well i suppose we leave it up to the developer outside the package to save store and retrieve the swarm config objects accordingly. yeah. 
+
+another question is the following: sometimes we dont want to recreate swarms for everytime, like if we are testing. what types of things can we do on the same swarm config object without problems? multiple swarms can live in the same swarmconfig IF they each have a unique root node id. and we just need to keep track of the root node id. so in the interface we need to add root_node_id back to the swarm object. and then when testing the interface we can have one swarm space, and reuse it just keeping track of root_node_ids .

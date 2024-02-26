@@ -3,7 +3,7 @@ import os
 import pytest
 from dotenv import load_dotenv
 
-from swarmstar.swarm.setup import setup_swarm_space
+from swarmstar.swarm.config import configure_swarm
 
 
 @pytest.mark.azure
@@ -21,7 +21,7 @@ def test_setup_swarm_space():
     azure_blob_storage_container_name = os.environ.get(
         "AZURE_BLOB_STORAGE_CONTAINER_NAME"
     )
-    setup_swarm_space(
+    configure_swarm(
         openai_key,
         "blank for now",
         "testing/test1/",

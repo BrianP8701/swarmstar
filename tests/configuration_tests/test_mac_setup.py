@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from swarmstar.swarm.setup import configure_swarm
+from swarmstar.swarm.config import configure_swarm
 from tests.utils.create_local_swarm_space import find_next_available_swarm_folder
 
 
