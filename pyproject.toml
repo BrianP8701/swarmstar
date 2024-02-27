@@ -1,10 +1,11 @@
 [tool.poetry]
 name = "swarmstar"
-version = "0.0.1"
+version = "0.0.3"
 description = ""
 authors = ["BrianP8701 <brianp8701@gmail.com>"]
 readme = "README.md"
-include = ["swarmstar/metadata/mongodb/action_space.bson"]
+include = ["swarmstar/internal_metadata/action_space.bson", "swarmstar/internal_metadata/action_space_metadata.json"]
+documentation = "https://brianp8701.github.io/swarmstar/"
 
 [tool.poetry.dependencies]
 python = "^3.10"

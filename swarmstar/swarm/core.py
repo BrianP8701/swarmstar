@@ -25,7 +25,7 @@ class Swarmstar:
         )
         output = self.execute(root_spawn_operation)
         root_node_id = output[0].node_id
-        return output, root_node_id
+        return output, root_node_id, root_spawn_operation
     
     def execute(
         self, swarm_operation: SwarmOperation
