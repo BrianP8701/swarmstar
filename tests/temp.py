@@ -1,34 +1,4 @@
-from enum import Enum
-
-from pydantic import BaseModel, ConfigDict, field_validator
+from swarmstar.utils.data.internal_operations import get_internal_action_metadata
 
 
-class Fruits(str, Enum):
-    apple = "apple"
-    banana = "banana"
-    orange = "orange"
-
-
-class Example(BaseModel):
-    model_config = ConfigDict(use_enum_values=True, validate_default=True)
-
-    field1: str
-    field2: int
-    field3: Fruits
-
-    @field_validator("field3")
-    def validate_field3(cls, v):
-        if v == "banana":
-            return Fruits.banana
-        elif v == "apple":
-            return Fruits.apple
-        elif v == "orange":
-            return Fruits.orange
-
-
-example = Example(field1="hello", field2=1, field3="banana")
-
-dump = example.model_dump()
-
-
-print(dump)
+print(get_internal_action_metadata('swarmstar/actions/reasoning/decompose_directive'))

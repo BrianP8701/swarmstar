@@ -34,7 +34,7 @@ class UtilSpace(BaseModel):
 
     def __getitem__(self, util_id: str) -> UtilMetadata:
         try:
-            internal_util_metadata = get_internal_util_metadata(self.swarm, util_id)
+            internal_util_metadata = get_internal_util_metadata(util_id)
             return internal_util_metadata
         except Exception:
             external_util_metadata = get_kv(self.swarm, "util_space", util_id)

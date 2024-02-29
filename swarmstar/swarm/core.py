@@ -10,12 +10,9 @@ class Swarmstar:
     def __init__(self, swarm: SwarmConfig):
         self.swarm = swarm
         
-    def spawn_root(self, goal: str) -> [List[SpawnOperation], str]:
+    def spawn_root(self, goal: str) -> SpawnOperation:
         """
-        Pass the goal to the swarm.
-        
-        This function will return the next set of operations 
-        to execute and the root node id.
+        Create the first spawn operation for the swarm.
         """
         root_spawn_operation = SpawnOperation(
             node_embryo=NodeEmbryo(
@@ -23,9 +20,7 @@ class Swarmstar:
                 message=goal
             )
         )
-        output = self.execute(root_spawn_operation)
-        root_node_id = output[0].node_id
-        return output, root_node_id, root_spawn_operation
+        return root_spawn_operation
     
     def execute(
         self, swarm_operation: SwarmOperation
@@ -49,7 +44,9 @@ class Swarmstar:
             raise ValueError(
                 f"Unknown swarm operation type: {swarm_operation.operation_type}"
             )
-
+        if isinstance(output, tuple):
+            output = list(output)
         if not isinstance(output, list) and output is not None:
             output = [output]
+            
         return output

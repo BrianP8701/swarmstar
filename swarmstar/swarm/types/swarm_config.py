@@ -23,7 +23,9 @@ class SwarmConfig(BaseModel):
     azure_cosmos_db_container_name: Optional[str] = None
     mongodb_uri: Optional[str] = None
     mongodb_db_name: Optional[str] = None
-
+    kv_operations_path: Optional[str] = None
+    folder_operations_path: Optional[str] = None
+    file_operations_path: Optional[str] = None
 
 # The types below aren't actually used in the codebase, but they are used in the documentation.
 
@@ -31,6 +33,11 @@ class SwarmConfig(BaseModel):
 class PlatformConfig(BaseModel):
     platform: Literal["mac", "azure"]
 
+class CustomConfig(BaseModel):
+    platform: Literal["custom"]
+    user_id: str
+    swarm_id: str
+    kv_operations_path: str
 
 class AzureConfig(PlatformConfig):
     platform: Literal["azure"]

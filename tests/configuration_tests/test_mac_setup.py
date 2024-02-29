@@ -11,7 +11,7 @@ def test_setup_swarm_space():
     root_path = find_next_available_swarm_folder()
     openai_key = os.environ.get("OPENAI_KEY")
     mongodb_uri = os.environ.get("MONGODB_URI")
-    mongodb_db_name = "swarmstar_unit_testss"
+    mongodb_db_name = "swarmstar_unit_tests"
     swarm = configure_swarm(
         openai_key,
         root_path,

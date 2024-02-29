@@ -9,7 +9,7 @@ from typing import List
 
 from pydantic import BaseModel, Field
 
-from swarmstar.swarm.types import BlockingOperation, TerminationOperation
+from swarmstar.swarm.types import BlockingOperation, TerminationOperation, UserCommunicationOperation
 from swarmstar.swarm.types.base_action import BaseAction
 
 
@@ -143,12 +143,9 @@ class AskUserQuestions(BaseAction):
         reports: List[str],
         completion: AgentMessage,
     ):
-        return BlockingOperation(
+        return UserCommunicationOperation(
             node_id=self.node.node_id,
-            blocking_type="send_user_message",
-            args={
-                "message": completion.content,
-            },
+            message=completion.content,
             context={
                 "questions": questions,
                 "persisted_context": persisted_context,

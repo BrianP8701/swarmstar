@@ -35,9 +35,7 @@ class MemorySpace(BaseModel):
 
     def __getitem__(self, memory_id: str) -> MemoryMetadata:
         try:
-            internal_memory_metadata = get_internal_memory_metadata(
-                self.swarm, memory_id
-            )
+            internal_memory_metadata = get_internal_memory_metadata(memory_id)
             return internal_memory_metadata
         except Exception:
             external_memory_metadata = get_kv(self.swarm, "memory_space", memory_id)

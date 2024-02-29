@@ -91,7 +91,7 @@ class ActionSpace(BaseModel):
 
     def __getitem__(self, action_id: str) -> ActionNode:
         try:
-            action_metadata = get_internal_action_metadata(self.swarm, action_id)
+            action_metadata = get_internal_action_metadata(action_id)
             if action_metadata is None:
                 raise ValueError(
                     f"This action id: `{action_id}` does not exist in internal action space."

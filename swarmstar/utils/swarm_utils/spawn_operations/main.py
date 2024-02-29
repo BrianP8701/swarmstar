@@ -47,7 +47,6 @@ def spawn(
 
     swarm_history = SwarmHistory(swarm=swarm)
     swarm_history.add_event(spawn_operation)
-    print(action_metadata)
     output = execute_node_action(swarm, node, action_metadata)
     return output
 

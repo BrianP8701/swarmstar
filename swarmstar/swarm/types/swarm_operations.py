@@ -3,10 +3,10 @@ The NodeEmbryo is what a node outputs to spawn children.
 
 Nodes can perform 1 of 4 "SwarmOperations":
     - SpawnOperation
-    - ExecuteOperation
     - TerminationOperation
     - FailureOperation
     - BlockingOperation
+    - UserCommunicationOperation
 """
 from typing import Any, Dict, Literal, Optional
 
@@ -19,9 +19,14 @@ class NodeEmbryo(BaseModel):
 
 
 class SwarmOperation(BaseModel):
-    operation_type: Literal["spawn", "terminate", "node_failure", "blocking"]
+    operation_type: Literal[
+        "spawn", 
+        "terminate", 
+        "node_failure", 
+        "blocking", 
+        "user_communication"
+    ]
     node_id: str
-
 
 class BlockingOperation(SwarmOperation):
     operation_type: Literal["blocking"] = Field(default="blocking")
@@ -39,7 +44,6 @@ class SpawnOperation(SwarmOperation):
     ] = None
     node_id: str = None
 
-
 class TerminationOperation(SwarmOperation):
     operation_type: Literal["terminate"] = Field(default="terminate")
     node_id: str
@@ -47,3 +51,10 @@ class TerminationOperation(SwarmOperation):
 class FailureOperation(SwarmOperation):
     operation_type: Literal["node_failure"] = Field(default="node_failure")
     node_id: Optional[str] = None
+
+class UserCommunicationOperation(SwarmOperation):
+    operation_type: Literal["user_communication"] = Field(default="user_communication")
+    node_id: str
+    message: str
+    context: Dict[str, Any] = {}
+    next_function_to_call: str

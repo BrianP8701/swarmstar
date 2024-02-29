@@ -123,6 +123,7 @@ def get_kv(swarm: SwarmConfig, category: str, key: str) -> dict:
             raise ValueError(f"Key {key} not found in MongoDB collection.")
         result.pop("_id")
         result.pop("key")
+        result.pop("version")
         return result
     except Exception as e:
         raise ValueError(f"Failed to get from MongoDB collection: {str(e)}")

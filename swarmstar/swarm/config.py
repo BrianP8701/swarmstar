@@ -15,7 +15,6 @@ from swarmstar.swarm.types import SwarmConfig
 from swarmstar.utils.data.kv_operations.main import add_kv
 from swarmstar.utils.data.kv_operations.mongodb import (
     check_and_create_database,
-    restore_database,
 )
 
 def configure_swarm(
@@ -51,9 +50,7 @@ def _setup_mac_swarm_space(openai_key: str, root_path: str, **kwargs) -> SwarmCo
         os.makedirs(root_path)
 
     check_and_create_database(kwargs["mongodb_uri"], kwargs["mongodb_db_name"])
-    restore_database(
-        "swarmstar", "internal_metadata", kwargs["mongodb_uri"], kwargs["mongodb_db_name"]
-    )
+
     return SwarmConfig(
         openai_key=openai_key,
         root_path=root_path,

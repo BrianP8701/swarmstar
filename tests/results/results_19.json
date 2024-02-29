@@ -1,0 +1,78 @@
+[
+    {
+        "node_id": null,
+        "operation_type": "spawn",
+        "action_id": "swarmstar/actions/reasoning/decompose_directive",
+        "message": "I want you to create a web app with 3 sections:\n1. A section where you can enter your goal and press spawn\n2. A section where you can talk to multiple agents at once\n3. A section where you can visualize the swarm's state4. A section where you can visualize the swarm's history"
+    },
+    {
+        "node_id": "DecomposeDirective_20240227160838591784_c3266562-54e7-444f-8d0a-cacc7685275e",
+        "operation_type": "blocking",
+        "node": {
+            "node_id": "DecomposeDirective_20240227160838591784_c3266562-54e7-444f-8d0a-cacc7685275e",
+            "parent_id": null,
+            "children_ids": [],
+            "action_id": "swarmstar/actions/reasoning/decompose_directive",
+            "message": "I want you to create a web app with 3 sections:\n1. A section where you can enter your goal and press spawn\n2. A section where you can talk to multiple agents at once\n3. A section where you can visualize the swarm's state4. A section where you can visualize the swarm's history",
+            "alive": true,
+            "termination_policy": "parallel_review",
+            "developer_logs": [],
+            "journal": [
+                {
+                    "header": "Directive to decompose",
+                    "content": "I want you to create a web app with 3 sections:\n1. A section where you can enter your goal and press spawn\n2. A section where you can talk to multiple agents at once\n3. A section where you can visualize the swarm's state4. A section where you can visualize the swarm's history"
+                }
+            ],
+            "report": null
+        }
+    },
+    {
+        "node_id": "DecomposeDirective_20240227160838591784_c3266562-54e7-444f-8d0a-cacc7685275e",
+        "operation_type": "blocking",
+        "node": {
+            "node_id": "DecomposeDirective_20240227160838591784_c3266562-54e7-444f-8d0a-cacc7685275e",
+            "parent_id": null,
+            "children_ids": [],
+            "action_id": "swarmstar/actions/reasoning/decompose_directive",
+            "message": "I want you to create a web app with 3 sections:\n1. A section where you can enter your goal and press spawn\n2. A section where you can talk to multiple agents at once\n3. A section where you can visualize the swarm's state4. A section where you can visualize the swarm's history",
+            "alive": true,
+            "termination_policy": "parallel_review",
+            "developer_logs": [
+                {
+                    "type": "instructor_request",
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": "You are given a directive. You have 2 options:\n1. Ask questions to get more information or clarification of requirements and intentions.\n2. Decompose the directive into actionable subdirectives that will be executed independently and in parallel. After those are done, youll generate the next set of subdirectives. I stress that the subdirectives must be independent and parallel.\n\nChoose one of the options and proceed. Do not ask questions and decompose the directive at the same time."
+                        },
+                        {
+                            "role": "user",
+                            "content": "Directive to decompose: \n`I want you to create a web app with 3 sections:\n1. A section where you can enter your goal and press spawn\n2. A section where you can talk to multiple agents at once\n3. A section where you can visualize the swarm's state4. A section where you can visualize the swarm's history`"
+                        }
+                    ]
+                },
+                {
+                    "type": "instructor_completion",
+                    "instructor_model_name": "DecomposeDirectiveModel",
+                    "completion": {
+                        "scrap_paper": null,
+                        "questions": null,
+                        "subdirectives": [
+                            "Design and implement a user interface for entering and submitting goals.",
+                            "Develop a multi-agent communication interface allowing simultaneous conversations.",
+                            "Create a real-time visualization tool for monitoring the swarm's current state.",
+                            "Build a historical data visualization interface for the swarm's past activities."
+                        ]
+                    }
+                }
+            ],
+            "journal": [
+                {
+                    "header": "Directive to decompose",
+                    "content": "I want you to create a web app with 3 sections:\n1. A section where you can enter your goal and press spawn\n2. A section where you can talk to multiple agents at once\n3. A section where you can visualize the swarm's state4. A section where you can visualize the swarm's history"
+                }
+            ],
+            "report": null
+        }
+    }
+]

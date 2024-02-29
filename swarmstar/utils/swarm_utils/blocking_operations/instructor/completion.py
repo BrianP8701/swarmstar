@@ -53,7 +53,7 @@ def blocking(
     node.developer_logs.append({
         "type": "instructor_completion",
         "instructor_model_name": instructor_model_name,
-        "completion": completion.model_dump_json(indent=4)
+        "completion": response.model_dump()
     })
     swarm_state.update_state(node)
     
@@ -63,4 +63,4 @@ def blocking(
         args={"completion": response},
         context=blocking_operation.context,
         next_function_to_call=blocking_operation.next_function_to_call,
-    ), {"type": "instructor_completion_response", "response": response.model_dump()}
+    )
