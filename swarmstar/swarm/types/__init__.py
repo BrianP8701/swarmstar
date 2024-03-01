@@ -6,7 +6,6 @@ from .action_metadata import (
     ActionFolder,
     InternalAction,
     InternalFolder,
-    ActionSpace,
 )
 
 from .memory_metadata import MemoryMetadata, MemorySpace

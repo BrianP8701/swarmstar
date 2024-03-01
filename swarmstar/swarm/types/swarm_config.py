@@ -33,12 +33,6 @@ class SwarmConfig(BaseModel):
 class PlatformConfig(BaseModel):
     platform: Literal["mac", "azure"]
 
-class CustomConfig(BaseModel):
-    platform: Literal["custom"]
-    user_id: str
-    swarm_id: str
-    kv_operations_path: str
-
 class AzureConfig(PlatformConfig):
     platform: Literal["azure"]
     user_id: str

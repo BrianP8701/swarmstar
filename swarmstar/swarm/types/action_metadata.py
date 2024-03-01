@@ -23,11 +23,6 @@ from typing import List, Optional
 from pydantic import BaseModel, Field
 from typing_extensions import Literal
 
-from swarmstar.swarm.types.swarm_config import SwarmConfig
-from swarmstar.utils.data.internal_operations import get_internal_action_metadata
-from swarmstar.utils.data.kv_operations.main import get_kv
-
-
 class ActionNode(BaseModel):
     is_folder: bool
     type: Literal[
@@ -78,44 +73,3 @@ class InternalFolder(ActionFolder):
     children_ids: List[str]
     parent: str = None
     internal_folder_path: str
-
-
-class ActionSpace(BaseModel):
-    """
-    The action space metadata is stored in the swarm's kv store as:
-
-        action_id: ActionMetadata
-    """
-
-    swarm: SwarmConfig
-
-    def __getitem__(self, action_id: str) -> ActionNode:
-        try:
-            action_metadata = get_internal_action_metadata(action_id)
-            if action_metadata is None:
-                raise ValueError(
-                    f"This action id: `{action_id}` does not exist in internal action space."
-                )
-        except Exception as e1:
-            try:
-                action_metadata = get_kv(self.swarm, "action_space", action_id)
-                if action_metadata is None:
-                    raise ValueError(
-                        f"This action id: `{action_id}` does not exist in external action space."
-                    ) from e1
-            except Exception as e2:
-                raise ValueError(
-                    f"This action id: `{action_id}` does not exist in both internal and external action spaces."
-                ) from e2
-
-        type_mapping = {
-            "internal_action": InternalAction,
-            "internal_folder": InternalFolder,
-        }
-        action_type = action_metadata["type"]
-        if action_type in type_mapping:
-            return type_mapping[action_type](**action_metadata)
-        return ActionNode(**action_metadata)
-
-    def get_root(self) -> ActionNode:
-        return self["swarmstar/actions"]

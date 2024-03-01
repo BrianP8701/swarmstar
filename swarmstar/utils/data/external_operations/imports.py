@@ -5,7 +5,6 @@ from pathlib import Path
 def import_module_from_path(module_name: str, path_to_file: str):
     """
     Dynamically imports a module relative to the runtime's current working directory.
-    This is used if the user has specified a custom module to use for KV operations.
     
     Args:
         module_name (str): The name to assign to the module.

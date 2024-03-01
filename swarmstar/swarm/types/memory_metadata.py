@@ -16,11 +16,6 @@ from typing import Dict, List
 from pydantic import BaseModel
 from typing_extensions import Literal
 
-from swarmstar.swarm.types.swarm_config import SwarmConfig
-from swarmstar.utils.data.internal_operations import get_internal_memory_metadata
-from swarmstar.utils.data.kv_operations.main import get_kv
-
-
 class MemoryMetadata(BaseModel):
     type: Literal["internal_folder", "local_folder", "azure_blob"]
     name: str
@@ -28,18 +23,3 @@ class MemoryMetadata(BaseModel):
     parent: str
     children: List[str]
     metadata: Dict[str, str]
-
-
-class MemorySpace(BaseModel):
-    swarm: SwarmConfig
-
-    def __getitem__(self, memory_id: str) -> MemoryMetadata:
-        try:
-            internal_memory_metadata = get_internal_memory_metadata(memory_id)
-            return internal_memory_metadata
-        except Exception:
-            external_memory_metadata = get_kv(self.swarm, "memory_space", memory_id)
-            if external_memory_metadata is not None:
-                return external_memory_metadata
-            else:
-                raise ValueError(f"This memory id: `{memory_id}` does not exist.")

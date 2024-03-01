@@ -9,7 +9,7 @@ from __future__ import annotations
 from importlib import import_module
 from typing import TYPE_CHECKING
 
-from swarmstar.utils.data.runtime_cwd_operations.imports import import_module_from_path
+from swarmstar.utils.data.external_operations.imports import import_module_from_path
 
 if TYPE_CHECKING:
     from swarmstar.swarm.types.swarm_config import SwarmConfig

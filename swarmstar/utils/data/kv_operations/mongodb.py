@@ -60,63 +60,46 @@ def create_client(uri: str) -> MongoClient:
         raise ValueError(f"Failed to create MongoDB client: {str(e)}")
 
 
-def create_collection(swarm: SwarmConfig, category: str) -> None:
+def create_collection(swarm: SwarmConfig, collection_name: str, ) -> None:
     uri = swarm.mongodb_uri
     db_name = swarm.mongodb_db_name
     client = create_client(uri)
     db = client[db_name]
-    collection = db[category]
+    collection = db[collection_name]
     collection.create_index([("key", pymongo.ASCENDING)], unique=True)
 
 
-def add_kv(swarm: SwarmConfig, category: str, key: str, value: dict) -> None:
-    try:
-        db_name = swarm.mongodb_db_name
-        collection_name = category
-        uri = swarm.mongodb_uri
-        client = create_client(uri)
-        db = client[db_name]
-        if collection_name not in db.list_collection_names():
-            create_collection(swarm, collection_name)
-        collection = db[collection_name]
-        document = {"key": key, **value}
-        collection.insert_one(document)
-    except pymongo.errors.DuplicateKeyError as e:
-        update_kv(swarm, category, key, value)
-    except Exception as e:
-        raise ValueError(f"Failed to add to MongoDB collection: {str(e)}")
-    
-def add_kv(swarm: SwarmConfig, category: str, key: str, value: dict) -> None:
+def add_kv(swarm: SwarmConfig, collection: str, key: str, value: dict) -> None:
     """
     Add a key-value pair to the collection with an initial version number.
     """
     try:
         db_name = swarm.mongodb_db_name
-        collection_name = category
+        collection_name = collection
         uri = swarm.mongodb_uri
         client = create_client(uri)
         db = client[db_name]
         if collection_name not in db.list_collection_names():
-            create_collection(swarm, collection_name)
+            raise ValueError(f"Collection {collection_name} not found in MongoDB database.")
         collection = db[collection_name]
         # Initialize the document with a version number
         document = {"key": key, "version": 1, **value}
         collection.insert_one(document)
     except pymongo.errors.DuplicateKeyError:
-        update_kv(swarm, category, key, value)
+        update_kv(swarm, collection, key, value)
     except Exception as e:
         raise ValueError(f'Failed to add to MongoDB collection: {str(e)}')
 
 
-def get_kv(swarm: SwarmConfig, category: str, key: str) -> dict:
+def get_kv(swarm: SwarmConfig, collection: str, key: str) -> dict:
     try:
         uri = swarm.mongodb_uri
         db_name = swarm.mongodb_db_name
-        collection_name = category
+        collection_name = collection
         client = create_client(uri)
         db = client[db_name]
         if collection_name not in db.list_collection_names():
-            create_collection(swarm, collection_name)
+            raise ValueError(f"Collection {collection_name} not found in MongoDB database.")
         collection = db[collection_name]
         result = collection.find_one({"key": key})
         if result is None:
@@ -129,15 +112,15 @@ def get_kv(swarm: SwarmConfig, category: str, key: str) -> dict:
         raise ValueError(f"Failed to get from MongoDB collection: {str(e)}")
 
 
-def delete_kv(swarm: SwarmConfig, category: str, key: str) -> None:
+def delete_kv(swarm: SwarmConfig, collection: str, key: str) -> None:
     try:
         uri = swarm.mongodb_uri
         db_name = swarm.mongodb_db_name
-        collection_name = category
+        collection_name = collection
         client = create_client(uri)
         db = client[db_name]
         if collection_name not in db.list_collection_names():
-            create_collection(swarm, collection_name)
+            raise ValueError(f"Collection {collection_name} not found in MongoDB database.")
         collection = db[collection_name]
         result = collection.delete_one({"key": key})
         if result.deleted_count == 0:
@@ -145,14 +128,14 @@ def delete_kv(swarm: SwarmConfig, category: str, key: str) -> None:
     except Exception as e:
         raise ValueError(f"Failed to delete from MongoDB collection: {str(e)}")
 
-def update_kv(swarm: SwarmConfig, category: str, key: str, updated_values: dict) -> None:
+def update_kv(swarm: SwarmConfig, collection: str, key: str, updated_values: dict) -> None:
     """
     Update specified fields of a document and increment its version, ensuring optimistic concurrency control.
     """
     try:
         uri = swarm.mongodb_uri
         db_name = swarm.mongodb_db_name
-        collection_name = category
+        collection_name = collection
         client = create_client(uri)
         db = client[db_name]
         collection = db[collection_name]
@@ -186,7 +169,7 @@ def update_kv(swarm: SwarmConfig, category: str, key: str, updated_values: dict)
     except Exception as e:
         raise ValueError(f"Failed to update MongoDB collection: {str(e)}")
 
-def append_to_list_with_versioning(swarm: SwarmConfig, category: str, key: str, list_field: str, value_to_append) -> None:
+def append_to_list_with_versioning(swarm: SwarmConfig, collection: str, key: str, list_field: str, value_to_append) -> None:
     """
     Appends a value to a list within a document, using optimistic concurrency control to handle concurrent updates safely.
 
@@ -198,7 +181,7 @@ def append_to_list_with_versioning(swarm: SwarmConfig, category: str, key: str, 
     try:
         uri = swarm.mongodb_uri
         db_name = swarm.mongodb_db_name
-        collection_name = category
+        collection_name = collection
         client = create_client(uri)
         db = client[db_name]
         collection = db[collection_name]
@@ -230,7 +213,7 @@ def append_to_list_with_versioning(swarm: SwarmConfig, category: str, key: str, 
     except Exception as e:
         raise ValueError(f"Failed to append to list in MongoDB collection: {str(e)}")
 
-def add_to_dict_with_versioning(swarm: SwarmConfig, category: str, key: str, dict_field: str, dict_key: str, dict_value) -> None:
+def add_to_dict_with_versioning(swarm: SwarmConfig, collection: str, key: str, dict_field: str, dict_key: str, dict_value) -> None:
     """
     Adds a key-value pair to a dictionary within a document, using optimistic concurrency control to handle concurrent updates safely.
 
@@ -243,7 +226,7 @@ def add_to_dict_with_versioning(swarm: SwarmConfig, category: str, key: str, dic
     try:
         uri = swarm.mongodb_uri
         db_name = swarm.mongodb_db_name
-        collection_name = category
+        collection_name = collection
         client = create_client(uri)
         db = client[db_name]
         collection = db[collection_name]
