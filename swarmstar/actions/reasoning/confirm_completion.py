@@ -12,7 +12,8 @@ directive node to continue the process.
 from typing import List, Optional
 from pydantic import BaseModel, Field
 
-from swarmstar.swarm.types import BlockingOperation, SwarmState, TerminationOperation, SpawnOperation
+from swarmstar.utils.swarm.swarmstar_space.swarm_state import get_node_from_swarm_state
+from swarmstar.swarm.types import BlockingOperation, TerminationOperation, SpawnOperation
 from swarmstar.swarm.types.base_action import BaseAction
 
 
@@ -42,8 +43,7 @@ class ConfirmCompletion(BaseAction):
         '''
         Get reports of all child branches
         '''
-        swarm_state = SwarmState(swarm=self.swarm)
-        parent_node = swarm_state[self.node.parent_id]
+        parent_node = get_node_from_swarm_state(self.swarm, self.node.parent_id)
         subdirectives = parent_node.journal[-1]["content"]
         initial_directive = parent_node.message
         child_branch_reports, branch_subdirectives = self.get_child_branch_reports()
@@ -76,7 +76,7 @@ class ConfirmCompletion(BaseAction):
         })
         
         return BlockingOperation(
-            node_id=self.node.node_id,
+            node_id=self.node._id,
             blocking_type="instructor_completion",
             args={
                 "messages": messages,
@@ -97,7 +97,7 @@ class ConfirmCompletion(BaseAction):
                 "content": "The directive has been completed."
             })
             return TerminationOperation(
-                node_id=self.node.node_id,
+                node_id=self.node._id,
             )
         else:
             self.add_journal_entry({
@@ -105,7 +105,7 @@ class ConfirmCompletion(BaseAction):
                 "content": f"The directive is incomplete. The message to send back to the decompose directive node is: {completion.message}"
             })
             return SpawnOperation(
-                node_id=self.node.node_id,
+                node_id=self.node._id,
                 node_embryo={
                     "action_id": "swarmstar/actions/reasoning/decompose_directive",
                     "message": completion.message
@@ -128,14 +128,13 @@ class ConfirmCompletion(BaseAction):
         # This should contain any nodes that have multiple children
         stop_action_ids = ["swarmstar/actions/reasoning/decompose_directive"]
 
-        swarm_state = SwarmState(swarm=self.swarm)
-        parent_node = swarm_state[self.node.parent_id]
+        parent_node = get_node_from_swarm_state(self.swarm, self.node.parent_id)
         all_branch_reports = []
         branch_subdirectives = []
         for child_id in parent_node.children_ids: # Loop through all children of decompose directive node
-            if child_id == self.node.node_id: # Skip this node (the confirm completion node)
+            if child_id == self.node._id: # Skip this node (the confirm completion node)
                 continue
-            child_node = swarm_state[child_id]
+            child_node = get_node_from_swarm_state(self.swarm, child_id)
             branch_subdirectives.append(child_node.message)
             this_branches_reports = []
             while True: # Descend down the branch, attaching the last journal entry of each node

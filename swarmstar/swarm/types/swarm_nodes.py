@@ -10,9 +10,10 @@ from typing_extensions import Literal
 
 
 class SwarmNode(BaseModel):
-    node_id: str
+    _id: str
     parent_id: Optional[str] = None
     children_ids: List[str] = []
+    operation_ids: List[str] = []
     action_id: str
     message: str
     alive: bool

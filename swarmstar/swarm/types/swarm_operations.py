@@ -19,6 +19,7 @@ class NodeEmbryo(BaseModel):
 
 
 class SwarmOperation(BaseModel):
+    _id: str
     operation_type: Literal[
         "spawn", 
         "terminate", 

@@ -1,7 +1,8 @@
 import json
 import os
 
-from swarmstar.swarm.types import SwarmOperation, SwarmState
+from swarmstar.swarm.types import SwarmOperation
+from swarmstar.utils.swarm.swarmstar_space.swarm_state import get_node_from_swarm_state
 
 def save_dict_to_json_file(file_path: str, data: dict) -> None:
     """
@@ -29,8 +30,7 @@ def save_swarm_operation_info(swarm, swarm_operation: SwarmOperation, file_path:
 
     node_id = swarm_operation.node_id
     if node_id is not None:
-        swarm_state = SwarmState(swarm=swarm)
-        node = swarm_state[node_id]
+        node = get_node_from_swarm_state(swarm, node_id)
         info_to_save["node"] = node.model_dump()
     
     if swarm_operation.operation_type == "spawn":

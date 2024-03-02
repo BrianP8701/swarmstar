@@ -1,7 +1,7 @@
 from .swarm_config import SwarmConfig, PlatformConfig, AzureConfig, LocalConfig
 
 from .action_metadata import (
-    ActionNode,
+    ActionMetadata,
     Action,
     ActionFolder,
     InternalAction,

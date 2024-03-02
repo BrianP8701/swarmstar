@@ -5,18 +5,14 @@ combining the args, context and swarm into the function call.
 Think of this as the entrypoint back into the action after a blocking operation has been completed.
 """
 
-from __future__ import annotations
-
 from importlib import import_module
-from typing import TYPE_CHECKING, List, Union
+from typing import List, Union
 
 from pydantic import BaseModel
 
-from swarmstar.swarm.types import ActionSpace, SwarmState
-
-if TYPE_CHECKING:
-    from swarmstar.swarm.types import BlockingOperation, SwarmConfig, SwarmOperation
-
+from swarmstar.swarm.types import BlockingOperation, SwarmConfig, SwarmOperation
+from swarmstar.utils.swarm.swarmstar_space.swarm_state import get_node_from_swarm_state
+from swarmstar.utils.swarm.swarmstar_space.action_space import get_action_metadata
 
 # This blocking operation doesn't have set args, it will just pass the args and context to the next function to call
 class expected_args(BaseModel):
@@ -26,11 +22,9 @@ class expected_args(BaseModel):
 def blocking(
     swarm: SwarmConfig, blocking_operation: BlockingOperation
 ) -> Union[SwarmOperation, List[SwarmOperation]]:
-    action_space = ActionSpace(swarm=swarm)
-    swarm_state = SwarmState(swarm=swarm)
     node_id = blocking_operation.node_id
-    node = swarm_state[node_id]
-    action_metadata = action_space[node.action_id]
+    node = get_node_from_swarm_state(swarm, node_id)
+    action_metadata = get_action_metadata(swarm, node.action_id)
     action_name = action_metadata.name
     script_path = action_metadata.internal_action_path
     action_file = import_module(script_path)

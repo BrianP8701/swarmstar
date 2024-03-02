@@ -46,3 +46,7 @@ def delete_kv(swarm: SwarmConfig, category: str, key: str) -> None:
 def update_kv(swarm: SwarmConfig, category: str, key: str, value: dict) -> None:
     kv_operations_module = get_kv_operations_module(swarm)
     return kv_operations_module.update_kv(swarm, category, key, value)
+
+def set_kv(swarm: SwarmConfig, category: str, key: str, value: dict) -> None:
+    kv_operations_module = get_kv_operations_module(swarm)
+    return kv_operations_module.set_kv(swarm, category, key, value)

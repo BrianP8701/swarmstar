@@ -1,4 +1,10 @@
-from swarmstar.utils.data.internal_operations import get_internal_action_metadata
+from pydantic import BaseModel
 
 
-print(get_internal_action_metadata('swarmstar/actions/reasoning/decompose_directive'))
+class temp(BaseModel):
+    a: int
+    b: int
+
+gra = temp(a=1, b=2, c=3)
+
+print(temp.model_validate(gra))

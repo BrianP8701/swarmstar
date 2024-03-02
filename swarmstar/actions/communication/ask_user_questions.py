@@ -90,7 +90,7 @@ class AskUserQuestions(BaseAction):
         })
 
         return BlockingOperation(
-            node_id=self.node.node_id,
+            node_id=self.node._id,
             blocking_type="instructor_completion",
             args={
                 "messages": messages,
@@ -125,7 +125,7 @@ class AskUserQuestions(BaseAction):
         ]
 
         return BlockingOperation(
-            node_id=self.node.node_id,
+            node_id=self.node._id,
             blocking_type="instructor_completion",
             args={"messages": messages, "instructor_model_name": "AgentMessage"},
             context={
@@ -144,7 +144,7 @@ class AskUserQuestions(BaseAction):
         completion: AgentMessage,
     ):
         return UserCommunicationOperation(
-            node_id=self.node.node_id,
+            node_id=self.node._id,
             message=completion.content,
             context={
                 "questions": questions,
@@ -176,7 +176,7 @@ class AskUserQuestions(BaseAction):
         ]
 
         return BlockingOperation(
-            node_id=self.node.node_id,
+            node_id=self.node._id,
             blocking_type="instructor_completion",
             args={
                 "messages": messages,
@@ -212,7 +212,7 @@ class AskUserQuestions(BaseAction):
         ]
 
         return BlockingOperation(
-            node_id=self.node.node_id,
+            node_id=self.node._id,
             blocking_type="instructor_completion",
             args={"messages": messages, "instructor_model_name": "FinalReport"},
             context={},
@@ -226,4 +226,4 @@ class AskUserQuestions(BaseAction):
                 "content": completion.report,
             }
         )
-        return TerminationOperation(node_id=self.node.node_id)
+        return TerminationOperation(node_id=self.node._id)

@@ -1,10 +1,10 @@
 from importlib import import_module
 from typing import List, Union
 
+from swarmstar.utils.swarm.swarmstar_space.swarm_history import add_event_to_swarm_history
 from swarmstar.swarm.types import (
     BlockingOperation,
     SwarmConfig,
-    SwarmHistory,
     SwarmOperation,
 )
 
@@ -31,7 +31,6 @@ def blocking(
         swarm, blocking_operation
     )
 
-    swarm_history = SwarmHistory(swarm=swarm)
-    swarm_history.add_event(blocking_operation)
+    add_event_to_swarm_history(swarm, blocking_operation)
 
     return output

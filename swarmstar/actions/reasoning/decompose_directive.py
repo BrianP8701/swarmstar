@@ -52,7 +52,7 @@ class DecomposeDirective(BaseAction):
         )
 
         return BlockingOperation(
-            node_id=self.node.node_id,
+            node_id=self.node._id,
             blocking_type="instructor_completion",
             args={
                 "messages": messages,
@@ -79,7 +79,7 @@ class DecomposeDirective(BaseAction):
             )
             
             spawn_operation = SpawnOperation(
-                node_id=self.node.node_id,
+                node_id=self.node._id,
                 node_embryo=NodeEmbryo(
                     action_id="swarmstar/actions/communication/ask_user_questions",
                     message=message,
@@ -91,7 +91,7 @@ class DecomposeDirective(BaseAction):
             spawn_operations = []
             for subdirective in subdirectives:
                 spawn_operation = SpawnOperation(
-                    node_id=self.node.node_id,
+                    node_id=self.node._id,
                     node_embryo=NodeEmbryo(
                         action_id="swarmstar/actions/reasoning/route_action",
                         message=subdirective,

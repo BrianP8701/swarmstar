@@ -4,18 +4,15 @@ a pydantic model and a list of messages, and will return a BlockingOperation
 which will call the next_function_to_call of the node's action with the completion
 and context.
 """
-from __future__ import annotations
-
 from importlib import import_module
-from typing import TYPE_CHECKING, Dict, List
+from typing import Dict, List
 
 from pydantic import BaseModel
 
-from swarmstar.swarm.types import BlockingOperation, SwarmState
+from swarmstar.swarm.types import BlockingOperation
 from swarmstar.utils.ai.openai_instructor import completion
-
-if TYPE_CHECKING:
-    from swarmstar.swarm.types import SwarmConfig
+from swarmstar.utils.swarm.swarmstar_space.swarm_state import get_node_from_swarm_state, set_node_in_swarm_state
+from swarmstar.swarm.types import SwarmConfig
 
 
 class expected_args(BaseModel):
@@ -30,8 +27,7 @@ def blocking(
 ) -> BlockingOperation:
     messages = blocking_operation.args["messages"]
     instructor_model_name = blocking_operation.args["instructor_model_name"]
-    swarm_state = SwarmState(swarm=swarm)
-    node = swarm_state[blocking_operation.node_id]
+    node = get_node_from_swarm_state(swarm, blocking_operation.node_id)
     
     
     
@@ -55,7 +51,7 @@ def blocking(
         "instructor_model_name": instructor_model_name,
         "completion": response.model_dump()
     })
-    swarm_state.update_state(node)
+    set_node_in_swarm_state(swarm, node)
     
     return BlockingOperation(
         node_id=blocking_operation.node_id,

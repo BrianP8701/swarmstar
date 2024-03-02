@@ -19,6 +19,7 @@ from .kv_operations.main import (
     delete_kv,
     get_kv,
     update_kv,
+    set_kv
 )
 
 from .internal_operations.swarmstar_metadata import (

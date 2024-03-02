@@ -1,10 +1,10 @@
 import pytest
 
 from swarmstar.swarm.core import swarmstar_god
-from swarmstar.swarm.types import NodeEmbryo, SpawnOperation, SwarmState
+from swarmstar.swarm.types import NodeEmbryo, SpawnOperation
 from tests.test_config import SWARMSTAR_UNIT_TESTS_MONGODB_DB_NAME
 from tests.utils.get_local_swarm_config import get_swarm_config
-
+from swarmstar.utils.swarm.swarmstar_space.swarm_state import get_node_from_swarm_state
 
 @pytest.mark.unit_test_operations
 def test_spawn_operation():
@@ -20,10 +20,9 @@ def test_spawn_operation():
 
     next_swarm_operation = swarmstar_god(swarm, spawn_operation)[0]
 
-    swarm_state = SwarmState(swarm=swarm)
     spawned_node_id = next_swarm_operation.node_id
-    node = swarm_state[spawned_node_id]
-    assert node.node_id == spawned_node_id
+    node = get_node_from_swarm_state(swarm, spawned_node_id)
+    assert node._id == spawned_node_id
     assert node.alive == True
     assert node.action_id == "swarmstar/actions/reasoning/decompose_directive"
     assert (

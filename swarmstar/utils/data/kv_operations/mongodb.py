@@ -66,12 +66,12 @@ def create_collection(swarm: SwarmConfig, collection_name: str, ) -> None:
     client = create_client(uri)
     db = client[db_name]
     collection = db[collection_name]
-    collection.create_index([("key", pymongo.ASCENDING)], unique=True)
+    collection.create_index([("_id", pymongo.ASCENDING)], unique=True)
 
 
-def add_kv(swarm: SwarmConfig, collection: str, key: str, value: dict) -> None:
+def add_kv(swarm: SwarmConfig, collection: str, _id: str, value: dict) -> None:
     """
-    Add a key-value pair to the collection with an initial version number.
+    Add a _id-value pair to the collection with an initial version number.
     """
     try:
         db_name = swarm.mongodb_db_name
@@ -83,15 +83,15 @@ def add_kv(swarm: SwarmConfig, collection: str, key: str, value: dict) -> None:
             raise ValueError(f"Collection {collection_name} not found in MongoDB database.")
         collection = db[collection_name]
         # Initialize the document with a version number
-        document = {"key": key, "version": 1, **value}
+        document = {"_id": _id, "version": 1, **value}
         collection.insert_one(document)
-    except pymongo.errors.DuplicateKeyError:
-        update_kv(swarm, collection, key, value)
+    except pymongo.errors.Duplicate_idError:
+        update_kv(swarm, collection, _id, value)
     except Exception as e:
         raise ValueError(f'Failed to add to MongoDB collection: {str(e)}')
 
 
-def get_kv(swarm: SwarmConfig, collection: str, key: str) -> dict:
+def get_kv(swarm: SwarmConfig, collection: str, _id: str) -> dict:
     try:
         uri = swarm.mongodb_uri
         db_name = swarm.mongodb_db_name
@@ -101,18 +101,15 @@ def get_kv(swarm: SwarmConfig, collection: str, key: str) -> dict:
         if collection_name not in db.list_collection_names():
             raise ValueError(f"Collection {collection_name} not found in MongoDB database.")
         collection = db[collection_name]
-        result = collection.find_one({"key": key})
+        result = collection.find_one({"_id": _id})
         if result is None:
-            raise ValueError(f"Key {key} not found in MongoDB collection.")
-        result.pop("_id")
-        result.pop("key")
-        result.pop("version")
+            raise ValueError(f"_id {_id} not found in MongoDB collection.")
         return result
     except Exception as e:
         raise ValueError(f"Failed to get from MongoDB collection: {str(e)}")
 
 
-def delete_kv(swarm: SwarmConfig, collection: str, key: str) -> None:
+def delete_kv(swarm: SwarmConfig, collection: str, _id: str) -> None:
     try:
         uri = swarm.mongodb_uri
         db_name = swarm.mongodb_db_name
@@ -122,13 +119,13 @@ def delete_kv(swarm: SwarmConfig, collection: str, key: str) -> None:
         if collection_name not in db.list_collection_names():
             raise ValueError(f"Collection {collection_name} not found in MongoDB database.")
         collection = db[collection_name]
-        result = collection.delete_one({"key": key})
+        result = collection.delete_one({"_id": _id})
         if result.deleted_count == 0:
-            raise ValueError(f"Key {key} not found in MongoDB collection.")
+            raise ValueError(f"_id {_id} not found in MongoDB collection.")
     except Exception as e:
         raise ValueError(f"Failed to delete from MongoDB collection: {str(e)}")
 
-def update_kv(swarm: SwarmConfig, collection: str, key: str, updated_values: dict) -> None:
+def update_kv(swarm: SwarmConfig, collection: str, _id: str, updated_values: dict) -> None:
     """
     Update specified fields of a document and increment its version, ensuring optimistic concurrency control.
     """
@@ -143,9 +140,9 @@ def update_kv(swarm: SwarmConfig, collection: str, key: str, updated_values: dic
         retries = 3
         for attempt in range(retries):
             # Fetch the current document
-            current_document = collection.find_one({"key": key})
+            current_document = collection.find_one({"_id": _id})
             if current_document is None:
-                raise ValueError(f'Key {key} not found in MongoDB collection {collection_name}.')
+                raise ValueError(f'_id {_id} not found in MongoDB collection {collection_name}.')
 
             # Prepare the update
             new_version = current_document.get("version", 0) + 1
@@ -157,7 +154,7 @@ def update_kv(swarm: SwarmConfig, collection: str, key: str, updated_values: dic
 
             # Attempt to update the document if the version hasn't changed
             result = collection.update_one(
-                {"key": key, "version": current_document["version"]},
+                {"_id": _id, "version": current_document["version"]},
                 {"$set": update_fields}
             )
 
@@ -169,96 +166,40 @@ def update_kv(swarm: SwarmConfig, collection: str, key: str, updated_values: dic
     except Exception as e:
         raise ValueError(f"Failed to update MongoDB collection: {str(e)}")
 
-def append_to_list_with_versioning(swarm: SwarmConfig, collection: str, key: str, list_field: str, value_to_append) -> None:
+def set_kv(swarm: SwarmConfig, collection: str, _id: str, new_value: dict) -> None:
     """
-    Appends a value to a list within a document, using optimistic concurrency control to handle concurrent updates safely.
-
-    :param collection_name: The name of the collection.
-    :param key: The key identifying the document.
-    :param list_field: The field within the document that contains the list to append to.
-    :param value_to_append: The value to append to the list.
+    Replace the value of a document with the new value provided, ensuring optimistic concurrency control.
     """
     try:
         uri = swarm.mongodb_uri
         db_name = swarm.mongodb_db_name
         collection_name = collection
-        client = create_client(uri)
+        client = create_client(uri)  # Assume create_client is defined elsewhere
         db = client[db_name]
         collection = db[collection_name]
 
-        retries = 3
+        retries = 5
         for attempt in range(retries):
             # Fetch the current document
-            current_document = collection.find_one({"key": key})
+            current_document = collection.find_one({"_id": _id})
             if current_document is None:
-                raise ValueError(f'Key {key} not found in MongoDB collection {collection_name}.')
-            if list_field not in current_document:
-                raise KeyError(f"Field '{list_field}' does not exist in the document. Ensure the field is initialized as a list.")
+                raise ValueError(f'_id {_id} not found in MongoDB collection {collection_name}.')
 
-            # Prepare the update with an incremented version number
+            # Prepare the new document with incremented version
             new_version = current_document.get("version", 0) + 1
-            updated_values = {"$push": {list_field: value_to_append}, "$set": {"version": new_version}}
+            new_document = new_value.copy()  # Make a copy to avoid mutating the original argument
+            new_document["version"] = new_version
 
-            # Attempt to update the document if the version hasn't changed
-            result = collection.update_one(
-                {"key": key, "version": current_document["version"]},
-                updated_values
+            # Attempt to replace the document if the version hasn't changed
+            result = collection.replace_one(
+                {"_id": _id, "version": current_document["version"]},
+                new_document
             )
 
             if result.matched_count:
                 break  # Update was successful
             elif attempt == retries - 1:
-                raise Exception("Failed to update document due to concurrent modification.")
+                raise Exception("Failed to replace document due to concurrent modification.")
             # If the document was updated elsewhere, retry the operation
     except Exception as e:
-        raise ValueError(f"Failed to append to list in MongoDB collection: {str(e)}")
-
-def add_to_dict_with_versioning(swarm: SwarmConfig, collection: str, key: str, dict_field: str, dict_key: str, dict_value) -> None:
-    """
-    Adds a key-value pair to a dictionary within a document, using optimistic concurrency control to handle concurrent updates safely.
-
-    :param collection_name: The name of the collection.
-    :param key: The key identifying the document.
-    :param dict_field: The field within the document that contains the dictionary to add to.
-    :param dict_key: The key to add to the dictionary.
-    :param dict_value: The value to associate with the dict_key in the dictionary.
-    """
-    try:
-        uri = swarm.mongodb_uri
-        db_name = swarm.mongodb_db_name
-        collection_name = collection
-        client = create_client(uri)
-        db = client[db_name]
-        collection = db[collection_name]
-
-        retries = 3
-        for attempt in range(retries):
-            # Fetch the current document
-            current_document = collection.find_one({"key": key})
-            if current_document is None:
-                raise ValueError(f'Key {key} not found in MongoDB collection {collection_name}.')
-            if dict_field not in current_document:
-                raise KeyError(f"Field '{dict_field}' does not exist in the document. Ensure the field is initialized as a dictionary.")
-
-            # Prepare the update with an incremented version number
-            new_version = current_document.get("version", 0) + 1
-            updated_values = {
-                "$set": {
-                    f"{dict_field}.{dict_key}": dict_value,  # This adds or updates the key in the dictionary
-                    "version": new_version
-                }
-            }
-
-            # Attempt to update the document if the version hasn't changed
-            result = collection.update_one(
-                {"key": key, "version": current_document["version"]},
-                updated_values
-            )
-
-            if result.matched_count:
-                break  # Update was successful
-            elif attempt == retries - 1:
-                raise Exception("Failed to update document due to concurrent modification.")
-            # If the document was updated elsewhere, retry the operation
-    except Exception as e:
-        raise ValueError(f"Failed to add to dictionary in MongoDB collection: {str(e)}")
+        raise ValueError(f"Failed to replace document in MongoDB collection: {str(e)}")

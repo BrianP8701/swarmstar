@@ -41,7 +41,7 @@ def get_container(swarm: SwarmConfig, category: str):
 
 
 def build_id(swarm: SwarmConfig, category: str, key: str) -> str:
-    return f"{swarm.user_id}_{swarm.swarm_id}_{category}_{key}"
+    return f"{swarm.user_id}_{swarm._id}_{category}_{key}"
 
 
 def add_kv(swarm: SwarmConfig, category: str, key: str, value: dict) -> None:
@@ -103,7 +103,7 @@ with id as the key for the document.
 #     value['id'] = key
 #     value['category'] = category
 #     value['user_id'] = swarm.user_id
-#     value['swarm_id'] = swarm.swarm_id
+#     value['swarm_id'] = swarm._id
 
 #     try:
 #         container.upsert_item(value)
@@ -118,7 +118,7 @@ with id as the key for the document.
 #     client = CosmosClient(url, credential=cosmos_key)
 #     database_name = client.get_database_client(swarm.azure_cosmos_db_database_name)
 #     container = database_name.get_container_client(container_name)
-#     partition_key = f'{swarm.user_id}/{swarm.swarm_id}/{category}'
+#     partition_key = f'{swarm.user_id}/{swarm._id}/{category}'
 #     partition_key = PartitionKey(partition_key)
 
 #     try:
@@ -134,7 +134,7 @@ with id as the key for the document.
 #     client = CosmosClient(url, credential=cosmos_key)
 #     database_name = client.get_database_client(swarm.azure_cosmos_db_database_name)
 #     container = database_name.get_container_client(container_name)
-#     partition_key = f'{swarm.user_id}/{swarm.swarm_id}/{category}'
+#     partition_key = f'{swarm.user_id}/{swarm._id}/{category}'
 #     partition_key = PartitionKey(partition_key)
 
 #     try:

@@ -17,6 +17,7 @@ from pydantic import BaseModel
 from typing_extensions import Literal
 
 class MemoryMetadata(BaseModel):
+    _id: str
     type: Literal["internal_folder", "local_folder", "azure_blob"]
     name: str
     description: str

@@ -1,7 +1,7 @@
 from swarmstar.utils.data import get_internal_action_metadata, get_kv
-from swarmstar.swarm.types import SwarmConfig, ActionNode, InternalAction, InternalFolder
+from swarmstar.swarm.types import SwarmConfig, ActionMetadata, InternalAction, InternalFolder
 
-def get_action_metadata(swarm: SwarmConfig, action_id: str) -> ActionNode:
+def get_action_metadata(swarm: SwarmConfig, action_id: str) -> ActionMetadata:
     try:
         action_metadata = get_internal_action_metadata(action_id)
         if action_metadata is None:
@@ -27,5 +27,5 @@ def get_action_metadata(swarm: SwarmConfig, action_id: str) -> ActionNode:
     action_type = action_metadata["type"]
     if action_type in type_mapping:
         return type_mapping[action_type](**action_metadata)
-    return ActionNode(**action_metadata)
+    return ActionMetadata(**action_metadata)
 

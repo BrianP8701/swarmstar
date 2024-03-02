@@ -15,11 +15,11 @@
 
 from typing import Union
 
+from swarmstar.utils.swarm.swarmstar_space.swarm_state import get_node_from_swarm_state, set_node_in_swarm_state
 from swarmstar.swarm.types import (
     NodeEmbryo,
     SpawnOperation,
     SwarmConfig,
-    SwarmState,
     TerminationOperation,
 )
 
@@ -28,22 +28,21 @@ def terminate(
     swarm: SwarmConfig, termination_operation: TerminationOperation
 ) -> Union[TerminationOperation, None]:
     node_id = termination_operation.node_id
-    swarm_state = SwarmState(swarm=swarm)
-    node = swarm_state[node_id]
+    node = get_node_from_swarm_state(swarm, node_id)
 
     mission_completion = False
     reports_consolidated = False
     node_with_final_report = ""
 
     for child_id in node.children_ids:
-        child = swarm_state[child_id]
+        child = get_node_from_swarm_state(swarm, child_id)
         if child.alive:
             return None
         if child.action_id == "swarmstar/actions/reasoning/confirm_completion":
             mission_completion = True
         if child.action_id == "swarmstar/actions/reasoning/consolidate_reports":
             reports_consolidated = True
-            node_with_final_report = swarm_state[child_id]
+            node_with_final_report = get_node_from_swarm_state(swarm, child_id)
 
     if mission_completion == False:
         return SpawnOperation(
@@ -71,7 +70,7 @@ def terminate(
         else:
             node.report = node_with_final_report.report
             node.alive = False
-            swarm_state.update_state(node)
+            set_node_in_swarm_state(swarm, node)
             return TerminationOperation(
                 operation_type="terminate",
                 node_id=node_id,

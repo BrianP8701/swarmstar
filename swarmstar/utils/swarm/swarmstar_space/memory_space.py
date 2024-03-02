@@ -4,7 +4,7 @@ from swarmstar.swarm.types import SwarmConfig, MemoryMetadata
 def get_memory_metadata(swarm: SwarmConfig, memory_id: str) -> MemoryMetadata:
     try:
         memory_metadata = get_internal_memory_metadata(memory_id)
-        if action_metadata is None:
+        if memory_metadata is None:
             raise ValueError(
                 f"This memory id: `{memory_id}` does not exist in internal memory space."
             )
@@ -21,10 +21,9 @@ def get_memory_metadata(swarm: SwarmConfig, memory_id: str) -> MemoryMetadata:
             ) from e2
 
     type_mapping = {
-        "internal_memory": InternalMemory,
-        "internal_folder": InternalFolder,
+
     }
     memory_type = memory_metadata["type"]
     if memory_type in type_mapping:
         return type_mapping[memory_type](**memory_metadata)
-    return MemoryNode(**memory_metadata)
+    return MemoryMetadata(**memory_metadata)

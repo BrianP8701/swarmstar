@@ -4,10 +4,10 @@ This operation spawns and terminates a node without running any of the action's 
 import pytest
 
 from swarmstar.swarm.core import swarmstar_god
+from swarmstar.utils.swarm.swarmstar_space.swarm_state import get_node_from_swarm_state
 from swarmstar.swarm.types import (
     NodeEmbryo,
     SpawnOperation,
-    SwarmState,
     TerminationOperation,
 )
 from tests.test_config import SWARMSTAR_UNIT_TESTS_MONGODB_DB_NAME
@@ -28,7 +28,6 @@ def test_simple_termination():
     )
 
     first_spawn_output = swarmstar_god(swarm, spawn_operation)[0]
-    swarm_state = SwarmState(swarm=swarm)
     first_node_id = first_spawn_output.node_id
 
     spawn_operation = SpawnOperation(
@@ -50,8 +49,8 @@ def test_simple_termination():
     next_swarm_operation = swarmstar_god(swarm, next_swarm_operation)
 
     try:
-        first_node = swarm_state[first_node_id]
-        second_node = swarm_state[second_node_id]
+        first_node = get_node_from_swarm_state(swarm, first_node_id)
+        second_node = get_node_from_swarm_state(swarm, second_node_id)
         assert first_node.alive == False
         assert second_node.alive == False
     except KeyError:

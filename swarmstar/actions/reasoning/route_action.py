@@ -4,14 +4,13 @@ from pydantic import BaseModel, Field
 
 from swarmstar.swarm.types import (
     ActionFolder,
-    ActionSpace,
     BlockingOperation,
     NodeEmbryo,
     SpawnOperation,
     SwarmOperation,
 )
 from swarmstar.swarm.types.base_action import BaseAction
-
+from swarmstar.utils.swarm.swarmstar_space.action_space import get_action_metadata
 
 class NextActionPath(BaseModel):
     index: Optional[int] = Field(
@@ -32,9 +31,8 @@ ROUTE_ACTION_INSTRUCTIONS = (
 
 class RouteAction(BaseAction):
     def main(self) -> BlockingOperation:
-        action_space = ActionSpace(swarm=self.swarm)
-        root: ActionFolder = action_space["swarmstar/actions"]
-        root_children_descriptions = self.get_children_descriptions(action_space, root)
+        root: ActionFolder = get_action_metadata(self.swarm, "swarmstar/actions")
+        root_children_descriptions = self.get_children_descriptions(root)
         messages = self.build_route_messages(
             self.node.message, root_children_descriptions
         )
@@ -47,7 +45,7 @@ class RouteAction(BaseAction):
         )
 
         return BlockingOperation(
-            node_id=self.node.node_id,
+            node_id=self.node._id,
             blocking_type="instructor_completion",
             args={"messages": messages, "instructor_model_name": "NextActionPath"},
             context={"parent_action_id": "swarmstar/actions"},
@@ -63,20 +61,19 @@ class RouteAction(BaseAction):
         """
         
         if completion.index is not None:
-            action_space = ActionSpace(swarm=self.swarm)
-            parent_action = action_space[parent_action_id]
+            parent_action = get_action_metadata(self.swarm, parent_action_id)
             next_action_id = parent_action.children_ids[completion.index]
-            current_action = action_space[next_action_id]
+            current_action = get_action_metadata(self.swarm, next_action_id)
 
             if current_action.is_folder:
                 children_descriptions = self.get_children_descriptions(
-                    action_space, current_action
+                    current_action
                 )
                 messages = self.build_route_messages(
                     self.node.message, children_descriptions
                 )
                 return BlockingOperation(
-                    node_id=self.node.node_id,
+                    node_id=self.node._id,
                     blocking_type="instructor_completion",
                     args={
                         "messages": messages,
@@ -91,7 +88,7 @@ class RouteAction(BaseAction):
                     "content": f"Routed goal: {self.node.message} to {next_action_id}"
                 })
                 return SpawnOperation(
-                    node_id=self.node.node_id,
+                    node_id=self.node._id,
                     node_embryo=NodeEmbryo(
                         action_id=next_action_id, message=self.node.message
                     )
@@ -103,9 +100,7 @@ class RouteAction(BaseAction):
             )
             # TODO Handle failure message. Pass to action creator or user for review
 
-    def build_route_messages(
-        self, goal: str, children_descriptions: List[str]
-    ) -> List[Dict[str, str]]:
+    def build_route_messages(self, goal: str, children_descriptions: List[str]) -> List[Dict[str, str]]:
         goal_and_action_path_options = (
             f"Decide what action path is best to take to accomplish this goal: {goal}\n\n"
             f"Options:\n"
@@ -119,11 +114,9 @@ class RouteAction(BaseAction):
         ]
         return messages
 
-    def get_children_descriptions(
-        self, action_space: ActionSpace, action_folder: ActionFolder
-    ) -> List[str]:
+    def get_children_descriptions(self, action_folder: ActionFolder) -> List[str]:
         children_descriptions = []
         for child_id in action_folder.children_ids:
-            child_metadata = action_space[child_id]
+            child_metadata = get_action_metadata(self.swarm, child_id)
             children_descriptions.append(child_metadata.description)
         return children_descriptions

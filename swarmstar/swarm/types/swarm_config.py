@@ -9,11 +9,11 @@ from typing_extensions import Literal
 
 
 class SwarmConfig(BaseModel):
+    _id: str
     root_path: str
     openai_key: str
     platform: Literal["mac", "azure"]
     user_id: Optional[str] = None
-    swarm_id: Optional[str] = None
     azure_blob_storage_account_name: Optional[str] = None
     azure_blob_storage_account_key: Optional[str] = None
     azure_blob_storage_container_name: Optional[str] = None

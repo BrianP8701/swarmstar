@@ -15,10 +15,10 @@ from abc import ABCMeta, abstractmethod
 from functools import wraps
 from typing import Any, Dict
 
+from swarmstar.utils.swarm.swarmstar_space.swarm_state import add_node_to_swarm_state
 from swarmstar.swarm.types.swarm_config import SwarmConfig
 from swarmstar.swarm.types.swarm_nodes import SwarmNode
 from swarmstar.swarm.types.swarm_operations import SwarmOperation
-from swarmstar.swarm.types.swarm_state import SwarmState
 
 
 def error_handling_decorator(func):
@@ -31,7 +31,7 @@ def error_handling_decorator(func):
                 0
             ]  # Assuming the first argument is always 'self' for instance methods
             tb_str = traceback.format_exc()
-            params_str = f"node_id: {self.node.node_id}\nParams: {kwargs}"
+            params_str = f"node_id: {self.node._id}\nParams: {kwargs}"
 
             error_message = (
                 f"Error in {func.__name__}:\n{str(e)}\n\n{tb_str}\n\n{params_str}"
@@ -39,7 +39,7 @@ def error_handling_decorator(func):
             raise Exception(error_message)
 
             # return FailureOperation(
-            #     node_id=self.node.node_id,
+            #     node_id=self.node._id,
             #     report=report,
             # )
 
@@ -70,15 +70,12 @@ class BaseAction(metaclass=ErrorHandlingMeta):
 
     def add_journal_entry(self, journal_entry: Dict[str, Any]):
         self.node.journal.append(journal_entry)
-        swarm_state = SwarmState(swarm=self.swarm)
-        swarm_state.update_state(self.node)
+        add_node_to_swarm_state(self.swarm, self.node)
 
     def add_developer_log(self, developer_log: Dict[str, Any]):
         self.node.developer_logs.append(developer_log)
-        swarm_state = SwarmState(swarm=self.swarm)
-        swarm_state.update_state(self.node)
+        add_node_to_swarm_state(self.swarm, self.node)
 
     def update_termination_policy(self, termination_policy: str):
         self.node.termination_policy = termination_policy
-        swarm_state = SwarmState(swarm=self.swarm)
-        swarm_state.update_state(self.node)
+        add_node_to_swarm_state(self.swarm, self.node)

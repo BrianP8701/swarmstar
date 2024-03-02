@@ -23,7 +23,8 @@ from typing import List, Optional
 from pydantic import BaseModel, Field
 from typing_extensions import Literal
 
-class ActionNode(BaseModel):
+class ActionMetadata(BaseModel):
+    _id: str
     is_folder: bool
     type: Literal[
         "azure_blob_storage_folder",
@@ -37,7 +38,7 @@ class ActionNode(BaseModel):
     parent: Optional[str] = None
 
 
-class ActionFolder(ActionNode):
+class ActionFolder(ActionMetadata):
     is_folder: Literal[True] = Field(default=True)
     type: Literal["internal_folder", "azure_blob_storage_folder"]
     name: str
@@ -46,7 +47,7 @@ class ActionFolder(ActionNode):
     parent: Optional[str] = None
 
 
-class Action(ActionNode):
+class Action(ActionMetadata):
     is_folder: Literal[False] = Field(default=False)
     type: Literal["internal_action", "azure_blob_action"]
     name: str
