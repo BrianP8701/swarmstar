@@ -10,7 +10,6 @@ from swarmstar.swarm.types import (
     SwarmNode,
     SwarmOperation,
 )
-from swarmstar.utils.misc.uuid import generate_uuid
 from swarmstar.utils.swarm.swarmstar_space.swarm_state import get_node_from_swarm_state, add_node_to_swarm_state, set_node_in_swarm_state
 from swarmstar.utils.swarm.swarmstar_space.action_space import get_action_metadata
 from swarmstar.utils.swarm.swarmstar_space.swarm_history import add_event_to_swarm_history
@@ -27,6 +26,7 @@ def spawn(
     termination_policy = action_metadata.termination_policy
     if spawn_operation.termination_policy_change is not None:
         termination_policy = spawn_operation.termination_policy_change
+
     node = SwarmNode(
         parent_id=parent_id,
         action_id=action_id,
@@ -34,7 +34,7 @@ def spawn(
         alive=True,
         termination_policy=termination_policy,
     )
-
+    
     add_node_to_swarm_state(swarm, node)
 
     if parent_id is not None:

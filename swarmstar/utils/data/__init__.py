@@ -19,7 +19,10 @@ from .kv_operations.main import (
     delete_kv,
     get_kv,
     update_kv,
-    set_kv
+    set_kv,
+    append_to_list,
+    get_element_by_index,
+    get_list_length,
 )
 
 from .internal_operations.swarmstar_metadata import (

@@ -1,4 +1,4 @@
-from swarmstar import execute_swarmstar_operation, spawn_swarm_root
+from swarmstar import execute_swarmstar_operation, spawn_swarm
 from tests.utils.get_local_swarm_config import get_swarm_config
 from tests.test_config import SWARMSTAR_UNIT_TESTS_MONGODB_DB_NAME
 from tests.utils.save_results import save_swarm_operation_info, find_next_available_results_file
@@ -11,12 +11,12 @@ def test_create_web_app():
         '3. A section where you can visualize the swarm\'s state'
         '4. A section where you can visualize the swarm\'s history'
     )
-    swarm = get_swarm_config(SWARMSTAR_UNIT_TESTS_MONGODB_DB_NAME, 'swarmstar_20240302081603901639_92a41fc2-b79a-4c76-bbec-f1fb3cbd104e')
+    swarm = get_swarm_config(SWARMSTAR_UNIT_TESTS_MONGODB_DB_NAME)
     
     results_file_path = find_next_available_results_file('tests/results/')
     
     
-    root_spawn_operation = spawn_swarm_root(swarm, goal)
+    swarm, root_spawn_operation = spawn_swarm(swarm, goal)
     save_swarm_operation_info(swarm, root_spawn_operation, results_file_path)
     operations_to_execute = execute_swarmstar_operation(swarm, root_spawn_operation)
 

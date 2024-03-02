@@ -5,13 +5,13 @@ and a preassigned action they must execute.
 
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing_extensions import Literal
 
 from swarmstar.utils.misc.uuid import generate_uuid
 
 class SwarmNode(BaseModel):
-    id: Optional[str] = generate_uuid('node')
+    id: Optional[str] = Field(default_factory=lambda: generate_uuid('node'))
     parent_id: Optional[str] = None
     children_ids: List[str] = []
     operation_ids: List[str] = []

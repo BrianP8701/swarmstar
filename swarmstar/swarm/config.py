@@ -33,10 +33,8 @@ def configure_swarm(
     }
 
     swarm = platform_map[platform](openai_key, root_path, **kwargs)
-    add_kv(swarm, "swarm_history", "current_frame", {"frame": 0})
-    add_kv(swarm, "config", swarm.id, swarm.model_dump())
+    add_kv(swarm, "config", "swarm_config", swarm.model_dump())
     return swarm
-
 
 def _setup_mac_swarm_space(openai_key: str, root_path: str, **kwargs) -> SwarmConfig:
     required_keys = ["mongodb_uri", "mongodb_db_name"]

@@ -3,7 +3,7 @@
     
     A node of this type decomposes its directive into immediate parralelizable actionable subdirectives.
     Thus it will have multiple children, and in addition it's goal might not be accomplished even when
-    all it's children have terminated. We thus have a specific termination policy for node' of this type.
+    all it's children have terminated. We thus have a specific termination policy for nodes of this type.
     
     1. If any children are alive, do nothing.
     2. If all children are terminated spawn the 'confirm_completion' node.

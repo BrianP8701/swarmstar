@@ -5,20 +5,26 @@ from swarmstar.utils.swarm.operations.blocking_operations.main import blocking
 from swarmstar.utils.swarm.operations.failure_operations.main import failure
 from swarmstar.utils.swarm.operations.spawn_operations.main import spawn
 from swarmstar.utils.swarm.operations.termination_operations.main import terminate
+from swarmstar.utils.misc.uuid import generate_uuid
+from swarmstar.utils.data import get_kv, append_to_list
 
  
-def spawn_swarm_root(swarm: SwarmConfig, goal: str) -> SpawnOperation:
+def spawn_swarm(swarm: SwarmConfig, goal: str) -> [SwarmConfig, SpawnOperation]:
     """
     Create the first spawn operation for the swarm.
     """
+    swarm_id = generate_uuid("swarmstar")
+    swarm.swarm_id = swarm_id
+    append_to_list(swarm, "admin", "swarms", swarm_id)
+    
     root_spawn_operation = SpawnOperation(
-        id=swarm.id,
         node_embryo=NodeEmbryo(
             action_id='swarmstar/actions/reasoning/decompose_directive',
             message=goal
         )
     )
-    return root_spawn_operation
+    
+    return swarm, root_spawn_operation
 
 def execute_swarmstar_operation(
     swarm: SwarmConfig, swarm_operation: SwarmOperation

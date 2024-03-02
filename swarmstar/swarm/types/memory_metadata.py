@@ -13,13 +13,13 @@ metadata labels the memory so the swarm knows how to interact with it.
 
 from typing import Dict, List, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing_extensions import Literal
 
 from swarmstar.utils.misc.uuid import generate_uuid
 
 class MemoryMetadata(BaseModel):
-    id: Optional[str] = generate_uuid('memory')
+    id: Optional[str] = Field(default_factory=lambda: generate_uuid('memory'))
     type: Literal["internal_folder", "local_folder", "azure_blob"]
     name: str
     description: str

@@ -50,3 +50,15 @@ def update_kv(swarm: SwarmConfig, category: str, key: str, value: dict) -> None:
 def set_kv(swarm: SwarmConfig, category: str, key: str, value: dict) -> None:
     kv_operations_module = get_kv_operations_module(swarm)
     return kv_operations_module.set_kv(swarm, category, key, value)
+
+def append_to_list(swarm: SwarmConfig, category: str, key: str, value: dict) -> None:
+    kv_operations_module = get_kv_operations_module(swarm)
+    return kv_operations_module.append_to_list(swarm, category, key, value)
+
+def get_element_by_index(swarm: SwarmConfig, category: str, key: str, index: int) -> dict:
+    kv_operations_module = get_kv_operations_module(swarm)
+    return kv_operations_module.get_element_by_index(swarm, category, key, index)
+
+def get_list_length(swarm: SwarmConfig, category: str, key: str) -> int:
+    kv_operations_module = get_kv_operations_module(swarm)
+    return kv_operations_module.get_list_length(swarm, category, key)

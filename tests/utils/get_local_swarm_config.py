@@ -23,5 +23,5 @@ def get_kv(db_name: str, category: str, _id: str) -> dict:
         ) from e
 
 
-def get_swarm_config(db_name: str, swarm_id: str) -> dict:
-    return SwarmConfig(**get_kv(db_name, "swarm", swarm_id))
+def get_swarm_config(db_name: str) -> dict:
+    return SwarmConfig(**get_kv(db_name, "config", "swarm_config"))

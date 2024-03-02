@@ -31,7 +31,7 @@ class SwarmOperation(BaseModel):
     node_id: str
 
 class BlockingOperation(SwarmOperation):
-    id: Optional[str] = generate_uuid('blocking_op')
+    id: Optional[str] = Field(default_factory=lambda: generate_uuid('blocking_op'))
     operation_type: Literal["blocking"] = Field(default="blocking")
     node_id: str
     blocking_type: str
@@ -40,7 +40,7 @@ class BlockingOperation(SwarmOperation):
     next_function_to_call: str
 
 class SpawnOperation(SwarmOperation):
-    id: Optional[str] = generate_uuid('spawn_op')
+    id: Optional[str] = Field(default_factory=lambda: generate_uuid('spawn_op'))
     operation_type: Literal["spawn"] = Field(default="spawn")
     node_embryo: NodeEmbryo
     termination_policy_change: Literal[
@@ -49,17 +49,17 @@ class SpawnOperation(SwarmOperation):
     node_id: str = None
 
 class TerminationOperation(SwarmOperation):
-    id: Optional[str] = generate_uuid('termination_op')
+    id: Optional[str] = Field(default_factory=lambda: generate_uuid('termination_op'))
     operation_type: Literal["terminate"] = Field(default="terminate")
     node_id: str
 
 class FailureOperation(SwarmOperation):
-    id: Optional[str] = generate_uuid('failure_op')
+    id: Optional[str] = Field(default_factory=lambda: generate_uuid('failure_op'))
     operation_type: Literal["node_failure"] = Field(default="node_failure")
     node_id: Optional[str] = None
 
 class UserCommunicationOperation(SwarmOperation):
-    id: Optional[str] = generate_uuid('user_comms_op')
+    id: Optional[str] = Field(default_factory=lambda: generate_uuid('user_comms_op'))
     operation_type: Literal["user_communication"] = Field(default="user_communication")
     node_id: str
     message: str

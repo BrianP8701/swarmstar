@@ -83,20 +83,23 @@ class DecomposeDirective(BaseAction):
                 node_embryo=NodeEmbryo(
                     action_id="swarmstar/actions/communication/ask_user_questions",
                     message=message,
-                ),
+                )
             )
+            
             return spawn_operation
         else:
             subdirectives = completion.subdirectives
             spawn_operations = []
             for subdirective in subdirectives:
+                
                 spawn_operation = SpawnOperation(
                     node_id=self.node.id,
                     node_embryo=NodeEmbryo(
                         action_id="swarmstar/actions/reasoning/route_action",
                         message=subdirective,
-                    ),
+                    )
                 )
+                
                 spawn_operations.append(spawn_operation)
             subdirectives_str = "\n".join(subdirectives)
             self.add_journal_entry(

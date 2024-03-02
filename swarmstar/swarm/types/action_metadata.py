@@ -25,7 +25,7 @@ from typing_extensions import Literal
 from swarmstar.utils.misc.uuid import generate_uuid
 
 class ActionMetadata(BaseModel):
-    id: Optional[str] = generate_uuid('action')
+    id: Optional[str] = Field(default_factory=lambda: generate_uuid('action'))
     is_folder: bool
     type: Literal[
         "azure_blob_storage_folder",
