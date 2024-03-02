@@ -3,7 +3,7 @@ This operation spawns and terminates a node without running any of the action's 
 """
 import pytest
 
-from swarmstar.swarm.core import swarmstar_god
+from swarmstar.swarm.core import execute_swarmstar_operation
 from swarmstar.utils.swarm.swarmstar_space.swarm_state import get_node_from_swarm_state
 from swarmstar.swarm.types import (
     NodeEmbryo,
@@ -27,7 +27,7 @@ def test_simple_termination():
         termination_policy_change="simple",
     )
 
-    first_spawn_output = swarmstar_god(swarm, spawn_operation)[0]
+    first_spawn_output = execute_swarmstar_operation(swarm, spawn_operation)[0]
     first_node_id = first_spawn_output.node_id
 
     spawn_operation = SpawnOperation(
@@ -40,13 +40,13 @@ def test_simple_termination():
         termination_policy_change="simple",
     )
 
-    second_spawn_output = swarmstar_god(swarm, spawn_operation)[0]
+    second_spawn_output = execute_swarmstar_operation(swarm, spawn_operation)[0]
     second_node_id = second_spawn_output.node_id
 
     terminate_operation = TerminationOperation(node_id=second_node_id)
 
-    next_swarm_operation = swarmstar_god(swarm, terminate_operation)[0]
-    next_swarm_operation = swarmstar_god(swarm, next_swarm_operation)
+    next_swarm_operation = execute_swarmstar_operation(swarm, terminate_operation)[0]
+    next_swarm_operation = execute_swarmstar_operation(swarm, next_swarm_operation)
 
     try:
         first_node = get_node_from_swarm_state(swarm, first_node_id)

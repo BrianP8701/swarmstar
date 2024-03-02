@@ -3,8 +3,6 @@ When the swarm object is created a single sqlite3 database is created for the sw
 
 This database is used to store all kv store data with the key being the category and the key.
 '''
-from __future__ import annotations
-from typing import TYPE_CHECKING
 import sqlite3
 import json
 

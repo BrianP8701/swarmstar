@@ -7,9 +7,10 @@ from typing import Optional
 from pydantic import BaseModel
 from typing_extensions import Literal
 
+from swarmstar.utils.misc.uuid import generate_uuid
 
 class SwarmConfig(BaseModel):
-    _id: str
+    id: Optional[str] = generate_uuid('swarmstar')
     root_path: str
     openai_key: str
     platform: Literal["mac", "azure"]

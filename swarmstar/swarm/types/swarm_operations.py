@@ -12,6 +12,7 @@ from typing import Any, Dict, Literal, Optional
 
 from pydantic import BaseModel, Field
 
+from swarmstar.utils.misc.uuid import generate_uuid
 
 class NodeEmbryo(BaseModel):
     action_id: str
@@ -19,7 +20,7 @@ class NodeEmbryo(BaseModel):
 
 
 class SwarmOperation(BaseModel):
-    _id: str
+    id: str
     operation_type: Literal[
         "spawn", 
         "terminate", 
@@ -30,6 +31,7 @@ class SwarmOperation(BaseModel):
     node_id: str
 
 class BlockingOperation(SwarmOperation):
+    id: Optional[str] = generate_uuid('blocking_op')
     operation_type: Literal["blocking"] = Field(default="blocking")
     node_id: str
     blocking_type: str
@@ -38,6 +40,7 @@ class BlockingOperation(SwarmOperation):
     next_function_to_call: str
 
 class SpawnOperation(SwarmOperation):
+    id: Optional[str] = generate_uuid('spawn_op')
     operation_type: Literal["spawn"] = Field(default="spawn")
     node_embryo: NodeEmbryo
     termination_policy_change: Literal[
@@ -46,14 +49,17 @@ class SpawnOperation(SwarmOperation):
     node_id: str = None
 
 class TerminationOperation(SwarmOperation):
+    id: Optional[str] = generate_uuid('termination_op')
     operation_type: Literal["terminate"] = Field(default="terminate")
     node_id: str
 
 class FailureOperation(SwarmOperation):
+    id: Optional[str] = generate_uuid('failure_op')
     operation_type: Literal["node_failure"] = Field(default="node_failure")
     node_id: Optional[str] = None
 
 class UserCommunicationOperation(SwarmOperation):
+    id: Optional[str] = generate_uuid('user_comms_op')
     operation_type: Literal["user_communication"] = Field(default="user_communication")
     node_id: str
     message: str

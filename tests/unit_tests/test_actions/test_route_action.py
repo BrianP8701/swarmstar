@@ -1,7 +1,7 @@
 # pytest tests/unit_tests/test_actions/test_route_action.py
 import pytest
 
-from swarmstar.swarm.core import swarmstar_god
+from swarmstar.swarm.core import execute_swarmstar_operation
 from swarmstar.swarm.types import NodeEmbryo, SpawnOperation
 from tests.utils.get_local_swarm_config import get_swarm_config
 
@@ -17,9 +17,9 @@ def test_route_action():
         )
     )
 
-    next_swarm_operation = swarmstar_god(swarm, spawn_route_node)
+    next_swarm_operation = execute_swarmstar_operation(swarm, spawn_route_node)
     while next_swarm_operation[0].operation_type != "spawn":
-        next_swarm_operation = swarmstar_god(swarm, next_swarm_operation[0])
+        next_swarm_operation = execute_swarmstar_operation(swarm, next_swarm_operation[0])
 
     assert next_swarm_operation[0].operation_type == "spawn"
     assert (

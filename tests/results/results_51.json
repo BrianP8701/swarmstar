@@ -1,0 +1,639 @@
+[
+    {
+        "node_id": null,
+        "operation_type": "spawn",
+        "action_id": "swarmstar/actions/reasoning/decompose_directive",
+        "message": "I want you to create a web app with 3 sections:\n1. A section where you can enter your goal and press spawn\n2. A section where you can talk to multiple agents at once\n3. A section where you can visualize the swarm's state4. A section where you can visualize the swarm's history"
+    },
+    {
+        "node_id": "node_20240302111025469466_cbeebdc8-d25f-4cae-827f-71b833997895",
+        "operation_type": "blocking",
+        "node": {
+            "id": "node_20240302111025469466_cbeebdc8-d25f-4cae-827f-71b833997895",
+            "parent_id": null,
+            "children_ids": [],
+            "operation_ids": [],
+            "action_id": "swarmstar/actions/reasoning/decompose_directive",
+            "message": "I want you to create a web app with 3 sections:\n1. A section where you can enter your goal and press spawn\n2. A section where you can talk to multiple agents at once\n3. A section where you can visualize the swarm's state4. A section where you can visualize the swarm's history",
+            "alive": true,
+            "termination_policy": "parallel_review",
+            "developer_logs": [],
+            "journal": [
+                {
+                    "header": "Directive to decompose",
+                    "content": "I want you to create a web app with 3 sections:\n1. A section where you can enter your goal and press spawn\n2. A section where you can talk to multiple agents at once\n3. A section where you can visualize the swarm's state4. A section where you can visualize the swarm's history"
+                }
+            ],
+            "report": null
+        }
+    },
+    {
+        "node_id": "node_20240302111025469466_cbeebdc8-d25f-4cae-827f-71b833997895",
+        "operation_type": "blocking",
+        "node": {
+            "id": "node_20240302111025469466_cbeebdc8-d25f-4cae-827f-71b833997895",
+            "parent_id": null,
+            "children_ids": [],
+            "operation_ids": [],
+            "action_id": "swarmstar/actions/reasoning/decompose_directive",
+            "message": "I want you to create a web app with 3 sections:\n1. A section where you can enter your goal and press spawn\n2. A section where you can talk to multiple agents at once\n3. A section where you can visualize the swarm's state4. A section where you can visualize the swarm's history",
+            "alive": true,
+            "termination_policy": "parallel_review",
+            "developer_logs": [
+                {
+                    "type": "instructor_request",
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": "You are given a directive. You have 2 options:\n1. Ask questions to get more information or clarification of requirements and intentions.\n2. Decompose the directive into actionable subdirectives that will be executed independently and in parallel. After those are done, youll generate the next set of subdirectives. I stress that the subdirectives must be independent and parallel.\n\nChoose one of the options and proceed. Do not ask questions and decompose the directive at the same time."
+                        },
+                        {
+                            "role": "user",
+                            "content": "Directive to decompose: \n`I want you to create a web app with 3 sections:\n1. A section where you can enter your goal and press spawn\n2. A section where you can talk to multiple agents at once\n3. A section where you can visualize the swarm's state4. A section where you can visualize the swarm's history`"
+                        }
+                    ]
+                },
+                {
+                    "type": "instructor_completion",
+                    "instructor_model_name": "DecomposeDirectiveModel",
+                    "completion": {
+                        "scrap_paper": null,
+                        "questions": null,
+                        "subdirectives": [
+                            "Design and implement a user interface for a section where users can enter their goals and interact with a 'spawn' button.",
+                            "Design and implement a multi-agent communication interface allowing simultaneous conversations with multiple agents.",
+                            "Develop a real-time visualization tool for monitoring the current state of the swarm.",
+                            "Create a historical data visualization interface for the swarm's past activities and states."
+                        ]
+                    }
+                }
+            ],
+            "journal": [
+                {
+                    "header": "Directive to decompose",
+                    "content": "I want you to create a web app with 3 sections:\n1. A section where you can enter your goal and press spawn\n2. A section where you can talk to multiple agents at once\n3. A section where you can visualize the swarm's state4. A section where you can visualize the swarm's history"
+                }
+            ],
+            "report": null
+        }
+    },
+    {
+        "node_id": "node_20240302111025469466_cbeebdc8-d25f-4cae-827f-71b833997895",
+        "operation_type": "spawn",
+        "node": {
+            "id": "node_20240302111025469466_cbeebdc8-d25f-4cae-827f-71b833997895",
+            "parent_id": null,
+            "children_ids": [],
+            "operation_ids": [],
+            "action_id": "swarmstar/actions/reasoning/decompose_directive",
+            "message": "I want you to create a web app with 3 sections:\n1. A section where you can enter your goal and press spawn\n2. A section where you can talk to multiple agents at once\n3. A section where you can visualize the swarm's state4. A section where you can visualize the swarm's history",
+            "alive": true,
+            "termination_policy": "parallel_review",
+            "developer_logs": [
+                {
+                    "type": "instructor_request",
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": "You are given a directive. You have 2 options:\n1. Ask questions to get more information or clarification of requirements and intentions.\n2. Decompose the directive into actionable subdirectives that will be executed independently and in parallel. After those are done, youll generate the next set of subdirectives. I stress that the subdirectives must be independent and parallel.\n\nChoose one of the options and proceed. Do not ask questions and decompose the directive at the same time."
+                        },
+                        {
+                            "role": "user",
+                            "content": "Directive to decompose: \n`I want you to create a web app with 3 sections:\n1. A section where you can enter your goal and press spawn\n2. A section where you can talk to multiple agents at once\n3. A section where you can visualize the swarm's state4. A section where you can visualize the swarm's history`"
+                        }
+                    ]
+                },
+                {
+                    "type": "instructor_completion",
+                    "instructor_model_name": "DecomposeDirectiveModel",
+                    "completion": {
+                        "scrap_paper": null,
+                        "questions": null,
+                        "subdirectives": [
+                            "Design and implement a user interface for a section where users can enter their goals and interact with a 'spawn' button.",
+                            "Design and implement a multi-agent communication interface allowing simultaneous conversations with multiple agents.",
+                            "Develop a real-time visualization tool for monitoring the current state of the swarm.",
+                            "Create a historical data visualization interface for the swarm's past activities and states."
+                        ]
+                    }
+                }
+            ],
+            "journal": [
+                {
+                    "header": "Directive to decompose",
+                    "content": "I want you to create a web app with 3 sections:\n1. A section where you can enter your goal and press spawn\n2. A section where you can talk to multiple agents at once\n3. A section where you can visualize the swarm's state4. A section where you can visualize the swarm's history"
+                },
+                {
+                    "header": "Successfully Decomposed Directives",
+                    "content": "Design and implement a user interface for a section where users can enter their goals and interact with a 'spawn' button.\nDesign and implement a multi-agent communication interface allowing simultaneous conversations with multiple agents.\nDevelop a real-time visualization tool for monitoring the current state of the swarm.\nCreate a historical data visualization interface for the swarm's past activities and states."
+                }
+            ],
+            "report": null
+        },
+        "action_id": "swarmstar/actions/reasoning/route_action",
+        "message": "Design and implement a user interface for a section where users can enter their goals and interact with a 'spawn' button."
+    },
+    {
+        "node_id": "node_20240302111025469466_cbeebdc8-d25f-4cae-827f-71b833997895",
+        "operation_type": "spawn",
+        "node": {
+            "id": "node_20240302111025469466_cbeebdc8-d25f-4cae-827f-71b833997895",
+            "parent_id": "node_20240302111025469466_cbeebdc8-d25f-4cae-827f-71b833997895",
+            "children_ids": [],
+            "operation_ids": [],
+            "action_id": "swarmstar/actions/reasoning/route_action",
+            "message": "Design and implement a user interface for a section where users can enter their goals and interact with a 'spawn' button.",
+            "alive": true,
+            "termination_policy": "simple",
+            "developer_logs": [],
+            "journal": [
+                {
+                    "header": "Decideing what action to take given directive",
+                    "content": "Design and implement a user interface for a section where users can enter their goals and interact with a 'spawn' button."
+                }
+            ],
+            "report": null
+        },
+        "action_id": "swarmstar/actions/reasoning/route_action",
+        "message": "Design and implement a multi-agent communication interface allowing simultaneous conversations with multiple agents."
+    },
+    {
+        "node_id": "node_20240302111025469466_cbeebdc8-d25f-4cae-827f-71b833997895",
+        "operation_type": "spawn",
+        "node": {
+            "id": "node_20240302111025469466_cbeebdc8-d25f-4cae-827f-71b833997895",
+            "parent_id": "node_20240302111025469466_cbeebdc8-d25f-4cae-827f-71b833997895",
+            "children_ids": [],
+            "operation_ids": [],
+            "action_id": "swarmstar/actions/reasoning/route_action",
+            "message": "Design and implement a multi-agent communication interface allowing simultaneous conversations with multiple agents.",
+            "alive": true,
+            "termination_policy": "simple",
+            "developer_logs": [],
+            "journal": [
+                {
+                    "header": "Decideing what action to take given directive",
+                    "content": "Design and implement a multi-agent communication interface allowing simultaneous conversations with multiple agents."
+                }
+            ],
+            "report": null
+        },
+        "action_id": "swarmstar/actions/reasoning/route_action",
+        "message": "Develop a real-time visualization tool for monitoring the current state of the swarm."
+    },
+    {
+        "node_id": "node_20240302111025469466_cbeebdc8-d25f-4cae-827f-71b833997895",
+        "operation_type": "spawn",
+        "node": {
+            "id": "node_20240302111025469466_cbeebdc8-d25f-4cae-827f-71b833997895",
+            "parent_id": "node_20240302111025469466_cbeebdc8-d25f-4cae-827f-71b833997895",
+            "children_ids": [],
+            "operation_ids": [],
+            "action_id": "swarmstar/actions/reasoning/route_action",
+            "message": "Develop a real-time visualization tool for monitoring the current state of the swarm.",
+            "alive": true,
+            "termination_policy": "simple",
+            "developer_logs": [],
+            "journal": [
+                {
+                    "header": "Decideing what action to take given directive",
+                    "content": "Develop a real-time visualization tool for monitoring the current state of the swarm."
+                }
+            ],
+            "report": null
+        },
+        "action_id": "swarmstar/actions/reasoning/route_action",
+        "message": "Create a historical data visualization interface for the swarm's past activities and states."
+    },
+    {
+        "node_id": "node_20240302111025469466_cbeebdc8-d25f-4cae-827f-71b833997895",
+        "operation_type": "blocking",
+        "node": {
+            "id": "node_20240302111025469466_cbeebdc8-d25f-4cae-827f-71b833997895",
+            "parent_id": "node_20240302111025469466_cbeebdc8-d25f-4cae-827f-71b833997895",
+            "children_ids": [],
+            "operation_ids": [],
+            "action_id": "swarmstar/actions/reasoning/route_action",
+            "message": "Create a historical data visualization interface for the swarm's past activities and states.",
+            "alive": true,
+            "termination_policy": "simple",
+            "developer_logs": [],
+            "journal": [
+                {
+                    "header": "Decideing what action to take given directive",
+                    "content": "Create a historical data visualization interface for the swarm's past activities and states."
+                }
+            ],
+            "report": null
+        }
+    },
+    {
+        "node_id": "node_20240302111025469466_cbeebdc8-d25f-4cae-827f-71b833997895",
+        "operation_type": "blocking",
+        "node": {
+            "id": "node_20240302111025469466_cbeebdc8-d25f-4cae-827f-71b833997895",
+            "parent_id": "node_20240302111025469466_cbeebdc8-d25f-4cae-827f-71b833997895",
+            "children_ids": [],
+            "operation_ids": [],
+            "action_id": "swarmstar/actions/reasoning/route_action",
+            "message": "Create a historical data visualization interface for the swarm's past activities and states.",
+            "alive": true,
+            "termination_policy": "simple",
+            "developer_logs": [
+                {
+                    "type": "instructor_request",
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": "Decide what action path to take based on the goal and the available actions. If there is no good action path to take, describe what type of action is needed in detail in the failure message, and leave index empty."
+                        },
+                        {
+                            "role": "system",
+                            "content": "Decide what action path is best to take to accomplish this goal: Design and implement a user interface for a section where users can enter their goals and interact with a 'spawn' button.\n\nOptions:\n0. This folder contains all actions pertaining to reasoning operations. It currently only contains an action that decomposes a directive into immediate sub-directives.\n1. Contains actions to interact with the user\n"
+                        }
+                    ]
+                },
+                {
+                    "type": "instructor_completion",
+                    "instructor_model_name": "NextActionPath",
+                    "completion": {
+                        "index": 1,
+                        "failure_message": null
+                    }
+                }
+            ],
+            "journal": [
+                {
+                    "header": "Decideing what action to take given directive",
+                    "content": "Create a historical data visualization interface for the swarm's past activities and states."
+                }
+            ],
+            "report": null
+        }
+    },
+    {
+        "node_id": "node_20240302111025469466_cbeebdc8-d25f-4cae-827f-71b833997895",
+        "operation_type": "blocking",
+        "node": {
+            "id": "node_20240302111025469466_cbeebdc8-d25f-4cae-827f-71b833997895",
+            "parent_id": "node_20240302111025469466_cbeebdc8-d25f-4cae-827f-71b833997895",
+            "children_ids": [],
+            "operation_ids": [],
+            "action_id": "swarmstar/actions/reasoning/route_action",
+            "message": "Create a historical data visualization interface for the swarm's past activities and states.",
+            "alive": true,
+            "termination_policy": "simple",
+            "developer_logs": [
+                {
+                    "type": "instructor_request",
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": "Decide what action path to take based on the goal and the available actions. If there is no good action path to take, describe what type of action is needed in detail in the failure message, and leave index empty."
+                        },
+                        {
+                            "role": "system",
+                            "content": "Decide what action path is best to take to accomplish this goal: Design and implement a user interface for a section where users can enter their goals and interact with a 'spawn' button.\n\nOptions:\n0. This folder contains all actions pertaining to reasoning operations. It currently only contains an action that decomposes a directive into immediate sub-directives.\n1. Contains actions to interact with the user\n"
+                        }
+                    ]
+                },
+                {
+                    "type": "instructor_completion",
+                    "instructor_model_name": "NextActionPath",
+                    "completion": {
+                        "index": 1,
+                        "failure_message": null
+                    }
+                },
+                {
+                    "type": "instructor_request",
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": "Decide what action path to take based on the goal and the available actions. If there is no good action path to take, describe what type of action is needed in detail in the failure message, and leave index empty."
+                        },
+                        {
+                            "role": "system",
+                            "content": "Decide what action path is best to take to accomplish this goal: Design and implement a multi-agent communication interface allowing simultaneous conversations with multiple agents.\n\nOptions:\n0. This folder contains all actions pertaining to reasoning operations. It currently only contains an action that decomposes a directive into immediate sub-directives.\n1. Contains actions to interact with the user\n"
+                        }
+                    ]
+                },
+                {
+                    "type": "instructor_completion",
+                    "instructor_model_name": "NextActionPath",
+                    "completion": {
+                        "index": null,
+                        "failure_message": "To design and implement a multi-agent communication interface, we need actions that involve system design, software development, and possibly multi-threading or asynchronous processing capabilities. Actions should include defining communication protocols, designing the interface architecture, implementing the interface, and testing the multi-agent communication system. None of the available actions pertain to these requirements."
+                    }
+                }
+            ],
+            "journal": [
+                {
+                    "header": "Decideing what action to take given directive",
+                    "content": "Create a historical data visualization interface for the swarm's past activities and states."
+                }
+            ],
+            "report": null
+        }
+    },
+    {
+        "node_id": "node_20240302111025469466_cbeebdc8-d25f-4cae-827f-71b833997895",
+        "operation_type": "blocking",
+        "node": {
+            "id": "node_20240302111025469466_cbeebdc8-d25f-4cae-827f-71b833997895",
+            "parent_id": "node_20240302111025469466_cbeebdc8-d25f-4cae-827f-71b833997895",
+            "children_ids": [],
+            "operation_ids": [],
+            "action_id": "swarmstar/actions/reasoning/route_action",
+            "message": "Create a historical data visualization interface for the swarm's past activities and states.",
+            "alive": true,
+            "termination_policy": "simple",
+            "developer_logs": [
+                {
+                    "type": "instructor_request",
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": "Decide what action path to take based on the goal and the available actions. If there is no good action path to take, describe what type of action is needed in detail in the failure message, and leave index empty."
+                        },
+                        {
+                            "role": "system",
+                            "content": "Decide what action path is best to take to accomplish this goal: Design and implement a user interface for a section where users can enter their goals and interact with a 'spawn' button.\n\nOptions:\n0. This folder contains all actions pertaining to reasoning operations. It currently only contains an action that decomposes a directive into immediate sub-directives.\n1. Contains actions to interact with the user\n"
+                        }
+                    ]
+                },
+                {
+                    "type": "instructor_completion",
+                    "instructor_model_name": "NextActionPath",
+                    "completion": {
+                        "index": 1,
+                        "failure_message": null
+                    }
+                },
+                {
+                    "type": "instructor_request",
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": "Decide what action path to take based on the goal and the available actions. If there is no good action path to take, describe what type of action is needed in detail in the failure message, and leave index empty."
+                        },
+                        {
+                            "role": "system",
+                            "content": "Decide what action path is best to take to accomplish this goal: Design and implement a multi-agent communication interface allowing simultaneous conversations with multiple agents.\n\nOptions:\n0. This folder contains all actions pertaining to reasoning operations. It currently only contains an action that decomposes a directive into immediate sub-directives.\n1. Contains actions to interact with the user\n"
+                        }
+                    ]
+                },
+                {
+                    "type": "instructor_completion",
+                    "instructor_model_name": "NextActionPath",
+                    "completion": {
+                        "index": null,
+                        "failure_message": "To design and implement a multi-agent communication interface, we need actions that involve system design, software development, and possibly multi-threading or asynchronous processing capabilities. Actions should include defining communication protocols, designing the interface architecture, implementing the interface, and testing the multi-agent communication system. None of the available actions pertain to these requirements."
+                    }
+                },
+                {
+                    "type": "instructor_request",
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": "Decide what action path to take based on the goal and the available actions. If there is no good action path to take, describe what type of action is needed in detail in the failure message, and leave index empty."
+                        },
+                        {
+                            "role": "system",
+                            "content": "Decide what action path is best to take to accomplish this goal: Develop a real-time visualization tool for monitoring the current state of the swarm.\n\nOptions:\n0. This folder contains all actions pertaining to reasoning operations. It currently only contains an action that decomposes a directive into immediate sub-directives.\n1. Contains actions to interact with the user\n"
+                        }
+                    ]
+                },
+                {
+                    "type": "instructor_completion",
+                    "instructor_model_name": "NextActionPath",
+                    "completion": {
+                        "index": null,
+                        "failure_message": "To develop a real-time visualization tool for monitoring the current state of the swarm, we need actions that involve software development tasks such as designing the user interface, implementing data processing and visualization algorithms, integrating with data sources (e.g., sensors or databases tracking the swarm), and testing the tool. None of the available actions pertain to these specific software development needs."
+                    }
+                }
+            ],
+            "journal": [
+                {
+                    "header": "Decideing what action to take given directive",
+                    "content": "Create a historical data visualization interface for the swarm's past activities and states."
+                }
+            ],
+            "report": null
+        }
+    },
+    {
+        "node_id": "node_20240302111025469466_cbeebdc8-d25f-4cae-827f-71b833997895",
+        "operation_type": "blocking",
+        "node": {
+            "id": "node_20240302111025469466_cbeebdc8-d25f-4cae-827f-71b833997895",
+            "parent_id": "node_20240302111025469466_cbeebdc8-d25f-4cae-827f-71b833997895",
+            "children_ids": [],
+            "operation_ids": [],
+            "action_id": "swarmstar/actions/reasoning/route_action",
+            "message": "Create a historical data visualization interface for the swarm's past activities and states.",
+            "alive": true,
+            "termination_policy": "simple",
+            "developer_logs": [
+                {
+                    "type": "instructor_request",
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": "Decide what action path to take based on the goal and the available actions. If there is no good action path to take, describe what type of action is needed in detail in the failure message, and leave index empty."
+                        },
+                        {
+                            "role": "system",
+                            "content": "Decide what action path is best to take to accomplish this goal: Design and implement a user interface for a section where users can enter their goals and interact with a 'spawn' button.\n\nOptions:\n0. This folder contains all actions pertaining to reasoning operations. It currently only contains an action that decomposes a directive into immediate sub-directives.\n1. Contains actions to interact with the user\n"
+                        }
+                    ]
+                },
+                {
+                    "type": "instructor_completion",
+                    "instructor_model_name": "NextActionPath",
+                    "completion": {
+                        "index": 1,
+                        "failure_message": null
+                    }
+                },
+                {
+                    "type": "instructor_request",
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": "Decide what action path to take based on the goal and the available actions. If there is no good action path to take, describe what type of action is needed in detail in the failure message, and leave index empty."
+                        },
+                        {
+                            "role": "system",
+                            "content": "Decide what action path is best to take to accomplish this goal: Design and implement a multi-agent communication interface allowing simultaneous conversations with multiple agents.\n\nOptions:\n0. This folder contains all actions pertaining to reasoning operations. It currently only contains an action that decomposes a directive into immediate sub-directives.\n1. Contains actions to interact with the user\n"
+                        }
+                    ]
+                },
+                {
+                    "type": "instructor_completion",
+                    "instructor_model_name": "NextActionPath",
+                    "completion": {
+                        "index": null,
+                        "failure_message": "To design and implement a multi-agent communication interface, we need actions that involve system design, software development, and possibly multi-threading or asynchronous processing capabilities. Actions should include defining communication protocols, designing the interface architecture, implementing the interface, and testing the multi-agent communication system. None of the available actions pertain to these requirements."
+                    }
+                },
+                {
+                    "type": "instructor_request",
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": "Decide what action path to take based on the goal and the available actions. If there is no good action path to take, describe what type of action is needed in detail in the failure message, and leave index empty."
+                        },
+                        {
+                            "role": "system",
+                            "content": "Decide what action path is best to take to accomplish this goal: Develop a real-time visualization tool for monitoring the current state of the swarm.\n\nOptions:\n0. This folder contains all actions pertaining to reasoning operations. It currently only contains an action that decomposes a directive into immediate sub-directives.\n1. Contains actions to interact with the user\n"
+                        }
+                    ]
+                },
+                {
+                    "type": "instructor_completion",
+                    "instructor_model_name": "NextActionPath",
+                    "completion": {
+                        "index": null,
+                        "failure_message": "To develop a real-time visualization tool for monitoring the current state of the swarm, we need actions that involve software development tasks such as designing the user interface, implementing data processing and visualization algorithms, integrating with data sources (e.g., sensors or databases tracking the swarm), and testing the tool. None of the available actions pertain to these specific software development needs."
+                    }
+                },
+                {
+                    "type": "instructor_request",
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": "Decide what action path to take based on the goal and the available actions. If there is no good action path to take, describe what type of action is needed in detail in the failure message, and leave index empty."
+                        },
+                        {
+                            "role": "system",
+                            "content": "Decide what action path is best to take to accomplish this goal: Create a historical data visualization interface for the swarm's past activities and states.\n\nOptions:\n0. This folder contains all actions pertaining to reasoning operations. It currently only contains an action that decomposes a directive into immediate sub-directives.\n1. Contains actions to interact with the user\n"
+                        }
+                    ]
+                },
+                {
+                    "type": "instructor_completion",
+                    "instructor_model_name": "NextActionPath",
+                    "completion": {
+                        "index": null,
+                        "failure_message": "To create a historical data visualization interface for the swarm's past activities and states, we need actions that involve data analysis, interface design, and possibly software development. Actions should include data collection, data processing, designing the user interface, implementing the visualization, and testing the interface. None of the current options provided are directly related to these tasks."
+                    }
+                }
+            ],
+            "journal": [
+                {
+                    "header": "Decideing what action to take given directive",
+                    "content": "Create a historical data visualization interface for the swarm's past activities and states."
+                }
+            ],
+            "report": null
+        }
+    },
+    {
+        "node_id": "node_20240302111025469466_cbeebdc8-d25f-4cae-827f-71b833997895",
+        "operation_type": "blocking",
+        "node": {
+            "id": "node_20240302111025469466_cbeebdc8-d25f-4cae-827f-71b833997895",
+            "parent_id": "node_20240302111025469466_cbeebdc8-d25f-4cae-827f-71b833997895",
+            "children_ids": [],
+            "operation_ids": [],
+            "action_id": "swarmstar/actions/reasoning/route_action",
+            "message": "Create a historical data visualization interface for the swarm's past activities and states.",
+            "alive": true,
+            "termination_policy": "simple",
+            "developer_logs": [
+                {
+                    "type": "instructor_request",
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": "Decide what action path to take based on the goal and the available actions. If there is no good action path to take, describe what type of action is needed in detail in the failure message, and leave index empty."
+                        },
+                        {
+                            "role": "system",
+                            "content": "Decide what action path is best to take to accomplish this goal: Design and implement a user interface for a section where users can enter their goals and interact with a 'spawn' button.\n\nOptions:\n0. This folder contains all actions pertaining to reasoning operations. It currently only contains an action that decomposes a directive into immediate sub-directives.\n1. Contains actions to interact with the user\n"
+                        }
+                    ]
+                },
+                {
+                    "type": "instructor_completion",
+                    "instructor_model_name": "NextActionPath",
+                    "completion": {
+                        "index": 1,
+                        "failure_message": null
+                    }
+                },
+                {
+                    "type": "instructor_request",
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": "Decide what action path to take based on the goal and the available actions. If there is no good action path to take, describe what type of action is needed in detail in the failure message, and leave index empty."
+                        },
+                        {
+                            "role": "system",
+                            "content": "Decide what action path is best to take to accomplish this goal: Design and implement a multi-agent communication interface allowing simultaneous conversations with multiple agents.\n\nOptions:\n0. This folder contains all actions pertaining to reasoning operations. It currently only contains an action that decomposes a directive into immediate sub-directives.\n1. Contains actions to interact with the user\n"
+                        }
+                    ]
+                },
+                {
+                    "type": "instructor_completion",
+                    "instructor_model_name": "NextActionPath",
+                    "completion": {
+                        "index": null,
+                        "failure_message": "To design and implement a multi-agent communication interface, we need actions that involve system design, software development, and possibly multi-threading or asynchronous processing capabilities. Actions should include defining communication protocols, designing the interface architecture, implementing the interface, and testing the multi-agent communication system. None of the available actions pertain to these requirements."
+                    }
+                },
+                {
+                    "type": "instructor_request",
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": "Decide what action path to take based on the goal and the available actions. If there is no good action path to take, describe what type of action is needed in detail in the failure message, and leave index empty."
+                        },
+                        {
+                            "role": "system",
+                            "content": "Decide what action path is best to take to accomplish this goal: Develop a real-time visualization tool for monitoring the current state of the swarm.\n\nOptions:\n0. This folder contains all actions pertaining to reasoning operations. It currently only contains an action that decomposes a directive into immediate sub-directives.\n1. Contains actions to interact with the user\n"
+                        }
+                    ]
+                },
+                {
+                    "type": "instructor_completion",
+                    "instructor_model_name": "NextActionPath",
+                    "completion": {
+                        "index": null,
+                        "failure_message": "To develop a real-time visualization tool for monitoring the current state of the swarm, we need actions that involve software development tasks such as designing the user interface, implementing data processing and visualization algorithms, integrating with data sources (e.g., sensors or databases tracking the swarm), and testing the tool. None of the available actions pertain to these specific software development needs."
+                    }
+                },
+                {
+                    "type": "instructor_request",
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": "Decide what action path to take based on the goal and the available actions. If there is no good action path to take, describe what type of action is needed in detail in the failure message, and leave index empty."
+                        },
+                        {
+                            "role": "system",
+                            "content": "Decide what action path is best to take to accomplish this goal: Create a historical data visualization interface for the swarm's past activities and states.\n\nOptions:\n0. This folder contains all actions pertaining to reasoning operations. It currently only contains an action that decomposes a directive into immediate sub-directives.\n1. Contains actions to interact with the user\n"
+                        }
+                    ]
+                },
+                {
+                    "type": "instructor_completion",
+                    "instructor_model_name": "NextActionPath",
+                    "completion": {
+                        "index": null,
+                        "failure_message": "To create a historical data visualization interface for the swarm's past activities and states, we need actions that involve data analysis, interface design, and possibly software development. Actions should include data collection, data processing, designing the user interface, implementing the visualization, and testing the interface. None of the current options provided are directly related to these tasks."
+                    }
+                }
+            ],
+            "journal": [
+                {
+                    "header": "Decideing what action to take given directive",
+                    "content": "Create a historical data visualization interface for the swarm's past activities and states."
+                }
+            ],
+            "report": null
+        }
+    }
+]

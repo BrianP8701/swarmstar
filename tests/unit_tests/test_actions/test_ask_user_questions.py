@@ -1,7 +1,7 @@
 # pytest tests/unit_tests/test_actions/test_ask_user_questions.py
 import pytest
 
-from swarmstar.swarm.core import swarmstar_god
+from swarmstar.swarm.core import execute_swarmstar_operation
 from swarmstar.swarm.types import BlockingOperation, NodeEmbryo, SpawnOperation
 from tests.utils.get_local_swarm_config import get_swarm_config
 
@@ -16,7 +16,7 @@ def test_ask_user_questions():
             message="Just ask the user what his favorite color and memory is. This is a test.",
         )
     )
-    next_swarm_operation = swarmstar_god(swarm, spawn_user_question_asker_node)
+    next_swarm_operation = execute_swarmstar_operation(swarm, spawn_user_question_asker_node)
 
     while (
         next_swarm_operation[0].operation_type != "spawn"
@@ -26,7 +26,7 @@ def test_ask_user_questions():
             next_swarm_operation[0].blocking_type == "instructor_completion"
             or next_swarm_operation[0].blocking_type == "internal_action"
         ):
-            next_swarm_operation = swarmstar_god(swarm, next_swarm_operation[0])
+            next_swarm_operation = execute_swarmstar_operation(swarm, next_swarm_operation[0])
         elif next_swarm_operation[0].blocking_type == "send_user_message":
             ai_message = next_swarm_operation[0].args["message"]
             print(f"AI: {ai_message}\nUser: ")

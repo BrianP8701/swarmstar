@@ -1,6 +1,6 @@
 import pytest
 
-from swarmstar.swarm.core import swarmstar_god
+from swarmstar.swarm.core import execute_swarmstar_operation
 from swarmstar.swarm.types import (
     BlockingOperation,
 )
@@ -28,7 +28,7 @@ def test_instructor_completion():
         next_function_to_call="NA",
     )
 
-    output = swarmstar_god(swarm, instructor_completion_operation)
+    output = execute_swarmstar_operation(swarm, instructor_completion_operation)
 
     assert output.operation_type == "blocking"
     assert output.node_id == "NA"

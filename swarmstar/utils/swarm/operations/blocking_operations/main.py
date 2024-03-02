@@ -13,8 +13,8 @@ def blocking(
     swarm: SwarmConfig, blocking_operation: BlockingOperation
 ) -> Union[SwarmOperation, List[SwarmOperation]]:
     blocking_operation_type_map = {
-        "instructor_completion": "swarmstar.utils.swarm_utils.blocking_operations.instructor.completion",
-        "internal_action": "swarmstar.utils.swarm_utils.blocking_operations.internal_action",
+        "instructor_completion": "swarmstar.utils.swarm.operations.blocking_operations.instructor.completion",
+        "internal_action": "swarmstar.utils.swarm.operations.blocking_operations.internal_action",
     }
 
     blocking_operation_type = blocking_operation.blocking_type

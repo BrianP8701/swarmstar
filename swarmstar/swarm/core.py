@@ -7,11 +7,12 @@ from swarmstar.utils.swarm.operations.spawn_operations.main import spawn
 from swarmstar.utils.swarm.operations.termination_operations.main import terminate
 
  
-def spawn_swarm_root(goal: str) -> SpawnOperation:
+def spawn_swarm_root(swarm: SwarmConfig, goal: str) -> SpawnOperation:
     """
     Create the first spawn operation for the swarm.
     """
     root_spawn_operation = SpawnOperation(
+        id=swarm.id,
         node_embryo=NodeEmbryo(
             action_id='swarmstar/actions/reasoning/decompose_directive',
             message=goal

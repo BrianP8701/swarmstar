@@ -45,7 +45,7 @@ class RouteAction(BaseAction):
         )
 
         return BlockingOperation(
-            node_id=self.node._id,
+            node_id=self.node.id,
             blocking_type="instructor_completion",
             args={"messages": messages, "instructor_model_name": "NextActionPath"},
             context={"parent_action_id": "swarmstar/actions"},
@@ -73,7 +73,7 @@ class RouteAction(BaseAction):
                     self.node.message, children_descriptions
                 )
                 return BlockingOperation(
-                    node_id=self.node._id,
+                    node_id=self.node.id,
                     blocking_type="instructor_completion",
                     args={
                         "messages": messages,
@@ -88,7 +88,7 @@ class RouteAction(BaseAction):
                     "content": f"Routed goal: {self.node.message} to {next_action_id}"
                 })
                 return SpawnOperation(
-                    node_id=self.node._id,
+                    node_id=self.node.id,
                     node_embryo=NodeEmbryo(
                         action_id=next_action_id, message=self.node.message
                     )

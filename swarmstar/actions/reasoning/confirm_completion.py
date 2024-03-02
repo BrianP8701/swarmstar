@@ -76,7 +76,7 @@ class ConfirmCompletion(BaseAction):
         })
         
         return BlockingOperation(
-            node_id=self.node._id,
+            node_id=self.node.id,
             blocking_type="instructor_completion",
             args={
                 "messages": messages,
@@ -97,7 +97,7 @@ class ConfirmCompletion(BaseAction):
                 "content": "The directive has been completed."
             })
             return TerminationOperation(
-                node_id=self.node._id,
+                node_id=self.node.id,
             )
         else:
             self.add_journal_entry({
@@ -105,7 +105,7 @@ class ConfirmCompletion(BaseAction):
                 "content": f"The directive is incomplete. The message to send back to the decompose directive node is: {completion.message}"
             })
             return SpawnOperation(
-                node_id=self.node._id,
+                node_id=self.node.id,
                 node_embryo={
                     "action_id": "swarmstar/actions/reasoning/decompose_directive",
                     "message": completion.message
@@ -132,7 +132,7 @@ class ConfirmCompletion(BaseAction):
         all_branch_reports = []
         branch_subdirectives = []
         for child_id in parent_node.children_ids: # Loop through all children of decompose directive node
-            if child_id == self.node._id: # Skip this node (the confirm completion node)
+            if child_id == self.node.id: # Skip this node (the confirm completion node)
                 continue
             child_node = get_node_from_swarm_state(self.swarm, child_id)
             branch_subdirectives.append(child_node.message)

@@ -31,7 +31,7 @@ def error_handling_decorator(func):
                 0
             ]  # Assuming the first argument is always 'self' for instance methods
             tb_str = traceback.format_exc()
-            params_str = f"node_id: {self.node._id}\nParams: {kwargs}"
+            params_str = f"node_id: {self.node.id}\nParams: {kwargs}"
 
             error_message = (
                 f"Error in {func.__name__}:\n{str(e)}\n\n{tb_str}\n\n{params_str}"
@@ -39,7 +39,7 @@ def error_handling_decorator(func):
             raise Exception(error_message)
 
             # return FailureOperation(
-            #     node_id=self.node._id,
+            #     node_id=self.node.id,
             #     report=report,
             # )
 

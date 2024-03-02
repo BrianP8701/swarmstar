@@ -25,18 +25,12 @@ def upload_json_to_mongodb(mongodb_uri: str, db_name: str, collection_name: str,
     db = client[db_name]
     collection = db[collection_name]
     
-    # Ensure the 'key' field is a unique index
-    try:
-        collection.create_index([('key', 1)], unique=True)
-    except errors.OperationFailure:
-        print("Index already exists.")
-    
-    # Loop through each key-value pair in the JSON data and upload
-    for key, value in data.items():
+    # Loop through each _id-value pair in the JSON data and upload
+    for _id, value in data.items():
         try:
-            collection.update_one({'key': key}, {'$set': value}, upsert=True)
-            print(f"Uploaded {key} to MongoDB.")
+            collection.update_one({'_id': _id}, {'$set': value}, upsert=True)
+            print(f"Uploaded {_id} to MongoDB.")
         except Exception as e:
-            print(f"Failed to upload {key}: {str(e)}")
+            print(f"Failed to upload {_id}: {str(e)}")
 
 

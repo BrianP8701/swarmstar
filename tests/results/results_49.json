@@ -1,0 +1,30 @@
+[
+    {
+        "node_id": null,
+        "operation_type": "spawn",
+        "action_id": "swarmstar/actions/reasoning/decompose_directive",
+        "message": "I want you to create a web app with 3 sections:\n1. A section where you can enter your goal and press spawn\n2. A section where you can talk to multiple agents at once\n3. A section where you can visualize the swarm's state4. A section where you can visualize the swarm's history"
+    },
+    {
+        "node_id": "DecomposeDirective_20240302082149855755_7905500c-baa9-44c4-b268-e22c8fe7101a",
+        "operation_type": "blocking",
+        "node": {
+            "id": "node_20240302082149499539_0693f8dd-59a3-4612-96f0-7d4056c50224",
+            "parent_id": null,
+            "children_ids": [],
+            "operation_ids": [],
+            "action_id": "swarmstar/actions/reasoning/decompose_directive",
+            "message": "I want you to create a web app with 3 sections:\n1. A section where you can enter your goal and press spawn\n2. A section where you can talk to multiple agents at once\n3. A section where you can visualize the swarm's state4. A section where you can visualize the swarm's history",
+            "alive": true,
+            "termination_policy": "parallel_review",
+            "developer_logs": [],
+            "journal": [
+                {
+                    "header": "Directive to decompose",
+                    "content": "I want you to create a web app with 3 sections:\n1. A section where you can enter your goal and press spawn\n2. A section where you can talk to multiple agents at once\n3. A section where you can visualize the swarm's state4. A section where you can visualize the swarm's history"
+                }
+            ],
+            "report": null
+        }
+    }
+]

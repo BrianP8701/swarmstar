@@ -13,9 +13,9 @@ def terminate(
     swarm: SwarmConfig, termination_operation: TerminationOperation
 ) -> Union[TerminationOperation, None]:
     termination_policy_map = {
-        "simple": "swarmstar.utils.swarm_utils.termination_operations.simple",
-        "parallel_review": "swarmstar.utils.swarm_utils.termination_operations.parallel_review",
-        "clone_with_questions_answered": "swarmstar.utils.swarm_utils.termination_operations.clone_with_questions_answered",
+        "simple": "swarmstar.utils.swarm.operations.termination_operations.simple",
+        "parallel_review": "swarmstar.utils.swarm.operations.termination_operations.parallel_review",
+        "clone_with_questions_answered": "swarmstar.utils.swarm.operations.termination_operations.clone_with_questions_answered",
     }
 
     node_id = termination_operation.node_id

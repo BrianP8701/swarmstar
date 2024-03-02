@@ -32,7 +32,7 @@ def blocking(
     
     
     models_module = import_module(
-        "swarmstar.utils.swarm_utils.blocking_operations.instructor.pydantic_models"
+        "swarmstar.utils.swarm.operations.blocking_operations.instructor.pydantic_models"
     )
     instructor_model = getattr(models_module, instructor_model_name)
 

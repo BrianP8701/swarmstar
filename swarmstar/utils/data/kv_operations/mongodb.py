@@ -24,7 +24,7 @@ def check_and_create_database(mongodb_uri: str, db_name: str) -> None:
         raise ValueError(f"Database {db_name} already exists.")
     else:
         db = client[db_name]
-        collection = db["stage"]
+        collection = db["swarm"]
         collection.insert_one({"_id": "dummy_id"})
         collection.delete_one({"_id": "dummy_id"})
         print(f"Database {db_name} created successfully.")
@@ -59,16 +59,6 @@ def create_client(uri: str) -> MongoClient:
     except Exception as e:
         raise ValueError(f"Failed to create MongoDB client: {str(e)}")
 
-
-def create_collection(swarm: SwarmConfig, collection_name: str, ) -> None:
-    uri = swarm.mongodb_uri
-    db_name = swarm.mongodb_db_name
-    client = create_client(uri)
-    db = client[db_name]
-    collection = db[collection_name]
-    collection.create_index([("_id", pymongo.ASCENDING)], unique=True)
-
-
 def add_kv(swarm: SwarmConfig, collection: str, _id: str, value: dict) -> None:
     """
     Add a _id-value pair to the collection with an initial version number.
@@ -79,14 +69,13 @@ def add_kv(swarm: SwarmConfig, collection: str, _id: str, value: dict) -> None:
         uri = swarm.mongodb_uri
         client = create_client(uri)
         db = client[db_name]
-        if collection_name not in db.list_collection_names():
-            raise ValueError(f"Collection {collection_name} not found in MongoDB database.")
         collection = db[collection_name]
+        value.pop("id", None)
         # Initialize the document with a version number
         document = {"_id": _id, "version": 1, **value}
         collection.insert_one(document)
-    except pymongo.errors.Duplicate_idError:
-        update_kv(swarm, collection, _id, value)
+    except pymongo.errors.DuplicateKeyError:
+        update_kv(swarm, collection_name, _id, value)
     except Exception as e:
         raise ValueError(f'Failed to add to MongoDB collection: {str(e)}')
 
@@ -203,3 +192,61 @@ def set_kv(swarm: SwarmConfig, collection: str, _id: str, new_value: dict) -> No
             # If the document was updated elsewhere, retry the operation
     except Exception as e:
         raise ValueError(f"Failed to replace document in MongoDB collection: {str(e)}")
+
+# def append_to_list(swarm: SwarmConfig, collection: str, _id: str, value) -> None:
+#     """
+#     Append a value to a list within a document identified by _id without reading the whole list.
+#     """
+#     try:
+#         uri = swarm.mongodb_uri
+#         db_name = swarm.mongodb_db_name
+#         client = create_client(uri)
+#         db = client[db_name]
+#         collection = db[collection]
+        
+#         collection.update_one({"_id": _id}, {"$push": {"listFieldName": value}})
+#         print("Value appended successfully.")
+#     except Exception as e:
+#         raise ValueError(f"Failed to append value to list in MongoDB collection: {str(e)}")
+
+# def get_element_by_index(swarm: SwarmConfig, collection: str, _id: str, index: int) -> any:
+#     """
+#     Retrieve an element by index from a list within a document without retrieving the whole list.
+#     """
+#     try:
+#         uri = swarm.mongodb_uri
+#         db_name = swarm.mongodb_db_name
+#         client = create_client(uri)
+#         db = client[db_name]
+#         collection = db[collection]
+        
+#         result = collection.find_one({"_id": _id}, {"listFieldName": {"$slice": [index, 1]}})
+#         if result and "listFieldName" in result and len(result["listFieldName"]) > 0:
+#             return result["listFieldName"][0]
+#         else:
+#             raise ValueError("Element at specified index not found.")
+#     except Exception as e:
+#         raise ValueError(f"Failed to retrieve element by index: {str(e)}")
+
+# def get_list_length(swarm: SwarmConfig, collection: str, _id: str) -> int:
+#     """
+#     Get the length of a list within a document without retrieving the list itself.
+#     """
+#     try:
+#         uri = swarm.mongodb_uri
+#         db_name = swarm.mongodb_db_name
+#         client = create_client(uri)
+#         db = client[db_name]
+#         collection = db[collection]
+        
+#         pipeline = [
+#             {"$match": {"_id": _id}},
+#             {"$project": {"length": {"$size": "$listFieldName"}}}
+#         ]
+#         result = list(collection.aggregate(pipeline))
+#         if result and len(result) > 0:
+#             return result[0]["length"]
+#         else:
+#             raise ValueError("_id not found or list is empty.")
+#     except Exception as e:
+#         raise ValueError(f"Failed to get list length: {str(e)}")

@@ -16,7 +16,7 @@ from pydantic import BaseModel
 from typing_extensions import Literal
 
 class UtilMetadata(BaseModel):
-    _id: str
+    id: str
     type: Literal["internal_folder", "internal_function"]
     name: str
     description: str

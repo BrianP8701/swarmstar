@@ -8,17 +8,14 @@ from .action_metadata import (
     InternalFolder,
 )
 
-from .memory_metadata import MemoryMetadata, MemorySpace
+from .memory_metadata import MemoryMetadata
 
-from .swarm_history import SwarmHistory
-
-from .swarm_state import SwarmState
 
 from .swarm_nodes import (
-    SwarmNode,
+    SwarmNode
 )
 
-from .util_metadata import UtilSpace, UtilMetadata
+from .util_metadata import UtilMetadata
 
 from .swarm_operations import (
     SwarmOperation,

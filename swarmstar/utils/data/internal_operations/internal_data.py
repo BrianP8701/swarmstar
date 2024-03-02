@@ -18,14 +18,16 @@ def get_binary_file(package: str, resource_name: str) -> BinaryIO:
 
 def get_internal_metadata(category: str, key: str) -> dict:
     try:
-        with resources.path('swarmstar.internal_metadata', f'{category}.sqlite3') as db_path:
+        with resources.path('swarmstar', f'internal_metadata.sqlite3') as db_path:
             conn = sqlite3.connect(str(db_path))
             cursor = conn.cursor()
             key = key
-            cursor.execute('SELECT value FROM kv_store WHERE key = ?', (key,))
+            cursor.execute(f'SELECT value FROM {category} WHERE _id = ?', (key,))
             result = cursor.fetchone()
             if result:
-                return json.loads(result[0])
+                result = json.loads(result[0])
+                result['id'] = key
+                return result
             else:
                 raise ValueError(f'No value found for key: {key}')
     except Exception as e:

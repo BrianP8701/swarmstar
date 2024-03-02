@@ -11,7 +11,7 @@ from swarmstar.swarm.types import (
     SwarmOperation,
 )
 from swarmstar.utils.misc.uuid import generate_uuid
-from swarmstar.utils.swarm.swarmstar_space.swarm_state import get_node_from_swarm_state, set_node_in_swarm_state
+from swarmstar.utils.swarm.swarmstar_space.swarm_state import get_node_from_swarm_state, add_node_to_swarm_state, set_node_in_swarm_state
 from swarmstar.utils.swarm.swarmstar_space.action_space import get_action_metadata
 from swarmstar.utils.swarm.swarmstar_space.swarm_history import add_event_to_swarm_history
 
@@ -28,18 +28,18 @@ def spawn(
     if spawn_operation.termination_policy_change is not None:
         termination_policy = spawn_operation.termination_policy_change
     node = SwarmNode(
-        _id=generate_uuid(action_metadata.name),
         parent_id=parent_id,
         action_id=action_id,
         message=node_embryo.message,
         alive=True,
-        termination_policy=termination_policy
+        termination_policy=termination_policy,
     )
-    set_node_in_swarm_state(swarm, node)
+
+    add_node_to_swarm_state(swarm, node)
 
     if parent_id is not None:
         parent_node = get_node_from_swarm_state(swarm, parent_id)
-        parent_node.children_ids.append(node._id)
+        parent_node.children_ids.append(node.id)
         set_node_in_swarm_state(swarm, parent_node)
 
     add_event_to_swarm_history(swarm, spawn_operation)
@@ -53,7 +53,7 @@ def execute_node_action(
     action_type = action_metadata.type
 
     action_type_map = {
-        "internal_action": "swarmstar.utils.swarm_utils.spawn_operations.internal_action",
+        "internal_action": "swarmstar.utils.swarm.operations.spawn_operations.internal_action",
     }
 
     if action_type not in action_type_map:

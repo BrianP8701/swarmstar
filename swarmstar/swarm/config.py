@@ -13,6 +13,7 @@ import os
 
 from swarmstar.swarm.types import SwarmConfig
 from swarmstar.utils.data.kv_operations.main import add_kv
+from swarmstar.utils.misc.uuid import generate_uuid
 from swarmstar.utils.data.kv_operations.mongodb import (
     check_and_create_database,
 )
@@ -33,7 +34,7 @@ def configure_swarm(
 
     swarm = platform_map[platform](openai_key, root_path, **kwargs)
     add_kv(swarm, "swarm_history", "current_frame", {"frame": 0})
-    add_kv(swarm, "swarm", "swarm", swarm.model_dump())
+    add_kv(swarm, "config", swarm.id, swarm.model_dump())
     return swarm
 
 

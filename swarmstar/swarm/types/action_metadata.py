@@ -19,12 +19,13 @@ The execution_metadata provides a place to store the information to be passed
 to the executor who handles this action_type.
 """
 from typing import List, Optional
-
 from pydantic import BaseModel, Field
 from typing_extensions import Literal
 
+from swarmstar.utils.misc.uuid import generate_uuid
+
 class ActionMetadata(BaseModel):
-    _id: str
+    id: Optional[str] = generate_uuid('action')
     is_folder: bool
     type: Literal[
         "azure_blob_storage_folder",

@@ -8,9 +8,10 @@ from typing import Any, Dict, List, Optional
 from pydantic import BaseModel
 from typing_extensions import Literal
 
+from swarmstar.utils.misc.uuid import generate_uuid
 
 class SwarmNode(BaseModel):
-    _id: str
+    id: Optional[str] = generate_uuid('node')
     parent_id: Optional[str] = None
     children_ids: List[str] = []
     operation_ids: List[str] = []

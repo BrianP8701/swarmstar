@@ -20,5 +20,5 @@ def terminate(
         return None
 
     return TerminationOperation(
-        node_id=parent_node._id, 
+        node_id=parent_node.id, 
     )
