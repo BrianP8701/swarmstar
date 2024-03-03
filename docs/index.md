@@ -1,11 +1,15 @@
-# Swarmstar
-
+# swarmstar
+![alt text](InfiniteRecursiveCreation.jpeg)
 what to do as the "intelligence" of models -> ?
 
-computers and current models are already superhuman at many things. As they approach us in other things we find ourselves in a new world.
+for all of history the most important thing has been to be a leader, because to have as much power as possible to achieve your goal you need to employ others to help you
 
-for all of history the most important thing has been to be a leader, because to have as much power as possible you need to employ others to help you in your mission.
+as models approach (and surpass?) humans in "intelligence" you dont want to waste your time aligning and working with humans to accomplish your mission. today's idea of a company goes out the window if ais surpass humans. Instead of running a company, you'd control and maintain ais, or, a "swarm". 
 
-as models approach (and surpass?) humans in intelligence, to accomplish your mission you dont want to waste your time aligning and working with humans. the modern model of a company goes out the window. Instead of running a company, everyone controls and maintains their own swarm. Rather than capitalism letting humans compete for money to employ more humans, humans control their swarms and compete to get more compute, energy, raw materials and intelligence to add to their swarm.
+Rather than capitalism letting humans compete for money to employ more humans, humans control their swarms and compete for money to upgrade and grow their swarms to achieve their goals
 
-accelerate or die
+swarmstar is my swarm architecture. i tried to design swarmstar to be as resilient as possible, useful no matter how "smart" models get
+
+maybe swarmstar will never become useful in which case it doesent matter. but if it does, I commit to keeping swarmstar fully open
+
+my lifelong goal is to solve aging or achieve stasis with reliable revival, and the best way i see to do that is to accelerate progress
