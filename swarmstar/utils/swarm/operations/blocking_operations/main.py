@@ -32,5 +32,5 @@ def blocking(
     )
 
     add_event_to_swarm_history(swarm, blocking_operation)
-
+    
     return output

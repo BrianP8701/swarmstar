@@ -12,7 +12,7 @@ def test_setup_swarm_space():
     openai_key = os.environ.get("OPENAI_KEY")
     mongodb_uri = os.environ.get("MONGODB_URI")
     mongodb_db_name = "swarmstar_tests"
-    # mongodb_db_name = "swarm"
+    # mongodb_db_name = "0"
 
     swarm = configure_swarm(
         openai_key,

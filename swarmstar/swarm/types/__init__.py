@@ -11,7 +11,7 @@ from .action_metadata import (
 from .memory_metadata import MemoryMetadata
 
 
-from .swarm_nodes import (
+from .swarm_node import (
     SwarmNode
 )
 

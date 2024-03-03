@@ -10,7 +10,7 @@ from typing_extensions import Literal
 from swarmstar.utils.misc.uuid import generate_uuid
 
 class SwarmConfig(BaseModel):
-    id: Optional[str] = Field(default_factory=lambda: generate_uuid('node'))
+    id: Optional[str] = Field(default_factory=lambda: generate_uuid('config'))
     swarm_id: Optional[str] = None
     root_path: str
     openai_key: str

@@ -17,7 +17,7 @@ from typing import Any, Dict
 
 from swarmstar.utils.swarm.swarmstar_space.swarm_state import set_node_in_swarm_state
 from swarmstar.swarm.types.swarm_config import SwarmConfig
-from swarmstar.swarm.types.swarm_nodes import SwarmNode
+from swarmstar.swarm.types.swarm_node import SwarmNode
 from swarmstar.swarm.types.swarm_operations import SwarmOperation
 
 

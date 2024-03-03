@@ -11,7 +11,7 @@ def test_create_web_app():
         '3. A section where you can visualize the swarm\'s state'
         '4. A section where you can visualize the swarm\'s history'
     )
-    swarm = get_swarm_config(SWARMSTAR_UNIT_TESTS_MONGODB_DB_NAME)
+    swarm = get_swarm_config(SWARMSTAR_UNIT_TESTS_MONGODB_DB_NAME, "default_config")
     
     results_file_path = find_next_available_results_file('tests/results/')
     

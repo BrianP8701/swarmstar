@@ -28,37 +28,37 @@ def get_kv_operations_module(swarm: SwarmConfig):
         return import_module(platform_map[platform])
 
 
-def add_kv(swarm: SwarmConfig, category: str, key: str, value: dict) -> None:
+def add_kv(swarm: SwarmConfig, category: str, _id: str, value: dict) -> None:
     kv_operations_module = get_kv_operations_module(swarm)
-    return kv_operations_module.add_kv(swarm, category, key, value)
+    return kv_operations_module.add_kv(swarm, category, _id, value)
 
 
-def get_kv(swarm: SwarmConfig, category: str, key: str) -> dict:
+def get_kv(swarm: SwarmConfig, category: str, _id: str) -> dict:
     kv_operations_module = get_kv_operations_module(swarm)
-    return kv_operations_module.get_kv(swarm, category, key)
+    return kv_operations_module.get_kv(swarm, category, _id)
 
 
-def delete_kv(swarm: SwarmConfig, category: str, key: str) -> None:
+def delete_kv(swarm: SwarmConfig, category: str, _id: str) -> None:
     kv_operations_module = get_kv_operations_module(swarm)
-    return kv_operations_module.delete_kv(swarm, category, key)
+    return kv_operations_module.delete_kv(swarm, category, _id)
 
 
-def update_kv(swarm: SwarmConfig, category: str, key: str, value: dict) -> None:
+def update_kv(swarm: SwarmConfig, category: str, _id: str, value: dict) -> None:
     kv_operations_module = get_kv_operations_module(swarm)
-    return kv_operations_module.update_kv(swarm, category, key, value)
+    return kv_operations_module.update_kv(swarm, category, _id, value)
 
-def set_kv(swarm: SwarmConfig, category: str, key: str, value: dict) -> None:
+def set_kv(swarm: SwarmConfig, category: str, _id: str, value: dict) -> None:
     kv_operations_module = get_kv_operations_module(swarm)
-    return kv_operations_module.set_kv(swarm, category, key, value)
+    return kv_operations_module.set_kv(swarm, category, _id, value)
 
-def append_to_list(swarm: SwarmConfig, category: str, key: str, value: dict) -> None:
+def append_to_list(swarm: SwarmConfig, category: str, _id: str, key: str, value: dict) -> None:
     kv_operations_module = get_kv_operations_module(swarm)
-    return kv_operations_module.append_to_list(swarm, category, key, value)
+    return kv_operations_module.append_to_list(swarm, category, _id, key, value)
 
-def get_element_by_index(swarm: SwarmConfig, category: str, key: str, index: int) -> dict:
+def get_element_by_index(swarm: SwarmConfig, category: str, _id: str, index: int) -> dict:
     kv_operations_module = get_kv_operations_module(swarm)
-    return kv_operations_module.get_element_by_index(swarm, category, key, index)
+    return kv_operations_module.get_element_by_index(swarm, category, _id, index)
 
-def get_list_length(swarm: SwarmConfig, category: str, key: str) -> int:
+def get_list_length(swarm: SwarmConfig, category: str, _id: str) -> int:
     kv_operations_module = get_kv_operations_module(swarm)
-    return kv_operations_module.get_list_length(swarm, category, key)
+    return kv_operations_module.get_list_length(swarm, category, _id)

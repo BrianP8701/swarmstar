@@ -6,7 +6,8 @@ from swarmstar.utils.swarm.operations.failure_operations.main import failure
 from swarmstar.utils.swarm.operations.spawn_operations.main import spawn
 from swarmstar.utils.swarm.operations.termination_operations.main import terminate
 from swarmstar.utils.misc.uuid import generate_uuid
-from swarmstar.utils.data import get_kv, append_to_list
+from swarmstar.utils.data import append_to_list
+from swarmstar.utils.swarm.swarmstar_space.swarm_state import add_operation_id_to_node
 
  
 def spawn_swarm(swarm: SwarmConfig, goal: str) -> [SwarmConfig, SpawnOperation]:
@@ -15,7 +16,7 @@ def spawn_swarm(swarm: SwarmConfig, goal: str) -> [SwarmConfig, SpawnOperation]:
     """
     swarm_id = generate_uuid("swarmstar")
     swarm.swarm_id = swarm_id
-    append_to_list(swarm, "admin", "swarms", swarm_id)
+    append_to_list(swarm, "admin", "swarms", "data", swarm_id)
     
     root_spawn_operation = SpawnOperation(
         node_embryo=NodeEmbryo(
@@ -52,5 +53,6 @@ def execute_swarmstar_operation(
         output = list(output)
     if not isinstance(output, list) and output is not None:
         output = [output]
-        
+    
+    add_operation_id_to_node(swarm, swarm_operation.node_id, swarm_operation.operation_id)
     return output
