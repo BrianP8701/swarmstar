@@ -14,7 +14,6 @@ class SwarmNode(BaseModel):
     id: Optional[str] = Field(default_factory=lambda: generate_uuid("node"))
     parent_id: Optional[str] = None
     children_ids: List[str] = []
-    operation_ids: List[str] = []
     action_id: str
     message: str
     alive: bool = True

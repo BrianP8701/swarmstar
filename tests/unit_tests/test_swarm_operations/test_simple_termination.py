@@ -4,7 +4,7 @@ This operation spawns and terminates a node without running any of the action's 
 import pytest
 
 from swarmstar.swarm.core import execute_swarmstar_operation
-from swarmstar.utils.swarm.swarmstar_space.swarm_state import get_node_from_swarm_state
+from swarmstar.utils.swarm.swarmstar_space import get_swarm_node
 from swarmstar.swarm.types import (
     NodeEmbryo,
     SpawnOperation,
@@ -49,8 +49,8 @@ def test_simple_termination():
     next_swarm_operation = execute_swarmstar_operation(swarm, next_swarm_operation)
 
     try:
-        first_node = get_node_from_swarm_state(swarm, first_node_id)
-        second_node = get_node_from_swarm_state(swarm, second_node_id)
+        first_node = get_swarm_node(swarm, first_node_id)
+        second_node = get_swarm_node(swarm, second_node_id)
         assert first_node.alive == False
         assert second_node.alive == False
     except KeyError:

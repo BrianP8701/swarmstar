@@ -27,4 +27,3 @@ def get_util_metadata(swarm: SwarmConfig, util_id: str) -> UtilMetadata:
     if util_type in type_mapping:
         return type_mapping[util_type](**util_metadata)
     return UtilMetadata(**util_metadata)
-

@@ -10,9 +10,13 @@ from swarmstar.swarm.types import (
     SwarmNode,
     SwarmOperation,
 )
-from swarmstar.utils.swarm.swarmstar_space.swarm_state import get_node_from_swarm_state, add_node_to_swarm_state, set_node_in_swarm_state
-from swarmstar.utils.swarm.swarmstar_space.action_space import get_action_metadata
-from swarmstar.utils.swarm.swarmstar_space.swarm_history import add_event_to_swarm_history
+from swarmstar.utils.swarm.swarmstar_space import (
+    get_swarm_node, 
+    update_swarm_node, 
+    save_swarm_node, 
+    add_swarm_operation_to_swarm_history, 
+    get_action_metadata
+)
 
 def spawn(
     swarm: SwarmConfig, spawn_operation: SpawnOperation
@@ -35,14 +39,14 @@ def spawn(
         termination_policy=termination_policy,
     )
     
-    add_node_to_swarm_state(swarm, node)
+    save_swarm_node(swarm, node)
 
     if parent_id is not None:
-        parent_node = get_node_from_swarm_state(swarm, parent_id)
+        parent_node = get_swarm_node(swarm, parent_id)
         parent_node.children_ids.append(node.id)
-        set_node_in_swarm_state(swarm, parent_node)
+        update_swarm_node(swarm, parent_node)
 
-    add_event_to_swarm_history(swarm, spawn_operation)
+    add_swarm_operation_to_swarm_history(swarm, spawn_operation.id)
     output = execute_node_action(swarm, node, action_metadata)
     return output
 

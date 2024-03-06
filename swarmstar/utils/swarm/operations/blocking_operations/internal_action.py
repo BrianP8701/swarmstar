@@ -11,8 +11,7 @@ from typing import List, Union
 from pydantic import BaseModel
 
 from swarmstar.swarm.types import BlockingOperation, SwarmConfig, SwarmOperation
-from swarmstar.utils.swarm.swarmstar_space.swarm_state import get_node_from_swarm_state
-from swarmstar.utils.swarm.swarmstar_space.action_space import get_action_metadata
+from swarmstar.utils.swarm.swarmstar_space import get_swarm_node, get_action_metadata
 
 # This blocking operation doesn't have set args, it will just pass the args and context to the next function to call
 class expected_args(BaseModel):
@@ -20,11 +19,11 @@ class expected_args(BaseModel):
 
 
 def blocking(
-    swarm: SwarmConfig, blocking_operation: BlockingOperation
+    swarm_config: SwarmConfig, blocking_operation: BlockingOperation
 ) -> Union[SwarmOperation, List[SwarmOperation]]:
     node_id = blocking_operation.node_id
-    node = get_node_from_swarm_state(swarm, node_id)
-    action_metadata = get_action_metadata(swarm, node.action_id)
+    node = get_swarm_node(swarm_config, node_id)
+    action_metadata = get_action_metadata(swarm_config, node.action_id)
     action_name = action_metadata.name
     script_path = action_metadata.internal_action_path
     action_file = import_module(script_path)
@@ -34,7 +33,7 @@ def blocking(
         combined_args.update(blocking_operation.context)
 
     action_class = getattr(action_file, action_name)
-    action_instance = action_class(swarm=swarm, node=node)
+    action_instance = action_class(swarm=swarm_config, node=node)
     return getattr(action_instance, blocking_operation.next_function_to_call)(
         **combined_args
     )

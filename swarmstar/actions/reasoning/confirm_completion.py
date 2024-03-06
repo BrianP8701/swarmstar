@@ -12,7 +12,7 @@ directive node to continue the process.
 from typing import List, Optional
 from pydantic import BaseModel, Field
 
-from swarmstar.utils.swarm.swarmstar_space.swarm_state import get_node_from_swarm_state
+from swarmstar.utils.swarm.swarmstar_space import get_swarm_node
 from swarmstar.swarm.types import BlockingOperation, TerminationOperation, SpawnOperation
 from swarmstar.swarm.types.base_action import BaseAction
 
@@ -43,7 +43,7 @@ class ConfirmCompletion(BaseAction):
         '''
         Get reports of all child branches
         '''
-        parent_node = get_node_from_swarm_state(self.swarm, self.node.parent_id)
+        parent_node = get_swarm_node(self.swarm, self.node.parent_id)
         subdirectives = parent_node.journal[-1]["content"]
         initial_directive = parent_node.message
         child_branch_reports, branch_subdirectives = self.get_child_branch_reports()
@@ -128,13 +128,13 @@ class ConfirmCompletion(BaseAction):
         # This should contain any nodes that have multiple children
         stop_action_ids = ["swarmstar/actions/reasoning/decompose_directive"]
 
-        parent_node = get_node_from_swarm_state(self.swarm, self.node.parent_id)
+        parent_node = get_swarm_node(self.swarm, self.node.parent_id)
         all_branch_reports = []
         branch_subdirectives = []
         for child_id in parent_node.children_ids: # Loop through all children of decompose directive node
             if child_id == self.node.id: # Skip this node (the confirm completion node)
                 continue
-            child_node = get_node_from_swarm_state(self.swarm, child_id)
+            child_node = get_swarm_node(self.swarm, child_id)
             branch_subdirectives.append(child_node.message)
             this_branches_reports = []
             while True: # Descend down the branch, attaching the last journal entry of each node

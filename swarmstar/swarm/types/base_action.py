@@ -15,7 +15,7 @@ from abc import ABCMeta, abstractmethod
 from functools import wraps
 from typing import Any, Dict
 
-from swarmstar.utils.swarm.swarmstar_space.swarm_state import set_node_in_swarm_state
+from swarmstar.utils.swarm.swarmstar_space import update_swarm_node
 from swarmstar.swarm.types.swarm_config import SwarmConfig
 from swarmstar.swarm.types.swarm_node import SwarmNode
 from swarmstar.swarm.types.swarm_operations import SwarmOperation
@@ -70,12 +70,12 @@ class BaseAction(metaclass=ErrorHandlingMeta):
 
     def add_journal_entry(self, journal_entry: Dict[str, Any]):
         self.node.journal.append(journal_entry)
-        set_node_in_swarm_state(self.swarm, self.node)
+        update_swarm_node(self.swarm, self.node)
 
     def add_developer_log(self, developer_log: Dict[str, Any]):
         self.node.developer_logs.append(developer_log)
-        set_node_in_swarm_state(self.swarm, self.node)
+        update_swarm_node(self.swarm, self.node)
 
     def update_termination_policy(self, termination_policy: str):
         self.node.termination_policy = termination_policy
-        set_node_in_swarm_state(self.swarm, self.node)
+        update_swarm_node(self.swarm, self.node)

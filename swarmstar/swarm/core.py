@@ -5,15 +5,13 @@ from swarmstar.utils.swarm.operations.blocking_operations.main import blocking
 from swarmstar.utils.swarm.operations.failure_operations.main import failure
 from swarmstar.utils.swarm.operations.spawn_operations.main import spawn
 from swarmstar.utils.swarm.operations.termination_operations.main import terminate
-from swarmstar.utils.data import append_to_list
-from swarmstar.utils.swarm.swarmstar_space.swarm_state import add_operation_id_to_node
-from swarmstar.utils.swarm.swarmstar_space.spawn import spawn_starswarm_space
+from swarmstar.utils.swarm.swarmstar_space.spawn import spawn_swarmstar_space
  
 def spawn_swarm(swarm: SwarmConfig, goal: str) -> [SwarmConfig, SpawnOperation]:
     """
     Create the first spawn operation for the swarm.
     """
-    spawn_starswarm_space(swarm, swarm.swarm_id)
+    spawn_swarmstar_space(swarm, swarm.swarm_id)
     
     root_spawn_operation = SpawnOperation(
         node_embryo=NodeEmbryo(
@@ -51,5 +49,4 @@ def execute_swarmstar_operation(
     if not isinstance(output, list) and output is not None:
         output = [output]
     
-    add_operation_id_to_node(swarm, swarm_operation.node_id, swarm_operation.operation_id)
     return output

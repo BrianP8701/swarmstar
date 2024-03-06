@@ -2,7 +2,7 @@ import pymongo
 from pymongo import MongoClient
 
 from swarmstar.swarm.types import SwarmConfig, SwarmNode
-from swarmstar.utils.swarm.swarmstar_space.swarm_state import get_node_from_swarm_state, add_node_to_swarm_state
+from swarmstar.utils.swarm.swarmstar_space import get_swarm_node, add_node_to_swarm_state
 
 mongodb_uri = "mongodb://localhost:27017/"
 
@@ -41,7 +41,7 @@ print('\n\n\n\n\n')
 print(temp_node)
 add_node_to_swarm_state(swarm_config, temp_node)
 
-retrieved_node = get_node_from_swarm_state(swarm_config, temp_node.id)
+retrieved_node = get_swarm_node(swarm_config, temp_node.id)
 print('\n\n\n\n\n')
 print(retrieved_node)
 print('\n\n\n\n\n')
