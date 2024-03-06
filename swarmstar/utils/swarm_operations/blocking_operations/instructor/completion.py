@@ -11,7 +11,7 @@ from pydantic import BaseModel
 
 from swarmstar.types import BlockingOperation
 from swarmstar.utils.ai.openai_instructor import completion
-from swarmstar.utils.swarm.swarmstar_space import get_swarm_node, update_swarm_node
+from swarmstar.utils.swarmstar_space import get_swarm_node, update_swarm_node
 from swarmstar.types import SwarmConfig
 
 
@@ -30,7 +30,7 @@ def blocking(
     node = get_swarm_node(swarm, blocking_operation.node_id)
 
     models_module = import_module(
-        "swarmstar.utils.swarm.operations.blocking_operations.instructor.pydantic_models"
+        "swarmstar.utils.swarm_operations.blocking_operations.instructor.pydantic_models"
     )
     instructor_model = getattr(models_module, instructor_model_name)
 

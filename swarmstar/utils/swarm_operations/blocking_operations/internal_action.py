@@ -11,7 +11,7 @@ from typing import List, Union
 from pydantic import BaseModel
 
 from swarmstar.types import BlockingOperation, SwarmConfig, SwarmOperation
-from swarmstar.utils.swarm.swarmstar_space import get_swarm_node, get_action_metadata
+from swarmstar.utils.swarmstar_space import get_swarm_node, get_action_metadata
 
 # This blocking operation doesn't have set args, it will just pass the args and context to the next function to call
 class expected_args(BaseModel):

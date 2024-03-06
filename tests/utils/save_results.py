@@ -2,7 +2,7 @@ import json
 import os
 
 from swarmstar.types import SwarmOperation
-from swarmstar.utils.swarm.swarmstar_space import get_swarm_node
+from swarmstar.utils.swarmstar_space import get_swarm_node
 
 def save_dict_to_json_file(file_path: str, data: dict) -> None:
     """

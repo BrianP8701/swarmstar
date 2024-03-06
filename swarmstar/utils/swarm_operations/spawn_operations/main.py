@@ -10,7 +10,7 @@ from swarmstar.types import (
     SwarmNode,
     SwarmOperation,
 )
-from swarmstar.utils.swarm.swarmstar_space import (
+from swarmstar.utils.swarmstar_space import (
     get_swarm_node, 
     update_swarm_node, 
     save_swarm_node, 
@@ -59,7 +59,7 @@ def execute_node_action(
     action_type = action_metadata.type
 
     action_type_map = {
-        "internal_action": "swarmstar.utils.swarm.operations.spawn_operations.internal_action",
+        "internal_action": "swarmstar.utils.swarm_operations.spawn_operations.internal_action",
     }
 
     if action_type not in action_type_map:

@@ -10,7 +10,7 @@ from swarmstar.types import (
     SwarmOperation,
 )
 from swarmstar.types.base_action import BaseAction
-from swarmstar.utils.swarm.swarmstar_space import get_action_metadata
+from swarmstar.utils.swarmstar_space import get_action_metadata
 
 class NextActionPath(BaseModel):
     index: Optional[int] = Field(

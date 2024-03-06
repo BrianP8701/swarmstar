@@ -4,7 +4,7 @@ from swarmstar.swarm.core import execute_swarmstar_operation
 from swarmstar.types import NodeEmbryo, SpawnOperation
 from tests.test_config import SWARMSTAR_UNIT_TESTS_MONGODB_DB_NAME
 from tests.utils.get_local_swarm_config import get_swarm_config
-from swarmstar.utils.swarm.swarmstar_space import get_swarm_node
+from swarmstar.utils.swarmstar_space import get_swarm_node
 
 @pytest.mark.unit_test_operations
 def test_spawn_operation():

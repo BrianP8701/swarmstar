@@ -2,7 +2,7 @@ import pymongo
 from pymongo import MongoClient
 
 from swarmstar.types import SwarmConfig, SwarmNode
-from swarmstar.utils.swarm.swarmstar_space import get_swarm_node, add_node_to_swarm_state
+from swarmstar.utils.swarmstar_space import get_swarm_node, add_node_to_swarm_state
 
 mongodb_uri = "mongodb://localhost:27017/"
 

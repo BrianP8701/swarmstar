@@ -15,7 +15,7 @@
 
 from typing import Union
 
-from swarmstar.utils.swarm.swarmstar_space import get_swarm_node, update_swarm_node
+from swarmstar.utils.swarmstar_space import get_swarm_node, update_swarm_node
 from swarmstar.types import (
     NodeEmbryo,
     SpawnOperation,

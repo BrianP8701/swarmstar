@@ -15,7 +15,7 @@ from abc import ABCMeta, abstractmethod
 from functools import wraps
 from typing import Any, Dict
 
-from swarmstar.utils.swarm.swarmstar_space import update_swarm_node
+from swarmstar.utils.swarmstar_space import update_swarm_node
 from swarmstar.types.swarm_config import SwarmConfig
 from swarmstar.types.swarm_node import SwarmNode
 from swarmstar.types.swarm_operations import SwarmOperation
