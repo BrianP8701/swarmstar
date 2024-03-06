@@ -1,5 +1,7 @@
 from pymongo import MongoClient
 
+from swarmstar.utils.data import set_kv
+
 def clear_swarm_space(db_name: str, mongodb_uri: str) -> None:
     """
     Goes through every collection in a MongoDB except for the one named 'config',
@@ -19,6 +21,8 @@ def clear_swarm_space(db_name: str, mongodb_uri: str) -> None:
             db[collection_name].delete_many({})
         else:
             db[collection_name].delete_many({"_id": {"$ne": "default_config"}})
+    
+    set_kv()
 
     print("Cleared all documents from all collections except 'config'.")
 

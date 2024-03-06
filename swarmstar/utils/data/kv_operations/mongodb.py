@@ -1,17 +1,11 @@
-from __future__ import annotations
-
 import subprocess
 from importlib import resources
-from typing import TYPE_CHECKING
 
 import pymongo
 from pymongo import MongoClient
 
-if TYPE_CHECKING:
-    from swarmstar.types import SwarmConfig
 
-
-def check_and_create_database(mongodb_uri: str, db_name: str) -> None:
+def check_and_create_mongodb_database(mongodb_uri: str, db_name: str) -> None:
     """
     Check if a MongoDB database exists, and if not, create it.
 
@@ -30,7 +24,7 @@ def check_and_create_database(mongodb_uri: str, db_name: str) -> None:
         print(f"Database {db_name} created successfully.")
 
 
-def restore_database(package_name: str, resource_name: str, uri: str, db_name: str):
+def restore_mongodb_database(package_name: str, resource_name: str, uri: str, db_name: str):
     """
     Restore a MongoDB database dump to a specified database from package resources.
 
@@ -52,21 +46,21 @@ def restore_database(package_name: str, resource_name: str, uri: str, db_name: s
             raise ValueError(f"Failed to restore database: {e}")
 
 
-def create_client(uri: str) -> MongoClient:
+def create_mongodb_client(uri: str) -> MongoClient:
     try:
         client = MongoClient(uri)
         return client
     except Exception as e:
         raise ValueError(f"Failed to create MongoDB client: {str(e)}")
 
-def add_kv(swarm: SwarmConfig, collection_name: str, _id: str, value: dict) -> None:
+def mongodb_add_kv(mongodb_uri: str, mongodb_db_name: str, collection_name: str, _id: str, value: dict) -> None:
     """
     Add a _id-value pair to the collection with an initial version number.
     """
     try:
-        db_name = swarm.mongodb_db_name
-        uri = swarm.mongodb_uri
-        client = create_client(uri)
+        uri = mongodb_uri
+        db_name = mongodb_db_name
+        client = create_mongodb_client(uri)
         db = client[db_name]
         collection = db[collection_name]
         value.pop("id", None)
@@ -74,25 +68,19 @@ def add_kv(swarm: SwarmConfig, collection_name: str, _id: str, value: dict) -> N
         document = {"_id": _id, "version": 1, **value}
         collection.insert_one(document)
     except pymongo.errors.DuplicateKeyError:
-        set_kv(swarm, collection_name, _id, value)
+        mongodb_set_kv(mongodb_uri, mongodb_db_name, collection_name, _id, value)
     except Exception as e:
         raise ValueError(f'Failed to add to MongoDB collection: {str(e)}')
 
 
-def get_kv(swarm: SwarmConfig, collection_name: str, _id: str) -> dict:
+def mongodb_get_kv(mongodb_uri: str, mongodb_db_name: str, collection_name: str, _id: str) -> dict:
     """
     Retrieve a document by _id from the collection.
-    
-    Note:
-        MongoDB uses the _id field as the primary key by default.
-        Pydantic models ignore fields that start with an underscore.
-        So on the MongoDB side, the _id field is used, but in our code
-        we always just switch the key _id to id.
     """
     try:
-        uri = swarm.mongodb_uri
-        db_name = swarm.mongodb_db_name
-        client = create_client(uri)
+        uri = mongodb_uri
+        db_name = mongodb_db_name
+        client = create_mongodb_client(uri)
         db = client[db_name]
         if collection_name not in db.list_collection_names():
             raise ValueError(f"Collection {collection_name} not found in MongoDB database.")
@@ -107,11 +95,11 @@ def get_kv(swarm: SwarmConfig, collection_name: str, _id: str) -> dict:
         raise ValueError(f"Failed to get from MongoDB collection: {str(e)}")
 
 
-def delete_kv(swarm: SwarmConfig, collection_name: str, _id: str) -> None:
+def mongodb_delete_kv(mongodb_uri: str, mongodb_db_name: str, collection_name: str, _id: str) -> None:
     try:
-        uri = swarm.mongodb_uri
-        db_name = swarm.mongodb_db_name
-        client = create_client(uri)
+        uri = mongodb_uri
+        db_name = mongodb_db_name
+        client = create_mongodb_client(uri)
         db = client[db_name]
         if collection_name not in db.list_collection_names():
             raise ValueError(f"Collection {collection_name} not found in MongoDB database.")
@@ -122,17 +110,17 @@ def delete_kv(swarm: SwarmConfig, collection_name: str, _id: str) -> None:
     except Exception as e:
         raise ValueError(f"Failed to delete from MongoDB collection: {str(e)}")
 
-def update_kv(swarm: SwarmConfig, collection_name: str, _id: str, updated_values: dict) -> None:
+def mongodb_update_kv(mongodb_uri: str, mongodb_db_name: str, collection_name: str, _id: str, updated_values: dict) -> None:
     """
     Update specified fields of a document and increment its version, ensuring optimistic concurrency control.
     """
     try:
-        uri = swarm.mongodb_uri
-        db_name = swarm.mongodb_db_name
-        client = create_client(uri)
+        uri = mongodb_uri
+        db_name = mongodb_db_name
+        client = create_mongodb_client(uri)
         db = client[db_name]
         collection = db[collection_name]
-        value.pop("id", None)
+        updated_values.pop("id", None)
 
         retries = 3
         for attempt in range(retries):
@@ -163,14 +151,14 @@ def update_kv(swarm: SwarmConfig, collection_name: str, _id: str, updated_values
     except Exception as e:
         raise ValueError(f"Failed to update MongoDB collection: {str(e)}")
 
-def set_kv(swarm: SwarmConfig, collection_name: str, _id: str, new_value: dict) -> None:
+def mongodb_set_kv(mongodb_uri: str, mongodb_db_name: str, collection_name: str, _id: str, new_value: dict) -> None:
     """
     Replace the value of a document with the new value provided, ensuring optimistic concurrency control.
     """
     try:
-        uri = swarm.mongodb_uri
-        db_name = swarm.mongodb_db_name
-        client = create_client(uri)  # Assume create_client is defined elsewhere
+        uri = mongodb_uri
+        db_name = mongodb_db_name
+        client = create_mongodb_client(uri)
         db = client[db_name]
         collection = db[collection_name]
         new_value.pop("id", None)
@@ -201,34 +189,34 @@ def set_kv(swarm: SwarmConfig, collection_name: str, _id: str, new_value: dict) 
     except Exception as e:
         raise ValueError(f"Failed to replace document in MongoDB collection: {str(e)}")
 
-def append_to_list(swarm: SwarmConfig, collection_name: str, _id: str, key: str, value) -> None:
+def mongodb_append_to_list(mongodb_uri: str, mongodb_db_name: str, collection_name: str, _id: str, key: str, value) -> None:
     """
     Append a value to a list within a document identified by _id, creating the document or list if they do not exist.
     """
     try:
-        uri = swarm.mongodb_uri
-        db_name = swarm.mongodb_db_name
-        client = create_client(uri)
+        uri = mongodb_uri
+        db_name = mongodb_db_name
+        client = create_mongodb_client(uri)
         db = client[db_name]
         collection = db[collection_name]
         
         if collection.count_documents({"_id": _id}) > 0:
             collection.update_one({"_id": _id}, {"$push": {key: value}}, upsert=True)
         else:
-            add_kv(swarm, collection_name, _id, {key: [value]})
+            mongodb_add_kv(mongodb_uri, mongodb_db_name, collection_name, _id, {key: [value]})
             
     except Exception as e:
         raise ValueError(f"Failed to append value {value} to list in MongoDB collection {collection_name}: {str(e)}")
 
 
-def get_element_by_index(swarm: SwarmConfig, collection_name: str, _id: str, index: int) -> any:
+def mongodb_get_element_by_index(mongodb_uri: str, mongodb_db_name: str, collection_name: str, _id: str, index: int) -> any:
     """
     Retrieve an element by index from a list within a document without retrieving the whole list.
     """
     try:
-        uri = swarm.mongodb_uri
-        db_name = swarm.mongodb_db_name
-        client = create_client(uri)
+        uri = mongodb_uri
+        db_name = mongodb_db_name
+        client = create_mongodb_client(uri)
         db = client[db_name]
         collection = db[collection_name]
         
@@ -240,14 +228,14 @@ def get_element_by_index(swarm: SwarmConfig, collection_name: str, _id: str, ind
     except Exception as e:
         raise ValueError(f"Failed to retrieve element by index: {str(e)}")
 
-def get_list_length(swarm: SwarmConfig, collection_name: str, _id: str) -> int:
+def mongodb_get_list_length(mongodb_uri: str, mongodb_db_name: str, collection_name: str, _id: str) -> int:
     """
     Get the length of a list within a document without retrieving the list itself.
     """
     try:
-        uri = swarm.mongodb_uri
-        db_name = swarm.mongodb_db_name
-        client = create_client(uri)
+        uri = mongodb_uri
+        db_name = mongodb_db_name
+        client = create_mongodb_client(uri)
         db = client[db_name]
         collection = db[collection_name]
         

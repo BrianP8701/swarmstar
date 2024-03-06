@@ -14,7 +14,7 @@ import os
 from swarmstar.types import SwarmConfig
 from swarmstar.utils.data.kv_operations.main import add_kv
 from swarmstar.utils.misc.generate_uuid import generate_uuid
-from swarmstar.utils.data.kv_operations.mongodb import (
+from swarmstar.utils.data.kv_operations.mongodb_wrapper import (
     check_and_create_database,
 )
 
