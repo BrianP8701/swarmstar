@@ -3,17 +3,17 @@ from swarmstar.swarm.types import UtilMetadata, SwarmConfig
 
 def get_util_metadata(swarm: SwarmConfig, util_id: str) -> UtilMetadata:
     try:
-        util_metadata = get_internal_util_metadata(util_id)
+        util_metadata = get_kv(swarm, "util_space", util_id)
         if util_metadata is None:
             raise ValueError(
-                f"This util id: `{util_id}` does not exist in internal util space."
+                f"This util id: `{util_id}` does not exist in external util space."
             )
     except Exception as e1:
         try:
-            util_metadata = get_kv(swarm, "util_space", util_id)
+            util_metadata = get_internal_util_metadata(util_id)
             if util_metadata is None:
                 raise ValueError(
-                    f"This util id: `{util_id}` does not exist in external util space."
+                    f"This util id: `{util_id}` does not exist in internal util space."
                 ) from e1
         except Exception as e2:
             raise ValueError(

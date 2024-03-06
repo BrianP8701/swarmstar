@@ -7,7 +7,7 @@ from typing import Optional, Dict, Any
 from pydantic import BaseModel, model_serializer, Field
 from typing_extensions import Literal
 
-from swarmstar.utils.misc.uuid import generate_uuid
+from swarmstar.utils.misc.generate_uuid import generate_uuid
 
 class SwarmConfig(BaseModel):
     id: Optional[str] = Field(default_factory=lambda: generate_uuid('config'))

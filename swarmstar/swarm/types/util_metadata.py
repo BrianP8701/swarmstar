@@ -15,7 +15,7 @@ from typing import Dict, List, Optional
 from pydantic import BaseModel, Field
 from typing_extensions import Literal
 
-from swarmstar.utils.misc.uuid import generate_uuid
+from swarmstar.utils.misc.generate_uuid import generate_uuid
 
 class UtilMetadata(BaseModel):
     id: Optional[str] = Field(default_factory=lambda: generate_uuid('util'))

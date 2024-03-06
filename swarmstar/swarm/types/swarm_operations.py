@@ -12,7 +12,7 @@ from typing import Any, Dict, Literal, Optional
 
 from pydantic import BaseModel, Field
 
-from swarmstar.utils.misc.uuid import generate_uuid
+from swarmstar.utils.misc.generate_uuid import generate_uuid
 
 class NodeEmbryo(BaseModel):
     action_id: str

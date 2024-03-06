@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "swarmstar"
 version = "0.0.7"
-description = ""
+description = "chatgpt on crack"
 authors = ["BrianP8701 <brianp8701@gmail.com>"]
 readme = "README.md"
 include = ["swarmstar/internal_metadata/action_space.bson", "swarmstar/internal_metadata/action_space_metadata.json"]

@@ -132,7 +132,8 @@ def update_kv(swarm: SwarmConfig, collection_name: str, _id: str, updated_values
         client = create_client(uri)
         db = client[db_name]
         collection = db[collection_name]
-        
+        value.pop("id", None)
+
         retries = 3
         for attempt in range(retries):
             # Fetch the current document
@@ -172,6 +173,7 @@ def set_kv(swarm: SwarmConfig, collection_name: str, _id: str, new_value: dict) 
         client = create_client(uri)  # Assume create_client is defined elsewhere
         db = client[db_name]
         collection = db[collection_name]
+        new_value.pop("id", None)
 
         retries = 5
         for attempt in range(retries):
