@@ -70,3 +70,20 @@ def find_next_available_results_file(folder_path: str) -> str:
         if not os.path.exists(file_path):
             return file_path
         x += 1
+
+def find_next_available_folder() -> str:
+    """
+    Searches inside the specified folder path and returns the path, including the folder path, 
+    to the next available folder.
+
+    :param folder_path: The path to the folder where the results files are stored.
+    :return: The path to the next available folder, including the folder path.
+    """
+    x = 0
+    folder_path = "tests/my_swarms"
+    while True:
+        folder_name = f"swarm_{x}"
+        new_folder_path = os.path.join(folder_path, folder_name)
+        if not os.path.exists(new_folder_path):
+            return new_folder_path
+        x += 1

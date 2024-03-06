@@ -5,13 +5,13 @@ from swarmstar.utils.swarm_operations.blocking_operations.main import blocking
 from swarmstar.utils.swarm_operations.failure_operations.main import failure
 from swarmstar.utils.swarm_operations.spawn_operations.main import spawn
 from swarmstar.utils.swarm_operations.termination_operations.main import terminate
-from swarmstar.utils.swarmstar_space.spawn import spawn_swarmstar_space
+from swarmstar.utils.swarmstar_space.general import spawn_swarmstar_space
  
-def spawn_swarm(swarm: SwarmConfig, goal: str) -> SpawnOperation:
+def spawn_swarm(swarm_config: SwarmConfig, goal: str) -> SpawnOperation:
     """
     Create the first spawn operation for the swarm.
     """
-    spawn_swarmstar_space(swarm, swarm.swarm_id)
+    spawn_swarmstar_space(swarm_config)
     
     root_spawn_operation = SpawnOperation(
         node_embryo=NodeEmbryo(
@@ -23,7 +23,7 @@ def spawn_swarm(swarm: SwarmConfig, goal: str) -> SpawnOperation:
     return root_spawn_operation
 
 def execute_swarmstar_operation(
-    swarm: SwarmConfig, swarm_operation: SwarmOperation
+    swarm_config: SwarmConfig, swarm_operation: SwarmOperation
 ) -> Union[List[SwarmOperation], None]:
     """
     This function is the main entry point for the swarmstar library. It takes in a swarm configuration and a swarm operation
@@ -38,7 +38,7 @@ def execute_swarmstar_operation(
 
     if swarm_operation.operation_type in operation_mapping:
         output = operation_mapping[swarm_operation.operation_type](
-            swarm, swarm_operation
+            swarm_config, swarm_operation
         )
     else:
         raise ValueError(

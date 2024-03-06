@@ -74,7 +74,7 @@ def add_kv(swarm: SwarmConfig, collection_name: str, _id: str, value: dict) -> N
         document = {"_id": _id, "version": 1, **value}
         collection.insert_one(document)
     except pymongo.errors.DuplicateKeyError:
-        update_kv(swarm, collection_name, _id, value)
+        set_kv(swarm, collection_name, _id, value)
     except Exception as e:
         raise ValueError(f'Failed to add to MongoDB collection: {str(e)}')
 
@@ -99,7 +99,7 @@ def get_kv(swarm: SwarmConfig, collection_name: str, _id: str) -> dict:
         collection = db[collection_name]
         result = collection.find_one({"_id": _id})
         if result is None:
-            raise ValueError(f"_id {_id} not found in MongoDB collection.")
+            raise ValueError(f"_id {_id} not found in MongoDB collection {collection_name}.")
         id = result.pop("_id")
         result["id"] = id
         return result
@@ -118,7 +118,7 @@ def delete_kv(swarm: SwarmConfig, collection_name: str, _id: str) -> None:
         collection = db[collection_name]
         result = collection.delete_one({"_id": _id})
         if result.deleted_count == 0:
-            raise ValueError(f"_id {_id} not found in MongoDB collection.")
+            raise ValueError(f"_id {_id} not found in MongoDB collection {collection_name}.")
     except Exception as e:
         raise ValueError(f"Failed to delete from MongoDB collection: {str(e)}")
 

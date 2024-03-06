@@ -2,7 +2,6 @@ import os
 
 import pytest
 
-from swarmstar.swarm.config import configure_swarm
 from tests.utils.create_local_swarm_space import find_next_available_swarm_folder
 
 
@@ -13,14 +12,3 @@ def test_setup_swarm_space():
     mongodb_uri = os.environ.get("MONGODB_URI")
     mongodb_db_name = "swarmstar_tests"
     # mongodb_db_name = "0"
-
-    swarm = configure_swarm(
-        openai_key,
-        root_path,
-        "mac",
-        mongodb_uri=mongodb_uri,
-        mongodb_db_name=mongodb_db_name,
-    )
-
-
-test_setup_swarm_space()

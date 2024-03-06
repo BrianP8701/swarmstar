@@ -13,8 +13,12 @@ def clear_swarm_space(db_name: str, mongodb_uri: str) -> None:
     collection_names = db.list_collection_names()
 
     for collection_name in collection_names:
-        if collection_name != 'config':
+        if collection_name == 'admin':
+            pass
+        elif collection_name != 'config':
             db[collection_name].delete_many({})
+        else:
+            db[collection_name].delete_many({"_id": {"$ne": "default_config"}})
 
     print("Cleared all documents from all collections except 'config'.")
 

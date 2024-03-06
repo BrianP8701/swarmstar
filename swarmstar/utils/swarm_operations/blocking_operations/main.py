@@ -31,7 +31,7 @@ def blocking(
         swarm_config, blocking_operation
     )
 
-    save_swarm_operation(swarm_config, output)
+    save_swarm_operation(swarm_config, blocking_operation)
     add_swarm_operation_to_swarm_history(swarm_config, blocking_operation.id)
     
     return output
