@@ -1,5 +1,5 @@
 from swarmstar.utils.data import get_internal_memory_metadata, get_kv
-from swarmstar.swarm.types import SwarmConfig, MemoryMetadata
+from swarmstar.types import SwarmConfig, MemoryMetadata
 
 def get_memory_metadata(swarm: SwarmConfig, memory_id: str) -> MemoryMetadata:
     try:

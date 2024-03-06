@@ -1,8 +1,8 @@
 from importlib import import_module
 from typing import List, Union
 
-from swarmstar.utils.swarm.swarmstar_space import add_swarm_operation_to_swarm_history
-from swarmstar.swarm.types import (
+from swarmstar.utils.swarm.swarmstar_space import add_swarm_operation_to_swarm_history, save_swarm_operation
+from swarmstar.types import (
     BlockingOperation,
     SwarmConfig,
     SwarmOperation,
@@ -31,6 +31,7 @@ def blocking(
         swarm_config, blocking_operation
     )
 
+    save_swarm_operation(swarm_config, output)
     add_swarm_operation_to_swarm_history(swarm_config, blocking_operation.id)
     
     return output

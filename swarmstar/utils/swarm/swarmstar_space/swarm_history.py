@@ -4,7 +4,7 @@ for each swarm id in chronological order.
 """
 from typing import List
 
-from swarmstar.swarm.types import SwarmConfig, SwarmOperation
+from swarmstar.types import SwarmConfig, SwarmOperation
 from swarmstar.utils.data import get_kv, append_to_list
 
 def add_swarm_operation_to_swarm_history(swarm: SwarmConfig, swarm_operation_id: str) -> None:

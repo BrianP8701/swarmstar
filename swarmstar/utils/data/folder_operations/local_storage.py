@@ -5,7 +5,7 @@ import shutil
 from typing import TYPE_CHECKING, List
 
 if TYPE_CHECKING:
-    from swarmstar.swarm.types import SwarmConfig
+    from swarmstar.types import SwarmConfig
 
 
 def delete_folder(swarm: SwarmConfig, folder_path: str) -> dict:

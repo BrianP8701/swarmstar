@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING
 from swarmstar.utils.data.external_operations.imports import import_module_from_path
 
 if TYPE_CHECKING:
-    from swarmstar.swarm.types.swarm_config import SwarmConfig
+    from swarmstar.types.swarm_config import SwarmConfig
 
 
 platform_map = {

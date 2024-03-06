@@ -1,5 +1,5 @@
 from swarmstar.utils.data import get_internal_action_metadata, get_kv
-from swarmstar.swarm.types import SwarmConfig, ActionMetadata, InternalAction, InternalFolder
+from swarmstar.types import SwarmConfig, ActionMetadata, InternalAction, InternalFolder
 
 def get_action_metadata(swarm: SwarmConfig, action_id: str) -> ActionMetadata:
     try:

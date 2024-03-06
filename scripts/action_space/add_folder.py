@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import json
 
 from swarmstar.utils.ai.openai_instructor import completion
-from swarmstar.swarm.types import ActionMetadata
+from swarmstar.types import ActionMetadata
 
 load_dotenv() # Load environment variables from .env file
 

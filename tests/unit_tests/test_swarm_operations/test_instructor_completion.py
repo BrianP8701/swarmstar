@@ -1,7 +1,7 @@
 import pytest
 
 from swarmstar.swarm.core import execute_swarmstar_operation
-from swarmstar.swarm.types import (
+from swarmstar.types import (
     BlockingOperation,
 )
 from tests.test_config import SWARMSTAR_UNIT_TESTS_MONGODB_DB_NAME

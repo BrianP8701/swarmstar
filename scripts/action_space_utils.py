@@ -2,7 +2,7 @@ from typing import Union
 import json
 import sqlite3
 
-from swarmstar.swarm.types import ActionMetadata, ActionFolder, ActionType
+from swarmstar.types import ActionMetadata, ActionFolder, ActionType
 
 def change_action_space_metadata(key: str, metadata: Union[ActionFolder, ActionMetadata]):
     json_path = 'swarmstar/actions/action_space_metadata.json'

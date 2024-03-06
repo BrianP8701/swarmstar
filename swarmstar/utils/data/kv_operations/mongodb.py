@@ -8,7 +8,7 @@ import pymongo
 from pymongo import MongoClient
 
 if TYPE_CHECKING:
-    from swarmstar.swarm.types import SwarmConfig
+    from swarmstar.types import SwarmConfig
 
 
 def check_and_create_database(mongodb_uri: str, db_name: str) -> None:

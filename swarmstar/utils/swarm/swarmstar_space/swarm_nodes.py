@@ -1,4 +1,4 @@
-from swarmstar.swarm.types import SwarmConfig, SwarmNode
+from swarmstar.types import SwarmConfig, SwarmNode
 from swarmstar.utils.data import add_kv, get_kv, set_kv
 
 def save_swarm_node(swarm: SwarmConfig, node: SwarmNode) -> None:

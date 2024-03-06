@@ -1,13 +1,13 @@
 from typing import List, Union
 
-from swarmstar.swarm.types import SwarmConfig, SwarmOperation, SpawnOperation, NodeEmbryo
+from swarmstar.types import SwarmConfig, SwarmOperation, SpawnOperation, NodeEmbryo
 from swarmstar.utils.swarm.operations.blocking_operations.main import blocking
 from swarmstar.utils.swarm.operations.failure_operations.main import failure
 from swarmstar.utils.swarm.operations.spawn_operations.main import spawn
 from swarmstar.utils.swarm.operations.termination_operations.main import terminate
 from swarmstar.utils.swarm.swarmstar_space.spawn import spawn_swarmstar_space
  
-def spawn_swarm(swarm: SwarmConfig, goal: str) -> [SwarmConfig, SpawnOperation]:
+def spawn_swarm(swarm: SwarmConfig, goal: str) -> SpawnOperation:
     """
     Create the first spawn operation for the swarm.
     """

@@ -1,7 +1,7 @@
 """
 This module is responsible for preparing mongoDB for a new swarmstar space.
 """
-from swarmstar.swarm.types.swarm_config import SwarmConfig
+from swarmstar.types.swarm_config import SwarmConfig
 from swarmstar.utils.data import add_kv, append_to_list
 
 def spawn_swarmstar_space(swarm: SwarmConfig, swarm_id: str) -> None:

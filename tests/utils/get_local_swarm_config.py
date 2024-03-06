@@ -1,7 +1,7 @@
 import pymongo
 from pymongo import MongoClient
 
-from swarmstar.swarm.types import SwarmConfig
+from swarmstar.types import SwarmConfig
 
 mongodb_uri = "mongodb://localhost:27017/"
 

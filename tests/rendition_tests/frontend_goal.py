@@ -11,14 +11,14 @@ def test_create_web_app():
         '3. A section where you can visualize the swarm\'s state'
         '4. A section where you can visualize the swarm\'s history'
     )
-    swarm = get_swarm_config(SWARMSTAR_UNIT_TESTS_MONGODB_DB_NAME, "default_config")
+    swarm_config = get_swarm_config(SWARMSTAR_UNIT_TESTS_MONGODB_DB_NAME, "default_config")
+    swarm_config.swarm_id = 'temp'
     
     results_file_path = find_next_available_results_file('tests/results/')
-    
-    
-    swarm, root_spawn_operation = spawn_swarm(swarm, goal)
-    save_swarm_operation_info(swarm, root_spawn_operation, results_file_path)
-    operations_to_execute = execute_swarmstar_operation(swarm, root_spawn_operation)
+
+    root_spawn_operation = spawn_swarm(swarm_config, goal)
+    save_swarm_operation_info(swarm_config, root_spawn_operation, results_file_path)
+    operations_to_execute = execute_swarmstar_operation(swarm_config, root_spawn_operation)
 
     while True:
         next_operations_to_execute = []
@@ -26,8 +26,8 @@ def test_create_web_app():
             print('\n\n\n\n\n')
             print(operation)
             print('\n\n\n\n\n')
-            save_swarm_operation_info(swarm, operation, results_file_path)
-            next_operations = execute_swarmstar_operation(swarm, operation)
+            save_swarm_operation_info(swarm_config, operation, results_file_path)
+            next_operations = execute_swarmstar_operation(swarm_config, operation)
             next_operations_to_execute.extend(next_operations)
         pause = input('Press enter to continue')
         operations_to_execute = next_operations_to_execute

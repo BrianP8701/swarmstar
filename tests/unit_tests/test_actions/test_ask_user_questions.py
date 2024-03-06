@@ -2,7 +2,7 @@
 import pytest
 
 from swarmstar.swarm.core import execute_swarmstar_operation
-from swarmstar.swarm.types import BlockingOperation, NodeEmbryo, SpawnOperation
+from swarmstar.types import BlockingOperation, NodeEmbryo, SpawnOperation
 from tests.utils.get_local_swarm_config import get_swarm_config
 
 

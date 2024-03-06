@@ -24,7 +24,7 @@ from typing import TYPE_CHECKING
 from azure.cosmos import CosmosClient
 
 if TYPE_CHECKING:
-    from swarmstar.swarm.types import SwarmConfig
+    from swarmstar.types import SwarmConfig
 
 
 def get_container(swarm: SwarmConfig, category: str):

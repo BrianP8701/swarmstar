@@ -16,9 +16,9 @@ from functools import wraps
 from typing import Any, Dict
 
 from swarmstar.utils.swarm.swarmstar_space import update_swarm_node
-from swarmstar.swarm.types.swarm_config import SwarmConfig
-from swarmstar.swarm.types.swarm_node import SwarmNode
-from swarmstar.swarm.types.swarm_operations import SwarmOperation
+from swarmstar.types.swarm_config import SwarmConfig
+from swarmstar.types.swarm_node import SwarmNode
+from swarmstar.types.swarm_operations import SwarmOperation
 
 
 def error_handling_decorator(func):

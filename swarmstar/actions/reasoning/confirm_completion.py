@@ -13,8 +13,8 @@ from typing import List, Optional
 from pydantic import BaseModel, Field
 
 from swarmstar.utils.swarm.swarmstar_space import get_swarm_node
-from swarmstar.swarm.types import BlockingOperation, TerminationOperation, SpawnOperation
-from swarmstar.swarm.types.base_action import BaseAction
+from swarmstar.types import BlockingOperation, TerminationOperation, SpawnOperation
+from swarmstar.types.base_action import BaseAction
 
 
 class ConfirmCompletionModel(BaseModel):

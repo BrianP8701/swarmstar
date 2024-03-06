@@ -9,8 +9,8 @@ from typing import List
 
 from pydantic import BaseModel, Field
 
-from swarmstar.swarm.types import BlockingOperation, TerminationOperation, UserCommunicationOperation
-from swarmstar.swarm.types.base_action import BaseAction
+from swarmstar.types import BlockingOperation, TerminationOperation, UserCommunicationOperation
+from swarmstar.types.base_action import BaseAction
 
 
 class QuestionAskerConversationState(BaseModel):

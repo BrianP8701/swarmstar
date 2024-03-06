@@ -3,7 +3,7 @@
 """
 from typing import Union
 
-from swarmstar.swarm.types import SwarmConfig, TerminationOperation
+from swarmstar.types import SwarmConfig, TerminationOperation
 from swarmstar.utils.swarm.swarmstar_space import get_swarm_node, update_swarm_node
 
 def terminate(

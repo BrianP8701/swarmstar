@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from azure.storage.blob import BlobServiceClient
 
 if TYPE_CHECKING:
-    from swarmstar.swarm.types import SwarmConfig
+    from swarmstar.types import SwarmConfig
 
 
 def delete_file(swarm: SwarmConfig, file_path: str) -> None:

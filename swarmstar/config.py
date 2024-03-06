@@ -11,7 +11,7 @@ passed around between every node and action. Keep it safe and private!
 """
 import os
 
-from swarmstar.swarm.types import SwarmConfig
+from swarmstar.types import SwarmConfig
 from swarmstar.utils.data.kv_operations.main import add_kv
 from swarmstar.utils.misc.generate_uuid import generate_uuid
 from swarmstar.utils.data.kv_operations.mongodb import (

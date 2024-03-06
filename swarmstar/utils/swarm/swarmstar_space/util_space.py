@@ -1,5 +1,5 @@
 from swarmstar.utils.data import get_internal_util_metadata, get_kv
-from swarmstar.swarm.types import UtilMetadata, SwarmConfig
+from swarmstar.types import UtilMetadata, SwarmConfig
 
 def get_util_metadata(swarm: SwarmConfig, util_id: str) -> UtilMetadata:
     try:

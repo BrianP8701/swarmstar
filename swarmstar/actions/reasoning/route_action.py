@@ -2,14 +2,14 @@ from typing import Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
-from swarmstar.swarm.types import (
+from swarmstar.types import (
     ActionFolder,
     BlockingOperation,
     NodeEmbryo,
     SpawnOperation,
     SwarmOperation,
 )
-from swarmstar.swarm.types.base_action import BaseAction
+from swarmstar.types.base_action import BaseAction
 from swarmstar.utils.swarm.swarmstar_space import get_action_metadata
 
 class NextActionPath(BaseModel):
