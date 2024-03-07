@@ -46,10 +46,8 @@ def terminate(
 
     if mission_completion == False:
         return SpawnOperation(
-            operation_type="spawn",
             node_id=node_id,
             node_embryo=NodeEmbryo(
-                node_id=node_id,
                 action_id="swarmstar/actions/reasoning/confirm_completion",
                 message="",
             ),
@@ -57,11 +55,9 @@ def terminate(
     else:
         if reports_consolidated == False:
             return SpawnOperation(
-                operation_type="spawn",
                 node_id=node_id,
                 node_embryos=[
                     NodeEmbryo(
-                        node_id=node_id,
                         action_id="swarmstar/actions/reasoning/consolidate_reports",
                         message="",
                     )
@@ -72,6 +68,5 @@ def terminate(
             node.alive = False
             update_swarm_node(swarm, node)
             return TerminationOperation(
-                operation_type="terminate",
                 node_id=node_id,
             )

@@ -12,6 +12,7 @@ from swarmstar.utils.misc.generate_uuid import generate_uuid
 
 class SwarmNode(BaseModel):
     id: Optional[str] = Field(default_factory=lambda: generate_uuid("node"))
+    name: str
     parent_id: Optional[str] = None
     children_ids: List[str] = []
     action_id: str

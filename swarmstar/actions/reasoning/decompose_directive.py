@@ -30,26 +30,29 @@ DECOMPOSE_DIRECTIVE_INSTRUCTIONS = (
     "1. Ask questions to get more information or clarification of requirements and intentions.\n"
     "2. Decompose the directive into actionable subdirectives that will be executed independently and in parallel. "
     "After those are done, youll generate the next set of subdirectives. I stress that the subdirectives "
-    "must be independent and parallel.\n\nChoose one of the options and proceed. Do not ask questions and decompose the directive at the same time."
+    "must be independent and parallel.\n\nChoose one of the options and proceed. Do not ask questions and "
+    "decompose the directive at the same time."
 )
 
 
 class DecomposeDirective(BaseAction):
     def main(self) -> BlockingOperation:
+        system_message = (
+            DECOMPOSE_DIRECTIVE_INSTRUCTIONS,
+            f"\n\nDirective to decompose: \n`{self.node.message}`",
+        )
         messages = [
-            {"role": "system", "content": DECOMPOSE_DIRECTIVE_INSTRUCTIONS},
-            {
-                "role": "user",
-                "content": f"Directive to decompose: \n`{self.node.message}`",
-            },
+            {"role": "system", "content": system_message}
         ]
 
-        self.add_journal_entry(
-            {
-                "header": "Directive to decompose",
-                "content": self.node.message,
-            }
-        )
+        self.log({
+            "role": "swarmstar",
+            "content": "Decomposing directive into actionable subdirectives.",
+        })
+        self.log({
+            "role": "system",
+            "content": system_message
+        })
 
         return BlockingOperation(
             node_id=self.node.id,
@@ -67,16 +70,26 @@ class DecomposeDirective(BaseAction):
         Depending on the completion, we will either ask questions
         or spawn child nodes for each subdirective.
         '''
+        self.log({
+            "role": "ai",
+            "content": (
+                f"Scrap paper: {completion.scrap_paper if completion.scrap_paper is not None else 'None'}\n\n"
+                f"Questions: {completion.questions if completion.questions is not None else 'None'}\n\n"
+                f"Subdirectives: {completion.subdirectives if completion.subdirectives is not None else 'None'}"
+            )
+        })
+        
         if completion.questions and len(completion.questions) > 0:
-            message = f"An agent was tasked with decomposing the directive: \n`{self.node.message}`\n\nBefore decomposing, the agent decided it needs the following questions answered first:\n"
+            message = (
+                f"An agent was tasked with decomposing the directive: \n`{self.node.message}`"
+                "\n\nBefore decomposing, the agent decided it needs the following questions answered first:\n"
+                )
             message += "\n".join(completion.questions)
 
-            self.add_journal_entry(
-                {
-                    "header": "Question Requested",
-                    "content": message
-                }
-            )
+            self.log({
+                "role": "swarmstar",
+                "content": "Asking questions before decomposing directive."
+            })
             
             spawn_operation = SpawnOperation(
                 node_id=self.node.id,
@@ -101,12 +114,13 @@ class DecomposeDirective(BaseAction):
                 )
                 
                 spawn_operations.append(spawn_operation)
-            subdirectives_str = "\n".join(subdirectives)
-            self.add_journal_entry(
-                {
-                    "header": "Successfully Decomposed Directives",
-                    "content": subdirectives_str,
-                }
-            )
+
+            self.log({
+                "role": "swarmstar",
+                "content": (
+                    "Decomposed directive into subdirectives. Spawning action router "
+                    "nodes to decide what action to take given the subdirectives."
+                    )
+            })
 
             return spawn_operations

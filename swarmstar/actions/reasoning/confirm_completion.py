@@ -54,25 +54,28 @@ class ConfirmCompletion(BaseAction):
                                    f"Here is the last journal entry of every node in this branch, stopping at a stop or leaf node:\n" \
                                    f"{joined_branch_reports}\n\n"
         
+        system_message = (
+            CONFIRM_COMPLETION_INSTRUCTIONS,
+            f"\n\nThe parent decomposed the directive: \n`{initial_directive}`\n\n",
+            f"Into subdirectives: {subdirectives}\n\n",
+            "Here are the reports of all the child branches:\n",
+            stringified_reports
+        )
+        
         messages = [
             {
                 "role": "system", 
-                "content": CONFIRM_COMPLETION_INSTRUCTIONS
-            },
-            {
-                "role": "system",
-                "content": (
-                    f"The parent decomposed the directive: \n`{initial_directive}`\n\n",
-                    f"Into subdirectives: {subdirectives}\n\n",
-                    "Here are the reports of all the child branches:\n",
-                    stringified_reports
-                ),
-            },
+                "content": system_message
+            }
         ]
         
-        self.add_journal_entry({
-            "header": "Confirming Completion of Directive",
-            "content": parent_node.message
+        self.log({
+            "role": "swarmstar",
+            "content": f"Confirming completion of parent's directive: {initial_directive}"
+        })
+        self.log({
+            "role": "system",
+            "content": system_message
         })
         
         return BlockingOperation(
@@ -91,6 +94,14 @@ class ConfirmCompletion(BaseAction):
         '''
         Depending on the completion, we will either terminate or spawn a new decompose directive node.
         '''
+        is_complete_str = "Directive has been completed." if completion.is_complete else "Directive has not been completed."
+        self.log({
+            "role": "ai",
+            "content": (
+                f"Is complete: {is_complete_str}\n\n"
+                f"Message: {completion.message if completion.message is not None else 'None'}"
+            )
+        })
         if completion.is_complete:
             self.add_journal_entry({
                 "header": "Directive Complete",
@@ -100,10 +111,11 @@ class ConfirmCompletion(BaseAction):
                 node_id=self.node.id,
             )
         else:
-            self.add_journal_entry({
-                "header": "Directive Incomplete",
-                "content": f"The directive is incomplete. The message to send back to the decompose directive node is: {completion.message}"
+            self.log({
+                "header": "swarmstar",
+                "content": "The directive is incomplete. Spawning a new decompose directive node."
             })
+
             return SpawnOperation(
                 node_id=self.node.id,
                 node_embryo={

@@ -33,6 +33,7 @@ def spawn(
         termination_policy = spawn_operation.termination_policy_change
 
     node = SwarmNode(
+        name=action_metadata.name,
         parent_id=parent_id,
         action_id=action_id,
         message=node_embryo.message,

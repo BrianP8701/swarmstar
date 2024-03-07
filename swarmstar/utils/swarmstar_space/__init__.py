@@ -17,3 +17,5 @@ from .action_space import get_action_metadata
 from .memory_space import get_memory_metadata
 
 from .util_space import get_util_metadata
+
+from .general import delete_swarmstar_space, spawn_swarmstar_space

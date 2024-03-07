@@ -73,20 +73,25 @@ class AskUserQuestions(BaseAction):
         return self.generate_initial_conversation_state()
 
     def generate_initial_conversation_state(self):
+        system_message = (
+            GENERATE_INITIAL_CONVERSATION_STATE_INSTRUCTIONS,
+            f"You are initializing the conversation state. Extract questions and "
+            f"context from this message:\n`{self.node.message}`"
+        )
         messages = [
             {
                 "role": "system",
-                "content": GENERATE_INITIAL_CONVERSATION_STATE_INSTRUCTIONS,
-            },
-            {
-                "role": "user",
-                "content": f"You are initializing the conversation state. Extract questions and context from this message:\n`{self.node.message}`",
-            },
+                "content": system_message
+            }
         ]
-
-        self.add_journal_entry({
-                "header": "Asking User Questions",
-                "content": self.node.message,   
+        
+        self.log({
+            "role": "swarmstar",
+            "content": f"We want to get answers to these questions from the user: {self.node.message}\n\n"
+        })
+        self.log({
+            "role": "system",
+            "content": system_message
         })
 
         return BlockingOperation(
@@ -111,19 +116,31 @@ class AskUserQuestions(BaseAction):
         reports: List[str],
         completion: QuestionAskerConversationState,
     ):
+        self.log({
+            "role": "ai",
+            "content": (
+                f"Questions: {completion.questions}\n\n"
+                f"Persisted Context: {completion.persisted_context}\n\n"
+                f"New Report: {completion.report}\n\n"
+            )
+        })
+        
+        system_message = (
+            GENERATE_MESSAGE_INSTRUCTIONS,
+            f"Questions: {completion.questions}\n\n"
+            f"Context: {completion.persisted_context}\n\n"
+            f"User's most recent message: {user_message}"
+            f"Your most recent message: {recent_ai_message}"
+        )
         messages = [
-            {"role": "system", "content": GENERATE_MESSAGE_INSTRUCTIONS},
-            {
-                "role": "system",
-                "content": (
-                    f"Questions: {completion.questions}\n\n"
-                    f"Context: {completion.persisted_context}\n\n"
-                    f"User's most recent message: {user_message}"
-                    f"Your most recent message: {recent_ai_message}"
-                ),
-            },
+            {"role": "system", "content": system_message}
         ]
 
+        self.log({
+            "role": "system",
+            "content": system_message
+        })
+        
         return BlockingOperation(
             node_id=self.node.id,
             blocking_type="instructor_completion",
@@ -143,6 +160,11 @@ class AskUserQuestions(BaseAction):
         reports: List[str],
         completion: AgentMessage,
     ):
+        self.log({
+            "role": "ai",
+            "content": completion.content
+        })
+        
         return UserCommunicationOperation(
             node_id=self.node.id,
             message=completion.content,
@@ -163,18 +185,31 @@ class AskUserQuestions(BaseAction):
         recent_ai_message: str,
         user_response: str,
     ):
+        self.log({
+            "role": "user",
+            "content": user_response
+        })
+        
+        system_message = (
+            UPDATE_CONVERSATION_STATE_INSTRUCTIONS,
+            f"Update Questions: {questions}\n\n"
+            f"Update Context: {persisted_context}\n\n"
+            f"Add to Reports: {reports}"
+            f"Your (you, the ais) most recent message: {recent_ai_message}"
+        )
         messages = [
-            {"role": "system", "content": UPDATE_CONVERSATION_STATE_INSTRUCTIONS},
+            {"role": "system", "content": system_message},
             {
                 "role": "user",
-                "content": f"Your most recent message: {recent_ai_message}\n\nUsers most recent message: {user_response}",
-            },
-            {
-                "role": "system",
-                "content": f"Update Questions: {questions}\n\nUpdate Context: {persisted_context}\n\nAdd to Reports. Do not repeat things that are already mentioned: {reports}",
-            },
+                "content": user_response
+            }
         ]
 
+        self.log({
+            "role": "system",
+            "content": system_message
+        })
+        
         return BlockingOperation(
             node_id=self.node.id,
             blocking_type="instructor_completion",
@@ -199,6 +234,14 @@ class AskUserQuestions(BaseAction):
     ):
         reports.append(completion.report)
         if (not completion.questions) or (len(completion.questions) == 0):
+            self.log({
+                "role": "ai",
+                "content": (
+                    f"Questions: {completion.questions}\n\n"
+                    f"Persisted Context: {completion.persisted_context}\n\n"
+                    f"New Report: {completion.report}\n\n"
+                )
+            })
             return self.finalize_report(reports)
 
         return self.generate_message(
@@ -206,10 +249,17 @@ class AskUserQuestions(BaseAction):
         )
 
     def finalize_report(self, reports: List[str]):
-        messages = [
-            {"role": "system", "content": FINALIZE_REPORT_INSTRUCTIONS},
-            {"role": "system", "content": f"Reports: {reports}"},
-        ]
+        self.log({
+            "role": "swarmstar",
+            "content": f"Finalizing the report."
+        })
+        system_message = FINALIZE_REPORT_INSTRUCTIONS + f"\n\nReports: {reports}"
+        messages = [{"role": "system", "content": system_message}]
+        
+        self.log({
+            "role": "system",
+            "content": system_message
+        })
 
         return BlockingOperation(
             node_id=self.node.id,
@@ -220,10 +270,4 @@ class AskUserQuestions(BaseAction):
         )
 
     def terminate_conversation(self, completion: FinalReport):
-        self.add_journal_entry(
-            {
-                "header": "Final Report",
-                "content": completion.report,
-            }
-        )
         return TerminationOperation(node_id=self.node.id)

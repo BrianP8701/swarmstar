@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 
 platform_map = {
-    "mac": "swarmstar.utils.data.kv_operations.mongodb",
+    "mac": "swarmstar.utils.data.kv_operations.mongodb_wrapper",
     "azure": "swarmstar.utils.data.kv_operations.cosmos_db",
 }
 

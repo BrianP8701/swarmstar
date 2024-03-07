@@ -60,20 +60,19 @@ class BaseAction(metaclass=ErrorHandlingMeta):
     All actions should subclass this class.
     """
 
-    def __init__(self, swarm: SwarmConfig, node: SwarmNode):
-        self.swarm = swarm
+    def __init__(self, swarm_config: SwarmConfig, node: SwarmNode):
+        self.swarm_config = swarm_config
         self.node = node
 
     @abstractmethod
     def main(self, **kwargs) -> SwarmOperation:
         pass
 
-    def add_journal_entry(self, journal_entry: Dict[str, Any]):
-        self.node.journal.append(journal_entry)
-        update_swarm_node(self.swarm, self.node)
-
-    def add_developer_log(self, developer_log: Dict[str, Any]):
-        self.node.developer_logs.append(developer_log)
+    def log(self, log_dict: Dict[str, Any]):
+        """
+        log_dict: {"role": "swarmstar, system, ai or user", "message": "Some message"}
+        """
+        self.node.developer_logs.append(log_dict)
         update_swarm_node(self.swarm, self.node)
 
     def update_termination_policy(self, termination_policy: str):
