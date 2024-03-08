@@ -33,7 +33,7 @@ def blocking(
         combined_args.update(blocking_operation.context)
 
     action_class = getattr(action_file, action_name)
-    action_instance = action_class(swarm=swarm_config, node=node)
+    action_instance = action_class(swarm_config=swarm_config, node=node)
     return getattr(action_instance, blocking_operation.next_function_to_call)(
         **combined_args
     )

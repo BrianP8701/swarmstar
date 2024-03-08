@@ -37,9 +37,13 @@ def execute_swarmstar_operation(
     }
 
     if swarm_operation.operation_type in operation_mapping:
-        output = operation_mapping[swarm_operation.operation_type](
-            swarm_config, swarm_operation
-        )
+        try:
+            output = operation_mapping[swarm_operation.operation_type](
+                swarm_config, swarm_operation
+            )
+        except Exception as e:
+            print(f"Error in execute_swarmstar_operation: {e}")
+            raise e
     else:
         raise ValueError(
             f"Unknown swarm operation type: {swarm_operation.operation_type}"

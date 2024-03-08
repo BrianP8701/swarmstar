@@ -43,7 +43,7 @@ class ConfirmCompletion(BaseAction):
         '''
         Get reports of all child branches
         '''
-        parent_node = get_swarm_node(self.swarm, self.node.parent_id)
+        parent_node = get_swarm_node(self.swarm_config, self.node.parent_id)
         subdirectives = parent_node.journal[-1]["content"]
         initial_directive = parent_node.message
         child_branch_reports, branch_subdirectives = self.get_child_branch_reports()
@@ -55,11 +55,11 @@ class ConfirmCompletion(BaseAction):
                                    f"{joined_branch_reports}\n\n"
         
         system_message = (
-            CONFIRM_COMPLETION_INSTRUCTIONS,
-            f"\n\nThe parent decomposed the directive: \n`{initial_directive}`\n\n",
-            f"Into subdirectives: {subdirectives}\n\n",
-            "Here are the reports of all the child branches:\n",
-            stringified_reports
+            f"{CONFIRM_COMPLETION_INSTRUCTIONS}"
+            f"\n\nThe parent decomposed the directive: \n`{initial_directive}`\n\n"
+            f"Into subdirectives: {subdirectives}\n\n"
+            "Here are the reports of all the child branches:\n\n"
+            f"{stringified_reports}"
         )
         
         messages = [
@@ -140,13 +140,13 @@ class ConfirmCompletion(BaseAction):
         # This should contain any nodes that have multiple children
         stop_action_ids = ["swarmstar/actions/reasoning/decompose_directive"]
 
-        parent_node = get_swarm_node(self.swarm, self.node.parent_id)
+        parent_node = get_swarm_node(self.swarm_config, self.node.parent_id)
         all_branch_reports = []
         branch_subdirectives = []
         for child_id in parent_node.children_ids: # Loop through all children of decompose directive node
             if child_id == self.node.id: # Skip this node (the confirm completion node)
                 continue
-            child_node = get_swarm_node(self.swarm, child_id)
+            child_node = get_swarm_node(self.swarm_config, child_id)
             branch_subdirectives.append(child_node.message)
             this_branches_reports = []
             while True: # Descend down the branch, attaching the last journal entry of each node

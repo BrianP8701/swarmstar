@@ -40,15 +40,6 @@ def blocking(
         instructor_model=instructor_model,
     )
 
-    node.developer_logs.append({
-        "type": "instructor_request",
-        "messages": messages
-    })
-    node.developer_logs.append({
-        "type": "instructor_completion",
-        "instructor_model_name": instructor_model_name,
-        "completion": response.model_dump()
-    })
     update_swarm_node(swarm, node)
     
     return BlockingOperation(

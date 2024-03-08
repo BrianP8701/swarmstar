@@ -38,8 +38,8 @@ DECOMPOSE_DIRECTIVE_INSTRUCTIONS = (
 class DecomposeDirective(BaseAction):
     def main(self) -> BlockingOperation:
         system_message = (
-            DECOMPOSE_DIRECTIVE_INSTRUCTIONS,
-            f"\n\nDirective to decompose: \n`{self.node.message}`",
+            f"{DECOMPOSE_DIRECTIVE_INSTRUCTIONS}"
+            f"\n\nDirective to decompose: \n`{self.node.message}`"
         )
         messages = [
             {"role": "system", "content": system_message}

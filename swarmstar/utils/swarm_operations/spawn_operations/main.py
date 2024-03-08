@@ -16,7 +16,8 @@ from swarmstar.utils.swarmstar_space import (
     save_swarm_node, 
     add_swarm_operation_to_swarm_history, 
     get_action_metadata,
-    save_swarm_operation
+    save_swarm_operation,
+    add_node_to_swarm_state
 )
 
 def spawn(
@@ -42,7 +43,8 @@ def spawn(
     )
     
     save_swarm_node(swarm, node)
-
+    add_node_to_swarm_state(swarm, node)
+    
     if parent_id is not None:
         parent_node = get_swarm_node(swarm, parent_id)
         parent_node.children_ids.append(node.id)

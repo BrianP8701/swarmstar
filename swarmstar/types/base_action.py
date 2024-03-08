@@ -73,8 +73,8 @@ class BaseAction(metaclass=ErrorHandlingMeta):
         log_dict: {"role": "swarmstar, system, ai or user", "message": "Some message"}
         """
         self.node.developer_logs.append(log_dict)
-        update_swarm_node(self.swarm, self.node)
+        update_swarm_node(self.swarm_config, self.node)
 
     def update_termination_policy(self, termination_policy: str):
         self.node.termination_policy = termination_policy
-        update_swarm_node(self.swarm, self.node)
+        update_swarm_node(self.swarm_config, self.node)

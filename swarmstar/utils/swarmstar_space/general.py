@@ -25,7 +25,7 @@ def delete_swarmstar_space(swarm_config: SwarmConfig) -> None:
     delete_kv(swarm_config, "config", swarm_config.id)
     delete_kv(swarm_config, "swarm_state", swarm_config.id)
     delete_kv(swarm_config, "swarm_history", swarm_config.id)
-
+    
     admin = get_kv(swarm_config, "admin", "swarms")
     admin["data"].remove(swarm_config.id)
     set_kv(swarm_config, "admin", "swarms", admin)

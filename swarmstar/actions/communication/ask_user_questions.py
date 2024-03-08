@@ -74,7 +74,7 @@ class AskUserQuestions(BaseAction):
 
     def generate_initial_conversation_state(self):
         system_message = (
-            GENERATE_INITIAL_CONVERSATION_STATE_INSTRUCTIONS,
+            f"{GENERATE_INITIAL_CONVERSATION_STATE_INSTRUCTIONS}"
             f"You are initializing the conversation state. Extract questions and "
             f"context from this message:\n`{self.node.message}`"
         )
@@ -126,7 +126,7 @@ class AskUserQuestions(BaseAction):
         })
         
         system_message = (
-            GENERATE_MESSAGE_INSTRUCTIONS,
+            f"{GENERATE_MESSAGE_INSTRUCTIONS}"
             f"Questions: {completion.questions}\n\n"
             f"Context: {completion.persisted_context}\n\n"
             f"User's most recent message: {user_message}"
@@ -191,7 +191,7 @@ class AskUserQuestions(BaseAction):
         })
         
         system_message = (
-            UPDATE_CONVERSATION_STATE_INSTRUCTIONS,
+            f"{UPDATE_CONVERSATION_STATE_INSTRUCTIONS}"
             f"Update Questions: {questions}\n\n"
             f"Update Context: {persisted_context}\n\n"
             f"Add to Reports: {reports}"

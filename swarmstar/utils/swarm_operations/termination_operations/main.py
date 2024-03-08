@@ -7,7 +7,6 @@ from swarmstar.types import (
     TerminationOperation,
 )
 
-
 def terminate(
     swarm: SwarmConfig, termination_operation: TerminationOperation
 ) -> Union[TerminationOperation, None]:
@@ -31,10 +30,14 @@ def terminate(
     termination_policy_module = import_module(
         termination_policy_map[termination_policy]
     )
-
-    output = termination_policy_module.terminate(swarm, termination_operation)
     
-    save_swarm_operation(swarm, output)
+    try:
+        output = termination_policy_module.terminate(swarm, termination_operation)
+    except Exception as e:
+        print(f"Error in termination policy module: {e}")
+        output = None
+    
+    save_swarm_operation(swarm, termination_operation)
     add_swarm_operation_to_swarm_history(swarm, termination_operation.id)
 
     return output

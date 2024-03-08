@@ -28,7 +28,7 @@ class SwarmOperation(BaseModel):
         "blocking", 
         "user_communication"
     ]
-    node_id: str
+    node_id: Optional[str] = None
 
 class BlockingOperation(SwarmOperation):
     id: Optional[str] = Field(default_factory=lambda: generate_uuid('blocking_op'))
@@ -46,7 +46,7 @@ class SpawnOperation(SwarmOperation):
     termination_policy_change: Literal[
         "simple", "parallel_review", "clone_with_questions_answered"
     ] = None
-    node_id: str = None
+    node_id: Optional[str] = None
 
 class TerminationOperation(SwarmOperation):
     id: Optional[str] = Field(default_factory=lambda: generate_uuid('termination_op'))
