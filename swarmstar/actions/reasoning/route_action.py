@@ -29,7 +29,7 @@ ROUTE_ACTION_INSTRUCTIONS = (
 )
 
 
-class RouteAction(BaseAction):
+class Action(BaseAction):
     def main(self) -> BlockingOperation:
         root: ActionFolder = get_action_metadata(self.swarm_config, "swarmstar/actions")
         root_children_descriptions = self.get_children_descriptions(root)

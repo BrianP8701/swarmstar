@@ -38,7 +38,7 @@ CONFIRM_COMPLETION_INSTRUCTIONS = (
     "you generate is all the node will see, so make sure it is comprehensive and actionable. "
 )
 
-class ConfirmCompletion(BaseAction):
+class Action(BaseAction):
     def main(self) -> BlockingOperation:
         '''
         Get reports of all child branches

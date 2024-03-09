@@ -35,7 +35,7 @@ DECOMPOSE_DIRECTIVE_INSTRUCTIONS = (
 )
 
 
-class DecomposeDirective(BaseAction):
+class Action(BaseAction):
     def main(self) -> BlockingOperation:
         system_message = (
             f"{DECOMPOSE_DIRECTIVE_INSTRUCTIONS}"

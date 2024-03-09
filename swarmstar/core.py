@@ -1,4 +1,5 @@
 from typing import List, Union
+import inspect
 
 from swarmstar.types import SwarmConfig, SwarmOperation, SpawnOperation, NodeEmbryo
 from swarmstar.utils.swarm_operations.blocking_operations.main import blocking
@@ -22,7 +23,7 @@ def spawn_swarm(swarm_config: SwarmConfig, goal: str) -> SpawnOperation:
     
     return root_spawn_operation
 
-def execute_swarmstar_operation(
+async def execute_swarmstar_operation(
     swarm_config: SwarmConfig, swarm_operation: SwarmOperation
 ) -> Union[List[SwarmOperation], None]:
     """
@@ -38,9 +39,12 @@ def execute_swarmstar_operation(
 
     if swarm_operation.operation_type in operation_mapping:
         try:
-            output = operation_mapping[swarm_operation.operation_type](
-                swarm_config, swarm_operation
-            )
+            operation_func = operation_mapping[swarm_operation.operation_type]
+            
+            if inspect.iscoroutinefunction(operation_func):
+                output = await operation_func(swarm_config, swarm_operation)
+            else:
+                output = operation_func(swarm_config, swarm_operation)        
         except Exception as e:
             print(f"Error in execute_swarmstar_operation: {e}")
             raise e

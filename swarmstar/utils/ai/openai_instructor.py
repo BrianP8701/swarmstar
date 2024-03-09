@@ -1,11 +1,12 @@
 from typing import Dict, List, Type
+import asyncio
 
 import instructor
-from openai import OpenAI
 from pydantic import BaseModel
+from openai import AsyncOpenAI
 
 
-def completion(
+async def completion(
     messages: List[Dict[str, str]],
     openai_key: str,
     instructor_model: Type[BaseModel],
@@ -32,8 +33,8 @@ def completion(
     Returns:
     - Type[BaseModel]: The Pydantic model
     """
-    client = instructor.patch(OpenAI(api_key=openai_key))
-    return client.chat.completions.create(
+    aclient = instructor.apatch(AsyncOpenAI(api_key=openai_key))
+    task = aclient.chat.completions.create(
         model="gpt-4-1106-preview",
         messages=messages,
         response_model=instructor_model,
@@ -41,3 +42,5 @@ def completion(
         seed=69,
         max_retries=max_retries,
     )
+
+    return await task

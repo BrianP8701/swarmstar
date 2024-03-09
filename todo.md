@@ -26,7 +26,7 @@
 - [ ] build memory space
 - [ ] add config functions to add custom data to memory and action space
 - [ ] test with multiple enviroments
-- [ ] create web app interface for swarm with user input to threads
+- [x] create web app interface for swarm with user input to threads
 - [ ] add retrieval agent
 - [ ] have swarm add more specifc file operation actions
 - [ ] have swarm add github actions
@@ -35,7 +35,7 @@
 - [x] platform interoperable user interaction
 - [ ] autonomous action/memory space optimization
 - [ ] visualize the memory and action space
-- [ ] visualize the swarm state and history
+- [x] visualize the swarm state
 - [x] ensure consistency in operations that write to swarm space
 - [x] add feature to pause and resume the swarm
 - [ ] allow devs to implement their own env configuration
@@ -46,6 +46,8 @@
 - [ ] add python coder
 - [ ] add python code tester (this gets a lot more complicated)
 - [ ] differentiate between actions meant to be routed to and actions that are not supposed to be callable by action router
+- [ ] add slider and stuff to see the swarm state's evolution through time
+- [ ] add options to choose mode to view swarm tree (directive box, or not, other options etc)
 
 Cloud Optimizations:
 - [x] in cloud functions decouple blocking openai calls. decouple all blocking calls in cloud functions. or look into durable azure functions

@@ -37,8 +37,8 @@
     "swarmstar/actions/reasoning/decompose_directive": {
         "is_folder": false,
         "type": "internal_action",
-        "name": "DecomposeDirective",
-        "description": "Decompose directives into immediate parralel sub-directives.",
+        "name": "Decompose Directive",
+        "description": "Decompose directives into immediate parallel sub-directives.",
         "parent": "swarmstar/actions/reasoning",
         "internal_action_path": "swarmstar.actions.reasoning.decompose_directive",
         "termination_policy": "parallel_review"
@@ -46,7 +46,7 @@
     "swarmstar/actions/reasoning/route_action": {
         "is_folder": false,
         "type": "internal_action",
-        "name": "RouteAction",
+        "name": "Route Action",
         "description": "Decide what action to take given a directive. Don't choose this if you are the action router, that'd be dumb and cause an infinite loop.",
         "parent": "swarmstar/actions/reasoning",
         "internal_action_path": "swarmstar.actions.reasoning.route_action",
@@ -55,7 +55,7 @@
     "swarmstar/actions/communication/ask_user_questions": {
         "is_folder": false,
         "type": "internal_action",
-        "name": "AskUserQuestions",
+        "name": "Ask User Questions",
         "description": "Ask the user questions.",
         "parent": "swarmstar/actions/communication",
         "internal_action_path": "swarmstar.actions.communication.ask_user_questions",
@@ -64,7 +64,7 @@
     "swarmstar/actions/reasoning/confirm_completion": {
         "is_folder": false,
         "type": "internal_action",
-        "name": "ConfirmCompletion",
+        "name": "Confirm Completion",
         "description": "This agent is called when all the children of a 'DecomposeDirective' node have terminated.\n\nIt is crucial to note, the 'DecomposeDirective' node breaks a directive into parallel subdirectives to be executed independently. There may still be further steps that need to be taken following the completion of this set of subdirectives.\n\nThis agent will confirm the completion of the directive. If complete, it will terminate and signal the parent node to terminate as well. Otherwise, it will spawn a new 'Decompose Directive' node to continue the process.",
         "parent": "swarmstar/actions/reasoning",
         "termination_policy": "simple",

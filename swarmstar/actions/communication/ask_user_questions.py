@@ -68,7 +68,7 @@ FINALIZE_REPORT_INSTRUCTIONS = (
 ).replace("\n", "\\n")
 
 
-class AskUserQuestions(BaseAction):
+class Action(BaseAction):
     def main(self):
         return self.generate_initial_conversation_state()
 

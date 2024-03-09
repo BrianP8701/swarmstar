@@ -1,7 +1,7 @@
 """
-    Parralel review termination is designated decompose directive actions.
+    parallel review termination is designated decompose directive actions.
     
-    A node of this type decomposes its directive into immediate parralelizable actionable subdirectives.
+    A node of this type decomposes its directive into immediate parallelizable actionable subdirectives.
     Thus it will have multiple children, and in addition it's goal might not be accomplished even when
     all it's children have terminated. We thus have a specific termination policy for nodes of this type.
     

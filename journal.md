@@ -420,7 +420,7 @@ But how do we 'route' when we have many hundreds of options to route to?
 
 
 
-Remember when we terminate a node we dont just go up to the most recent fork in the tree. some managers didnt do inparralel at break but had a plan with steps so u need to pass back to them
+Remember when we terminate a node we dont just go up to the most recent fork in the tree. some managers didnt do inparallel at break but had a plan with steps so u need to pass back to them
 
 
 
@@ -467,7 +467,7 @@ So lets just make up our own fake scenario:
 
 goal: determine the root cause of aging
 routed to : break_down_goal
-parralel -> retrieve_info, write text
+parallel -> retrieve_info, write text
 
 We will need to retrieve: Most recent and well peer reviewed research on causes and solutions to aging and what are the primary unanswered questions/ bottlenecks
 
@@ -508,7 +508,7 @@ Fundamentally this becomes a retrieval and memory management problem
 
 Fundamentally what is the purpose of the swarm? Specifically, i mean the way im building this out, this architecture with a tree? Why do i have asynchronous stuff? What im doing could easily be done synchronously, sequentially.
 
-Im doing this for efficiency and dare i say scalability? Efficiency obviously because we'll have llm calls running in parralel, more and more the deeper we go down the tree. And scalability.... well tbh we already discussed this part. so far our 'swarm' system we are building locally is very fast and efficient with the only bottleneck being the llm calls.
+Im doing this for efficiency and dare i say scalability? Efficiency obviously because we'll have llm calls running in parallel, more and more the deeper we go down the tree. And scalability.... well tbh we already discussed this part. so far our 'swarm' system we are building locally is very fast and efficient with the only bottleneck being the llm calls.
 
 bruh, okay but this could be horizontally distributed need be. idk i just wanted to think about how this might grow with scale now but i guess thats a problem for another time. I just finished reading alex xu's system design interview book a couple days ago in iceland.
 
@@ -562,7 +562,7 @@ OOOHHH another cool detail while writing a much more in depth prompt for the age
 Okay im adjusting my agent prompts and changing them to give them options to retrieve context or ask for user input and im reaching a few questions. So ive already concluded that each agent should be able to ask the user or retrieval agent questions. Im confused about:
 
 - Do i give the manager agent an is_parrallel choice or just have it output a list of immediate goals?
-    This depends. In the code do we come back to this agent to review and make the next decision or does it get terminated and another agent does review and next decision? Where does review happen is the question? Do we have a seperate review agent or have review happen within the agent? review within the agent fosho. review within the agent fosho. SOoooo like... hmm. Itll be aware of what it wanted accomplished. And then its children will pass it a report. and then it will decide to terminate or create new children. so no in parralel. just output immediate goals to be done now.
+    This depends. In the code do we come back to this agent to review and make the next decision or does it get terminated and another agent does review and next decision? Where does review happen is the question? Do we have a seperate review agent or have review happen within the agent? review within the agent fosho. review within the agent fosho. SOoooo like... hmm. Itll be aware of what it wanted accomplished. And then its children will pass it a report. and then it will decide to terminate or create new children. so no in parallel. just output immediate goals to be done now.
 
 
 
@@ -1775,7 +1775,7 @@ Now eventually as we move down this tree and it gets created a node will eventua
 
 
 1. A node terminates. every node upon completion and spawning a subnode or child node will have a report of what it finished. if the node was simple and definitely suceeded and only has one child, its termination is very simple. it simply terminates and passes the terimation command to its parent
-2. Nodes that break down goals into subgoals and spawn multiple children. when one of its children branches terminate and propagate the termination up to it its termination policy is different. it must make sure all its children are terminated. if not wait. if yes, it checks if there was a review node amongst the children. if not it creates a node that will review all the reports of the children. This is because the node breaks goals into parralel goals, so there might be a next set of subgoals to be done after the first set has finished. the review agent has its own termination policy of type 1. the review agent will spawn a child node that breaks down the goal further followiung the previous set. if the node that breaks down goals has all its children terminated and amongst it is a review node (which only terminates if it determines the goal is fully accomplished) then that node terminates
+2. Nodes that break down goals into subgoals and spawn multiple children. when one of its children branches terminate and propagate the termination up to it its termination policy is different. it must make sure all its children are terminated. if not wait. if yes, it checks if there was a review node amongst the children. if not it creates a node that will review all the reports of the children. This is because the node breaks goals into parallel goals, so there might be a next set of subgoals to be done after the first set has finished. the review agent has its own termination policy of type 1. the review agent will spawn a child node that breaks down the goal further followiung the previous set. if the node that breaks down goals has all its children terminated and amongst it is a review node (which only terminates if it determines the goal is fully accomplished) then that node terminates
 3. User comms. some nodes decide that they need to communicate with another agent or user. so they spawn a child and pass their questions to it. that node will find asnwer to those questions talkng to the user, or talking to another node. Eventually that node terminates, and the original node who asked the questions needs a termination policy that says it doesent terminate, but needs to spawn a new node just like itself, clone itself and pass the questions and answers. then it can change its termination policy to simple termination
 
 so when is a node assigned its termination policy? Does its termination policy change through time? For example the decompose directive node has 3 steps, 1. wait for all children to die, 2. spawn review node, 3. simple termination and report consolidation when review node dies. So i suppose the termination policy doesent change through time. but one thing is how does the... hmm. i guess we need to think. Where there only ever be one decompose directive node? For all problems in the universe those using the decompose directive action work? It seems like a very bold claim. but what problem doesent need to be broken down? Every problem needs to be broken down. And in what manner can you break a problem down? Well i guess ive answered myself. we only have one decompose directive node. we only have one node for review. 

@@ -8,7 +8,6 @@ def execute_action(
     swarm_config: SwarmConfig, node: SwarmNode, action_metadata: Action
 ) -> Union[SwarmOperation, List[SwarmOperation]]:
     internal_action_path = action_metadata.internal_action_path
-    action_name = action_metadata.name
-    action_class = getattr(import_module(internal_action_path), action_name)
+    action_class = getattr(import_module(internal_action_path), "Action")
     action_instance = action_class(swarm_config=swarm_config, node=node)
     return action_instance.main()

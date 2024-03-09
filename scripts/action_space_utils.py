@@ -33,7 +33,7 @@ action_id = "swarmstar/actions/reasoning/decompose_directive"
 dict_version = {
     "type": "internal_action",
     "name": "decompose_directive.py",
-    "description": "Decompose directives into immediate parralel sub-directives.",
+    "description": "Decompose directives into immediate parallel sub-directives.",
     "parent": "swarmstar/actions/reasoning",
     "execution_metadata": {
         "script_path": "swarmstar/actions/reasoning/decompose_directive.py"

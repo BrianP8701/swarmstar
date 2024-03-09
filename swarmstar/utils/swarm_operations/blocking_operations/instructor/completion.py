@@ -22,7 +22,7 @@ class expected_args(BaseModel):
     instructor_model_name: str  # This should point to a pydnatic model in the swarmstar.utils.ai.openai_instructor.models module
 
 
-def blocking(
+async def blocking(
     swarm: SwarmConfig, blocking_operation: BlockingOperation
 ) -> BlockingOperation:
     messages = blocking_operation.args["messages"]
@@ -34,7 +34,7 @@ def blocking(
     )
     instructor_model = getattr(models_module, instructor_model_name)
 
-    response = completion(
+    response = await completion(
         messages=messages,
         openai_key=swarm.openai_key,
         instructor_model=instructor_model,

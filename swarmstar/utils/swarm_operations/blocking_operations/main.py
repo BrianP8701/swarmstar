@@ -1,5 +1,6 @@
 from importlib import import_module
 from typing import List, Union
+import inspect
 
 from swarmstar.utils.swarmstar_space import add_swarm_operation_to_swarm_history, save_swarm_operation
 from swarmstar.types import (
@@ -9,7 +10,7 @@ from swarmstar.types import (
 )
 
 
-def blocking(
+async def blocking(
     swarm_config: SwarmConfig, blocking_operation: BlockingOperation
 ) -> Union[SwarmOperation, List[SwarmOperation]]:
     blocking_operation_type_map = {
@@ -27,9 +28,13 @@ def blocking(
     blocking_operation_type_module = import_module(
         blocking_operation_type_map[blocking_operation_type]
     )
-    output: SwarmOperation = blocking_operation_type_module.blocking(
-        swarm_config, blocking_operation
-    )
+    
+    blocking_func = blocking_operation_type_module.blocking
+
+    if inspect.iscoroutinefunction(blocking_func):
+        output: SwarmOperation = await blocking_func(swarm_config, blocking_operation)
+    else:
+        output: SwarmOperation = blocking_func(swarm_config, blocking_operation)
 
     save_swarm_operation(swarm_config, blocking_operation)
     add_swarm_operation_to_swarm_history(swarm_config, blocking_operation.id)
