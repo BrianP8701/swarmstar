@@ -25,6 +25,7 @@ from .swarm_operations import (
     BlockingOperation,
     NodeEmbryo,
     UserCommunicationOperation,
+    ActionOperation
 )
 
 from .base_action import BaseAction

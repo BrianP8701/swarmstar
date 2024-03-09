@@ -2,7 +2,7 @@ from importlib import import_module
 from typing import List, Union
 import inspect
 
-from swarmstar.utils.swarmstar_space import add_swarm_operation_to_swarm_history, save_swarm_operation
+from swarmstar.utils.swarmstar_space import add_swarm_operation_id_to_swarm_history, save_swarm_operation
 from swarmstar.types import (
     BlockingOperation,
     SwarmConfig,
@@ -14,8 +14,7 @@ async def blocking(
     swarm_config: SwarmConfig, blocking_operation: BlockingOperation
 ) -> Union[SwarmOperation, List[SwarmOperation]]:
     blocking_operation_type_map = {
-        "instructor_completion": "swarmstar.utils.swarm_operations.blocking_operations.instructor.completion",
-        "internal_action": "swarmstar.utils.swarm_operations.blocking_operations.internal_action",
+        "instructor_completion": "swarmstar.utils.swarm_operations.blocking_operations.instructor.completion"
     }
 
     blocking_operation_type = blocking_operation.blocking_type
@@ -37,6 +36,6 @@ async def blocking(
         output: SwarmOperation = blocking_func(swarm_config, blocking_operation)
 
     save_swarm_operation(swarm_config, blocking_operation)
-    add_swarm_operation_to_swarm_history(swarm_config, blocking_operation.id)
+    add_swarm_operation_id_to_swarm_history(swarm_config, blocking_operation.id)
     
     return output

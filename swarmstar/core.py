@@ -1,11 +1,19 @@
 from typing import List, Union
 import inspect
 
-from swarmstar.types import SwarmConfig, SwarmOperation, SpawnOperation, NodeEmbryo
-from swarmstar.utils.swarm_operations.blocking_operations.main import blocking
-from swarmstar.utils.swarm_operations.failure_operations.main import failure
-from swarmstar.utils.swarm_operations.spawn_operations.main import spawn
-from swarmstar.utils.swarm_operations.termination_operations.main import terminate
+from swarmstar.types import (
+    SwarmConfig,
+    SwarmOperation,
+    SpawnOperation,
+    NodeEmbryo,
+)
+from swarmstar.utils.swarm_operations import (
+    blocking,
+    failure,
+    spawn,
+    terminate,
+    execute_action
+)
 from swarmstar.utils.swarmstar_space.general import spawn_swarmstar_space
  
 def spawn_swarm(swarm_config: SwarmConfig, goal: str) -> SpawnOperation:
@@ -35,6 +43,7 @@ async def execute_swarmstar_operation(
         "blocking": blocking,
         "terminate": terminate,
         "node_failure": failure,
+        "action": execute_action,
     }
 
     if swarm_operation.operation_type in operation_mapping:
@@ -52,9 +61,12 @@ async def execute_swarmstar_operation(
         raise ValueError(
             f"Unknown swarm operation type: {swarm_operation.operation_type}"
         )
-    if isinstance(output, tuple):
-        output = list(output)
-    if not isinstance(output, list) and output is not None:
-        output = [output]
     
-    return output
+    if output is None:
+        return None
+    elif isinstance(output, SwarmOperation):
+        return [output]
+    elif isinstance(output, list):
+        return output
+    else:
+        raise ValueError(f"Unexpected return type from operation_func: {type(output)}")

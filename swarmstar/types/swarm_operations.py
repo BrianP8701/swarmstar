@@ -26,7 +26,8 @@ class SwarmOperation(BaseModel):
         "terminate", 
         "node_failure", 
         "blocking", 
-        "user_communication"
+        "user_communication",
+        "action"
     ]
     node_id: Optional[str] = None
 
@@ -46,7 +47,15 @@ class SpawnOperation(SwarmOperation):
     termination_policy_change: Literal[
         "simple", "parallel_review", "clone_with_questions_answered"
     ] = None
-    node_id: Optional[str] = None
+    parent_node_id: Optional[str] = None
+    child_node_id: Optional[str] = None
+
+class ActionOperation(SwarmOperation):
+    id: Optional[str] = Field(default_factory=lambda: generate_uuid('action_op'))
+    operation_type: Literal["action"] = Field(default="action")
+    function_to_call: str
+    node_id: str
+    args: Dict[str, Any] = {}
 
 class TerminationOperation(SwarmOperation):
     id: Optional[str] = Field(default_factory=lambda: generate_uuid('termination_op'))

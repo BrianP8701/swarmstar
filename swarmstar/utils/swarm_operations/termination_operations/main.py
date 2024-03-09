@@ -1,7 +1,7 @@
 from importlib import import_module
 from typing import Union
 
-from swarmstar.utils.swarmstar_space import get_swarm_node, add_swarm_operation_to_swarm_history, save_swarm_operation
+from swarmstar.utils.swarmstar_space import get_swarm_node, add_swarm_operation_id_to_swarm_history, save_swarm_operation
 from swarmstar.types import (
     SwarmConfig,
     TerminationOperation,
@@ -38,6 +38,6 @@ def terminate(
         output = None
     
     save_swarm_operation(swarm, termination_operation)
-    add_swarm_operation_to_swarm_history(swarm, termination_operation.id)
+    add_swarm_operation_id_to_swarm_history(swarm, termination_operation.id)
 
     return output

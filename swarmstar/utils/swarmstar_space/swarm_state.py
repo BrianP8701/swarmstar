@@ -8,8 +8,8 @@ from swarmstar.types.swarm_config import SwarmConfig
 from swarmstar.types.swarm_node import SwarmNode
 from swarmstar.utils.data import get_kv, append_to_list
 
-def add_node_to_swarm_state(swarm: SwarmConfig, node: SwarmNode) -> None:
-    append_to_list(swarm, "swarm_state", swarm.id, "data", node.id)
+def add_node_id_to_swarm_state(swarm: SwarmConfig, node_id: str) -> None:
+    append_to_list(swarm, "swarm_state", swarm.id, "data", node_id)
 
 def get_swarm_state(swarm: SwarmConfig) -> List[str]:
     """

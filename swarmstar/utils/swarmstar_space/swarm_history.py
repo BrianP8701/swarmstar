@@ -7,7 +7,7 @@ from typing import List
 from swarmstar.types import SwarmConfig, SwarmOperation
 from swarmstar.utils.data import get_kv, append_to_list
 
-def add_swarm_operation_to_swarm_history(swarm: SwarmConfig, swarm_operation_id: str) -> None:
+def add_swarm_operation_id_to_swarm_history(swarm: SwarmConfig, swarm_operation_id: str) -> None:
     append_to_list(swarm, "swarm_history", swarm.id, "data", swarm_operation_id)
     
 def get_swarm_history(swarm: SwarmConfig) -> List[str]:
