@@ -1,6 +1,6 @@
 import pytest
 
-from swarmstar.swarm.core import execute_swarmstar_operation
+from swarmstar.core import execute_swarmstar_operation
 from swarmstar.types import (
     BlockingOperation,
 )

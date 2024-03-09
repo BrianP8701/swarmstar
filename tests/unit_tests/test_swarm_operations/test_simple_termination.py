@@ -3,7 +3,7 @@ This operation spawns and terminates a node without running any of the action's 
 """
 import pytest
 
-from swarmstar.swarm.core import execute_swarmstar_operation
+from swarmstar.core import execute_swarmstar_operation
 from swarmstar.utils.swarmstar_space import get_swarm_node
 from swarmstar.types import (
     NodeEmbryo,

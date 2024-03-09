@@ -117,7 +117,7 @@ class Action(BaseAction):
             })
 
             return SpawnOperation(
-                node_id=self.node.id,
+                parent_node_id=self.node.id,
                 node_embryo={
                     "action_id": "swarmstar/actions/reasoning/decompose_directive",
                     "message": completion.message

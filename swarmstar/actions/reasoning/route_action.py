@@ -109,7 +109,7 @@ class Action(BaseAction):
                 })
                 
                 return SpawnOperation(
-                    node_id=self.node.id,
+                    parent_node_id=self.node.id,
                     node_embryo=NodeEmbryo(
                         action_id=next_action_id, message=self.node.message
                     )
