@@ -8,7 +8,8 @@
             "swarmstar/actions/reasoning",
             "swarmstar/actions/communication"
         ],
-        "internal_folder_path": "swarmstar/actions"
+        "internal_folder_path": "swarmstar/actions",
+        "routable": true
     },
     "swarmstar/actions/reasoning": {
         "is_folder": true,
@@ -21,7 +22,8 @@
             "swarmstar/actions/reasoning/confirm_completion"
         ],
         "parent": "swarmstar/actions",
-        "internal_folder_path": "swarmstar/actions/reasoning"
+        "internal_folder_path": "swarmstar/actions/reasoning",
+        "routable": true
     },
     "swarmstar/actions/communication": {
         "is_folder": true,
@@ -32,7 +34,8 @@
             "swarmstar/actions/communication/ask_user_questions"
         ],
         "parent": "swarmstar/actions",
-        "internal_folder_path": "swarmstar.actions.communication"
+        "internal_folder_path": "swarmstar.actions.communication",
+        "routable": true
     },
     "swarmstar/actions/reasoning/decompose_directive": {
         "is_folder": false,
@@ -41,7 +44,8 @@
         "description": "Decompose directives into immediate parallel sub-directives.",
         "parent": "swarmstar/actions/reasoning",
         "internal_action_path": "swarmstar.actions.reasoning.decompose_directive",
-        "termination_policy": "parallel_review"
+        "termination_policy": "parallel_review",
+        "routable": true
     },
     "swarmstar/actions/reasoning/route_action": {
         "is_folder": false,
@@ -50,7 +54,8 @@
         "description": "Decide what action to take given a directive. Don't choose this if you are the action router, that'd be dumb and cause an infinite loop.",
         "parent": "swarmstar/actions/reasoning",
         "internal_action_path": "swarmstar.actions.reasoning.route_action",
-        "termination_policy": "simple"
+        "termination_policy": "simple",
+        "routable": false
     },
     "swarmstar/actions/communication/ask_user_questions": {
         "is_folder": false,
@@ -59,7 +64,8 @@
         "description": "Ask the user questions.",
         "parent": "swarmstar/actions/communication",
         "internal_action_path": "swarmstar.actions.communication.ask_user_questions",
-        "termination_policy": "simple"
+        "termination_policy": "simple",
+        "routable": true
     },
     "swarmstar/actions/reasoning/confirm_completion": {
         "is_folder": false,
@@ -68,6 +74,7 @@
         "description": "This agent is called when all the children of a 'DecomposeDirective' node have terminated.\n\nIt is crucial to note, the 'DecomposeDirective' node breaks a directive into parallel subdirectives to be executed independently. There may still be further steps that need to be taken following the completion of this set of subdirectives.\n\nThis agent will confirm the completion of the directive. If complete, it will terminate and signal the parent node to terminate as well. Otherwise, it will spawn a new 'Decompose Directive' node to continue the process.",
         "parent": "swarmstar/actions/reasoning",
         "termination_policy": "simple",
-        "internal_action_path": "swarmstar.actions.reasoning.confirm_completion"
+        "internal_action_path": "swarmstar.actions.reasoning.confirm_completion",
+        "routable": false
     }
 }

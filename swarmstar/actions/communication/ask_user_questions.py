@@ -129,7 +129,7 @@ class Action(BaseAction):
             f"{GENERATE_MESSAGE_INSTRUCTIONS}"
             f"Questions: {completion.questions}\n\n"
             f"Context: {completion.persisted_context}\n\n"
-            f"User's most recent message: {user_message}"
+            f"User's most recent message: {user_message}\n"
             f"Your most recent message: {recent_ai_message}"
         )
         messages = [
@@ -194,7 +194,7 @@ class Action(BaseAction):
             f"{UPDATE_CONVERSATION_STATE_INSTRUCTIONS}"
             f"Update Questions: {questions}\n\n"
             f"Update Context: {persisted_context}\n\n"
-            f"Add to Reports: {reports}"
+            f"Add to Reports: {reports}\n\n"
             f"Your (you, the ais) most recent message: {recent_ai_message}"
         )
         messages = [

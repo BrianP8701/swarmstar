@@ -1,5 +1,6 @@
 import sqlite3
 import json
+import os
 
 def create_or_open_kv_db(sqlite3_db_path: str, table_name: str) -> None:
     try:
@@ -28,19 +29,9 @@ def move_json_to_sqlite3(json_path: str, sqlite3_db_path: str, table_name: str) 
 
 json_path = 'swarmstar/actions/action_space.json'
 sqlite3_db_path = 'swarmstar/internal_metadata.sqlite3'
+
+if os.path.exists(sqlite3_db_path):
+    os.remove(sqlite3_db_path)
+
 create_or_open_kv_db(sqlite3_db_path, "action_space")
 move_json_to_sqlite3(json_path, sqlite3_db_path, "action_space")
-
-# x = retrieve_value_from_sqlite3(sqlite3_db_path, 'action_space_swarmstar/actions/reasoning')
-
-# print(x)
-# print(type(x))
-# # Turn json string to dict
-# x = json.loads(x)
-
-# print(x)
-# print(type(x))
-
-# path = '/Users/brianprzezdziecki/Code/autonomous-general-agent-swarm/swarmstar/actions/action_space_metadata.sqlite3'
-# create_or_open_kv_db(path)
-

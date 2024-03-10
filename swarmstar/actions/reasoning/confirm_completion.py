@@ -6,7 +6,7 @@ subdirectives to be executed independently. There may still be further steps tha
 taken following the completion of this set of subdirectives.
 
 This agent will confirm the completion of the directive. If complete, it will terminate
-and signal the parent node to terminate as well. Otherwise, it will spawn a new deompose
+and signal the parent node to terminate as well. Otherwise, it will spawn a new decompose
 directive node to continue the process.
 """
 from typing import List, Optional
@@ -117,7 +117,7 @@ class Action(BaseAction):
             })
 
             return SpawnOperation(
-                parent_node_id=self.node.id,
+                node_id=self.node.id,
                 node_embryo={
                     "action_id": "swarmstar/actions/reasoning/decompose_directive",
                     "message": completion.message

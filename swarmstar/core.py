@@ -15,6 +15,10 @@ from swarmstar.utils.swarm_operations import (
     execute_action
 )
 from swarmstar.utils.swarmstar_space.general import spawn_swarmstar_space
+from swarmstar.utils.swarmstar_space import (
+    add_swarm_operation_id_to_swarm_history,
+    save_swarm_operation
+)
  
 def spawn_swarm(swarm_config: SwarmConfig, goal: str) -> SpawnOperation:
     """
@@ -29,6 +33,7 @@ def spawn_swarm(swarm_config: SwarmConfig, goal: str) -> SpawnOperation:
         )
     )
     
+    save_swarm_operation(swarm_config, root_spawn_operation)
     return root_spawn_operation
 
 async def execute_swarmstar_operation(
@@ -65,8 +70,13 @@ async def execute_swarmstar_operation(
     if output is None:
         return None
     elif isinstance(output, SwarmOperation):
-        return [output]
-    elif isinstance(output, list):
-        return output
-    else:
+        output = [output]
+    elif not isinstance(output, list):
         raise ValueError(f"Unexpected return type from operation_func: {type(output)}")
+
+    for operation in output:
+        save_swarm_operation(swarm_config, operation)
+
+    add_swarm_operation_id_to_swarm_history(swarm_config, swarm_operation.id)
+
+    return output

@@ -44,10 +44,10 @@ class SpawnOperation(SwarmOperation):
     id: Optional[str] = Field(default_factory=lambda: generate_uuid('spawn_op'))
     operation_type: Literal["spawn"] = Field(default="spawn")
     node_embryo: NodeEmbryo
-    termination_policy_change: Literal[
+    termination_policy_change: Optional[Literal[
         "simple", "parallel_review", "clone_with_questions_answered"
-    ] = None
-    parent_node_id: Optional[str] = None
+    ]] = None
+    node_id: Optional[str] = None
     child_node_id: Optional[str] = None
 
 class ActionOperation(SwarmOperation):

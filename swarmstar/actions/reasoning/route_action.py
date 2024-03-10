@@ -8,6 +8,7 @@ from swarmstar.types import (
     NodeEmbryo,
     SpawnOperation,
     SwarmOperation,
+    ActionMetadata
 )
 from swarmstar.types.base_action import BaseAction
 from swarmstar.utils.swarmstar_space import get_action_metadata
@@ -32,7 +33,9 @@ ROUTE_ACTION_INSTRUCTIONS = (
 class Action(BaseAction):
     def main(self) -> BlockingOperation:
         root: ActionFolder = get_action_metadata(self.swarm_config, "swarmstar/actions")
-        root_children_descriptions = self.get_children_descriptions(root)
+        root_children = self.get_children_action_metadata(root)
+        children_action_ids = [child.id for child in root_children]
+        root_children_descriptions = self.get_children_descriptions(root_children)
         messages = self.build_route_messages(
             self.node.message, root_children_descriptions
         )
@@ -50,17 +53,20 @@ class Action(BaseAction):
             node_id=self.node.id,
             blocking_type="instructor_completion",
             args={"messages": messages, "instructor_model_name": "NextActionPath"},
-            context={"parent_action_id": "swarmstar/actions"},
+            context={"children_action_ids": children_action_ids},
             next_function_to_call="route_goal",
         )
 
     def route_goal(
-        self, completion: NextActionPath, parent_action_id: str
+        self, completion: NextActionPath, children_action_ids: List[str]
     ) -> SwarmOperation:
         """
         This function gets called over and over again 
         until we reach a leaf node, aka an action.
         """
+        current_action_id = children_action_ids[completion.index]
+        current_action = get_action_metadata(self.swarm_config, current_action_id)
+
         self.log({
             "role": "ai",
             "content": (
@@ -68,11 +74,8 @@ class Action(BaseAction):
                 f"Failure message: {completion.failure_message if completion.failure_message is not None else 'None'}"
             )
         })
+        
         if completion.index is not None:
-            parent_action = get_action_metadata(self.swarm_config, parent_action_id)
-            next_action_id = parent_action.children_ids[completion.index]
-            current_action = get_action_metadata(self.swarm_config, next_action_id)
-
             if current_action.is_folder:
                 
                 self.log({
@@ -80,9 +83,9 @@ class Action(BaseAction):
                     "content": f"The router navigated to the {current_action.name} folder."
                 })
                 
-                children_descriptions = self.get_children_descriptions(
-                    current_action
-                )
+                children = self.get_children_action_metadata(current_action)
+                current_children_action_ids = [child.id for child in children]
+                children_descriptions = self.get_children_descriptions(children)
                 messages = self.build_route_messages(
                     self.node.message, children_descriptions
                 )
@@ -99,22 +102,22 @@ class Action(BaseAction):
                         "messages": messages,
                         "instructor_model_name": "NextActionPath",
                     },
-                    context={"parent_action_id": next_action_id},
+                    context={"children_action_ids": current_children_action_ids},
                     next_function_to_call="route_goal",
                 )
-            else:
+            else: # We've reached an action
                 self.log({
                     "role": "swarmstar",
                     "content": f"The router decided to take the {current_action.name} action for this directive."
                 })
                 
                 return SpawnOperation(
-                    parent_node_id=self.node.id,
+                    node_id=self.node.id,
                     node_embryo=NodeEmbryo(
-                        action_id=next_action_id, message=self.node.message
+                        action_id=current_action_id, message=self.node.message
                     )
                 )
-        else:
+        else: # There's no good action path to take
             failure_message = completion.failure_message
             
             self.log({
@@ -140,9 +143,16 @@ class Action(BaseAction):
         ]
         return messages
 
-    def get_children_descriptions(self, action_folder: ActionFolder) -> List[str]:
+    def get_children_descriptions(self, children_action_metadata: List[ActionMetadata]) -> List[str]:
         children_descriptions = []
+        for child in children_action_metadata:
+            children_descriptions.append(child.name + ": " + child.description)
+        return children_descriptions
+
+    def get_children_action_metadata(self, action_folder: ActionFolder) -> List[ActionMetadata]:
+        children_metadata = []
         for child_id in action_folder.children_ids:
             child_metadata = get_action_metadata(self.swarm_config, child_id)
-            children_descriptions.append(child_metadata.name + ": " + child_metadata.description)
-        return children_descriptions
+            if child_metadata.routable:
+                children_metadata.append(child_metadata)
+        return children_metadata

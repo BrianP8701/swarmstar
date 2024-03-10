@@ -1,23 +1,21 @@
 """
 The spawn operation will create a new node in the swarm and return an ActionOperation
 """
-from typing import List, Union
+from typing import List
 
 from swarmstar.types import (
     SpawnOperation,
     SwarmConfig,
     SwarmNode,
-    SwarmOperation,
     ActionOperation
 )
 from swarmstar.utils.swarmstar_space import (
     get_swarm_node, 
     update_swarm_node, 
     save_swarm_node, 
-    add_swarm_operation_id_to_swarm_history, 
     get_action_metadata,
-    save_swarm_operation,
-    add_node_id_to_swarm_state
+    add_node_id_to_swarm_state,
+    update_swarm_operation
 )
 
 def spawn(swarm: SwarmConfig, spawn_operation: SpawnOperation) ->  List[ActionOperation]:
@@ -78,5 +76,4 @@ def _update_spawn_operation(swarm: SwarmConfig, spawn_operation: SpawnOperation,
     Update child_node_id attr in spawn_operation
     """
     spawn_operation.child_node_id = node_id
-    save_swarm_operation(swarm, spawn_operation)
-    add_swarm_operation_id_to_swarm_history(swarm, spawn_operation.id)
+    update_swarm_operation(swarm, spawn_operation)

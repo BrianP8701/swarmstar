@@ -5,7 +5,7 @@ from .swarm_state import (add_node_id_to_swarm_state,
                           get_len_swarm_state, 
                           get_swarm_node_by_index)
 
-from .swarm_operations import get_swarm_operation, save_swarm_operation
+from .swarm_operations import get_swarm_operation, save_swarm_operation, update_swarm_operation
 
 from .swarm_history import (get_swarm_operation_by_index, 
                             get_swarm_history, 

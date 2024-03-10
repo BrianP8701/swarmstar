@@ -37,6 +37,7 @@ class ActionMetadata(BaseModel):
     description: str
     children_ids: Optional[List[str]] = None
     parent: Optional[str] = None
+    routable: bool = True
 
 
 class ActionFolder(ActionMetadata):
