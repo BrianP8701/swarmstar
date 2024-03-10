@@ -24,5 +24,4 @@ class SwarmNode(BaseModel):
         "clone_with_questions_answered",
     ]
     developer_logs: List[Dict[str, Any]] = []
-    journal: List[Dict[str, Any]] = []
     report: Optional[str] = None

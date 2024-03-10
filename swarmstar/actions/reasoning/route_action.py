@@ -110,6 +110,10 @@ class Action(BaseAction):
                     "role": "swarmstar",
                     "content": f"The router decided to take the {current_action.name} action for this directive."
                 })
+                self.report(
+                    f"The router agent chose an action to take given a directive.\n\nDirective: {self.node.message}"
+                    f"\n\nChosen action: {current_action.name}\n\nAction description: {current_action.description}"
+                )
                 
                 return SpawnOperation(
                     node_id=self.node.id,
@@ -124,6 +128,10 @@ class Action(BaseAction):
                 "role": "swarmstar",
                 "content": "The router failed to find a good action path to take."
             })
+            self.report(
+                f"Tried to find a good action path to take given a directive, but failed.\n\n"
+                f"Directive: {self.node.message}\n\nFailure message: {failure_message}"
+            )
             
             raise ValueError(
                 f"The router agent failed to find a good action path to take. We need to implement something here to handle this. For example we could pass this to the action creator or talk to the user.\n\nThe agent's failure message: {failure_message}"

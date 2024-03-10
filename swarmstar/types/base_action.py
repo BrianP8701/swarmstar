@@ -75,6 +75,10 @@ class BaseAction(metaclass=ErrorHandlingMeta):
         self.node.developer_logs.append(log_dict)
         update_swarm_node(self.swarm_config, self.node)
 
+    def report(self, report: str):
+        self.node.report = report
+        update_swarm_node(self.swarm_config, self.node)
+    
     def update_termination_policy(self, termination_policy: str):
         self.node.termination_policy = termination_policy
         update_swarm_node(self.swarm_config, self.node)

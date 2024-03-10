@@ -1,5 +1,5 @@
 """
-Decompose a directive into actionable subdirectives.
+Decompose a directive into immediate actionable subdirectives to be independently executed in parallel.
 
 The agent will ask questions if it needs more information before decomposing the directive.
 """
@@ -98,7 +98,11 @@ class Action(BaseAction):
                     message=message,
                 )
             )
-            
+            self.report(
+                f"Tried to decompose directive but decided to ask questions first.\n\n"
+                f"Directive:\n{self.node.message}\n\nQuestions:\n{completion.questions}"
+            )
+
             return spawn_operation
         else:
             subdirectives = completion.subdirectives
@@ -122,5 +126,9 @@ class Action(BaseAction):
                     "nodes to decide what action to take given the subdirectives."
                     )
             })
+            self.report(
+                f"Decomposed directive into immediate actionable subdirective to be independently "
+                f"executed in parallel.\n\nDirective:\n{self.node.message}\n\nSubdirectives:\n{subdirectives}"
+            )
 
             return spawn_operations

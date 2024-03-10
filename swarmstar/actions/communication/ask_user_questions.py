@@ -270,4 +270,13 @@ class Action(BaseAction):
         )
 
     def terminate_conversation(self, completion: FinalReport):
+        self.log({
+            "role": "ai",
+            "content": completion.report
+        })
+        self.report(
+            "The agent created a final report after having a conversation with the user "
+            f"with the intent of answering a given set of questions.\n\nQuestions: {self.node.message}"
+            f"\n\nReport: {completion.report}"
+        )
         return TerminationOperation(node_id=self.node.id)

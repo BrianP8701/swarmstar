@@ -1,13 +1,14 @@
 """
-This agent is called when all the children of a "DecomposeDirective" node have terminated.
+This agent is called when all the children of a "Decompose Directive" node have terminated.
 
-It is crucial to note, the "DecomposeDirective" node breaks a directive into parallel 
-subdirectives to be executed independently. There may still be further steps that need to be
-taken following the completion of this set of subdirectives.
+The "DecomposeDirective" node breaks a directive into a set of,
+    "immediate actionable subdirectives to be executed independently and in parallel."
+    
+Following the execution of these subdirectives, this node is called to make a decision.
 
-This agent will confirm the completion of the directive. If complete, it will terminate
-and signal the parent node to terminate as well. Otherwise, it will spawn a new decompose
-directive node to continue the process.
+    1. If the directive is complete, it will terminate and signal the parent node to terminate as well.
+    2. If the directive is not complete, it will spawn a new decompose directive node to continue 
+        the process, generating the next sequential set of subdirectives.
 """
 from typing import List, Optional
 from pydantic import BaseModel, Field

@@ -1923,3 +1923,23 @@ the swarm config object then forces all action, memory util space, swarm state a
 That is it. for every new swarm a user creates we create a new swarmconfig object. we need something using the swarm_id to get the swarmconfig object. how may we do this? well i suppose we leave it up to the developer outside the package to save store and retrieve the swarm config objects accordingly. yeah. 
 
 another question is the following: sometimes we dont want to recreate swarms for everytime, like if we are testing. what types of things can we do on the same swarm config object without problems? multiple swarms can live in the same swarmconfig IF they each have a unique root node id. and we just need to keep track of the root node id. so in the interface we need to add root_node_id back to the swarm object. and then when testing the interface we can have one swarm space, and reuse it just keeping track of root_node_ids .
+
+# Confirm Completion Node
+
+This process can be complex. Confirming the completion of a directive has many edge cases:
+    - One of the subdirectives may have failed and been deemed impossible.
+    - The depth of the tree is unknown. Do we review all branches at once, one at a time,
+        or if a branch is extremely deep, do we have to review it in chunks?
+    - How to handle the case where we realize that the overarching directive was incorrect?
+    - How to handle the case where we realize that the overarching directive was correct, but
+        the subdirectives were incorrect?
+
+I suppose here is the methodology:
+    The confirm completion node is by default given the final report of every leaf node of each
+    branch. Following this, it may proceed to ask questions. These questions will get passed to 
+    the question router who will get answers to these questions and return them to the confirm 
+    completion node.
+
+What is the final report of a leaf node? A leaf node should in fact be quite well defined. And we can just set the last log of that node as the report? Okay. no wait that doesent necessarily work. ill just add a report var to each node. each node finished by stating a report comprehenisvely describing what theyve done, perhaps also including refs to like links, file paths to memory etc of things relevant. yeah that works.
+
+this brings us to the topic of sharing constants. strings, things that need to precisely be correct. these can be navigated by routing, but how to pass them around? well you know what i always say, dont worry about that until i need it. lets just add a report var to each swarmnode
