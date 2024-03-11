@@ -23,8 +23,7 @@ def test_simple_termination():
         node_embryo=NodeEmbryo(
             action_id="swarmstar/actions/reasoning/decompose_directive",
             message='Create and add a web browsing action to the swarm\'s action space. The action name should be "browse_web".',
-        ),
-        termination_policy_change="simple",
+        )
     )
 
     first_spawn_output = execute_swarmstar_operation(swarm, spawn_operation)[0]
@@ -36,8 +35,7 @@ def test_simple_termination():
         node_embryo=NodeEmbryo(
             action_id="swarmstar/actions/reasoning/decompose_directive",
             message='Create and add a web browsing action to the swarm\'s action space. The action name should be "browse_web".',
-        ),
-        termination_policy_change="simple",
+        )
     )
 
     second_spawn_output = execute_swarmstar_operation(swarm, spawn_operation)[0]

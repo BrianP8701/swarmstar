@@ -21,7 +21,7 @@ class SwarmNode(BaseModel):
     termination_policy: Literal[
         "simple",
         "parallel_review",
-        "clone_with_questions_answered",
+        "custom_action_termination",
     ]
     developer_logs: List[Any] = []
     report: Optional[str] = None

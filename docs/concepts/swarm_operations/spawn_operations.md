@@ -10,7 +10,7 @@ class NodeEmbryo(BaseModel):
 class SpawnOperation(SwarmOperation):
     operation_type: Literal['spawn']
     node_embryo: NodeEmbryo
-    termination_policy_change: Literal[
+    : Literal[
         'simple',
         'parallel_review', 
         'clone_with_questions_answered'

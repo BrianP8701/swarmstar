@@ -66,11 +66,6 @@ def _update_parent(swarm: SwarmConfig, spawn_operation: SpawnOperation, node: Sw
         parent_node.children_ids.append(node.id)
         update_swarm_node(swarm, parent_node)
 
-    if spawn_operation.termination_policy_change is not None:
-        parent_node = get_swarm_node(swarm, parent_id)
-        parent_node.termination_policy = spawn_operation.termination_policy_change
-        update_swarm_node(swarm, parent_node)
-
 def _update_spawn_operation(swarm: SwarmConfig, spawn_operation: SpawnOperation, node_id: str) -> None:
     """
     Update child_node_id attr in spawn_operation

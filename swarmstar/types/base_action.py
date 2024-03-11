@@ -16,7 +16,7 @@ from functools import wraps
 from typing import Any, Dict, List, Callable, get_type_hints, get_origin, get_args
 from inspect import signature
 
-from swarmstar.utils.swarmstar_space import update_swarm_node
+from swarmstar.utils.swarmstar_space import update_swarm_node, get_swarm_node
 from swarmstar.types.swarm_config import SwarmConfig
 from swarmstar.types.swarm_node import SwarmNode
 from swarmstar.types.swarm_operations import SwarmOperation
@@ -68,16 +68,43 @@ class BaseAction(metaclass=ErrorHandlingMeta):
 
     @abstractmethod
     def main(self) -> [SwarmOperation, List[SwarmOperation]]:
-        pass
-
+        pass        
+    
+    def get_node(self) -> SwarmNode:
+        return get_swarm_node(self.swarm_config, self.node.id)
+    
     def report(self, report: str):
-        self.node.report = report
-        update_swarm_node(self.swarm_config, self.node)
+        node = self.get_node()
+        if node.report is not None:
+            raise ValueError(f"Node {node.id} already has a report: {node.report}. Cannot update with {report}.")
+        node.report = report
+        update_swarm_node(self.swarm_config, node)
     
     def update_termination_policy(self, termination_policy: str):
-        self.node.termination_policy = termination_policy
-        update_swarm_node(self.swarm_config, self.node)
-        
+        node = self.get_node()
+        node.termination_policy = termination_policy
+        update_swarm_node(self.swarm_config, node)
+    
+    def add_value_to_execution_memory(self, attribute: str, value: Any):
+        node = self.get_node()
+        node.execution_memory[attribute] = value
+        update_swarm_node(self.swarm_config, node)
+    
+    def remove_value_from_execution_memory(self, attribute: str):
+        node = self.get_node()
+        del node.execution_memory[attribute]
+        update_swarm_node(self.swarm_config, node)
+
+    def update_execution_memory(self, execution_memory: Dict[str, Any]):
+        node = self.get_node()
+        node.execution_memory = execution_memory
+        update_swarm_node(self.swarm_config, node)
+
+    def clear_execution_memory(self):
+        node = self.get_node()
+        node.execution_memory = {}
+        update_swarm_node(self.swarm_config, node)
+    
     @staticmethod
     def termination_handler(func: Callable):
         def wrapper(self, terminator_node_id: str, context: Dict[str, Any]):
@@ -141,11 +168,12 @@ class BaseAction(metaclass=ErrorHandlingMeta):
 
         :return: The index_key of the log that was added.
         """
+        node = self.get_node()
         if index_key is None:
-            self.node.developer_logs.append(log_dict)
-            return_index_key = [len(self.node.developer_logs) - 1]
+            node.developer_logs.append(log_dict)
+            return_index_key = [len(node.developer_logs) - 1]
         else:
-            nested_list = self.node.developer_logs
+            nested_list = node.developer_logs
             for i, index in enumerate(index_key):
                 if index > len(nested_list):
                     raise IndexError(f"Index {index} is out of range for the current list. {nested_list}")
@@ -164,5 +192,5 @@ class BaseAction(metaclass=ErrorHandlingMeta):
                         nested_list = nested_list[index]
                     else:
                         raise ValueError("Invalid index_key. Cannot traverse non-list elements.")
-        update_swarm_node(self.swarm_config, self.node)
+        update_swarm_node(self.swarm_config, node)
         return return_index_key

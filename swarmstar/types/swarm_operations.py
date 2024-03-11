@@ -29,7 +29,6 @@ class SwarmOperation(BaseModel):
         "user_communication",
         "action"
     ]
-    node_id: Optional[str] = None
 
 class BlockingOperation(SwarmOperation):
     id: Optional[str] = Field(default_factory=lambda: generate_uuid('blocking_op'))
@@ -44,11 +43,6 @@ class SpawnOperation(SwarmOperation):
     id: Optional[str] = Field(default_factory=lambda: generate_uuid('spawn_op'))
     operation_type: Literal["spawn"] = Field(default="spawn")
     node_embryo: NodeEmbryo
-    termination_policy_change: Optional[Literal[
-        "simple",
-        "review_directive_completion",
-        "custom_action_termination"
-    ]] = None
     node_id: Optional[str] = None
     child_node_id: Optional[str] = None
     context: Dict[str, Any] = None

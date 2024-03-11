@@ -58,11 +58,10 @@ class FinalReport(BaseModel):
         description="Concise and comprehensive report of answers to our questions and supporting context.",
     )
 
-
-class ConfirmCompletionModel(BaseModel):
+class ReviewDirectiveCompletionModel(BaseModel):
     is_complete: bool = Field(
         ..., description="Whether the directive is complete or not."
     )
-    message: Optional[str] = Field(
-        None, description="If the directive is not complete, this message will be sent back to the decompose directive node."
+    questions: Optional[str] = Field(
+        None, description="Ask questions to determine if the directive has been completed."
     )
