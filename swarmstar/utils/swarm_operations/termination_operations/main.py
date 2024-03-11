@@ -12,7 +12,7 @@ def terminate(
 ) -> Union[TerminationOperation, None]:
     termination_policy_map = {
         "simple": "swarmstar.utils.swarm_operations.termination_operations.simple",
-        "parallel_review": "swarmstar.utils.swarm_operations.termination_operations.parallel_review",
+        "review_directive_completion": "swarmstar.utils.swarm_operations.termination_operations.review_directive_completion",
         "custom_action_termination": "swarmstar.utils.swarm_operations.termination_operations.custom_action_termination",
     }
 

@@ -167,12 +167,11 @@ class Action(BaseAction):
                     "content": "All branches have been reviewed. Moving on to confirm completion of overarching directive."
                 }, log_index_key
                 )
-                self.node.execution_memory.pop("__termination_handler__", None)
                 self.remove_value_from_execution_memory("branch_head_node_ids_under_review")
                 self.update_termination_policy("simple")
                 return self.confirm_completion_of_overarching_directive()
 
-    @BaseAction.termination_handler
+    @BaseAction.termination_handler 
     def review_branch_with_questions_answered(self, terminator_node_id: str, context: Dict[str, Any]):
         """
             This function is called when the communication node spawned to answer 
@@ -296,8 +295,8 @@ class Action(BaseAction):
                 raise ValueError("The ai returned None for both params, questions and is_complete in the ReviewDirectiveModel.")
             
             all_reports = "\n\n".join(self.node.execution_memory["branch_reports"].values())
-            all_reports += self.node.execution_memory["overarching_directive_questions_answers"] if \
-            "overarching_directive_questions_answers" in self.node.execution_memory else ""
+            all_reports += self.node.execution_memory["overarching_directive_question_answers"] if \
+            "overarching_directive_question_answers" in self.node.execution_memory else ""
             self.clear_execution_memory()
             self.report(all_reports)
             
@@ -337,12 +336,13 @@ class Action(BaseAction):
         terminator_node = get_swarm_node(self.swarm_config, terminator_node_id)
         question_answers = terminator_node.report
         execution_memory = self.get_node().execution_memory
-        overarching_directive_questions_answers = execution_memory.get("overarching_directive_questions_answers", "")
-        overarching_directive_questions_answers += f"\n\n{question_answers}"
-        execution_memory["overarching_directive_questions_answers"] = overarching_directive_questions_answers
+        overarching_directive_question_answers = (
+            execution_memory.get("overarching_directive_question_answers", "") +
+            f"\n\n{question_answers}"
+        )
+        execution_memory["overarching_directive_question_answers"] = overarching_directive_question_answers
         self.update_execution_memory(execution_memory)        
         self.update_termination_policy("simple")
-        self.remove_value_from_execution_memory("__termination_handler__")
 
         self.log({
             "role": "swarmstar",
@@ -361,7 +361,7 @@ class Action(BaseAction):
             f"\n\nOverarching directive:\n{get_swarm_node(self.swarm_config, self.node.parent_id).message}"
             f"\n\nFollowing reports are from branches which pursued subdirectives derived from the overarching directive."
             f"\n\nBranch reports:\n{reports_str}"
-            f"\n\nAnswers to questions:\n{overarching_directive_questions_answers}"
+            f"\n\nAnswers to questions:\n{overarching_directive_question_answers}"
         )
         messages = [{"role": "system", "content": system_message}]
         
@@ -379,6 +379,14 @@ class Action(BaseAction):
             next_function_to_call="analyze_overarching_directive_review"
         )
 
+    def create_summary_of_entire_branch(self):
+        """
+            Call this when we've made a decision on whether the overarching directive has been completed.
+            This step will create a summary of what the entire branch has done from all the branch reports
+            and question answers we've gathered along the way. This summary will be reported to the parent 
+            or passed to the next decompose directive node.
+        """
+        pass
 
     def _get_branch_reports(self, branch_head_node_ids: List[str]) -> Dict[str, List[str]]:
         """

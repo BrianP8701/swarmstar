@@ -749,7 +749,7 @@ like i have a couple pieces now i already talked abt above yesterday: testing, s
 
 so yeah. i guess we have the one memory folder to hold it all. and a memory router or retrieval router to navigate it
 
-retrieval router, action router. when the quantity of options grow to large we need to break it down into sections and layers, a tree with clone nodes allowed. the routers navigate the action and memory tree. the swarm can create new actions and memories of its own. oh yeah baby now we're onto something.
+retrieval router, action router. when the quantity of options grow to large we need to break it down into sections and layers, a tree with clone nodes allowed. the routers navigate the action and memory tree. the swarm can create new actions and memories of its own. oh yeah now we're onto something.
 
 all the actions are agents
 any history, state, synthetic code, docs is memory
@@ -1092,9 +1092,9 @@ remember my boy. noone. noone gives a fuck - NOBODY GIVES A FUCK - about how coo
 okay i feel good abt this plan. now time to uh actually code it. im kinda overwhelmed by the magnitude of what im telling myself rn. what do i do rn?
 
 uh right yeah decouple and make the core stateless. lets do that.
-oh right i realize what i havent considered yet. custom memory spaces. How do i make it so that we can have the swarm work with and cloud provider or local memory spaces. fuck. rn i have a memory router, retriaval agent to navigate over the memory space. also i have all these paths within my package. when i make the package itll have a memory space that already has some stuff. Then how would we add stuff to that memory space from cloud from any possible source? rn the routers navigate    AHH BABY I GOT THE SOLUTION IM TOO GOOD FUCKING GET IN THERE MATE. EASY PEASY. we revert back to our old solution. Have a tree serialiable object representing the memory tree and each node pointing to location of the data. TOO EASY MAN
+oh right i realize what i havent considered yet. custom memory spaces. How do i make it so that we can have the swarm work with and cloud provider or local memory spaces. fuck. rn i have a memory router, retriaval agent to navigate over the memory space. also i have all these paths within my package. when i make the package itll have a memory space that already has some stuff. Then how would we add stuff to that memory space from cloud from any possible source? rn the routers navigate    AHHH I GOT THE SOLUTION IM TOO GOOD FUCKING GET IN THERE MATE. EASY PEASY. we revert back to our old solution. Have a tree serialiable object representing the memory tree and each node pointing to location of the data. TOO EASY MAN
 
-Tree contains metadata for each node and pointer. Pointer can be within package or to a cloud location with which you define your connection specific retrieval function in utils. come on get in there baby its too easy for me. fuck yeah
+Tree contains metadata for each node and pointer. Pointer can be within package or to a cloud location with which you define your connection specific retrieval function in utils. come on get in there its too easy for me. fuck yeah
 
 
 
@@ -1568,7 +1568,7 @@ internal actions are inside the package. do i...
 
 wait i just realized. the actual... ah man fuck. this gets confusing now. memory space action space, blob storage noqsl. the actual memory and... no the annoying thing i just realized is that the action space metadata and memory space metadata can be a nosql container instead of a blob. which would be more efficient. do i say fuck interoperability and just code? Or do i truly try to strive for interoperabilty? i think purely striving for interoperability forces me to make the swarm more general. yes interoperability.
 
-the solution has to be a flexible memory space that can store metadata of "memories" that the swarm can navigate, and any of those "memories" are labeled with a type telling us how to actually access the data. i was underestimating wait.... but now i see how powerful this can be. the combination of a completely general action and memory space. oh boy. oh boy im cooking. im cooking yessirrrrr. yessir. YESSIR BITCH ASS FAGGOT. WE MAKING THIS SHIT BABY
+the solution has to be a flexible memory space that can store metadata of "memories" that the swarm can navigate, and any of those "memories" are labeled with a type telling us how to actually access the data. i was underestimating wait.... but now i see how powerful this can be. the combination of a completely general action and memory space. oh boy. oh boy im cooking. im cooking yessirrrrr. yessir. YESSIR BITCH ASS FAGGOT. WE MAKING THIS SHIT
 
 these small details, getting these tiny details right will make the difference between a system that is general and a system that is not. this is not some thing thatll ill be able to think about and take time and build. any week now somebody might finish creating a recursively self improving system. I have to hurry the fuck up and make this shit
 
@@ -1968,7 +1968,7 @@ wow this is amazing. just by talking to myself i find design choice answers ever
 
 anyway, back to the solution. so we decide we have questions to ask. spawn a route question node with branch head node id in context. set termination policy change to custom_action_termination_handler. this termination method will look in execution memory for a variable named, \_\_action_termination_handler\_\_. this termination method will then call and return the result of that function with the child node_id that called it. this means we need to change the termination method to hold the node id of the terminator and terminated.
 
-
+# group logging
 New problem. Logging needs more complex handling. the problem i mentioned before? Yeah no this cant be ignored. What we have is a further addition. 
 
 This is a log:
@@ -1999,7 +1999,7 @@ i suppose this can be passed through context? yeah that works. oh wait lol i was
 
 # A revelation???????
 
-ohhhh baby. The swarm primarily comminicates 5 things as of now: 
+ohhhh yeah. The swarm primarily comminicates 5 things as of now: 
     - Directives
     - Context
     - Questions
@@ -2029,7 +2029,97 @@ After tmrw wake up code 2 hours. eat breakfast. go to library. come back at 1pm 
 if i do that, wednesday u get a reward: Wake up and go on a run. then code, eat breakfast and go to the library and continue the routine.
 
 oh btw if i want the reward, before wednesday i need to:
-    - finish review directive, question router, question nodes. parallel logs in UI. Successful front to end termination for baby 2 question. Map out coder action. Map out metadatafying a repo. map out action creator. yessir we are getting somewhere baby. 
+    - finish review directive, question router, question nodes. parallel logs in UI. Successful front to end termination for easy 2 question. Map out coder action. Map out metadatafying a repo. map out action creator. yessir we are getting somewhere. 
 
 ok lets be honest, i cant finish all that by wednesday. BUT - within the next two days we'll put in 15 hours a day of work. we can get a lot done in 30 hours.
+
+# Consolidating reports
+
+First of all, what goes into the decompose directive report?
+What goes into the review directive completion report. 
+
+ahh this is where we have a problem. the decompose directive node already has a very simple report:
+    self.report(
+        f"Decomposed directive into immediate actionable subdirective to be independently "
+        f"executed in parallel.\n\nDirective:\n{self.node.message}\n\nSubdirectives:\n{subdirectives}"
+    )
+
+and this is indeed correct. review directive completion will also have a very simple report as well. The issue that im facing now is the following
+
+when collecting branch reports ot determine if an overarching directive has been accomplished we gather reports from all leaf nodes as well as from immediate child decompose directive nodes. this prevents us from diving too deep into the tree. u can easily imagine that this could overflow the context limit of an llm. so we want to consolidate reports at every decompose directive node i think? And grab that from the nodes stored context?
+
+question to think about when i solve the problem above: If we have node context is the context passing back and forth through blocking operations necessary? Umm let me just answer that rn - no. I think? Hold on let me think abt this more. yeah no it is necessary. we need both yeah. 
+
+anyway, back to creating that thing, the consolidated reports for the decompose directive node when it terminates. 
+
+Distinction: Every node creates a report when it finishes executing it's action
+
+the decompose directive has an extra "consolidated_reports" parameter in its context that is created when it terminates. how do we create this? The thing is this
+    - all nodes that are not leaf nodes are not actually actionable actions. they were managerial actions, routing, planning, decomposing. 
+    - by gathering reports from only leaf nodes we are cutting down the number of reports. We need to have a managable amount of stuff when doing review of a directives completion. we can explore more by asking questions ofc
+
+lets set some ground rules. if a node says it did something in a report we trust that it has done what it said. it is that nodes duty to confirm what it reports it did is actually complete. So a coder must do and run tests before it reports and terminates saying it has finished coding x or y. likewise for other tasks. 
+
+there is also the issue of if a subdirective has not been achieved. well if a subdirective has not been achieved then we are almost certainly saying the overarching directive is not complete. we would then proceed to spawn a new decompose directive node under the review node. 
+
+i mean fuck it tbh. lets just keep it simple. the review node takes all the leaf node reports + questions and answers it got through its review process, and compresses it into a report it will pass to the decompose directive node if it has came to a decision. Oh are u asking about decompose directive nodes that spawned a review node and got passed up for not completing? What is their report then? well this is where the tree- the current tree structure is throwing me off.
+
+mmm i suppose that the tree is not actually chronological which can throw people off, and which is throwing me off now.
+
+okay alright i got it. heres the situation. if the review directive node itself is the one that initiates termination, yes it can consolidate reports and set the consolidated reports of the parent. however. uh wait a second no even if it spawns it passes a consolidated reports to the parent, and on the way up we just accumulate consolidated reports as we pass decompose directive junctures and compress.
+
+[text](public/IMG_3847.png)
+
+okay so this was too much to fit in my head, i had to resort to good old paper for this one. anyway ive got the solution. there are different scenarios:
+
+    - review node initiates termination by decision.
+        Set consolidated reports in parents context.
+    - review node decides to spawn a new decompose directive node.
+        still, set the consolidated reports in the parents context
+    - review node propagates termination from below.
+        take review child node consolidated reports and combine with parents consolidated reports. compress.
+
+decompose directive nodes can exist in 3 scenarios:
+    - root node
+    - spawned by action router
+    - spawned by review directive completion
+
+Consolidated reports from dd nodes spawned by action router will be handled by the review node, as the parent dd node is still waiting on this branches completion
+Consolidated reports spawned by review directive completion will combine on both sides like a sandwich. okay we're good enough waffle. lets implement this. in fact. should we implement a consolidate reports action dedicated to this? In fact here we can actually implement a token count check. if the consolidated reports are smaller than some number x than we can skip consolidation. in fact for my current small scale test goals im currently doing consolidation is not even necessary. and also granularity of compression is not that simple. You cant give a long one and say compress you have to compress at a certain granularity to a certain granularity. 
+
+Should consolidated reports remain as just a single string?
+
+New problem. the algo i described above will take a consolidated compressed report and combine it with another consolidated compressed report. imagine one is much deeper than the other. in fact as we know the swarm will follow sort of a series of steps. 
+
+U have the first layer with the first set of decompose directives, then the next set below that and so forth to layer N. when layers 1-N finish and terminate and we come back to layer 0, we're going to be doing this:
+
+We're going to take the consolidated reports that layer 0 initially had on layer 0
+We're gonna take the consolidated reports of layers 1-N which are compressed
+
+And then we'll consolidate this. The problem here is that there is this loss of information on the way down. In fact its counterintuitive, because Layer N was actually the most recent layer that was performed, and layer 0 was the first layer, so its actually got diluted in reverse time which if anything is the opposite way dilution would happen, if we even wanted dilution. which we dont. im gonna pivot and think of an entirely different approach. this might not be the right approach - i suspect the right approach is a combination of the 2. here let me explain:
+
+at every review node we previously said we'll retrieve reports from every leaf node, but also stop at immediate child decompose directive nodes to grab their consolidated reports to prevent context overflow. Lets throw the consolidated reports idea out the window for now. Lets say at every review node, we literally just go all the way down and grab EVERY leaf node's report. and then this will obviously cause context overflow. but it will allow for like even spread of compression across all reports. which is what we want. we want reports to be compression loss to happen in the direction of depth of the tree. the problem here is the mismatch between the sort of order of propagation and current tree structure. in fact. wait. my brain is touching something. when a node sets its consolidated reports it shouldnt change it. that decompose directive node is responsible for the branch nodes it spawned, but not the decompose directive node spawned by its review node if it exists. but this raises an issue. if this decompose directive node, is a child of another decompose directive node then when that node's review node wants to go down and grab stuff what does it do? 
+
+ive drawn another picture
+
+[text](public/IMG_3848.heic)
+
+as you can see, 8 and 9 get compressed multiple times whereas 5, 6 and 7 get compressed once. this leads to the reports from 8 and 9 losing much more information than 5, 6 and 7. we need to have an even distribution of compression across all reports?
+
+okay lets not overcomplicate this. lets imagine this is a company. the company hires x people to do x tasks. when they finish, they get the reports from those x people. they then use those reports to hire y people to do y tasks after the x people. one of these y people also decide to hire z people to do z tasks, completing his task for him. those z people finish and report to the person who hired them. that person consolidates the z people's reports. Him, alongside the other y people pass their reports to the company. the company then...
+
+hmm weird. based off this analogy my initial intuition was correct. wtf is going on. well this intuition from a company standpoint is actually more representative of the problem than anything else. AH FUCK. let me scale this example with the company up theres more edge cases i can feel them tingling my brain
+
+Im the ceo. 
+
+I hire A people. they finish their tasks, each giving me a report. okay okay nice reports. I need to hire B people to work on the next phase of this project. one of the B people hires B1 people to accomplish his task. One of the B1 people hires B1.1 people to accomplish his task. the B1.1 people finish and report to the B1 person who hired them. This guy checks if he has finished his job. He hasnt. he hires another B1.2 people to work on the task. those B1.2 people all finish their work. Now the B1 person who hired them reviews the B1.2 people's reports with his mission also keeping in mind the work of the B1.1 people. He decides theyve finished. By now all the other B1 people have finished and reported to me. The B1 guy who hired people then gives me a consolidated report. 
+
+Each node in the swarm system is responsible for its own report and the reports of its direct subordinates (nodes it spawned).
+When a node finishes its task: a. If it's a leaf node (no subordinates), it generates its own report. b. If it has subordinates, it waits for their reports.
+Once a node receives reports from all its subordinates: a. It reviews and consolidates the reports, considering its own task and the subordinates' reports. b. It generates a consolidated report that summarizes the key information from its own task and the subordinates' reports.
+The consolidated report is then passed up to the node's parent (the node that spawned it).
+This process continues recursively up the tree until the root node (CEO) receives consolidated reports from all its direct subordinates.
+The root node (CEO) can then review the consolidated reports, make decisions, and proceed with the next phase of the project.
+
+this analogy leads me to see that the order of information loss is correct. the actual vector of time in which these things happen is correct. and the root level CEO node simply doesent need to do review anymore so that last information loss upward in the final termination propagation... omfg i solved it uuhhhhhhh yes my brain was aching bro, fuck.
 
