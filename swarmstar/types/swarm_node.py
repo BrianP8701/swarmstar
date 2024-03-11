@@ -23,5 +23,7 @@ class SwarmNode(BaseModel):
         "parallel_review",
         "clone_with_questions_answered",
     ]
-    developer_logs: List[Dict[str, Any]] = []
+    developer_logs: List[Any] = []
     report: Optional[str] = None
+    execution_memory: Optional[Dict[str, Any]] = None
+    context: Optional[Dict[str, Any]] = None

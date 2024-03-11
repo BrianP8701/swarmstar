@@ -31,7 +31,6 @@ def spawn(swarm: SwarmConfig, spawn_operation: SpawnOperation) ->  List[ActionOp
         function_to_call="main",
     )
 
-
 def _spawn_node(swarm: SwarmConfig, spawn_operation: SpawnOperation) -> SwarmNode:
     """
     Spawns a new node in the swarm and saves it to database
@@ -48,7 +47,8 @@ def _spawn_node(swarm: SwarmConfig, spawn_operation: SpawnOperation) -> SwarmNod
         action_id=action_id,
         message=node_embryo.message,
         alive=True,
-        termination_policy=termination_policy
+        termination_policy=termination_policy,
+        context=spawn_operation.context
     )
 
     save_swarm_node(swarm, node)

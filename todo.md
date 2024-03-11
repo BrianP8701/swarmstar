@@ -48,6 +48,7 @@
 - [ ] differentiate between actions meant to be routed to and actions that are not supposed to be callable by action router
 - [ ] add slider and stuff to see the swarm state's evolution through time
 - [ ] add options to choose mode to view swarm tree (directive box, or not, other options etc)
+- [ ] make node logging use append to list with versioning instead of update_node
 
 Cloud Optimizations:
 - [x] in cloud functions decouple blocking openai calls. decouple all blocking calls in cloud functions. or look into durable azure functions

@@ -45,10 +45,13 @@ class SpawnOperation(SwarmOperation):
     operation_type: Literal["spawn"] = Field(default="spawn")
     node_embryo: NodeEmbryo
     termination_policy_change: Optional[Literal[
-        "simple", "parallel_review", "clone_with_questions_answered"
+        "simple",
+        "review_directive_completion",
+        "custom_action_termination"
     ]] = None
     node_id: Optional[str] = None
     child_node_id: Optional[str] = None
+    context: Dict[str, Any] = None
 
 class ActionOperation(SwarmOperation):
     id: Optional[str] = Field(default_factory=lambda: generate_uuid('action_op'))
@@ -60,7 +63,9 @@ class ActionOperation(SwarmOperation):
 class TerminationOperation(SwarmOperation):
     id: Optional[str] = Field(default_factory=lambda: generate_uuid('termination_op'))
     operation_type: Literal["terminate"] = Field(default="terminate")
-    node_id: str
+    terminator_node_id: str
+    target_node_id: str
+    context: Dict[str, Any] = None
 
 class FailureOperation(SwarmOperation):
     id: Optional[str] = Field(default_factory=lambda: generate_uuid('failure_op'))

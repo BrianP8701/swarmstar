@@ -279,4 +279,7 @@ class Action(BaseAction):
             f"with the intent of answering a given set of questions.\n\nQuestions: {self.node.message}"
             f"\n\nReport: {completion.report}"
         )
-        return TerminationOperation(node_id=self.node.id)
+        return TerminationOperation(
+            target_node_id=self.node.id,
+            terminator_node_id=self.node.id,
+        )

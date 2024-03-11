@@ -13,7 +13,7 @@ def terminate(
     termination_policy_map = {
         "simple": "swarmstar.utils.swarm_operations.termination_operations.simple",
         "parallel_review": "swarmstar.utils.swarm_operations.termination_operations.parallel_review",
-        "clone_with_questions_answered": "swarmstar.utils.swarm_operations.termination_operations.clone_with_questions_answered",
+        "custom_action_termination": "swarmstar.utils.swarm_operations.termination_operations.custom_action_termination",
     }
 
     node_id = termination_operation.node_id

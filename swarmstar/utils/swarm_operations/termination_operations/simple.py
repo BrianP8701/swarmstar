@@ -1,5 +1,5 @@
 """
-    Simple termination simply terminates the given node and returns a TerminationOperation for the parent node.
+Simple termination terminates the given node and returns a TerminationOperation for the parent node.
 """
 from typing import Union
 
@@ -20,5 +20,7 @@ def terminate(
         return None
 
     return TerminationOperation(
-        node_id=parent_node.id, 
+        terminator_node_id=node_id,
+        target_node_id=parent_node.id, 
+        context=termination_operation.context
     )

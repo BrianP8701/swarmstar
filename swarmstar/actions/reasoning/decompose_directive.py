@@ -37,6 +37,11 @@ DECOMPOSE_DIRECTIVE_INSTRUCTIONS = (
 
 class Action(BaseAction):
     def main(self) -> BlockingOperation:
+        self.log({
+            "role": "swarmstar",
+            "content": "Decomposing directive into actionable subdirectives.",
+        })
+        
         system_message = (
             f"{DECOMPOSE_DIRECTIVE_INSTRUCTIONS}"
             f"\n\nDirective to decompose: \n`{self.node.message}`"
@@ -45,10 +50,6 @@ class Action(BaseAction):
             {"role": "system", "content": system_message}
         ]
 
-        self.log({
-            "role": "swarmstar",
-            "content": "Decomposing directive into actionable subdirectives.",
-        })
         self.log({
             "role": "system",
             "content": system_message

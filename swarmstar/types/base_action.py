@@ -13,7 +13,7 @@ will catch any exceptions and return a FailureOperation with a report of the err
 import traceback
 from abc import ABCMeta, abstractmethod
 from functools import wraps
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 from swarmstar.utils.swarmstar_space import update_swarm_node
 from swarmstar.types.swarm_config import SwarmConfig
@@ -65,15 +65,8 @@ class BaseAction(metaclass=ErrorHandlingMeta):
         self.node = node
 
     @abstractmethod
-    def main(self, **kwargs) -> SwarmOperation:
+    def main(self, **kwargs) -> [SwarmOperation, List[SwarmOperation]]:
         pass
-
-    def log(self, log_dict: Dict[str, Any]):
-        """
-        log_dict: {"role": "swarmstar, system, ai or user", "message": "Some message"}
-        """
-        self.node.developer_logs.append(log_dict)
-        update_swarm_node(self.swarm_config, self.node)
 
     def report(self, report: str):
         self.node.report = report
@@ -81,4 +74,60 @@ class BaseAction(metaclass=ErrorHandlingMeta):
     
     def update_termination_policy(self, termination_policy: str):
         self.node.termination_policy = termination_policy
+        update_swarm_node(self.swarm_config, self.node)
+
+    def log(self, log_dict: Dict[str, Any], index_key: List[int] = None):
+        """
+        This function appends a log to the developer_logs list or a nested list within developer_logs.
+
+        The log_dict should have the following format:
+        {
+            "role": (swarmstar, system, ai or user),
+            "content": "..."
+        }
+
+        Node developer_logs contains a list of logs in time order.
+        Developer logs can also contain nested lists.
+        Logs inside a nested list means those were performed in parallel. For example:
+
+        [log0, log1, log2, [log3.0, log3.1, log3.2], log4]
+            log3.0, log3.1, log3.2 were performed in parallel.
+
+        or even,
+
+        [log0, log1, [[log2.0.0, log2.0.1, log2.0.2], [log2.1.0, log2.1.1]], log3]
+            log2.0.1, log2.0.2, log2.0.3 were performed in parallel.
+            log2.1.1, log2.1.2 were performed in parallel.
+            log2.0 and log2.1 were performed in parallel.
+
+        If index_key is None, the log will be appended to the developer_logs list.
+        If an index_key is provided, the log will be appended to the nested list at the index_key.
+
+        The function can create a new empty list and add the log if the list doesn't exist,
+        but it can only create one list at a time. If an attempt is made to create more than one list
+        at a time, an error will be raised.
+
+        :param log_dict: A dictionary representing the log to be added.
+        :param index_key: A list of integers representing the index path to the nested list where the log should be added.
+        :raises ValueError: If an attempt is made to create more than one list at a time.
+        """
+        if index_key is None:
+            self.node.developer_logs.append(log_dict)
+        else:
+            nested_list = self.node.developer_logs
+            for i, index in enumerate(index_key):
+                if index > len(nested_list):
+                    raise IndexError(f"Index {index} is out of range for the current list. {nested_list}")
+                if i == len(index_key) - 1:
+                    if len(nested_list) == index:
+                        nested_list.append([log_dict])
+                    elif isinstance(nested_list[index], list):
+                        nested_list[index].append(log_dict)
+                    else:
+                        nested_list[index] = [nested_list[index], log_dict]
+                else:
+                    if isinstance(nested_list[index], list):
+                        nested_list = nested_list[index]
+                    else:
+                        raise ValueError("Invalid index_key. Cannot traverse non-list elements.")
         update_swarm_node(self.swarm_config, self.node)

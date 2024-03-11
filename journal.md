@@ -1924,7 +1924,7 @@ That is it. for every new swarm a user creates we create a new swarmconfig objec
 
 another question is the following: sometimes we dont want to recreate swarms for everytime, like if we are testing. what types of things can we do on the same swarm config object without problems? multiple swarms can live in the same swarmconfig IF they each have a unique root node id. and we just need to keep track of the root node id. so in the interface we need to add root_node_id back to the swarm object. and then when testing the interface we can have one swarm space, and reuse it just keeping track of root_node_ids .
 
-# Confirm Completion Node
+# Confirm Completion Node (renamed to review directive)
 
 This process can be complex. Confirming the completion of a directive has many edge cases:
     - One of the subdirectives may have failed and been deemed impossible.
@@ -1934,12 +1934,64 @@ This process can be complex. Confirming the completion of a directive has many e
     - How to handle the case where we realize that the overarching directive was correct, but
         the subdirectives were incorrect?
 
-I suppose here is the methodology:
-    The confirm completion node is by default given the final report of every leaf node of each
+I suppose here is the methodology: 
+    The confirm completion node is by default given the final report of every leaf node of each 
     branch. Following this, it may proceed to ask questions. These questions will get passed to 
     the question router who will get answers to these questions and return them to the confirm 
-    completion node.
+    completion node. 
 
 What is the final report of a leaf node? A leaf node should in fact be quite well defined. And we can just set the last log of that node as the report? Okay. no wait that doesent necessarily work. ill just add a report var to each node. each node finished by stating a report comprehenisvely describing what theyve done, perhaps also including refs to like links, file paths to memory etc of things relevant. yeah that works.
 
 this brings us to the topic of sharing constants. strings, things that need to precisely be correct. these can be navigated by routing, but how to pass them around? well you know what i always say, dont worry about that until i need it. lets just add a report var to each swarmnode
+
+okay so ive now added reporting to all nodes. each node has like a comprehensive report of what its done, a summary of what its done. It could be computationally expensive to even just gather the report of every node recursively. I think we definitely want to stop at each decompose directive node. So we'll recursively travel to each leaf node and stopping at decompose directive nodes to gather those reports. we'll do this seperately, perhaps in parralel for each subdirective. then we'll ask decide, is this subdirective complete, or ask questions if needed. then after that process if all subdirectives are complete we can say that and check if given that all subdirectives are complete is the overarching directive complete? If not spawn a new decompose directive node with the overarching directive and all the reports along with the derived answers u got from questions. should this all be packed into one node? its quite a lot. whats concerning me is twofold:
+
+    1. this is a lot of stuff to stuff into developer logs in the ui, its gonna be af fucking ton to read. i imagined the ui as having each node be quite manageable to read and review. but once again, the python coder and action router we can imagine will get quite long. whats more important is having individual units of each node. are there reusable components in this overarching confirm completion node aforementioned? theres utils like getting all the lead/branching node reports. not rlly that. then we ask questions abt this specific topic. not that either. than we - yeah no im wasting time. this is one giant node. if anything, in the future we adapt the UI to handle more stuff in the dev logs.
+    2. The parallel blocking operation execution - when u get them back how do we know when to continue with all the results? we gotta add an execution memory to each node. yeah this is what we ought to do. what we ought to call this? lets call this node_ram? No. execution_memory. uhh... no. context? No context isnt right, i think execution memory is closer. okay who cares, execution_memory
+
+alright now outline the steps again
+
+1. Get reports of all leaf nodes and decompose directive nodes. Determine if the subdirective is complete given this report. ask questions if needed
+    - if questions are asked, pass to question router. receive the answer, and repeat the above step, potentially asking more questions.
+2. After we've determined whether each subdirective is complete or not, or whatever we finish each one off with like a conclusive report, which might have been just the leaf node report, or might be something more comprehensive including answers to questions we received. We pass all of these along with the overarching directive and ask "is this overarching directive complete, made irrelevant or impossible, or is there more steps to take to achieve this overarching directive?
+    - If more steps to take, spawn a decompose directive node
+    - If complete terminate.
+    - If failure, create a failure node, and ill come and check it out and figure out the problem.
+
+Note, decompose directive nodes set their reports at end of parallel review. 
+
+mmm. encountering a problem. So i implemented the first part of the action, where we get reports of leaves and immediate child decompose directive nodes for each branch. given these we ask gpt if each branch has completed its subdirective with all these reports. True or False for completion. In addition, it can ask questions. These get passed to a question router. 
+
+Now here's the problem im facing. For performance, we review each branch in parallel. now multiple of these might end up asking questions, thus spawning multiple route question nodes. Well the route question node gets the message, the questions. But when it completes, how does it pass the answer back to the parent? what does it need? it spawns and all it knows is the questions. its not aware of all the stuff going on above it. so something must be defined in the review node, a custom termination policy ofc. in the execution memory we can store all the branch head node ids waiting on answers. this process can be defined by a termination policy. this termination policy should simply point to a function inside the action. but when a route question node terminates, it needs to somehow pass the answers alongside with the branch head node id it corresponds to. How can we do this? we can add a new field to swarmnodes, context. Context gets passed down spawn operations and up termination operations. they can be submitted or removed by any node in the tree as they see fit.
+
+wow this is amazing. just by talking to myself i find design choice answers every time. and obviously this is without a doubt the right answer i mean, there is no better way to do this. this is the logical optimum. i need to find logical optimums as fast as possible. so im so worried someone will create this before me and my work will be rendered irrelevant. Lets be honest, im not as experienced a developer as others. but coming to logical conclusions is something im capable of doing. noone really does this better or worst i think, this is the purest of mental labors, logic. I need to spend as much time building this out. this system is built of logic and i might have a chance of building this first in the world if i spend more time than anyone else using logic to solve these problems. 
+
+anyway, back to the solution. so we decide we have questions to ask. spawn a route question node with branch head node id in context. set termination policy change to custom_action_termination_handler. this termination method will look in execution memory for a variable named, \_\_action_termination_handler\_\_. this termination method will then call and return the result of that function with the child node_id that called it. this means we need to change the termination method to hold the node id of the terminator and terminated.
+
+
+New problem. Logging needs more complex handling. the problem i mentioned before? Yeah no this cant be ignored. What we have is a further addition. 
+
+This is a log:
+{
+    "role": (swarmstar, system, ai or user),
+    "content": "..."
+}
+
+Currently node developer_logs contains a list of logs in time order. New addition. developer logs can contain nested lists. Logs inside a nested list means those were performed in parallel. For example:
+
+[log1, log2, [log3.1, log3.2, log3.3], log 4]
+
+or even,
+
+[log1, [[log2.1.1, log2.1.2, log2.1.3], [log2.2.1, log2.2.2]], log3]
+
+So we can identify a log by the key: [index, index, index], a list as deep as the logs go. 
+
+Now question. Currently im working on review directive completion. its why i decided i need a more complex logging system. heres the issue.
+
+1, 2, 3                            confirm completion of branches
+                    log in 4.x                              log in 5.x
+                   branch A asks questions            branch B asks questions    
+                   gets question answers               gets question answers
+
+i suppose this can be passed through context? yeah that works. oh wait lol i was thinking node context when i wrote this, which is totally wrong, but it does work with the operation context. so i got it right by accident, but no i got it wrong. just a funny coincidence.

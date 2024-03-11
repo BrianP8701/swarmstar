@@ -44,7 +44,7 @@
         "description": "Decompose directives into immediate parallel sub-directives.",
         "parent": "swarmstar/actions/reasoning",
         "internal_action_path": "swarmstar.actions.reasoning.decompose_directive",
-        "termination_policy": "parallel_review",
+        "termination_policy": "review_directive_completion",
         "routable": true
     },
     "swarmstar/actions/reasoning/route_action": {
