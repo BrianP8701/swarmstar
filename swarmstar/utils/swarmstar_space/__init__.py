@@ -18,4 +18,6 @@ from .memory_space import get_memory_metadata
 
 from .util_space import get_util_metadata
 
+from .swarm_config import get_swarm_config, add_swarm_config
+
 from .general import delete_swarmstar_space, spawn_swarmstar_space

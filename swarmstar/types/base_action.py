@@ -13,7 +13,8 @@ will catch any exceptions and return a FailureOperation with a report of the err
 import traceback
 from abc import ABCMeta, abstractmethod
 from functools import wraps
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Callable, get_type_hints, get_origin, get_args
+from inspect import signature
 
 from swarmstar.utils.swarmstar_space import update_swarm_node
 from swarmstar.types.swarm_config import SwarmConfig
@@ -38,6 +39,7 @@ def error_handling_decorator(func):
             )
             raise Exception(error_message)
 
+            # TODO Failure Operation for error handling
             # return FailureOperation(
             #     node_id=self.node.id,
             #     report=report,
@@ -65,7 +67,7 @@ class BaseAction(metaclass=ErrorHandlingMeta):
         self.node = node
 
     @abstractmethod
-    def main(self, **kwargs) -> [SwarmOperation, List[SwarmOperation]]:
+    def main(self) -> [SwarmOperation, List[SwarmOperation]]:
         pass
 
     def report(self, report: str):
@@ -75,32 +77,56 @@ class BaseAction(metaclass=ErrorHandlingMeta):
     def update_termination_policy(self, termination_policy: str):
         self.node.termination_policy = termination_policy
         update_swarm_node(self.swarm_config, self.node)
+        
+    @staticmethod
+    def termination_handler(func: Callable):
+        def wrapper(self, terminator_node_id: str, context: Dict[str, Any]):
+            sig = signature(func)
+            params = sig.parameters
+            if len(params) != 3 or list(params.keys()) != ['self', 'terminator_node_id', 'context']:
+                raise TypeError("Function must accept exactly two parameters: 'terminator_node_id' and 'context', along with 'self'")
+            
+            # Check return type using type hints
+            type_hints = get_type_hints(func)
+            if 'return' in type_hints:
+                return_type = type_hints['return']
+                if get_origin(return_type) is list:  # Check if the return type is a generic list
+                    if not issubclass(get_args(return_type)[0], SwarmOperation):
+                        raise TypeError("Return type must be SwarmOperation or List[SwarmOperation]")
+                elif not issubclass(return_type, SwarmOperation):  # Direct class check if not a generic list
+                    raise TypeError("Return type must be SwarmOperation or List[SwarmOperation]")
+            
+            # Call the actual function
+            return func(self, terminator_node_id, context)
+        return wrapper
 
     def log(self, log_dict: Dict[str, Any], index_key: List[int] = None) -> List[int]:
         """
-        This function appends a log to the developer_logs list or a nested list within developer_logs.
+        This function appends a log to the developer_logs list in a node or a nested list 
+        within developer_logs.
 
         The log_dict should have the following format:
         {
             "role": (swarmstar, system, ai or user),
             "content": "..."
         }
-
-        Node developer_logs contains a list of logs in time order.
-        Logs inside a nested list means those were performed in parallel. 
-        If you do not need parallel logs, you can ignore the index_key parameter.
+        
+        If you are not doing parallel logs, you can ignore the index_key parameter.
+        Parallel logs are logs that were performed in parallel. For example, if within 
+        one node we have multiple conversations in parallel, we don't want these to 
+        overlap in the logs.
         
         Example:
 
         [log0, log1, log2, [log3.0, log3.1, log3.2], log4]
-            log3.0, log3.1, log3.2 were performed in parallel.
+            log3.0, log3.1, log3.2 are grouped.
 
         or even,
 
         [log0, log1, [[log2.0.0, log2.0.1, log2.0.2], [log2.1.0, log2.1.1]], log3]
-            log2.0.1, log2.0.2, log2.0.3 were performed in parallel.
-            log2.1.1, log2.1.2 were performed in parallel.
-            log2.0 and log2.1 were performed in parallel.
+            log2.0.0, log2.0.1, log2.0.2 are grouped.
+            log2.1.0, log2.1.1 are grouped.
+            log2.0 and log2.1 are performed in parallel.
 
         If index_key is None, the log will be appended to the developer_logs list.
         If an index_key is provided, the log will be appended to the nested list at the index_key.
@@ -112,6 +138,8 @@ class BaseAction(metaclass=ErrorHandlingMeta):
         :param log_dict: A dictionary representing the log to be added.
         :param index_key: A list of integers representing the index path to the nested list where the log should be added.
         :raises ValueError: If an attempt is made to create more than one list at a time.
+
+        :return: The index_key of the log that was added.
         """
         if index_key is None:
             self.node.developer_logs.append(log_dict)

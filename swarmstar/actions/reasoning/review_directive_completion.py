@@ -40,6 +40,20 @@ REVIEW_DIRECTIVE_INSTRUCTIONS = (
 
 
 class Action(BaseAction):
+    """
+    
+    execution_memory:
+        branch_head_node_ids_under_review: List[str]
+            In the first phase of this action, we'll be reviewing each branch. This list
+            will contain the ids of the branch head nodes under review. When done reviewing
+            a branch, we'll remove it from this list. When the list is empty, we'll move
+            to the next phase.
+        branch_reports: Dict[str, List[str]]
+            A dictionary of branch head node ids to a list of their respective reports.
+            Each branch will have a list of reports from all its leaf nodes and immediate
+            child decompose directive nodes. In addition to the reports, we'll also add
+            answers to any questions the reviewer asks to this list.
+    """
     def main(self) -> List[BlockingOperation]:
         return self.confirm_completion_of_branches(self)
             
@@ -53,7 +67,7 @@ class Action(BaseAction):
         decompose_directive_node = get_swarm_node(self.swarm_config, self.node.parent_id)
         branch_head_node_ids = decompose_directive_node.children_ids
         self.node.execution_memory["branch_head_node_ids_under_review"] = branch_head_node_ids
-        
+
         branch_reports = self._get_branch_reports()
         self.node.execution_memory["branch_reports"] = {}
         for branch_head_node_id in branch_head_node_ids:
@@ -118,7 +132,8 @@ class Action(BaseAction):
                     "branch_head_node_id": branch_head_node_id
                 }
             )
-            
+    
+    @BaseAction.termination_handler
     def analyze_branch_question_answers(self, terminator_node_id: str, context: Dict[str, Any]):
         branch_head_node_id = context["branch_head_node_id"]
         branch_head_node = get_swarm_node(self.swarm_config, branch_head_node_id)

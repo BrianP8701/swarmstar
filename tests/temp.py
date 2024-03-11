@@ -1,116 +1,119 @@
+"""file for quick tests. nothing to see here."""
 import pymongo
 from pymongo import MongoClient
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Tuple, get_origin, get_args
+from tests.test_config import SWARMSTAR_UNIT_TESTS_MONGODB_DB_NAME, MONGODB_URI
 
-from swarmstar.types import SwarmConfig, SwarmNode
-from swarmstar.utils.swarmstar_space import get_swarm_node, get_action_metadata
+from swarmstar.types import SwarmConfig, SwarmNode, SpawnOperation, BlockingOperation
+from swarmstar.utils.swarmstar_space import get_swarm_node, get_action_metadata, get_swarm_config
 from swarmstar.utils.data import get_kv, get_internal_action_metadata
 
-developer_logs = [{"role": "system", "content": "Log 0.0"}]
+import traceback
+from abc import ABCMeta, abstractmethod
+from functools import wraps
+from typing import Any, Dict, List, Callable, get_type_hints
+from inspect import signature
 
-def log(log_dict: Dict[str, Any], index_key: List[int] = None):
-        if index_key is None:
-            developer_logs.append(log_dict)
-            return_index_key = [len(developer_logs) - 1]
-        else:
-            nested_list = developer_logs
-            for i, index in enumerate(index_key):
-                if index > len(nested_list):
-                    raise IndexError(f"Index {index} is out of range for the current list. {nested_list}")
-                if i == len(index_key) - 1:
-                    if len(nested_list) == index:
-                        nested_list.append([log_dict])
-                        return_index_key = index_key + [0]
-                    elif isinstance(nested_list[index], list):
-                        nested_list[index].append(log_dict)
-                        return_index_key = index_key + [len(nested_list[index]) - 1]
-                    else:
-                        nested_list[index] = [nested_list[index], log_dict]
-                        return_index_key = index_key + [1]
-                else:
-                    if isinstance(nested_list[index], list):
-                        nested_list = nested_list[index]
-                    else:
-                        raise ValueError("Invalid index_key. Cannot traverse non-list elements.")
-        return return_index_key
+from swarmstar.utils.swarmstar_space import update_swarm_node
+from swarmstar.types.swarm_config import SwarmConfig
+from swarmstar.types.swarm_node import SwarmNode
+from swarmstar.types.swarm_operations import SwarmOperation
 
-def test_log_function():
-    global developer_logs
-    developer_logs = [{"role": "system", "content": "Log 0.0"}]
 
-    try:
-        # Test appending a log to the main list
-        index_key = log({"role": "user", "content": "Log 1.0"})
-        assert developer_logs == [
-            {"role": "system", "content": "Log 0.0"},
-            {"role": "user", "content": "Log 1.0"}
-        ]
-        assert index_key == [1]
-
-        # Test appending a log at an index out of range
+def error_handling_decorator(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
         try:
-            log({"role": "system", "content": "Log 3.0"}, [4])
-            assert False, "Expected ValueError for appending a log out of range"
-        except IndexError:
-            pass
+            return func(*args, **kwargs)
+        except Exception as e:
+            self = args[
+                0
+            ]  # Assuming the first argument is always 'self' for instance methods
+            tb_str = traceback.format_exc()
+            params_str = f"node_id: {self.node.id}\nParams: {kwargs}"
 
-        # Test appending a log to the main list
-        index_key = log({"role": "ai", "content": "Log 2.0"})
-        assert developer_logs == [
-            {"role": "system", "content": "Log 0.0"},
-            {"role": "user", "content": "Log 1.0"},
-            {"role": "ai", "content": "Log 2.0"}
-        ]
-        assert index_key == [2]
+            error_message = (
+                f"Error in {func.__name__}:\n{str(e)}\n\n{tb_str}\n\n{params_str}"
+            )
+            raise Exception(error_message)
 
-        # Test appending a log to an existing nested list
-        index_key = log({"role": "ai", "content": "Log 2.1"}, [2])
-        assert developer_logs == [
-            {"role": "system", "content": "Log 0.0"},
-            {"role": "user", "content": "Log 1.0"},
-            [
-                {"role": "ai", "content": "Log 2.0"},
-                {"role": "ai", "content": "Log 2.1"}
-            ]
-        ]
-        assert index_key == [2, 1]
+            # return FailureOperation(
+            #     node_id=self.node.id,
+            #     report=report,
+            # )
 
-        # Test appending a log to a new nested list
-        index_key = log({"role": "system", "content": "Log 3.0"}, [3])
-        assert developer_logs == [
-            {"role": "system", "content": "Log 0.0"},
-            {"role": "user", "content": "Log 1.0"},
-            [
-                {"role": "ai", "content": "Log 2.0"},
-                {"role": "ai", "content": "Log 2.1"}    
-            ],
-            [{"role": "system", "content": "Log 3.0"}]
-        ]
-        assert index_key == [3, 0]
+    return wrapper
 
-        # Test appending a log to a non-list element within a nested list
-        index_key = log({"role": "user", "content": "Log 2.1.0"}, [2, 1])
-        assert developer_logs == [
-            {"role": "system", "content": "Log 0.0"},
-            {"role": "user", "content": "Log 1.0"},
-            [
-                {"role": "ai", "content": "Log 2.0"},
-                [{"role": "ai", "content": "Log 2.1"}, {"role": "user", "content": "Log 2.1.0"}]
-            ],
-            [{"role": "system", "content": "Log 3.0"}]
-        ]
-        assert index_key == [2, 1, 1]
 
-        # Test creating more than one list at a time (should raise an error)
-        try:
-            log({"role": "system", "content": "Log 4.0"}, [4, 0])
-            assert False, "Expected ValueError for creating more than one list at a time"
-        except IndexError:
-            pass
-    except Exception as e:
-        print('\n\n')
-        print(developer_logs)
-        print('\n\n')
-        raise(e)
+class ErrorHandlingMeta(ABCMeta):
+    def __new__(mcs, name, bases, dct):
+        new_cls = super().__new__(mcs, name, bases, dct)
+        for attr_name, attr_value in dct.items():
+            if callable(attr_value) and not attr_name.startswith("__"):
+                error_wrapped = error_handling_decorator(attr_value)
+                setattr(new_cls, attr_name, error_wrapped)
+        return new_cls
 
-test_log_function()
+class BaseAction(metaclass=ErrorHandlingMeta):
+    """
+    All actions should subclass this class.
+    """
+
+    def __init__(self, swarm_config: SwarmConfig, node: SwarmNode):
+        self.swarm_config = swarm_config
+        self.node = node
+
+    @abstractmethod
+    def main(self) -> [SwarmOperation, List[SwarmOperation]]:
+        pass
+
+    def report(self, report: str):
+        self.node.report = report
+        update_swarm_node(self.swarm_config, self.node)
+    
+    def update_termination_policy(self, termination_policy: str):
+        self.node.termination_policy = termination_policy
+        update_swarm_node(self.swarm_config, self.node)
+        
+    @staticmethod
+    def termination_handler(func: Callable):
+        def wrapper(self, terminator_node_id: str, context: Dict[str, Any]):
+            sig = signature(func)
+            params = sig.parameters
+            if len(params) != 3 or list(params.keys()) != ['self', 'terminator_node_id', 'context']:
+                raise TypeError("Function must accept exactly two parameters: 'terminator_node_id' and 'context', along with 'self'")
+            
+            # Check return type using type hints
+            type_hints = get_type_hints(func)
+            if 'return' in type_hints:
+                return_type = type_hints['return']
+                if get_origin(return_type) is list:  # Check if the return type is a generic list
+                    if not issubclass(get_args(return_type)[0], SwarmOperation):
+                        raise TypeError("Return type must be SwarmOperation or List[SwarmOperation]")
+                elif not issubclass(return_type, SwarmOperation):  # Direct class check if not a generic list
+                    raise TypeError("Return type must be SwarmOperation or List[SwarmOperation]")
+            
+            # Call the actual function
+            return func(self, terminator_node_id, context)
+        return wrapper
+
+
+class TestAction(BaseAction):
+    def main(self) -> [SwarmOperation, List[SwarmOperation]]:
+        pass
+
+    @BaseAction.termination_handler
+    def analyze_branch_question_answers(self, terminator_node_id: str, context: Dict[str, Any]) -> List[SwarmOperation]:
+        print("it worked")
+
+swarm_config = get_swarm_config(MONGODB_URI, SWARMSTAR_UNIT_TESTS_MONGODB_DB_NAME, "default_config")
+test_node = SwarmNode(
+    name="test",
+    action_id="test",
+    message="test",
+    termination_policy="simple"
+
+)
+test = TestAction(swarm_config, test_node)
+
+test.analyze_branch_question_answers("test", {})
