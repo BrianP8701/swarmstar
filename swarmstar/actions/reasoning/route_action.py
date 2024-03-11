@@ -1,5 +1,9 @@
+"""
+Given a directive, the router agent uses an LLM to navigate the action space 
+through its metadata to decide what action to take. If there is no good action
+path to take, the router agent will describe what type of action is needed in detail.
+"""
 from typing import Dict, List, Optional
-
 from pydantic import BaseModel, Field
 
 from swarmstar.types import (

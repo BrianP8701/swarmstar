@@ -76,7 +76,7 @@ class BaseAction(metaclass=ErrorHandlingMeta):
         self.node.termination_policy = termination_policy
         update_swarm_node(self.swarm_config, self.node)
 
-    def log(self, log_dict: Dict[str, Any], index_key: List[int] = None):
+    def log(self, log_dict: Dict[str, Any], index_key: List[int] = None) -> List[int]:
         """
         This function appends a log to the developer_logs list or a nested list within developer_logs.
 
@@ -87,8 +87,10 @@ class BaseAction(metaclass=ErrorHandlingMeta):
         }
 
         Node developer_logs contains a list of logs in time order.
-        Developer logs can also contain nested lists.
-        Logs inside a nested list means those were performed in parallel. For example:
+        Logs inside a nested list means those were performed in parallel. 
+        If you do not need parallel logs, you can ignore the index_key parameter.
+        
+        Example:
 
         [log0, log1, log2, [log3.0, log3.1, log3.2], log4]
             log3.0, log3.1, log3.2 were performed in parallel.
@@ -113,6 +115,7 @@ class BaseAction(metaclass=ErrorHandlingMeta):
         """
         if index_key is None:
             self.node.developer_logs.append(log_dict)
+            return_index_key = [len(self.node.developer_logs) - 1]
         else:
             nested_list = self.node.developer_logs
             for i, index in enumerate(index_key):
@@ -121,13 +124,17 @@ class BaseAction(metaclass=ErrorHandlingMeta):
                 if i == len(index_key) - 1:
                     if len(nested_list) == index:
                         nested_list.append([log_dict])
+                        return_index_key = index_key + [0]
                     elif isinstance(nested_list[index], list):
                         nested_list[index].append(log_dict)
+                        return_index_key = index_key + [len(nested_list[index]) - 1]
                     else:
                         nested_list[index] = [nested_list[index], log_dict]
+                        return_index_key = index_key + [1]
                 else:
                     if isinstance(nested_list[index], list):
                         nested_list = nested_list[index]
                     else:
                         raise ValueError("Invalid index_key. Cannot traverse non-list elements.")
         update_swarm_node(self.swarm_config, self.node)
+        return return_index_key

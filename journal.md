@@ -1995,3 +1995,41 @@ Now question. Currently im working on review directive completion. its why i dec
                    gets question answers               gets question answers
 
 i suppose this can be passed through context? yeah that works. oh wait lol i was thinking node context when i wrote this, which is totally wrong, but it does work with the operation context. so i got it right by accident, but no i got it wrong. just a funny coincidence.
+
+
+# A revelation???????
+
+ohhhh baby. The swarm primarily comminicates 5 things as of now: 
+    - Directives
+    - Context
+    - Questions
+    - Reports
+    - Logs
+
+My mental process was:
+    1. Directive
+    2. write code
+    3. write tests
+    4. run tests, edit code
+
+
+I believe a better way is:
+    1. Directive
+    2. write tests
+    3. write code
+    4. modify tests as needed
+    5. run tests edit code
+
+i wont explain this in depth here, but i know this is da way. this is da way. where are u running? why are u running? COME BACK HERE BOI OOGA BOOGA BOOGA
+
+I need to wake up tmrw, code for 2 hours. eat breakfast, go to the library. stay in the library until closes. come home. eat dinner. code until sleep.
+
+After tmrw wake up code 2 hours. eat breakfast. go to library. come back at 1pm eat lunch. go back to the library before 2. stay in the library until it closes. come home. clean home. go to sleep
+
+if i do that, wednesday u get a reward: Wake up and go on a run. then code, eat breakfast and go to the library and continue the routine.
+
+oh btw if i want the reward, before wednesday i need to:
+    - finish review directive, question router, question nodes. parallel logs in UI. Successful front to end termination for baby 2 question. Map out coder action. Map out metadatafying a repo. map out action creator. yessir we are getting somewhere baby. 
+
+ok lets be honest, i cant finish all that by wednesday. BUT - within the next two days we'll put in 15 hours a day of work. we can get a lot done in 30 hours.
+
