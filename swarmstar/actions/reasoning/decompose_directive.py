@@ -93,7 +93,7 @@ class Action(BaseAction):
             })
             
             spawn_operation = SpawnOperation(
-                node_id=self.node.id,
+                parent_node_id=self.node.id,
                 node_embryo=NodeEmbryo(
                     action_id="swarmstar/actions/communication/ask_user_questions",
                     message=message,
@@ -111,7 +111,7 @@ class Action(BaseAction):
             for subdirective in subdirectives:
                 
                 spawn_operation = SpawnOperation(
-                    node_id=self.node.id,
+                    parent_node_id=self.node.id,
                     node_embryo=NodeEmbryo(
                         action_id="swarmstar/actions/reasoning/route_action",
                         message=subdirective,

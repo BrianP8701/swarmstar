@@ -56,7 +56,7 @@ class Action(ActionMetadata):
     description: str
     parent: str
     children_ids: Optional[List[str]] = Field(default=None)
-    termination_policy: Literal["simple", "parallel_review", "clone_with_questions_answered"]
+    termination_policy: Literal["simple", "confirm_directive_completion", "clone_with_questions_answered"]
 
 
 class InternalAction(Action):
@@ -65,7 +65,7 @@ class InternalAction(Action):
     description: str
     children_ids: Optional[List[str]] = Field(default=None)
     parent: str
-    termination_policy: Literal["simple", "parallel_review", "clone_with_questions_answered"]
+    termination_policy: Literal["simple", "confirm_directive_completion", "clone_with_questions_answered"]
     internal_action_path: str
 
 

@@ -55,7 +55,7 @@ from swarmstar.types import BlockingOperation, TerminationOperation, SpawnOperat
 from swarmstar.types.base_action import BaseAction
 
 
-class ReviewDirectiveCompletionModel(BaseModel):
+class ConfirmDirectiveCompletionModel(BaseModel):
     is_complete: bool = Field(
         ..., description="Whether the directive is complete or not."
     )
@@ -73,7 +73,7 @@ class UpdateDirective(BaseModel):
         ..., description="The updated directive to be given to the next decompose directive node."
     )
 
-REVIEW_DIRECTIVE_COMPLETION_INSTRUCTIONS = (
+confirm_directive_completion_INSTRUCTIONS = (
     "Your purpose is to review and determine if the directive has been completed. "
     "You'll be given the directive and reports detailing what has been done. You are "
     "to trust these reports, as it is each node's responsibility to produce an accurate report. "
@@ -147,7 +147,7 @@ class Action(BaseAction):
             this_branch_directive = get_swarm_node(self.swarm_config, node_id).message
             
             system_message = (
-                f"{REVIEW_DIRECTIVE_COMPLETION_INSTRUCTIONS}"
+                f"{confirm_directive_completion_INSTRUCTIONS}"
                 f"\n\nBranch directive:\n{this_branch_directive}"
                 f"\n\nBranch reports:\n{this_branch_reports_str}"
             )
@@ -175,7 +175,7 @@ class Action(BaseAction):
             )        
         return confirm_completion_operations
 
-    def analyze_branch_review(self, completion: ReviewDirectiveCompletionModel, branch_head_node_id: str, log_index_key: List[int]):
+    def analyze_branch_review(self, completion: ConfirmDirectiveCompletionModel, branch_head_node_id: str, log_index_key: List[int]):
         """
             Analyzes the completion model returned by the AI. If the AI has questions, we'll 
             spawn a communication node to get answers. If the AI has determined the branch
@@ -200,7 +200,7 @@ class Action(BaseAction):
             self.add_value_to_execution_memory("__termination_handler__", "review_branch_with_questions_answered")
             self.update_termination_policy("custom_action_termination")
             return SpawnOperation(
-                node_id=self.node.id,
+                parent_node_id=self.node.id,
                 node_embryo=NodeEmbryo(
                     action_id="swarmstar/actions/communication/route_questions",
                     message=completion.questions
@@ -265,7 +265,7 @@ class Action(BaseAction):
         self.node.execution_memory["branch_reports"][branch_head_node_id] = reports
 
         system_message = (
-            f"{ReviewDirectiveCompletionModel}"
+            f"{ConfirmDirectiveCompletionModel}"
             f"\n\nBranch directive:\n{branch_directive}"
             f"\n\nBranch reports:\n{reports}"
         )
@@ -311,7 +311,7 @@ class Action(BaseAction):
         reports_str = "\n\n".join(all_branch_reports)
         overarching_directive = get_swarm_node(self.swarm_config, self.node.parent_id).message
         system_message = (
-            f"{REVIEW_DIRECTIVE_COMPLETION_INSTRUCTIONS}"
+            f"{confirm_directive_completion_INSTRUCTIONS}"
             f"\n\nOverarching directive:\n{overarching_directive}"
             f"\n\nFollowing reports are from branches which pursued subdirectives derived from the overarching directive."
             f"\n\nBranch reports:\n{reports_str}"
@@ -333,7 +333,7 @@ class Action(BaseAction):
             next_function_to_call="analyze_overarching_directive_review"
         )
 
-    def analyze_overarching_directive_review(self, completion: ReviewDirectiveCompletionModel):
+    def analyze_overarching_directive_review(self, completion: ConfirmDirectiveCompletionModel):
         self.log({
             "role": "ai",
             "content": (
@@ -350,7 +350,7 @@ class Action(BaseAction):
             self.add_value_to_execution_memory("__termination_handler__", "review_overarching_directive_with_questions_answered")
             self.update_termination_policy("custom_action_termination")
             return SpawnOperation(
-                node_id=self.node.id,
+                parent_node_id=self.node.id,
                 node_embryo=NodeEmbryo(
                     action_id="swarmstar/actions/communication/route_questions",
                     message=completion.questions
@@ -404,7 +404,7 @@ class Action(BaseAction):
         reports_str = "\n\n".join(all_branch_reports)
         
         system_message = (
-            f"{ReviewDirectiveCompletionModel}"
+            f"{ConfirmDirectiveCompletionModel}"
             f"\n\nOverarching directive:\n{get_swarm_node(self.swarm_config, self.node.parent_id).message}"
             f"\n\nFollowing reports are from branches which pursued subdirectives derived from the overarching directive."
             f"\n\nBranch reports:\n{reports_str}"
@@ -483,7 +483,6 @@ class Action(BaseAction):
             return TerminationOperation(
                 node_id=self.node.parent_id,
                 terminator_node_id=self.node.id,
-                target_node_id=self.node.parent_id
             )
         else:
             self.log({
@@ -533,7 +532,7 @@ class Action(BaseAction):
         
         self.clear_execution_memory()
         return SpawnOperation(
-            node_id=self.node.id,
+            parent_node_id=self.node.id,
             node_embryo=NodeEmbryo(
                 action_id="swarmstar/actions/reasoning/decompose_directive",
                 message=completion.new_directive

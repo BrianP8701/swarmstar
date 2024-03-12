@@ -19,7 +19,7 @@
         "children_ids": [
             "swarmstar/actions/reasoning/decompose_directive",
             "swarmstar/actions/reasoning/route_action",
-            "swarmstar/actions/reasoning/confirm_completion"
+            "swarmstar/actions/reasoning/confirm_directive_completion"
         ],
         "parent": "swarmstar/actions",
         "internal_folder_path": "swarmstar/actions/reasoning",
@@ -44,7 +44,7 @@
         "description": "Decompose directives into immediate parallel sub-directives.",
         "parent": "swarmstar/actions/reasoning",
         "internal_action_path": "swarmstar.actions.reasoning.decompose_directive",
-        "termination_policy": "review_directive_completion",
+        "termination_policy": "confirm_directive_completion",
         "routable": true
     },
     "swarmstar/actions/reasoning/route_action": {
@@ -67,14 +67,14 @@
         "termination_policy": "simple",
         "routable": true
     },
-    "swarmstar/actions/reasoning/confirm_completion": {
+    "swarmstar/actions/reasoning/confirm_directive_completion": {
         "is_folder": false,
         "type": "internal_action",
-        "name": "Confirm Completion",
+        "name": "Confirm Directive Completion",
         "description": "This agent is called when all the children of a 'DecomposeDirective' node have terminated.\n\nIt is crucial to note, the 'DecomposeDirective' node breaks a directive into parallel subdirectives to be executed independently. There may still be further steps that need to be taken following the completion of this set of subdirectives.\n\nThis agent will confirm the completion of the directive. If complete, it will terminate and signal the parent node to terminate as well. Otherwise, it will spawn a new 'Decompose Directive' node to continue the process.",
         "parent": "swarmstar/actions/reasoning",
         "termination_policy": "simple",
-        "internal_action_path": "swarmstar.actions.reasoning.confirm_completion",
+        "internal_action_path": "swarmstar.actions.reasoning.confirm_directive_completion",
         "routable": false
     }
 }

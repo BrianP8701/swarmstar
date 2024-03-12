@@ -20,7 +20,7 @@ class SwarmNode(BaseModel):
     alive: bool = True
     termination_policy: Literal[
         "simple",
-        "parallel_review",
+        "confirm_directive_completion",
         "custom_action_termination",
     ]
     developer_logs: List[Any] = []

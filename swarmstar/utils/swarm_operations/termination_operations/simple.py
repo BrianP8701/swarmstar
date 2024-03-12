@@ -21,6 +21,6 @@ def terminate(
 
     return TerminationOperation(
         terminator_node_id=node_id,
-        target_node_id=parent_node.id, 
+        node_id=parent_node.id, 
         context=termination_operation.context
     )

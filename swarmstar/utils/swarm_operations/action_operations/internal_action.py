@@ -17,7 +17,7 @@ def execute_action(swarm_config: SwarmConfig, action_operation: ActionOperation)
     
     internal_action_path = action_metadata.internal_action_path
     action_class = getattr(import_module(internal_action_path), "Action")
-    action_instance = action_class(swarm_config=swarm_config, node_id=node_id)
+    action_instance = action_class(swarm_config=swarm_config, node=node)
     
     function_to_call = action_operation.function_to_call
     args = action_operation.args

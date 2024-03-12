@@ -12,7 +12,7 @@ class SpawnOperation(SwarmOperation):
     node_embryo: NodeEmbryo
     : Literal[
         'simple',
-        'parallel_review', 
+        'confirm_directive_completion', 
         'clone_with_questions_answered'
     ] = None
     node_id: str

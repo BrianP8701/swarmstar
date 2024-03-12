@@ -280,6 +280,6 @@ class Action(BaseAction):
             f"\n\nReport: {completion.report}"
         )
         return TerminationOperation(
-            target_node_id=self.node.id,
+            node_id=self.node.id,
             terminator_node_id=self.node.id,
         )

@@ -43,9 +43,9 @@ class SpawnOperation(SwarmOperation):
     id: Optional[str] = Field(default_factory=lambda: generate_uuid('spawn_op'))
     operation_type: Literal["spawn"] = Field(default="spawn")
     node_embryo: NodeEmbryo
+    parent_node_id: Optional[str] = None
     node_id: Optional[str] = None
-    child_node_id: Optional[str] = None
-    context: Dict[str, Any] = None
+    context: Optional[Dict[str, Any]] = None 
 
 class ActionOperation(SwarmOperation):
     id: Optional[str] = Field(default_factory=lambda: generate_uuid('action_op'))
@@ -58,8 +58,8 @@ class TerminationOperation(SwarmOperation):
     id: Optional[str] = Field(default_factory=lambda: generate_uuid('termination_op'))
     operation_type: Literal["terminate"] = Field(default="terminate")
     terminator_node_id: str
-    target_node_id: str
-    context: Dict[str, Any] = None
+    node_id: str
+    context: Optional[Dict[str, Any]] = None
 
 class FailureOperation(SwarmOperation):
     id: Optional[str] = Field(default_factory=lambda: generate_uuid('failure_op'))
@@ -71,5 +71,5 @@ class UserCommunicationOperation(SwarmOperation):
     operation_type: Literal["user_communication"] = Field(default="user_communication")
     node_id: str
     message: str
-    context: Dict[str, Any] = {}
+    context: Optional[Dict[str, Any]] = {}
     next_function_to_call: str

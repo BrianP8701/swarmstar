@@ -35,7 +35,7 @@ def _spawn_node(swarm: SwarmConfig, spawn_operation: SpawnOperation) -> SwarmNod
     """
     Spawns a new node in the swarm and saves it to database
     """
-    parent_id = spawn_operation.node_id
+    parent_id = spawn_operation.parent_node_id
     node_embryo = spawn_operation.node_embryo
     action_id = node_embryo.action_id
     action_metadata = get_action_metadata(swarm, action_id)
@@ -68,7 +68,7 @@ def _update_parent(swarm: SwarmConfig, spawn_operation: SpawnOperation, node: Sw
 
 def _update_spawn_operation(swarm: SwarmConfig, spawn_operation: SpawnOperation, node_id: str) -> None:
     """
-    Update child_node_id attr in spawn_operation
+    Update node_id attr in spawn_operation
     """
-    spawn_operation.child_node_id = node_id
+    spawn_operation.node_id = node_id
     update_swarm_operation(swarm, spawn_operation)

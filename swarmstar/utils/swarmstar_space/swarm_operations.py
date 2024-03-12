@@ -1,3 +1,4 @@
+from pydantic import ValidationError
 from swarmstar.types import (
     SwarmConfig, 
     SwarmOperation, 
@@ -15,7 +16,10 @@ def save_swarm_operation(swarm: SwarmConfig, operation: SwarmOperation) -> None:
 
 def get_swarm_operation(swarm: SwarmConfig, operation_id: str) -> SwarmOperation:
     operation = get_kv(swarm, "swarm_operations", operation_id)
+    if operation is None:
+        raise ValueError(f"Operation with id {operation_id} not found")
     operation_type = operation["operation_type"]
+ 
     operation_mapping = {
         "blocking": BlockingOperation,
         "user_communication": UserCommunicationOperation,
@@ -26,10 +30,17 @@ def get_swarm_operation(swarm: SwarmConfig, operation_id: str) -> SwarmOperation
     }
     
     if operation_type in operation_mapping:
-        OperationClass = operation_mapping[operation_type]
-        return OperationClass.model_validate(operation)
+        try:
+            OperationClass = operation_mapping[operation_type]
+            return OperationClass.model_validate(operation)
+        except ValidationError as e:
+            print(f"Error validating operation {operation} of type {operation_type}")
+            raise e
+        except Exception as e:
+            raise e
     else:
         raise ValueError(f"Operation type {operation_type} not recognized")
+        
 
 
 def update_swarm_operation(swarm: SwarmConfig, operation: SwarmOperation) -> None:

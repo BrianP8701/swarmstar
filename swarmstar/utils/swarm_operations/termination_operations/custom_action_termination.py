@@ -17,19 +17,19 @@ def terminate(
     swarm_config: SwarmConfig, termination_operation: TerminationOperation
 ) -> Union[TerminationOperation, None]:
     terminator_node_id = termination_operation.terminator_node_id
-    target_node_id = termination_operation.target_node_id
+    node_id = termination_operation.node_id
     context = termination_operation.context
 
-    target_node = get_swarm_node(swarm_config, target_node_id)
+    target_node = get_swarm_node(swarm_config, node_id)
     termination_handler = target_node.execution_memory.get("__termination_handler__")
     
     if termination_handler is not None:
         return ActionOperation(
-            node_id=target_node_id,
+            node_id=node_id,
             function_to_call=termination_handler,
             args={"terminator_node_id": terminator_node_id, "context": context},
         )
 
     raise ValueError(
-        f"Termination handler not found in target node's execution memory. target_node_id: {target_node_id}"
+        f"Termination handler not found in target node's execution memory. node_id: {node_id}"
     )

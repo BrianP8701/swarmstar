@@ -13,7 +13,7 @@ class SwarmNode(BaseModel):
     alive: bool
     termination_policy: Literal[
         'simple',
-        'parallel_review', 
+        'confirm_directive_completion', 
         'clone_with_questions_answered'
     ] 
 ```
