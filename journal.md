@@ -2123,3 +2123,12 @@ The root node (CEO) can then review the consolidated reports, make decisions, an
 
 this analogy leads me to see that the order of information loss is correct. the actual vector of time in which these things happen is correct. and the root level CEO node simply doesent need to do review anymore so that last information loss upward in the final termination propagation... omfg i solved it uuhhhhhhh yes my brain was aching bro, fuck.
 
+okay lets review. First and foremost, the thing that confused me: The main trunk of the tree, there is no need to ever propagate errors up this tree as there is no review completion node to be ran on the way. the reason is because when the review completion node performs review and decides the overarching directive is not complete it spawns a completely new node, taking the overarching directive and revamping it with the set of subdirectives that was just performed. in this manner, there is never a need to propagate reports up the tree trunk. 
+
+So lets conclude the passing of reports conclusively.
+
+    - Whenever a node finishes executing its action and outputs its final spawn or termination operations it will submit a report concluding what it has done. managerial nodes make a decision, and leaf nodes perform a direct action torwards the goal.
+    - when a leaf decompose directive node terminates it will consolidate reports of all its direct child leaves. it will store this consolidated report in its context. this consolidated report will not be touched or changed.
+    - when a parent decompose directive node terminates, we'll use the method we originally planned. to take the consolidated reports of decompose directive nodes and direct leaf nodes and consolidate those.
+
+Now lets just refine the consolidate report function. ah also do we create a seperate consolidate report function? Nah i dont think theres any need. 
