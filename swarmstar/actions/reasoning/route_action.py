@@ -56,11 +56,12 @@ class Action(BaseAction):
         return BlockingOperation(
             node_id=self.node.id,
             blocking_type="instructor_completion",
-            args={"messages": messages, "instructor_model_name": "NextActionPath"},
-            context={"children_action_ids": children_action_ids},
+            args={"messages": messages},
+            context={"instructor_model_name": "NextActionPath", "children_action_ids": children_action_ids},
             next_function_to_call="route_goal",
         )
 
+    @BaseAction.receive_completion_handler
     def route_goal(
         self, completion: NextActionPath, children_action_ids: List[str]
     ) -> SwarmOperation:
@@ -102,11 +103,11 @@ class Action(BaseAction):
                 return BlockingOperation(
                     node_id=self.node.id,
                     blocking_type="instructor_completion",
-                    args={
-                        "messages": messages,
-                        "instructor_model_name": "NextActionPath",
+                    args={"messages": messages},
+                    context={
+                        "children_action_ids": current_children_action_ids,
+                        "instructor_model_name": "NextActionPath"    
                     },
-                    context={"children_action_ids": current_children_action_ids},
                     next_function_to_call="route_goal",
                 )
             else: # We've reached an action

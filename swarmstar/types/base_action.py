@@ -10,6 +10,7 @@ When a new action is created, it should subclass BaseAction and implement the ma
 All action functions will automatically be wrapped with the error handling decorator, which 
 will catch any exceptions and return a FailureOperation with a report of the error.
 """
+from importlib import import_module
 import traceback
 from abc import ABCMeta, abstractmethod
 from functools import wraps
@@ -107,6 +108,14 @@ class BaseAction(metaclass=ErrorHandlingMeta):
     
     @staticmethod
     def termination_handler(func: Callable):
+        """
+            This decorator is used to mark a function as a termination handler.
+            
+            When termination policy is set to "custom_action_termination", it is expected 
+            that the action will set __termination_handler__ in the node's execution memory 
+            to the name of the function that will handle the termination. This function
+            should be wrapped with this decorator, to ensure it has the correct signature.
+        """
         def wrapper(self, terminator_node_id: str, context: Dict[str, Any]):
             sig = signature(func)
             params = sig.parameters
@@ -126,6 +135,33 @@ class BaseAction(metaclass=ErrorHandlingMeta):
             # Call the actual function
             return func(self, terminator_node_id, context)
         return wrapper
+
+    @staticmethod
+    def receive_completion_handler(func: Callable):
+        """
+        This decorator is used to mark a function as a receive completion handler.
+        When you send out a blocking operation to receive a completion from an ai,
+        it will run and the function_to_call after the blocking operation should be
+        wrapped with this decorator. This is to ensure that the completion is converted 
+        to the pydantic model. If the user pauses the swarm, the operation might get queued
+        in the database, causing it to convert to a dict. This decorator handles that edge case
+        """
+        def wrapper(self, completion: Any, **kwargs):
+            sig = signature(func)
+            params = sig.parameters
+
+            instructor_model_name = kwargs.pop("instructor_model_name", None)
+            
+            if type(completion) is dict and instructor_model_name:
+                models_module = import_module(
+                    "swarmstar.utils.swarm_operations.blocking_operations.instructor.pydantic_models"
+                )
+                instructor_model = getattr(models_module, instructor_model_name)
+                completion = instructor_model.model_validate(completion)
+            
+            return func(self, completion, **kwargs)
+        return wrapper
+
 
     def log(self, log_dict: Dict[str, Any], index_key: List[int] = None) -> List[int]:
         """

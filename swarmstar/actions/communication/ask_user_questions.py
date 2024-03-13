@@ -97,18 +97,17 @@ class Action(BaseAction):
         return BlockingOperation(
             node_id=self.node.id,
             blocking_type="instructor_completion",
-            args={
-                "messages": messages,
-                "instructor_model_name": "QuestionAskerConversationState",
-            },
+            args={"messages": messages},
             context={
                 "user_message": "User has no messages, the convo is just starting.",
                 "recent_ai_message": "No messages yet, the convo is just starting.",
                 "reports": [],
+                "instructor_model_name": "QuestionAskerConversationState"
             },
             next_function_to_call="generate_message",
         )
 
+    @BaseAction.receive_completion_handler
     def generate_message(
         self,
         user_message: str,
@@ -144,15 +143,17 @@ class Action(BaseAction):
         return BlockingOperation(
             node_id=self.node.id,
             blocking_type="instructor_completion",
-            args={"messages": messages, "instructor_model_name": "AgentMessage"},
+            args={"messages": messages},
             context={
                 "questions": completion.questions,
                 "persisted_context": completion.persisted_context,
                 "reports": reports,
+                "instructor_model_name": "AgentMessage"
             },
             next_function_to_call="send_user_message",
         )
 
+    @BaseAction.receive_completion_handler
     def send_user_message(
         self,
         questions: List[str],
@@ -214,17 +215,18 @@ class Action(BaseAction):
             node_id=self.node.id,
             blocking_type="instructor_completion",
             args={
-                "messages": messages,
-                "instructor_model_name": "QuestionAskerConversationState",
+                "messages": messages
             },
             context={
                 "reports": reports,
                 "user_response": user_response,
                 "recent_ai_message": recent_ai_message,
+                "instructor_model_name": "QuestionAskerConversationState"
             },
             next_function_to_call="decide_to_continue_or_end_conversation",
         )
 
+    @BaseAction.receive_completion_handler
     def decide_to_continue_or_end_conversation(
         self,
         reports: List[str],
@@ -264,11 +266,12 @@ class Action(BaseAction):
         return BlockingOperation(
             node_id=self.node.id,
             blocking_type="instructor_completion",
-            args={"messages": messages, "instructor_model_name": "FinalReport"},
-            context={},
+            args={"messages": messages},
+            context={"instructor_model_name": "FinalReport"},
             next_function_to_call="terminate_conversation",
         )
 
+    @BaseAction.receive_completion_handler
     def terminate_conversation(self, completion: FinalReport):
         self.log({
             "role": "ai",

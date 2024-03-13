@@ -25,7 +25,7 @@ async def blocking(
     swarm: SwarmConfig, blocking_operation: BlockingOperation
 ) -> BlockingOperation:
     messages = blocking_operation.args["messages"]
-    instructor_model_name = blocking_operation.args["instructor_model_name"]
+    instructor_model_name = blocking_operation.context["instructor_model_name"]
 
     models_module = import_module(
         "swarmstar.utils.swarm_operations.blocking_operations.instructor.pydantic_models"
@@ -35,7 +35,7 @@ async def blocking(
     response = await completion(
         messages=messages,
         openai_key=swarm.openai_key,
-        instructor_model=instructor_model,
+        instructor_model=instructor_model
     )
     
     return ActionOperation(

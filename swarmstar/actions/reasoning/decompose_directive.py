@@ -58,14 +58,12 @@ class Action(BaseAction):
         return BlockingOperation(
             node_id=self.node.id,
             blocking_type="instructor_completion",
-            args={
-                "messages": messages,
-                "instructor_model_name": "DecomposeDirectiveModel",
-            },
-            context={},
+            args={"messages": messages},
+            context={"instructor_model_name": "DecomposeDirectiveModel"},
             next_function_to_call="analyze_output",
         )
 
+    @BaseAction.receive_completion_handler
     def analyze_output(self, completion: DecomposeDirectiveModel) -> SpawnOperation:
         '''
         Depending on the completion, we will either ask questions
