@@ -9,9 +9,9 @@ from typing import Dict, List
 
 from pydantic import BaseModel
 
-from swarmstar.types import BlockingOperation, ActionOperation
+from swarmstar.models import BlockingOperation, ActionOperation
 from swarmstar.utils.ai.openai_instructor import completion
-from swarmstar.types import SwarmConfig
+from swarmstar.models import SwarmConfig
 
 
 class expected_args(BaseModel):

@@ -5,7 +5,7 @@ import shutil
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from swarmstar.types import SwarmConfig
+    from swarmstar.models import SwarmConfig
 
 
 def delete_file(swarm: SwarmConfig, file_path: str) -> None:

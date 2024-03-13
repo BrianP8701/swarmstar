@@ -11,13 +11,16 @@ Nodes can perform 1 of 4 "SwarmOperations":
 from __future__ import annotations
 from typing import Any, Dict, Literal, Optional, Union
 from pydantic import BaseModel, Field
+from pydantic import ValidationError
 
 from swarmstar.utils.misc.generate_uuid import generate_uuid
+from swarmstar.utils.data import MongoDBWrapper
+
+db = MongoDBWrapper()
 
 class NodeEmbryo(BaseModel):
     action_id: str
     message: str
-
 
 class SwarmOperation(BaseModel):
     id: str
@@ -31,7 +34,7 @@ class SwarmOperation(BaseModel):
     ]
 
     @classmethod
-    def model_validate(cls, data: Union[Dict[str, Any], 'SwarmOperation'], **kwargs) -> 'SwarmOperation':
+    def model_validate(cls,data: Union[Dict[str, Any], 'SwarmOperation'], **kwargs) -> 'SwarmOperation':
         if isinstance(data, SwarmOperation):
             return data
         elif isinstance(data, dict):
@@ -49,6 +52,43 @@ class SwarmOperation(BaseModel):
             elif operation_type == 'user_communication':
                 return UserCommunicationOperation(**data)
         return super().model_validate(data, **kwargs)
+
+    @staticmethod
+    def insert_swarm_operation(operation: SwarmOperation) -> None:
+        db.add("swarm_operations", operation.id, operation.model_dump())
+
+    @staticmethod
+    def get_swarm_operation(operation_id: str) -> SwarmOperation:
+        operation = db.get("swarm_operations", operation_id)
+        if operation is None:
+            raise ValueError(f"Operation with id {operation_id} not found")
+        operation_type = operation["operation_type"]
+    
+        operation_mapping = {
+            "blocking": BlockingOperation,
+            "user_communication": UserCommunicationOperation,
+            "spawn": SpawnOperation,
+            "terminate": TerminationOperation,
+            "action": ActionOperation,
+            "node_failure": FailureOperation,
+        }
+        
+        if operation_type in operation_mapping:
+            try:
+                OperationClass = operation_mapping[operation_type]
+                return OperationClass.model_validate(operation)
+            except ValidationError as e:
+                print(f"Error validating operation {operation} of type {operation_type}")
+                raise e
+            except Exception as e:
+                raise e
+        else:
+            raise ValueError(f"Operation type {operation_type} not recognized")
+
+    @staticmethod
+    def update_swarm_operation(operation: SwarmOperation) -> None:
+        db.set("swarm_operations", operation.id, operation.model_dump())
+
 
 class BlockingOperation(SwarmOperation):
     id: Optional[str] = Field(default_factory=lambda: generate_uuid('blocking_op'))

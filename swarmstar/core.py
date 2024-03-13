@@ -1,11 +1,13 @@
 from typing import List, Union
 import inspect
 
-from swarmstar.types import (
+from swarmstar.models import (
     SwarmConfig,
     SwarmOperation,
     SpawnOperation,
     NodeEmbryo,
+    Swarmstar,
+    SwarmHistory
 )
 from swarmstar.utils.swarm_operations import (
     blocking,
@@ -14,17 +16,12 @@ from swarmstar.utils.swarm_operations import (
     terminate,
     execute_action
 )
-from swarmstar.utils.swarmstar_space.general import spawn_swarmstar_space
-from swarmstar.utils.swarmstar_space import (
-    add_swarm_operation_id_to_swarm_history,
-    save_swarm_operation
-)
- 
+
 def spawn_swarm(swarm_config: SwarmConfig, goal: str) -> SpawnOperation:
     """
     Create the first spawn operation for the swarm.
     """
-    spawn_swarmstar_space(swarm_config)
+    Swarmstar.spawn_swarmstar_space(swarm_config)
     
     root_spawn_operation = SpawnOperation(
         node_embryo=NodeEmbryo(
@@ -33,8 +30,9 @@ def spawn_swarm(swarm_config: SwarmConfig, goal: str) -> SpawnOperation:
         )
     )
     
-    save_swarm_operation(swarm_config, root_spawn_operation)
+    SwarmOperation.insert_swarm_operation(root_spawn_operation)
     return root_spawn_operation
+
 
 async def execute_swarmstar_operation(
     swarm_config: SwarmConfig, swarm_operation: SwarmOperation
@@ -75,8 +73,10 @@ async def execute_swarmstar_operation(
         raise ValueError(f"Unexpected return type from operation_func: {type(output)}")
 
     for operation in output:
-        save_swarm_operation(swarm_config, operation)
+        # Insert new operations into the swarm operations collection
+        SwarmOperation.insert_swarm_operation(operation)
 
-    add_swarm_operation_id_to_swarm_history(swarm_config, swarm_operation.id)
+    # Add executed operation to swarm history
+    SwarmHistory.add_swarm_operation_id_to_swarm_history(swarm_config.id, swarm_operation.id)
 
     return output

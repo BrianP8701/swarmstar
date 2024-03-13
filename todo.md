@@ -54,7 +54,7 @@ Cloud Optimizations:
 - [x] in cloud functions decouple blocking openai calls. decouple all blocking calls in cloud functions. or look into durable azure functions
 - [ ] when cosmosdb python sdk supports it, use hierarchical partition keys: user_id/swarm_id/category with id for query
 I think i might use mongodb atlas instead of cosmosdb so this might be irrelevant
-
+Serverless Framework Plugins: If you're using the Serverless Framework to deploy your Azure Functions, there are plugins like serverless-mongodb-atlas that handle connection management for you. These plugins create a singleton database connection that's reused across all function invocations.
 
 
 ## 12/23/23 - 1/18/24

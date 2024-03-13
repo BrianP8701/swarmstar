@@ -23,6 +23,11 @@ from pydantic import BaseModel, Field
 from typing_extensions import Literal
 
 from swarmstar.utils.misc.generate_uuid import generate_uuid
+from swarmstar.utils.data import MongoDBWrapper
+from swarmstar.models.internal_metadata import SwarmstarInternal
+
+db = MongoDBWrapper()
+ss_internal = SwarmstarInternal()
 
 class ActionMetadata(BaseModel):
     id: Optional[str] = Field(default_factory=lambda: generate_uuid('action'))
@@ -39,6 +44,34 @@ class ActionMetadata(BaseModel):
     parent: Optional[str] = None
     routable: bool = True
 
+    @staticmethod
+    def get_action_metadata(action_id: str) -> 'ActionMetadata':
+        try:
+            action_metadata = db.get("action_space", action_id)
+            if action_metadata is None:
+                raise ValueError(
+                    f"This action id: `{action_id}` does not exist in external action space."
+                )
+        except Exception as e1:
+            try:
+                action_metadata = ss_internal.get_internal_action_metadata(action_id)
+                if action_metadata is None:
+                    raise ValueError(
+                        f"This action id: `{action_id}` does not exist in internal action space."
+                    ) from e1
+            except Exception as e2:
+                raise ValueError(
+                    f"This action id: `{action_id}` does not exist in both internal and external action spaces."
+                ) from e2
+
+        type_mapping = {
+            "internal_action": InternalAction,
+            "internal_folder": InternalFolder,
+        }
+        action_type = action_metadata["type"]
+        if action_type in type_mapping:
+            return type_mapping[action_type](**action_metadata)
+        return ActionMetadata(**action_metadata)
 
 class ActionFolder(ActionMetadata):
     is_folder: Literal[True] = Field(default=True)

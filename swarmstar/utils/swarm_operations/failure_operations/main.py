@@ -1,6 +1,6 @@
 from typing import List, Union
 
-from swarmstar.types import FailureOperation, SwarmConfig, SwarmOperation
+from swarmstar.models import FailureOperation, SwarmConfig, SwarmOperation
 
 
 def failure(

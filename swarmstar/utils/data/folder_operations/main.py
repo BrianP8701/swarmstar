@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, List
 from swarmstar.utils.data.external_operations.imports import import_module_from_path
 
 if TYPE_CHECKING:
-    from swarmstar.types import SwarmConfig
+    from swarmstar.models import SwarmConfig
 
 platform_map = {
     "mac": "swarmstar.utils.data.folder_operations.local_storage",

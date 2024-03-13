@@ -1,31 +1,120 @@
-from __future__ import annotations
+from pymongo import MongoClient
+from pymongo.errors import DuplicateKeyError
 
-from typing import TYPE_CHECKING
-from swarmstar.utils.data.kv_operations.mongodb import *
+from swarmstar.utils.data.kv_operations.kv_database import KV_Database
 
-if TYPE_CHECKING:
-    from swarmstar.types import SwarmConfig
+class MongoDBWrapper(KV_Database):
+    _instance = None
 
-def add_kv(swarm: SwarmConfig, collection_name: str, _id: str, value: dict) -> None:
-    return mongodb_add_kv(swarm.mongodb_uri, swarm.mongodb_db_name, collection_name, _id, value)
+    def __new__(cls, uri, db_name):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
 
-def get_kv(swarm: SwarmConfig, collection_name: str, _id: str) -> dict:
-    return mongodb_get_kv(swarm.mongodb_uri, swarm.mongodb_db_name, collection_name, _id)
+    def __init__(self, uri, db_name):
+        if not hasattr(self, 'client'):
+            self.client = MongoClient(uri)
+        self.db = self.client[db_name]
 
-def delete_kv(swarm: SwarmConfig, collection_name: str, _id: str) -> None:
-    return mongodb_delete_kv(swarm.mongodb_uri, swarm.mongodb_db_name, collection_name, _id)
+    def insert(self, category, key, value):
+        try:
+            collection = self.db[category]
+            value.pop("_id", None)  # Remove the _id field if it exists
+            document = {"_id": key, "version": 1, **value}
+            collection.insert_one(document)
+        except DuplicateKeyError:
+            raise ValueError(f"A document with _id {key} already exists.")
 
-def update_kv(swarm: SwarmConfig, collection_name: str, _id: str, updated_values: dict) -> None:
-    return mongodb_update_kv(swarm.mongodb_uri, swarm.mongodb_db_name, collection_name, _id, updated_values)
+    def set(self, category, key, value):
+        try:
+            collection = self.db[category]
+            value.pop("_id", None)  # Remove the _id field if it exists
 
-def set_kv(swarm: SwarmConfig, collection_name: str, _id: str, new_value: dict) -> None:
-    return mongodb_set_kv(swarm.mongodb_uri, swarm.mongodb_db_name, collection_name, _id, new_value)
+            retries = 5
+            for attempt in range(retries):
+                current_document = collection.find_one({"_id": key})
+                if current_document is None:
+                    raise ValueError(f"_id {key} not found in the collection.")
 
-def append_to_list(swarm: SwarmConfig, collection_name: str, _id: str, key: str, value) -> None:
-    return mongodb_append_to_list(swarm.mongodb_uri, swarm.mongodb_db_name, collection_name, _id, key, value)
+                new_version = current_document.get("version", 0) + 1
+                new_document = value.copy()
+                new_document["version"] = new_version
 
-def get_element_by_index(swarm: SwarmConfig, collection_name: str, _id: str, index: int) -> any:
-    return mongodb_get_element_by_index(swarm.mongodb_uri, swarm.mongodb_db_name, collection_name, _id, index)
+                result = collection.replace_one(
+                    {"_id": key, "version": current_document["version"]}, new_document
+                )
 
-def get_list_length(swarm: SwarmConfig, collection_name: str, _id: str) -> int:
-    return mongodb_get_list_length(swarm.mongodb_uri, swarm.mongodb_db_name, collection_name, _id)
+                if result.matched_count:
+                    break
+                elif attempt == retries - 1:
+                    raise Exception("Failed to set value due to concurrent modification.")
+        except Exception as e:
+            raise ValueError(f"Failed to set value: {str(e)}")
+
+    def update(self, category, key, updated_values):
+        try:
+            collection = self.db[category]
+            updated_values.pop("_id", None)  # Remove the _id field if it exists
+
+            retries = 3
+            for attempt in range(retries):
+                current_document = collection.find_one({"_id": key})
+                if current_document is None:
+                    raise ValueError(f"_id {key} not found in the collection.")
+
+                new_version = current_document.get("version", 0) + 1
+                update_fields = {"version": new_version}
+                for field, value in updated_values.items():
+                    if field not in current_document:
+                        raise KeyError(f"Field '{field}' does not exist in the document.")
+                    update_fields[field] = value
+
+                result = collection.update_one(
+                    {"_id": key, "version": current_document["version"]},
+                    {"$set": update_fields},
+                )
+
+                if result.matched_count:
+                    break
+                elif attempt == retries - 1:
+                    raise Exception("Failed to update document due to concurrent modification.")
+        except Exception as e:
+            raise ValueError(f"Failed to update document: {str(e)}")
+
+    def get(self, category, key):
+        collection = self.db[category]
+        result = collection.find_one({"_id": key})
+        if result is None:
+            raise ValueError(f"_id {key} not found in the collection.")
+        result.pop("_id")
+        return result
+
+    def delete(self, category, key):
+        collection = self.db[category]
+        result = collection.delete_one({"_id": key})
+        if result.deleted_count == 0:
+            raise ValueError(f"_id {key} not found in the collection.")
+
+    def exists(self, category, key):
+        collection = self.db[category]
+        return collection.count_documents({"_id": key}) > 0
+
+    def append(self, category, key, value):
+        collection = self.db[category]
+        result = collection.find_one({"_id": key})
+        if result:
+            if "data" not in result:
+                collection.update_one({"_id": key}, {"$set": {"data": []}})
+            collection.update_one({"_id": key}, {"$push": {"data": value}})
+        else:
+            self.insert(category, key, {"data": [value]})
+
+    def remove_from_list(self, category, key, value):
+        collection = self.db[category]
+        if collection.count_documents({"_id": key}) == 0:
+            raise ValueError(f"_id {key} not found in the collection.")
+
+        result = collection.update_one({"_id": key}, {"$pull": {"data": value}})
+
+        if result.modified_count == 0:
+            raise ValueError(f"Value {value} not found in the list associated with _id {key}.")

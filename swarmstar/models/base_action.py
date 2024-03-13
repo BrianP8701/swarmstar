@@ -17,21 +17,18 @@ from functools import wraps
 from typing import Any, Dict, List, Callable, get_type_hints, get_origin, get_args
 from inspect import signature
 
-from swarmstar.utils.swarmstar_space import update_swarm_node, get_swarm_node
-from swarmstar.types.swarm_config import SwarmConfig
-from swarmstar.types.swarm_node import SwarmNode
-from swarmstar.types.swarm_operations import SwarmOperation
+from swarmstar.models.swarm_node import SwarmNode
+from swarmstar.models.swarm_config import SwarmConfig
+from swarmstar.models.swarm_node import SwarmNode
+from swarmstar.models.swarm_operations import SwarmOperation
 
 
 def error_handling_decorator(func):
     @wraps(func)
-    def wrapper(*args, **kwargs):
+    def wrapper(self, *args, **kwargs):
         try:
-            return func(*args, **kwargs)
+            return func(self, *args, **kwargs)
         except Exception as e:
-            self = args[
-                0
-            ]  # Assuming the first argument is always 'self' for instance methods
             tb_str = traceback.format_exc()
             params_str = f"node_id: {self.node.id}\nParams: {kwargs}"
 
@@ -72,39 +69,39 @@ class BaseAction(metaclass=ErrorHandlingMeta):
         pass        
     
     def get_node(self) -> SwarmNode:
-        return get_swarm_node(self.swarm_config, self.node.id)
+        return SwarmNode.get_swarm_node(self.node.id)
     
     def report(self, report: str):
         node = self.get_node()
         if node.report is not None:
             raise ValueError(f"Node {node.id} already has a report: {node.report}. Cannot update with {report}.")
         node.report = report
-        update_swarm_node(self.swarm_config, node)
+        SwarmNode.update_swarm_node(node)
     
     def update_termination_policy(self, termination_policy: str):
         node = self.get_node()
         node.termination_policy = termination_policy
-        update_swarm_node(self.swarm_config, node)
+        SwarmNode.update_swarm_node(node)
     
     def add_value_to_execution_memory(self, attribute: str, value: Any):
         node = self.get_node()
         node.execution_memory[attribute] = value
-        update_swarm_node(self.swarm_config, node)
+        SwarmNode.update_swarm_node(node)
     
     def remove_value_from_execution_memory(self, attribute: str):
         node = self.get_node()
         del node.execution_memory[attribute]
-        update_swarm_node(self.swarm_config, node)
+        SwarmNode.update_swarm_node(node)
 
     def update_execution_memory(self, execution_memory: Dict[str, Any]):
         node = self.get_node()
         node.execution_memory = execution_memory
-        update_swarm_node(self.swarm_config, node)
+        SwarmNode.update_swarm_node(node)
 
     def clear_execution_memory(self):
         node = self.get_node()
         node.execution_memory = {}
-        update_swarm_node(self.swarm_config, node)
+        SwarmNode.update_swarm_node(node)
     
     @staticmethod
     def termination_handler(func: Callable):
@@ -116,7 +113,10 @@ class BaseAction(metaclass=ErrorHandlingMeta):
             to the name of the function that will handle the termination. This function
             should be wrapped with this decorator, to ensure it has the correct signature.
         """
-        def wrapper(self, terminator_node_id: str, context: Dict[str, Any]):
+        def wrapper(self, **kwargs):
+            terminator_node_id = kwargs["terminator_node_id"]
+            context = kwargs["context"]
+            
             sig = signature(func)
             params = sig.parameters
             if len(params) != 3 or list(params.keys()) != ['self', 'terminator_node_id', 'context']:
@@ -138,28 +138,39 @@ class BaseAction(metaclass=ErrorHandlingMeta):
 
     @staticmethod
     def receive_completion_handler(func: Callable):
-        """
-        This decorator is used to mark a function as a receive completion handler.
-        When you send out a blocking operation to receive a completion from an ai,
-        it will run and the function_to_call after the blocking operation should be
-        wrapped with this decorator. This is to ensure that the completion is converted 
-        to the pydantic model. If the user pauses the swarm, the operation might get queued
-        in the database, causing it to convert to a dict. This decorator handles that edge case
-        """
-        def wrapper(self, completion: Any, **kwargs):
+        @wraps(func)
+        def wrapper(self, *args, **kwargs):
+            if len(args) > 1:
+                # If there are positional arguments, convert them to keyword arguments
+                arg_names = list(signature(func).parameters.keys())[1:]  # Exclude 'self'
+                kwargs.update(dict(zip(arg_names, args[1:])))
+                args = args[:1]  # Keep only 'self'
+
+            completion = kwargs.get("completion")
+
             sig = signature(func)
             params = sig.parameters
 
             instructor_model_name = kwargs.pop("instructor_model_name", None)
-            
+
             if type(completion) is dict and instructor_model_name:
                 models_module = import_module(
                     "swarmstar.utils.swarm_operations.blocking_operations.instructor.pydantic_models"
                 )
                 instructor_model = getattr(models_module, instructor_model_name)
                 completion = instructor_model.model_validate(completion)
-            
-            return func(self, completion, **kwargs)
+
+            # Extract the required arguments from kwargs based on the function signature
+            func_args = {}
+            for param in params.values():
+                if param.name != "self":
+                    if param.name in kwargs:
+                        func_args[param.name] = kwargs.pop(param.name)
+                    elif param.default != param.empty:
+                        func_args[param.name] = param.default
+
+            return func(self, *args, **func_args)
+
         return wrapper
 
 
@@ -228,5 +239,5 @@ class BaseAction(metaclass=ErrorHandlingMeta):
                         nested_list = nested_list[index]
                     else:
                         raise ValueError("Invalid index_key. Cannot traverse non-list elements.")
-        update_swarm_node(self.swarm_config, node)
+        SwarmNode.update_swarm_node(node)
         return return_index_key

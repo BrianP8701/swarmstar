@@ -6,21 +6,18 @@ This termination operation will:
 """
 from typing import Union
 
-from swarmstar.utils.swarmstar_space import get_swarm_node
-from swarmstar.types import (
-    SwarmConfig,
+from swarmstar.models import (
     TerminationOperation,
-    ActionOperation
+    ActionOperation,
+    SwarmNode,
 )
 
-def terminate(
-    swarm_config: SwarmConfig, termination_operation: TerminationOperation
-) -> Union[TerminationOperation, None]:
+def terminate(termination_operation: TerminationOperation) -> Union[TerminationOperation, None]:
     terminator_node_id = termination_operation.terminator_node_id
     node_id = termination_operation.node_id
     context = termination_operation.context
 
-    target_node = get_swarm_node(swarm_config, node_id)
+    target_node = SwarmNode.get_swarm_node(node_id)
     termination_handler = target_node.execution_memory.get("__termination_handler__")
     
     if termination_handler is not None:

@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING, List
 from azure.storage.blob import BlobServiceClient
 
 if TYPE_CHECKING:
-    from swarmstar.types import SwarmConfig
+    from swarmstar.models import SwarmConfig
 
 
 def delete_folder(swarm: SwarmConfig, folder_path: str) -> dict:

@@ -1,8 +1,7 @@
 import os
 from dotenv import load_dotenv
 
-from swarmstar.types import SwarmConfig
-from swarmstar.utils.swarmstar_space.swarm_config import add_swarm_config
+from swarmstar.models import SwarmConfig
 
 load_dotenv()
 openai_key = os.getenv("OPENAI_KEY")
@@ -18,7 +17,7 @@ def create_default_swarm_config():
         mongodb_db_name=mongodb_db_name,
     )
     
-    add_swarm_config(swarm_config)
+    SwarmConfig.add_swarm_config(swarm_config)
 
 create_default_swarm_config()
     

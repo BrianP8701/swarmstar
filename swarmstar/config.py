@@ -11,10 +11,10 @@ passed around between every node and action. Keep it safe and private!
 """
 import os
 
-from swarmstar.types import SwarmConfig
+from swarmstar.models import SwarmConfig
 from swarmstar.utils.data.kv_operations.main import add_kv
 from swarmstar.utils.misc.generate_uuid import generate_uuid
-from swarmstar.utils.data.kv_operations.mongodb_wrapper import (
+from swarmstar.utils.data.kv_operations.mongodb_access import (
     check_and_create_database,
 )
 

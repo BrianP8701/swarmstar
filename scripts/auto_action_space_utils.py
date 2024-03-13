@@ -5,7 +5,7 @@ import sqlite3
 import json
 
 from swarmstar.utils.ai.openai_instructor import completion
-from swarmstar.types import ActionMetadata, ActionType
+from swarmstar.models import ActionMetadata, ActionType
 
 load_dotenv()  # Load environment variables from .env file
 openai_key = os.getenv('OPENAI_KEY')

@@ -4,14 +4,12 @@ The spawn operation will create a new node in the swarm, and begin executing the
 from importlib import import_module
 from typing import List, Union
 
-from swarmstar.types import (
+from swarmstar.models import (
     SwarmConfig,
     SwarmOperation,
-    ActionOperation
-)
-from swarmstar.utils.swarmstar_space import (
-    get_swarm_node, 
-    get_action_metadata,
+    ActionOperation,
+    SwarmNode,
+    ActionMetadata
 )
 
 def execute_action(swarm_config: SwarmConfig, action_operation: ActionOperation) -> Union[SwarmOperation, List[SwarmOperation]]:
@@ -20,8 +18,8 @@ def execute_action(swarm_config: SwarmConfig, action_operation: ActionOperation)
     to perform.
     """
     node_id = action_operation.node_id
-    node = get_swarm_node(swarm_config, node_id)
-    action_metadata = get_action_metadata(swarm_config, node.action_id)
+    node = SwarmNode.get_swarm_node(node_id)
+    action_metadata = ActionMetadata.get_action_metadata(node.action_id)
 
     action_type = action_metadata.type
 

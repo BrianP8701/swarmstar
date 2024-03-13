@@ -12,20 +12,17 @@
 """
 from typing import Union
 
-from swarmstar.utils.swarmstar_space import get_swarm_node, update_swarm_node
-from swarmstar.types import (
+from swarmstar.models import (
     NodeEmbryo,
     SpawnOperation,
-    SwarmConfig,
     TerminationOperation,
+    SwarmNode
 )
 
 
-def terminate(
-    swarm: SwarmConfig, termination_operation: TerminationOperation
-) -> Union[TerminationOperation, None]:
+def terminate(termination_operation: TerminationOperation) -> Union[TerminationOperation, None]:
     node_id = termination_operation.node_id
-    target_node = get_swarm_node(swarm, node_id)
+    target_node = SwarmNode.get_swarm_node(node_id)
 
     if target_node.action_id != "swarmstar/actions/reasoning/decompose_directive":
         raise ValueError("Review directive termination policy can only be applied to nodes of type 'decompose directive'") 
@@ -33,7 +30,7 @@ def terminate(
     mission_completion = False
 
     for child_id in target_node.children_ids:
-        child = get_swarm_node(swarm, child_id)
+        child = SwarmNode.get_swarm_node(child_id)
         if child.alive:
             return None
         if child.action_id == "swarmstar/actions/reasoning/confirm_directive_completion":
@@ -49,8 +46,8 @@ def terminate(
         )
     else:
         target_node.alive = False
-        update_swarm_node(swarm, target_node)
-        parent_node = get_swarm_node(swarm, target_node.parent_id)
+        SwarmNode.update_swarm_node(target_node)
+        parent_node = SwarmNode.get_swarm_node(target_node.parent_id)
         return TerminationOperation(
             terminator_node_id=node_id,
             node_id=parent_node.id,

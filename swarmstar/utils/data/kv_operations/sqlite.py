@@ -6,7 +6,7 @@ This database is used to store all kv store data with the key being the category
 import sqlite3
 import json
 
-from swarmstar.types import SwarmConfig
+from swarmstar.models import SwarmConfig
 
 def create_or_open_kv_db(db_path: str) -> None:
     try:

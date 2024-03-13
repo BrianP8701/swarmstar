@@ -6,7 +6,7 @@ path to take, the router agent will describe what type of action is needed in de
 from typing import Dict, List, Optional
 from pydantic import BaseModel, Field
 
-from swarmstar.types import (
+from swarmstar.models import (
     ActionFolder,
     BlockingOperation,
     NodeEmbryo,
@@ -14,8 +14,7 @@ from swarmstar.types import (
     SwarmOperation,
     ActionMetadata
 )
-from swarmstar.types.base_action import BaseAction
-from swarmstar.utils.swarmstar_space import get_action_metadata
+from swarmstar.models.base_action import BaseAction
 
 class NextActionPath(BaseModel):
     index: Optional[int] = Field(
@@ -36,7 +35,7 @@ ROUTE_ACTION_INSTRUCTIONS = (
 
 class Action(BaseAction):
     def main(self) -> BlockingOperation:
-        root: ActionFolder = get_action_metadata(self.swarm_config, "swarmstar/actions")
+        root: ActionFolder = ActionMetadata.get_action_metadata("swarmstar/actions")
         root_children = self.get_children_action_metadata(root)
         children_action_ids = [child.id for child in root_children]
         root_children_descriptions = self.get_children_descriptions(root_children)
@@ -70,7 +69,7 @@ class Action(BaseAction):
         until we reach a leaf node, aka an action.
         """
         current_action_id = children_action_ids[completion.index]
-        current_action = get_action_metadata(self.swarm_config, current_action_id)
+        current_action = ActionMetadata.get_action_metadata(current_action_id)
 
         self.log({
             "role": "ai",
@@ -165,7 +164,7 @@ class Action(BaseAction):
     def get_children_action_metadata(self, action_folder: ActionFolder) -> List[ActionMetadata]:
         children_metadata = []
         for child_id in action_folder.children_ids:
-            child_metadata = get_action_metadata(self.swarm_config, child_id)
+            child_metadata = ActionMetadata.get_action_metadata(child_id)
             if child_metadata.routable:
                 children_metadata.append(child_metadata)
         return children_metadata

@@ -3,19 +3,16 @@ Simple termination terminates the given node and returns a TerminationOperation 
 """
 from typing import Union
 
-from swarmstar.types import SwarmConfig, TerminationOperation
-from swarmstar.utils.swarmstar_space import get_swarm_node, update_swarm_node
+from swarmstar.models import SwarmConfig, TerminationOperation, SwarmNode
 
-def terminate(
-    swarm: SwarmConfig, termination_operation: TerminationOperation
-) -> Union[TerminationOperation, None]:
+def terminate(termination_operation: TerminationOperation) -> Union[TerminationOperation, None]:
     node_id = termination_operation.node_id
-    node = get_swarm_node(swarm, node_id)
+    node = SwarmNode.get_swarm_node(node_id)
     node.alive = False
-    update_swarm_node(swarm, node)
+    SwarmNode.update_swarm_node(node)
 
     try:
-        parent_node = get_swarm_node(swarm, node.parent_id)
+        parent_node = SwarmNode.get_swarm_node(node.parent_id)
     except:
         return None
 
