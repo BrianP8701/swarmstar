@@ -60,7 +60,7 @@ def _update_parent(swarm: SwarmConfig, spawn_operation: SpawnOperation, node: Sw
     """
     Update parent node's children_ids and termination_policy if necessary
     """
-    parent_id = spawn_operation.node_id
+    parent_id = spawn_operation.parent_node_id
     if parent_id is not None:
         parent_node = get_swarm_node(swarm, parent_id)
         parent_node.children_ids.append(node.id)

@@ -8,8 +8,8 @@ Nodes can perform 1 of 4 "SwarmOperations":
     - BlockingOperation
     - UserCommunicationOperation
 """
-from typing import Any, Dict, Literal, Optional
-
+from __future__ import annotations
+from typing import Any, Dict, Literal, Optional, Union
 from pydantic import BaseModel, Field
 
 from swarmstar.utils.misc.generate_uuid import generate_uuid
@@ -22,13 +22,33 @@ class NodeEmbryo(BaseModel):
 class SwarmOperation(BaseModel):
     id: str
     operation_type: Literal[
-        "spawn", 
-        "terminate", 
-        "node_failure", 
-        "blocking", 
+        "spawn",
+        "terminate",
+        "node_failure",
+        "blocking",
         "user_communication",
         "action"
     ]
+
+    @classmethod
+    def model_validate(cls, data: Union[Dict[str, Any], 'SwarmOperation'], **kwargs) -> 'SwarmOperation':
+        if isinstance(data, SwarmOperation):
+            return data
+        elif isinstance(data, dict):
+            operation_type = data.get('operation_type')
+            if operation_type == 'blocking':
+                return BlockingOperation(**data)
+            elif operation_type == 'spawn':
+                return SpawnOperation(**data)
+            elif operation_type == 'action':
+                return ActionOperation(**data)
+            elif operation_type == 'terminate':
+                return TerminationOperation(**data)
+            elif operation_type == 'node_failure':
+                return FailureOperation(**data)
+            elif operation_type == 'user_communication':
+                return UserCommunicationOperation(**data)
+        return super().model_validate(data, **kwargs)
 
 class BlockingOperation(SwarmOperation):
     id: Optional[str] = Field(default_factory=lambda: generate_uuid('blocking_op'))
