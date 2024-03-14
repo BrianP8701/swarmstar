@@ -1,7 +1,7 @@
 # pytest tests/unit_tests/test_actions/test_route_action.py
 import pytest
 
-from swarmstar.core import execute_swarmstar_operation
+from swarmstar.swarmstar import execute_swarmstar_operation
 from swarmstar.models import NodeEmbryo, SpawnOperation
 from tests.utils.get_local_swarm_config import get_swarm_config
 

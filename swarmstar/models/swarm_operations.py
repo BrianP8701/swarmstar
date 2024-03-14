@@ -55,7 +55,7 @@ class SwarmOperation(BaseModel):
 
     @staticmethod
     def insert_swarm_operation(operation: SwarmOperation) -> None:
-        db.add("swarm_operations", operation.id, operation.model_dump())
+        db.insert("swarm_operations", operation.id, operation.model_dump())
 
     @staticmethod
     def get_swarm_operation(operation_id: str) -> SwarmOperation:

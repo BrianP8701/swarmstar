@@ -30,8 +30,6 @@ from .swarm_operations import (
 
 from .base_action import BaseAction
 
-from .swarmstar import Swarmstar
-
 from .swarm_history import SwarmHistory
 
 from .swarm_state import SwarmState

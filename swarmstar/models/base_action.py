@@ -18,7 +18,6 @@ from typing import Any, Dict, List, Callable, get_type_hints, get_origin, get_ar
 from inspect import signature
 
 from swarmstar.models.swarm_node import SwarmNode
-from swarmstar.models.swarm_config import SwarmConfig
 from swarmstar.models.swarm_node import SwarmNode
 from swarmstar.models.swarm_operations import SwarmOperation
 
@@ -60,8 +59,7 @@ class BaseAction(metaclass=ErrorHandlingMeta):
     All actions should subclass this class.
     """
 
-    def __init__(self, swarm_config: SwarmConfig, node: SwarmNode):
-        self.swarm_config = swarm_config
+    def __init__(self, node: SwarmNode):
         self.node = node
 
     @abstractmethod

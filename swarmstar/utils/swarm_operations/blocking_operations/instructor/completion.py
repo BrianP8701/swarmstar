@@ -10,9 +10,10 @@ from typing import Dict, List
 from pydantic import BaseModel
 
 from swarmstar.models import BlockingOperation, ActionOperation
-from swarmstar.utils.ai.openai_instructor import completion
+from swarmstar.utils.ai import Instructor
 from swarmstar.models import SwarmConfig
 
+instructor = Instructor()
 
 class expected_args(BaseModel):
     messages: List[
@@ -21,9 +22,7 @@ class expected_args(BaseModel):
     instructor_model_name: str  # This should point to a pydnatic model in the swarmstar.utils.ai.openai_instructor.models module
 
 
-async def blocking(
-    swarm: SwarmConfig, blocking_operation: BlockingOperation
-) -> BlockingOperation:
+async def blocking(blocking_operation: BlockingOperation) -> BlockingOperation:
     messages = blocking_operation.args["messages"]
     instructor_model_name = blocking_operation.context["instructor_model_name"]
 
@@ -32,9 +31,8 @@ async def blocking(
     )
     instructor_model = getattr(models_module, instructor_model_name)
 
-    response = await completion(
+    response = await instructor.completion(
         messages=messages,
-        openai_key=swarm.openai_key,
         instructor_model=instructor_model
     )
     

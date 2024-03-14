@@ -9,9 +9,7 @@ from swarmstar.models import (
 )
 
 
-async def blocking(
-    swarm_config: SwarmConfig, blocking_operation: BlockingOperation
-) -> Union[SwarmOperation, List[SwarmOperation]]:
+async def blocking(blocking_operation: BlockingOperation) -> Union[SwarmOperation, List[SwarmOperation]]:
     blocking_operation_type_map = {
         "instructor_completion": "swarmstar.utils.swarm_operations.blocking_operations.instructor.completion"
     }
@@ -30,8 +28,8 @@ async def blocking(
     blocking_func = blocking_operation_type_module.blocking
 
     if inspect.iscoroutinefunction(blocking_func):
-        output: SwarmOperation = await blocking_func(swarm_config, blocking_operation)
+        output: SwarmOperation = await blocking_func(blocking_operation)
     else:
-        output: SwarmOperation = blocking_func(swarm_config, blocking_operation)
+        output: SwarmOperation = blocking_func(blocking_operation)
 
     return output

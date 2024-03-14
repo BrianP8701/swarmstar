@@ -12,11 +12,11 @@ from swarmstar.models import (
     SwarmOperation
 )
 
-def spawn(spawn_operation: SpawnOperation) ->  List[ActionOperation]:
+def spawn(swarm_id: str, spawn_operation: SpawnOperation) ->  List[ActionOperation]:
     """
     Swarmstar Spawn Operation handler
     """
-    node = _spawn_node(spawn_operation)
+    node = _spawn_node(swarm_id, spawn_operation)
     _update_parent(spawn_operation, node)
     _update_spawn_operation(spawn_operation, node.id)
 
@@ -25,7 +25,7 @@ def spawn(spawn_operation: SpawnOperation) ->  List[ActionOperation]:
         function_to_call="main",
     )
 
-def _spawn_node(spawn_operation: SpawnOperation) -> SwarmNode:
+def _spawn_node(swarm_id: str, spawn_operation: SpawnOperation) -> SwarmNode:
     """
     Spawns a new node in the swarm and saves it to database
     """
@@ -45,8 +45,8 @@ def _spawn_node(spawn_operation: SpawnOperation) -> SwarmNode:
         context=spawn_operation.context
     )
 
-    SwarmNode.save_swarm_node(node)
-    SwarmState.add_node_id_to_swarm_state(node.id)
+    SwarmNode.insert_swarm_node(node)
+    SwarmState.add_node_id_to_swarm_state(swarm_id, node.id)
     
     return node
 

@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 import json
 
-from swarmstar.utils.ai.openai_instructor import completion
+from swarmstar.utils.ai.instructor import completion
 from swarmstar.models import InternalAction
 
 load_dotenv() # Load environment variables from .env file

@@ -1,1 +1,1 @@
-from .core import spawn_swarm, execute_swarmstar_operation
+from .swarmstar import Swarmstar

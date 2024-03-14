@@ -5,14 +5,13 @@ from importlib import import_module
 from typing import List, Union
 
 from swarmstar.models import (
-    SwarmConfig,
     SwarmOperation,
     ActionOperation,
     SwarmNode,
     ActionMetadata
 )
 
-def execute_action(swarm_config: SwarmConfig, action_operation: ActionOperation) -> Union[SwarmOperation, List[SwarmOperation]]:
+def execute_action(action_operation: ActionOperation) -> Union[SwarmOperation, List[SwarmOperation]]:
     """
     Handles the action and returns the next set of operations
     to perform.
@@ -33,4 +32,4 @@ def execute_action(swarm_config: SwarmConfig, action_operation: ActionOperation)
         )
 
     action_type_module = import_module(action_type_map[action_type])
-    return action_type_module.execute_action(swarm_config, action_operation)
+    return action_type_module.execute_action(action_operation)

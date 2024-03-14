@@ -1,20 +1,26 @@
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
+from dotenv import load_dotenv
+import os
 
 from swarmstar.utils.data.kv_operations.kv_database import KV_Database
+
+load_dotenv()
+MONGODB_URI = os.getenv("MONGODB_URI")
+MONGODB_DB_NAME = os.getenv("MONGODB_DB_NAME")
 
 class MongoDBWrapper(KV_Database):
     _instance = None
 
-    def __new__(cls, uri, db_name):
+    def __new__(cls):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
 
-    def __init__(self, uri, db_name):
+    def __init__(self):
         if not hasattr(self, 'client'):
-            self.client = MongoClient(uri)
-        self.db = self.client[db_name]
+            self.client = MongoClient(MONGODB_URI)
+        self.db = self.client[MONGODB_DB_NAME]
 
     def insert(self, category, key, value):
         try:
@@ -87,6 +93,7 @@ class MongoDBWrapper(KV_Database):
         if result is None:
             raise ValueError(f"_id {key} not found in the collection.")
         result.pop("_id")
+        result["id"] = key
         return result
 
     def delete(self, category, key):

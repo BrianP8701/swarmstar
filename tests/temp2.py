@@ -1,13 +1,7 @@
+from swarmstar import Swarmstar
+from swarmstar.models import SwarmConfig
 
 
-
-k = "a"
-
-
-r = (
-    k +
-    "c"
-)
-
-print(type(r))
-
+swarm_config = SwarmConfig.get_swarm_config("temp")
+print(swarm_config)
+Swarmstar.delete_swarmstar_space(swarm_config.id)

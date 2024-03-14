@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 import sqlite3
 import json
 
-from swarmstar.utils.ai.openai_instructor import completion
+from swarmstar.utils.ai.instructor import completion
 from swarmstar.models import ActionMetadata, ActionType
 
 load_dotenv()  # Load environment variables from .env file
