@@ -21,23 +21,22 @@ from swarmstar.utils.data import MongoDBWrapper
 db = MongoDBWrapper()
 
 class Swarmstar:
-    def __init__(self, swarm_config: SwarmConfig, goal: str):
+    def __init__(self, swarm_config: SwarmConfig):
         self.swarm_config = swarm_config
-        self.goal = goal
         self.swarm_id = swarm_config.id
-        swarm_id = self.swarm_config.id
-        db.insert("swarm_history", swarm_id, {"data": []})
-        db.insert("swarm_state", swarm_id, {"data": []})
-        SwarmConfig.add_swarm_config(swarm_config)
 
-    def spawn_root(self) -> SpawnOperation:
+
+    def spawn_root(self, goal: str) -> SpawnOperation:
         """
         Create the first spawn operation for the swarm.
         """
+        db.insert("swarm_history", self.swarm_id, {"data": []})
+        db.insert("swarm_state", self.swarm_id, {"data": []})
+        SwarmConfig.add_swarm_config(self.swarm_config)
         root_spawn_operation = SpawnOperation(
             node_embryo=NodeEmbryo(
                 action_id='swarmstar/actions/reasoning/decompose_directive',
-                message=self.goal
+                message=goal
             )
         )
         

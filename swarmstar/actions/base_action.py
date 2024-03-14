@@ -17,9 +17,7 @@ from functools import wraps
 from typing import Any, Dict, List, Callable, get_type_hints, get_origin, get_args
 from inspect import signature
 
-from swarmstar.models.swarm_node import SwarmNode
-from swarmstar.models.swarm_node import SwarmNode
-from swarmstar.models.swarm_operations import SwarmOperation
+from swarmstar.models import SwarmOperation, SwarmNode, FailureOperation
 
 
 def error_handling_decorator(func):
@@ -34,12 +32,17 @@ def error_handling_decorator(func):
             error_message = (
                 f"Error in {func.__name__}:\n{str(e)}\n\n{tb_str}\n\n{params_str}"
             )
+            
             raise Exception(error_message)
-
-            # TODO Failure Operation for error handling
+            
+            self.log({
+                "role": "swarmstar",
+                "content": error_message
+            })
+            
             # return FailureOperation(
             #     node_id=self.node.id,
-            #     report=report,
+            #     message=error_message,
             # )
 
     return wrapper
@@ -153,7 +156,7 @@ class BaseAction(metaclass=ErrorHandlingMeta):
 
             if type(completion) is dict and instructor_model_name:
                 models_module = import_module(
-                    "swarmstar.utils.swarm_operations.blocking_operations.instructor.pydantic_models"
+                    "swarmstar.actions.pydantic_models"
                 )
                 instructor_model = getattr(models_module, instructor_model_name)
                 completion = instructor_model.model_validate(completion)

@@ -8,7 +8,7 @@ from typing import List, Optional
 from pydantic import BaseModel, Field
 
 from swarmstar.models import BlockingOperation, NodeEmbryo, SpawnOperation
-from swarmstar.models.base_action import BaseAction
+from swarmstar.actions.base_action import BaseAction
 
 
 class DecomposeDirectiveModel(BaseModel):

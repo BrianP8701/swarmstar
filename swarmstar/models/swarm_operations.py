@@ -125,6 +125,8 @@ class FailureOperation(SwarmOperation):
     id: Optional[str] = Field(default_factory=lambda: generate_uuid('failure_op'))
     operation_type: Literal["node_failure"] = Field(default="node_failure")
     node_id: Optional[str] = None
+    message: str
+    context: Optional[Dict[str, Any]] = {}
 
 class UserCommunicationOperation(SwarmOperation):
     id: Optional[str] = Field(default_factory=lambda: generate_uuid('user_comms_op'))

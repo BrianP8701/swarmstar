@@ -27,7 +27,7 @@ async def blocking(blocking_operation: BlockingOperation) -> BlockingOperation:
     instructor_model_name = blocking_operation.context["instructor_model_name"]
 
     models_module = import_module(
-        "swarmstar.utils.swarm_operations.blocking_operations.instructor.pydantic_models"
+        "swarmstar.actions.pydantic_models"
     )
     instructor_model = getattr(models_module, instructor_model_name)
 

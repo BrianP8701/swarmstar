@@ -36,6 +36,15 @@ class NextActionPath(BaseModel):
     )
 
 
+class InitialQuestionAskerConversationState(BaseModel):
+    questions: List[str] = Field(..., description="List of questions we need answered")
+    persisted_context: str = Field(
+        ...,
+        description="A concise and compact representation of the necessary information to persist through the conversation.",
+    )
+    chat_name: str = Field(..., description="A 2-4 word name for the conversation")
+
+
 class QuestionAskerConversationState(BaseModel):
     questions: List[str] = Field(..., description="List of questions we need answered")
     persisted_context: str = Field(

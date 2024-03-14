@@ -1,6 +1,8 @@
 from pymongo import MongoClient
 
-from swarmstar.utils.data.kv_operations.mongodb import mongodb_set_kv
+from swarmstar.utils.data import MongoDBWrapper
+
+mdb = MongoDBWrapper()
 
 def clear_swarm_space(db_name: str, mongodb_uri: str) -> None:
     """
@@ -23,7 +25,7 @@ def clear_swarm_space(db_name: str, mongodb_uri: str) -> None:
             db[collection_name].delete_many({"_id": {"$ne": "default_config"}})
     
     empty_admin = {"data": []}
-    mongodb_set_kv(mongodb_uri, db_name, "admin", "swarms", empty_admin)
+    mdb.set("admin", "swarms", empty_admin)
 
     print("Cleared all documents from all collections except 'config'.")
 

@@ -28,7 +28,7 @@ from .swarm_operations import (
     ActionOperation
 )
 
-from .base_action import BaseAction
+from ..actions.base_action import BaseAction
 
 from .swarm_history import SwarmHistory
 

@@ -10,8 +10,15 @@ from typing import List
 from pydantic import BaseModel, Field
 
 from swarmstar.models import BlockingOperation, TerminationOperation, UserCommunicationOperation
-from swarmstar.models.base_action import BaseAction
+from swarmstar.actions.base_action import BaseAction
 
+class InitialQuestionAskerConversationState(BaseModel):
+    questions: List[str] = Field(..., description="List of questions we need answered")
+    persisted_context: str = Field(
+        ...,
+        description="A concise and compact representation of the necessary information to persist through the conversation.",
+    )
+    chat_name: str = Field(..., description="A 2-4 word name for the conversation")
 
 class QuestionAskerConversationState(BaseModel):
     questions: List[str] = Field(..., description="List of questions we need answered")
@@ -41,8 +48,8 @@ GENERATE_INITIAL_CONVERSATION_STATE_INSTRUCTIONS = (
     "1. Identify the questions that need to be answered.\n"
     "2. Persist critical context that is needed for the conversation from the goal. This "
     "context should be minimal and directly support the agent in maintaining the conversation.\n"
-    "3. Craft an initial message to the user that is concise and clear to avoid confusion.\n\n"
-    "Leave the report field empty. You are initializing the conversation state\n\n"
+    "3. Craft an initial message to the user that is concise and clear to avoid confusion.\n"
+    "4. Create a 2-4 word name for the conversation.\n\n"
     "The reports aren't used as context throughout the conversation, so make sure all necessary context is in the persisted context."
 ).replace("\n", "\\n")
 
@@ -99,12 +106,79 @@ class Action(BaseAction):
             blocking_type="instructor_completion",
             args={"messages": messages},
             context={
-                "user_message": "User has no messages, the convo is just starting.",
-                "recent_ai_message": "No messages yet, the convo is just starting.",
-                "reports": [],
-                "instructor_model_name": "QuestionAskerConversationState"
+                "instructor_model_name": "InitialQuestionAskerConversationState"
             },
-            next_function_to_call="generate_message",
+            next_function_to_call="handle_initial_conversation_state",
+        )
+
+    @BaseAction.receive_completion_handler
+    def handle_initial_conversation_state(
+        self,
+        completion: InitialQuestionAskerConversationState,
+    ):
+        self.log({
+            "role": "ai",
+            "content": (
+                f"Generated chat name: {completion.chat_name}\n\n"
+                f"Questions: {completion.questions}\n\n"
+                f"Persisted Context: {completion.persisted_context}\n\n"
+            )
+        })
+        
+        system_message = (
+            f"{GENERATE_MESSAGE_INSTRUCTIONS}"
+            f"Questions: {completion.questions}\n\n"
+            f"Context: {completion.persisted_context}\n\n"
+            f"Start the conversation off with a message that is clear and concise."
+        )
+        messages = [
+            {"role": "system", "content": system_message}
+        ]
+
+        self.log({
+            "role": "system",
+            "content": system_message
+        })
+        
+        return BlockingOperation(
+            node_id=self.node.id,
+            blocking_type="instructor_completion",
+            args={"messages": messages},
+            context={
+                "questions": completion.questions,
+                "persisted_context": completion.persisted_context,
+                "reports": [],
+                "chat_name": completion.chat_name,
+                "instructor_model_name": "AgentMessage"
+            },
+            next_function_to_call="send_user_first_message",
+        )
+
+    @BaseAction.receive_completion_handler
+    def send_user_first_message(
+        self,
+        questions: List[str],
+        persisted_context: str,
+        reports: List[str],
+        chat_name: str,
+        completion: AgentMessage,
+    ):
+        self.log({
+            "role": "ai",
+            "content": completion.content
+        })
+        
+        return UserCommunicationOperation(
+            node_id=self.node.id,
+            message=completion.content,
+            context={
+                "questions": questions,
+                "persisted_context": persisted_context,
+                "reports": reports,
+                "recent_ai_message": completion.content,
+                "chat_name": chat_name,
+            },
+            next_function_to_call="update_conversation_state",
         )
 
     @BaseAction.receive_completion_handler
