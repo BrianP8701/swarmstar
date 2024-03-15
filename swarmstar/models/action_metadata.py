@@ -33,10 +33,8 @@ class ActionMetadata(BaseModel):
     id: Optional[str] = Field(default_factory=lambda: generate_uuid('action'))
     is_folder: bool
     type: Literal[
-        "azure_blob_storage_folder",
         "internal_folder",
         "internal_action",
-        "azure_blob_action",
     ]
     name: str
     description: str

@@ -11,7 +11,7 @@ All of these require different types of interaction. The memory
 metadata labels the memory so the swarm knows how to interact with it.
 """
 
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 
 from pydantic import BaseModel, Field
 from typing_extensions import Literal
@@ -26,12 +26,19 @@ ss_internal = SwarmstarInternal()
 
 class MemoryMetadata(BaseModel):
     id: Optional[str] = Field(default_factory=lambda: generate_uuid('memory'))
-    type: Literal["internal_folder", "local_folder", "azure_blob"]
+    is_folder: bool
+    type: Literal[
+        "folder",
+        "key_value",
+        "markdown",
+        "internal_sqlite",
+        "internal_markdown"
+    ]
     name: str
     description: str
-    parent: str
-    children: List[str]
-    metadata: Dict[str, str]
+    parent: Optional[str] = None
+    children: Optional[List[str]] = None
+    context: Optional[Dict[str, Any]] = {}
 
     @staticmethod
     def get_memory_metadata(memory_id: str) -> 'MemoryMetadata':
@@ -61,3 +68,25 @@ class MemoryMetadata(BaseModel):
         if memory_type in type_mapping:
             return type_mapping[memory_type](**memory_metadata)
         return MemoryMetadata(**memory_metadata)
+
+class MemoryFolder(MemoryMetadata):
+    is_folder: Literal[True] = Field(default=True)
+    type: Literal["folder"]
+    name: str
+    description: str
+    children_ids: List[str]
+    parent: Optional[str] = None
+
+class Memory(MemoryMetadata):
+    is_folder: Literal[False] = Field(default=False)
+    type: Literal[
+        "key_value",
+        "markdown",
+        "internal_sqlite",
+        "internal_markdown"
+    ]
+    name: str
+    description: str
+    parent: str
+    children_ids: Field(default=None)
+    context: Optional[Dict[str, Any]] = {}

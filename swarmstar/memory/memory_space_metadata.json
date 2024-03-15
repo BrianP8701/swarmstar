@@ -1,9 +1,12 @@
 {
-    "internal_swarm_memory": {
+    "user": {
         
     },
-    "swarm_space": {
+    "projects": {
 
+    },
+    "swarmstar": {
+        
     }
 }
 

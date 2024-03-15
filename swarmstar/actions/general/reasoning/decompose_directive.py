@@ -31,7 +31,8 @@ DECOMPOSE_DIRECTIVE_INSTRUCTIONS = (
     "2. Decompose the directive into actionable subdirectives that will be executed independently and in parallel. "
     "After those are done, youll generate the next set of subdirectives. I stress that the subdirectives "
     "must be independent and parallel.\n\nChoose one of the options and proceed. Do not ask questions and "
-    "decompose the directive at the same time."
+    "decompose the directive at the same time.\n\n"
+    ""
 )
 
 

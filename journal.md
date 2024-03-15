@@ -2132,3 +2132,26 @@ So lets conclude the passing of reports conclusively.
     - when a parent decompose directive node terminates, we'll use the method we originally planned. to take the consolidated reports of decompose directive nodes and direct leaf nodes and consolidate those.
 
 Now lets just refine the consolidate report function. ah also do we create a seperate consolidate report function? Nah i dont think theres any need. 
+
+# checkpoint
+
+well. if u read this journal, youll see how earlier on i said "oh we're ready to start pushing the swarm and add capabilities!" well, it wasnt i needed more infrastrucure. but now we are. now the worst is ahead of us. the competition fucking devin pissed me off man fuck. here i wrote it down:
+
+1. Non technical user asks for an app/plugin to be created for them. It is not meant to be scalable. The user only communicates what features they want and gives feedback. The swarm is responsible for choosing stack/architecture, building, deploying and iterating.
+2. Technical user asks swarm to add a feature to his repository. The swarm tries to be autonomous as possible, but will ask the user questions about his system, design choices, patterns to follow etc if needed. How to test something, if it can add something, approval for its choices.
+3. Technical user asks swarm to create a scalable product, or something more deeply technical and cutting edge. The user is involved in requestiong features, choosing direction and makes all high level choices. The swarm can make suggestions, but it must let the user make all choices. the swarm builds, and might ask the user for help on creating abstractions or system design choices. the user might not know where the project might go as a whole. it might be an iterative process, constantly ongoing and adding onto the directives. before concluding completion the swarm must always ask the user if he is happy. after a swarm has determined completion it should not be deleted. if the user wants to continue adding or changing things in the future it may come back, and the previous memory space will need to be reused.
+4. Having swarmstar work on swarmstar. it must refer to me for any decisions it makes for approval, and it will need to understand itself deeply. i think this is a good place to start. if i can get swarmstar to deeply understand itself and build on itself, we should be able to get swarmstar to apply the same principles to another repository, and have it upgrade or change itself as needed during when this happens.
+
+These are "types", different categories of directives. there are obv a lot more, these are just "software" directives. unlocking software directives means itll be able to work on itself and dynamically create new actions for itself as needed to accomplish new tasks on the spot. 
+
+we also introduce, "general" and "specific" actions. general actions are meant to be found, searched for. specific actions are meant to be directly called upon. 
+
+we also must now think about memory. types of things we need to save in memory:
+
+- constant variables (website links, keys, passwords etc) these may have a unique spot in th ui to be entered, but they must be saved appropriately and be easy to find.
+- user details. in the initial phase we aim to understand our user. are they technical or non technical? What is their background? How involved and how much control do they want over what is being done? 
+
+
+# Node Principles
+
+- Do NOT make assumptions. Ask questions. About intent, requirements, system.

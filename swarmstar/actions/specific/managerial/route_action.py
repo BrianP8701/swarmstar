@@ -68,9 +68,6 @@ class Action(BaseAction):
         This function gets called over and over again 
         until we reach a leaf node, aka an action.
         """
-        current_action_id = children_action_ids[completion.index]
-        current_action = ActionMetadata.get_action_metadata(current_action_id)
-
         self.log({
             "role": "ai",
             "content": (
@@ -80,6 +77,8 @@ class Action(BaseAction):
         })
         
         if completion.index is not None:
+            current_action_id = children_action_ids[completion.index]
+            current_action = ActionMetadata.get_action_metadata(current_action_id)
             if current_action.is_folder:
                 
                 self.log({
