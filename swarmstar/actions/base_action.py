@@ -16,8 +16,11 @@ from abc import ABCMeta, abstractmethod
 from functools import wraps
 from typing import Any, Dict, List, Callable, get_type_hints, get_origin, get_args
 from inspect import signature
+import json
+import sys
+import inspect
 
-from swarmstar.models import SwarmOperation, SwarmNode, FailureOperation
+from swarmstar.models import SwarmOperation, SwarmNode, SpawnOperation, NodeEmbryo
 
 
 def error_handling_decorator(func):
@@ -26,25 +29,37 @@ def error_handling_decorator(func):
         try:
             return func(self, *args, **kwargs)
         except Exception as e:
-            tb_str = traceback.format_exc()
-            params_str = f"node_id: {self.node.id}\nParams: {kwargs}"
-
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            traceback_str = ''.join(traceback.format_exception(exc_type, exc_value, exc_traceback))
+            
+            # Capture local variables
+            frame = inspect.trace()[-1][0]
+            local_vars = frame.f_locals
+            
+            error_details = {
+                'exc_type': exc_type.__name__,
+                'exc_value': str(exc_value),
+                'exc_traceback': traceback_str,
+                'local_variables': {key: repr(value) for key, value in local_vars.items()},
+                'error_line': frame.f_lineno,
+                'error_module': frame.f_code.co_filename
+            }
+            
             error_message = (
-                f"Error in {func.__name__}:\n{str(e)}\n\n{tb_str}\n\n{params_str}"
+                f"Error in {func.__name__}:\n{str(e)}\n\n"
+                f"Traceback:\n{traceback_str}\n\n"
+                f"Local Variables:\n{json.dumps(error_details['local_variables'], indent=2)}"
             )
             
-            raise Exception(error_message)
-            
-            self.log({
-                "role": "swarmstar",
-                "content": error_message
-            })
-            
-            # return FailureOperation(
-            #     node_id=self.node.id,
-            #     message=error_message,
-            # )
-
+            return SpawnOperation(
+                parent_node_id=self.node.id,
+                node_embryo=NodeEmbryo(
+                    action_id="swarmstar/actions/swarmstar/handle_failure",
+                    message=error_message,
+                    context={'error_details': error_details}
+                )
+            )
+    
     return wrapper
 
 

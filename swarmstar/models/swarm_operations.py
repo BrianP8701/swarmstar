@@ -21,6 +21,7 @@ db = MongoDBWrapper()
 class NodeEmbryo(BaseModel):
     action_id: str
     message: str
+    context: Optional[Dict[str, Any]] = {}
 
 class SwarmOperation(BaseModel):
     id: str
@@ -94,7 +95,9 @@ class BlockingOperation(SwarmOperation):
     id: Optional[str] = Field(default_factory=lambda: generate_uuid('blocking_op'))
     operation_type: Literal["blocking"] = Field(default="blocking")
     node_id: str
-    blocking_type: str
+    blocking_type: Literal[
+        "instructor_completion",
+    ]
     args: Dict[str, Any] = {}
     context: Dict[str, Any] = {}
     next_function_to_call: str
@@ -105,7 +108,6 @@ class SpawnOperation(SwarmOperation):
     node_embryo: NodeEmbryo
     parent_node_id: Optional[str] = None
     node_id: Optional[str] = None
-    context: Optional[Dict[str, Any]] = None
 
 class ActionOperation(SwarmOperation):
     id: Optional[str] = Field(default_factory=lambda: generate_uuid('action_op'))
@@ -124,6 +126,11 @@ class TerminationOperation(SwarmOperation):
 class FailureOperation(SwarmOperation):
     id: Optional[str] = Field(default_factory=lambda: generate_uuid('failure_op'))
     operation_type: Literal["node_failure"] = Field(default="node_failure")
+    failure_type: Literal[
+        "missing_action",
+        "instructor_failure",
+        "execution_error"
+    ]
     node_id: Optional[str] = None
     message: str
     context: Optional[Dict[str, Any]] = {}

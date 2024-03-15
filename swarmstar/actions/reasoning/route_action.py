@@ -3,7 +3,7 @@ Given a directive, the router agent uses an LLM to navigate the action space
 through its metadata to decide what action to take. If there is no good action
 path to take, the router agent will describe what type of action is needed in detail.
 """
-from typing import Dict, List, Optional
+from typing import List, Optional, Dict
 from pydantic import BaseModel, Field
 
 from swarmstar.models import (
@@ -122,12 +122,13 @@ class Action(BaseAction):
                 return SpawnOperation(
                     parent_node_id=self.node.id,
                     node_embryo=NodeEmbryo(
-                        action_id=current_action_id, message=self.node.message
+                        action_id=current_action_id, 
+                        message=self.node.message
                     )
                 )
         else: # There's no good action path to take
             failure_message = completion.failure_message
-            
+
             self.log({
                 "role": "swarmstar",
                 "content": "The router failed to find a good action path to take."
@@ -136,11 +137,14 @@ class Action(BaseAction):
                 f"Tried to find a good action path to take given a directive, but failed.\n\n"
                 f"Directive: {self.node.message}\n\nFailure message: {failure_message}"
             )
-            
-            raise ValueError(
-                f"The router agent failed to find a good action path to take. We need to implement something here to handle this. For example we could pass this to the action creator or talk to the user.\n\nThe agent's failure message: {failure_message}"
+
+            return SpawnOperation(
+                parent_node_id=self.node.id,
+                node_embryo=NodeEmbryo(
+                    action_id="swarmstar/actions/swarmstar/create_action",
+                    message=failure_message
+                )
             )
-            # TODO Handle failure message. Pass to action creator or user for review
 
     def build_route_messages(self, goal: str, children_descriptions: List[str]) -> List[Dict[str, str]]:
         goal_and_action_path_options = (

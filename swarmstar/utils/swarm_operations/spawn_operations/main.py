@@ -42,7 +42,7 @@ def _spawn_node(swarm_id: str, spawn_operation: SpawnOperation) -> SwarmNode:
         message=node_embryo.message,
         alive=True,
         termination_policy=termination_policy,
-        context=spawn_operation.context
+        context=node_embryo.context
     )
 
     SwarmNode.insert_swarm_node(node)

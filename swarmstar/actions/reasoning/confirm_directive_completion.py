@@ -202,12 +202,12 @@ class Action(BaseAction):
                 parent_node_id=self.node.id,
                 node_embryo=NodeEmbryo(
                     action_id="swarmstar/actions/communication/route_questions",
-                    message=completion.questions
-                ),
-                context={
-                    "branch_head_node_id": branch_head_node_id,
-                    "log_index_key": log_index_key
-                }
+                    message=completion.questions,
+                    context={
+                        "branch_head_node_id": branch_head_node_id,
+                        "log_index_key": log_index_key
+                    }
+                )
             )
         else:
             is_complete = completion.is_complete
