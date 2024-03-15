@@ -47,8 +47,11 @@ def terminate(termination_operation: TerminationOperation) -> Union[TerminationO
     else:
         target_node.alive = False
         SwarmNode.update_swarm_node(target_node)
-        parent_node = SwarmNode.get_swarm_node(target_node.parent_id)
-        return TerminationOperation(
-            terminator_node_id=node_id,
-            node_id=parent_node.id,
-        )
+        if target_node.parent_id is None:
+            return None
+        else:
+            parent_node = SwarmNode.get_swarm_node(target_node.parent_id)
+            return TerminationOperation(
+                terminator_node_id=node_id,
+                node_id=parent_node.id,
+            )

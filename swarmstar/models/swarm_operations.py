@@ -105,7 +105,7 @@ class SpawnOperation(SwarmOperation):
     node_embryo: NodeEmbryo
     parent_node_id: Optional[str] = None
     node_id: Optional[str] = None
-    context: Optional[Dict[str, Any]] = None 
+    context: Optional[Dict[str, Any]] = None
 
 class ActionOperation(SwarmOperation):
     id: Optional[str] = Field(default_factory=lambda: generate_uuid('action_op'))

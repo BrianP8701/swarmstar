@@ -15,7 +15,7 @@ class SwarmHistory:
             Add a swarm operation id to the swarm history when 
             a swarm operation is executed.
         """
-        db.append("swarm_history", swarm_id, swarm_operation_id)
+        db.append("swarm_history", swarm_id, "data", swarm_operation_id)
 
     @staticmethod
     def get_swarm_history(swarm_id: str) -> List[str]:
@@ -28,3 +28,7 @@ class SwarmHistory:
     @staticmethod
     def get_swarm_operation_by_index(swarm_id: str, index: int) -> SwarmOperation:
         return db.get("swarm_history", swarm_id)["data"][index]
+
+    @staticmethod
+    def add_swarm_history(swarm_id: str, swarm_operaion_ids: List[str]) -> None:
+        db.insert("swarm_history", swarm_id, {"data": swarm_operaion_ids})

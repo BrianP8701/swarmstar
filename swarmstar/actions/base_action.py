@@ -160,6 +160,7 @@ class BaseAction(metaclass=ErrorHandlingMeta):
                 )
                 instructor_model = getattr(models_module, instructor_model_name)
                 completion = instructor_model.model_validate(completion)
+                kwargs["completion"] = completion
 
             # Extract the required arguments from kwargs based on the function signature
             func_args = {}

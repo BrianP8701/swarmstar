@@ -28,8 +28,8 @@ class SwarmNode(BaseModel):
     ]
     developer_logs: List[Any] = []
     report: Optional[str] = None
-    execution_memory: Optional[Dict[str, Any]] = None
-    context: Optional[Dict[str, Any]] = None
+    execution_memory: Optional[Dict[str, Any]] = {}
+    context: Optional[Dict[str, Any]] = {}
 
     @staticmethod
     def insert_swarm_node(node: 'SwarmNode') -> None:

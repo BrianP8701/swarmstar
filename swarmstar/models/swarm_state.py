@@ -8,7 +8,7 @@ db = MongoDBWrapper()
 class SwarmState:
     @staticmethod
     def add_node_id_to_swarm_state(swarm_id: str, node_id: str) -> None:
-        db.append("swarm_state", swarm_id, node_id)
+        db.append("swarm_state", swarm_id, "data", node_id)
 
     @staticmethod
     def get_swarm_state(swarm_id: str) -> List[str]:
@@ -24,3 +24,7 @@ class SwarmState:
     @staticmethod
     def get_swarm_node_by_index(swarm_id: str, index: int) -> SwarmNode:
         return db.get("swarm_state", swarm_id)['data'][index]
+
+    @staticmethod
+    def add_swarm_state(swarm_id: str, swarm_state: List[str]) -> None:
+        db.insert("swarm_state", swarm_id, {"data": swarm_state})

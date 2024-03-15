@@ -25,6 +25,7 @@ class MongoDBWrapper(KV_Database):
     def insert(self, category, key, value):
         try:
             collection = self.db[category]
+            value.pop("id", None)  # Remove the _id field if it exists
             value.pop("_id", None)  # Remove the _id field if it exists
             document = {"_id": key, "version": 1, **value}
             collection.insert_one(document)
@@ -34,6 +35,7 @@ class MongoDBWrapper(KV_Database):
     def set(self, category, key, value):
         try:
             collection = self.db[category]
+            value.pop("id", None)  # Remove the _id field if it exists
             value.pop("_id", None)  # Remove the _id field if it exists
 
             retries = 5
@@ -60,7 +62,7 @@ class MongoDBWrapper(KV_Database):
     def update(self, category, key, updated_values):
         try:
             collection = self.db[category]
-            updated_values.pop("_id", None)  # Remove the _id field if it exists
+            updated_values.pop("id", None)  # Remove the _id field if it exists
 
             retries = 3
             for attempt in range(retries):
@@ -106,15 +108,15 @@ class MongoDBWrapper(KV_Database):
         collection = self.db[category]
         return collection.count_documents({"_id": key}) > 0
 
-    def append(self, category, key, value):
+    def append(self, category, key, inner_key, value):
         collection = self.db[category]
         result = collection.find_one({"_id": key})
         if result:
-            if "data" not in result:
-                collection.update_one({"_id": key}, {"$set": {"data": []}})
-            collection.update_one({"_id": key}, {"$push": {"data": value}})
+            if inner_key not in result:
+                collection.update_one({"_id": key}, {"$set": {inner_key: []}})
+            collection.update_one({"_id": key}, {"$push": {inner_key: value}})
         else:
-            self.insert(category, key, {"data": [value]})
+            self.insert(category, key, {inner_key: [value]})
 
     def remove_from_list(self, category, key, value):
         collection = self.db[category]

@@ -68,7 +68,7 @@ class FinalReport(BaseModel):
     )
 
 
-class ConfirmDirectiveCompletionModel(BaseModel):
+class ConfirmDirectiveModel(BaseModel):
     is_complete: bool = Field(
         ..., description="Whether the directive is complete or not."
     )

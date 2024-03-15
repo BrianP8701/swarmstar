@@ -1,5 +1,29 @@
 # TODO List
 
+# 3/14/24 - 
+- [ ] web host frontend, deploy backend to serverless
+- [ ] share constants
+- [ ] metafy repo/data
+- [ ] add swarm memory to ui
+- [ ] add sequential plan to decompose directive node
+- [ ] upload files/folders in ui
+- [ ] constant chat in ui
+- [ ] history slider in ui
+- [ ] edit swarm in ui
+- [ ] step mode in ui
+
+Actions to implement:
+- [ ] action creator
+- [ ] route question
+- [ ] route failure
+- [ ] find constant
+- [ ] save constant
+- [ ] write tests
+- [ ] write code
+- [ ] get text from web
+- [ ] get answers from web
+
+
 ## 1/18/24 - 
 - [x] test manager
 - [x] integration test

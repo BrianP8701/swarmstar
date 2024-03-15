@@ -23,7 +23,7 @@ class SwarmConfig(BaseModel):
     @staticmethod
     def add_swarm_config(swarm_config: 'SwarmConfig') -> None:
         db.insert("config", swarm_config.id, swarm_config.model_dump())
-        db.append("admin", "swarms", swarm_config.id)
+        db.append("admin", "swarms", "data", swarm_config.id)
 
     @staticmethod
     def get_swarm_config(swarm_config_id: str) -> 'SwarmConfig':
