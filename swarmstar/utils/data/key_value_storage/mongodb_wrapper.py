@@ -127,3 +127,34 @@ class MongoDBWrapper(KV_Database):
 
         if result.modified_count == 0:
             raise ValueError(f"Value {value} not found in the list associated with _id {key}.")
+
+    def save_bytes(self, category, key, file_bytes):
+        """
+        Save binary data to a specified key.
+
+        :param category: Collection name.
+        :param key: Document key.
+        :param file_bytes: Binary data to save.
+        """
+        collection = self.db[category]
+        binary_data = Binary(file_bytes)
+        try:
+            document = {"_id": key, "data": binary_data, "version": 1}
+            collection.insert_one(document)
+        except DuplicateKeyError:
+            raise ValueError(f"A document with _id {key} already exists in collection {category}.")
+
+    def retrieve_bytes(self, category, key):
+        """
+        Retrieve binary data stored under a specified key.
+
+        :param category: Collection name.
+        :param key: Document key.
+        :return: Binary data as bytes.
+        """
+        collection = self.db[category]
+        result = collection.find_one({"_id": key}, {"data": 1})
+        if result and "data" in result:
+            return result["data"]
+        else:
+            raise ValueError(f"_id {key} not found in the collection {category} or it does not have binary data.")

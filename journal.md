@@ -1,4 +1,6 @@
-this file is not meant to be read but i like keeping it up 
+this file is not meant to be read but i like keeping it up. by definition, i come here when my thoughts are a mess, thus everything in here is just that - a horrible fucking mess. I find this process very helpful when im faced with something difficult, but when i have all the necessary information in my head. like chatgpt cant help me anymore, i already have all the pieces - but i just need to put them together or come up with the right design and am stuck.
+
+______________________________________________________________
 
 We want functions that can:
     Take text describing a function
@@ -2155,3 +2157,45 @@ we also must now think about memory. types of things we need to save in memory:
 # Node Principles
 
 - Do NOT make assumptions. Ask questions. About intent, requirements, system.
+- Each node is responsible for its own report and verifying the correctness of the report. it must be certain that what its said is done, through testing if coding etc.
+
+
+# Memory space & Artificial environments aka containers for ais
+ive already spent some time thinking abt this. lets walk through the flow of whats going on here. before i begin i want to preface with something:
+
+A big problem i had in the past was trying to hard to make something dynamic, flexible. with the action space i tried to make the actions flexible to any language, to any platform, and different methods of running. in fact what i ended up doing was severely constraining and shrinking the space of the problem at the end: I defined an abstract action class and created a strict flow and way of handling actions with only 2 types internal and external actions. anyway, keep this in mind when dealing with the memory space. reduce the complexity down to only whats necessary
+
+## memory space
+lets keep it simple. actual storage of memories? Mongodb. most things, most files are under 16MB and can easily be stored in mongodb. we dont have to create any folders. the memory metadata tree contains the actual organization of the memory space. and the actual memories are just stored on mongodb in a collection called memories with UUIDS. The memory metadata space will have information about how to retrieve each memory. there will be different types of memories as well with different types of retrieval. all files (that are text files, code files) can be retrieved individually as a string.
+
+However in addition, we have actual code projects, repositrories, stuff we need to run. with dependencies. the root node of these "projects" can be clearly labeled to indicate, "hey, this is a repository, all related meant to all be in a container together in order to run." okay. now to the actual topic - how to run code in the memory space and how to handle and manage all the enviroments.
+
+## containers
+obviously containers. docker. now we walk the flow:
+the swarm needs to run, test some code it wrote. this is the first time the swarm has had to run code yet, its young. so it creates a new container. the actual LLM is only given a simple question - what language is this project using? And we'll proceed to create a blank container just off the base image for that language, python in this case lets say. itll choose the most recent version of python (idk maybe different). Anyway the container is created and is running. we first go to metadata tree and using the information there, we'll move all the files to the container, in the same format, following the same folder structure. then we'll create a poetry file and look at the dependencies of the code, and add all those to the poetry enviroment. this enviroment is stored inside the container. where do we get the dependencies from? Well every memory node includes a list of its dependencies in its metadata. so now we get the llm involved again, explaining to it, hey we have a container, with this runtime, with this code setup, maybe show the tree of the directory structure, and these dependencies installed with poetry and poetry shell on. this is the CWD. then ask it what command it wants to send to run in the terminal. maybe itll ask questions, in which case well have to answer those by passing it to the question router who will either search the memory, internet or talk to the user. if it outputs a command well pass it to the terminal, run it and return the stderr or stdout to the llm. itll analyze this and if an error occurs will begin a debugging process, until fixed. once the code runs correctly, itll either output another command or say, hey im done. i dont need the terminal anymore. 
+
+Now we have a weird decision. as it goes off and does other stuff, we have no idea how long itll be until it needs to use the container again. how much overhead is there from having a container running, but really just waiting for tty? Maybe instead we should add a timer, so if x time passes well kill the container and (ill explain what happens here in a moment) and when the swarm decides it wants to run code again itll either send a command or just start a the container again, getting the image. So lets call that a terminal session for the swarm. it can start a terminal session to container x.
+
+Now the actual container will persist what? It wont persist the code in a volume. everytime a terminal session starts, we instantiate the docker container by pasing files from mongodb. all changes to the code are made to mongodb, and propagated to the terminal session, if there is an active terminal session with this project. However, the container DOES store enviroment specific stuff. any poetry stuff. or runtime stuff. or system stuff. or npm stuff etc. the images are stored with environment stuff in docker registry. the code is stored in mongodb. when starting a terminal session for swarm, we get the image start a container and get the code from mongodb. Whenever we have a new different project that requires a different environment, and we want to seperate it, or actually more appropriately, the swarm decides it has a different project, we will create a new image for that swarm. okay so thats containers and how the ai runs code
+
+another situation, what about long running code like deploying an app? Are there easy ways to host apps on like vercel, just frontends with a backend, not at all meant for scale, just one user for free? Or i guess we dont want to ask the user to deal with those details, wed want to just host it.... that is like a one off terminal command, not like running a fastapi app or next.js and having it constantly running on the temrminal session right? I think we'd want that. use some other service to host and deploy any apps we make and let the user try it out, give feedback, change redeploy. ive never deployed apps off my local machine before... so i dont know how compliocated it is.
+
+## The memory space.
+the memory space contains 4 root level folders:
+- user - all convos with user, requests, descriptions of user. refer back to this for ground truth, of the users requirements intentions, and to understand when to get the user involved.
+- swarmstar - documentation and stuff internal to the swarm, so it can work on itself, understand itself when working
+- projects/ or containers - each folder (subfolders if theres lots of project managed by one swarm) corresponds to a project, which corresponds to an environment/ container id in docker registry. this is what we talked about above
+- internet scraped stuff - stuff we gathered from searching internet, docs, code etc.
+
+
+Implement the memory storage system using MongoDB, including the metadata tree and retrieval methods.
+Develop the container management system using Docker, incorporating the LLM's decision-making process for determining project language and container setup.
+Establish a mechanism for moving files between MongoDB and containers, following the folder structure defined in the metadata tree.
+Integrate package manager for dependency management within the containers depending on the project.
+Design the debugging process for the LLM to identify and resolve errors in the code.
+Implement the timer functionality to kill inactive containers and optimize resource usage.
+Set up a system to propagate code changes from MongoDB to active terminal sessions.
+Configure the Docker registry to store container images with environment-specific configurations.
+Research and test hosting and deployment options for apps created by the AI, focusing on single-user, free solutions.
+Create the four root-level folders in the memory space and define their purposes and usage guidelines.
+

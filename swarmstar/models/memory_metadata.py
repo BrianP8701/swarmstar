@@ -29,10 +29,8 @@ class MemoryMetadata(BaseModel):
     is_folder: bool
     type: Literal[
         "folder",
-        "key_value",
-        "markdown",
-        "internal_sqlite",
-        "internal_markdown"
+        "project_root_folder",
+        "project_file_bytes",
     ]
     name: str
     description: str
@@ -71,22 +69,36 @@ class MemoryMetadata(BaseModel):
 
 class MemoryFolder(MemoryMetadata):
     is_folder: Literal[True] = Field(default=True)
-    type: Literal["folder"]
+    type: Literal[
+        "folder"
+        "project_root_folder"
+    ]
     name: str
     description: str
     children_ids: List[str]
     parent: Optional[str] = None
 
-class Memory(MemoryMetadata):
+class MemoryNode(MemoryMetadata):
     is_folder: Literal[False] = Field(default=False)
     type: Literal[
-        "key_value",
-        "markdown",
-        "internal_sqlite",
-        "internal_markdown"
+        "project_file_bytes"
     ]
     name: str
     description: str
     parent: str
     children_ids: Optional[List[str]] = Field(default=None)
     context: Optional[Dict[str, Any]] = {}
+
+"""
+Context for each type of memory
+
+    folder: {}
+
+    project_root_folder: {
+        container_id: points to container in docker registry
+    }
+        
+    project_file_bytes: {
+        file_path: Root to file from root of project
+    }
+"""

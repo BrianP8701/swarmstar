@@ -44,3 +44,13 @@ class KV_Database(ABC):
     def remove_from_list(self, category, key, value):
         """Remove a value from a list associated with a key."""
         pass
+
+    @abstractmethod
+    def save_bytes(self, category, key, file_bytes):
+        """Save binary data to a specified key."""
+        pass
+
+    @abstractmethod
+    def retrieve_bytes(self, category, key):
+        """Retrieve binary data stored under a specified key."""
+        pass

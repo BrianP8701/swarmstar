@@ -9,7 +9,7 @@ from .action_metadata import (
 )
 
 from .memory_metadata import MemoryMetadata
-
+from .memories import Memory
 
 from .swarm_node import (
     SwarmNode
