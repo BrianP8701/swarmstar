@@ -8,7 +8,6 @@ class LocalStorage:
 
     root_path = root_path_var.get()  # Retrieve the root path from the context variable
 
-
     def __new__(cls, root_path: str):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
