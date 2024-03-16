@@ -14,5 +14,3 @@ def get_binary_data(package: str, resource_name: str) -> bytes:
 
 def get_binary_file(package: str, resource_name: str) -> BinaryIO:
     return resources.open_binary(package, resource_name)
-
-

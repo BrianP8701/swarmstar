@@ -3,7 +3,7 @@ from pymongo.errors import DuplicateKeyError
 from dotenv import load_dotenv
 import os
 
-from swarmstar.utils.data.kv_operations.kv_database import KV_Database
+from swarmstar.utils.data.key_value_storage.abstract import KV_Database
 
 load_dotenv()
 MONGODB_URI = os.getenv("MONGODB_URI")

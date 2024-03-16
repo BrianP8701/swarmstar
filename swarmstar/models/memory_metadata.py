@@ -88,5 +88,5 @@ class Memory(MemoryMetadata):
     name: str
     description: str
     parent: str
-    children_ids: Field(default=None)
+    children_ids: Optional[List[str]] = Field(default=None)
     context: Optional[Dict[str, Any]] = {}

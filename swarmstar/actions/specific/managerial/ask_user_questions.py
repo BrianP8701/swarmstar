@@ -31,18 +31,6 @@ class QuestionAskerConversationState(BaseModel):
         description="Concise and comprehensive report of answers to our questions and supporting context.",
     )
 
-
-class AgentMessage(BaseModel):
-    content: str = Field(..., description="The message to send to the user.")
-
-
-class FinalReport(BaseModel):
-    report: str = Field(
-        ...,
-        description="Concise and comprehensive report of answers to our questions and supporting context.",
-    )
-
-
 GENERATE_INITIAL_CONVERSATION_STATE_INSTRUCTIONS = (
     "Steps:\n\n"
     "1. Identify the questions that need to be answered.\n"
@@ -142,14 +130,13 @@ class Action(BaseAction):
         
         return BlockingOperation(
             node_id=self.node.id,
-            blocking_type="instructor_completion",
+            blocking_type="openai_completion",
             args={"messages": messages},
             context={
                 "questions": completion.questions,
                 "persisted_context": completion.persisted_context,
                 "reports": [],
-                "chat_name": completion.chat_name,
-                "instructor_model_name": "AgentMessage"
+                "chat_name": completion.chat_name
             },
             next_function_to_call="send_user_first_message",
         )
@@ -161,21 +148,21 @@ class Action(BaseAction):
         persisted_context: str,
         reports: List[str],
         chat_name: str,
-        completion: AgentMessage,
+        completion: str,
     ):
         self.log({
             "role": "ai",
-            "content": completion.content
+            "content": completion
         })
         
         return UserCommunicationOperation(
             node_id=self.node.id,
-            message=completion.content,
+            message=completion,
             context={
                 "questions": questions,
                 "persisted_context": persisted_context,
                 "reports": reports,
-                "recent_ai_message": completion.content,
+                "recent_ai_message": completion,
                 "chat_name": chat_name,
             },
             next_function_to_call="update_conversation_state",
@@ -216,13 +203,12 @@ class Action(BaseAction):
         
         return BlockingOperation(
             node_id=self.node.id,
-            blocking_type="instructor_completion",
+            blocking_type="openai_completion",
             args={"messages": messages},
             context={
                 "questions": completion.questions,
                 "persisted_context": completion.persisted_context,
-                "reports": reports,
-                "instructor_model_name": "AgentMessage"
+                "reports": reports
             },
             next_function_to_call="send_user_message",
         )
@@ -233,21 +219,21 @@ class Action(BaseAction):
         questions: List[str],
         persisted_context: str,
         reports: List[str],
-        completion: AgentMessage,
+        completion: str,
     ):
         self.log({
             "role": "ai",
-            "content": completion.content
+            "content": completion
         })
         
         return UserCommunicationOperation(
             node_id=self.node.id,
-            message=completion.content,
+            message=completion,
             context={
                 "questions": questions,
                 "persisted_context": persisted_context,
                 "reports": reports,
-                "recent_ai_message": completion.content,
+                "recent_ai_message": completion,
             },
             next_function_to_call="update_conversation_state",
         )
@@ -339,22 +325,22 @@ class Action(BaseAction):
 
         return BlockingOperation(
             node_id=self.node.id,
-            blocking_type="instructor_completion",
+            blocking_type="openai_completion",
             args={"messages": messages},
-            context={"instructor_model_name": "FinalReport"},
+            context={},
             next_function_to_call="terminate_conversation",
         )
 
     @BaseAction.receive_completion_handler
-    def terminate_conversation(self, completion: FinalReport):
+    def terminate_conversation(self, completion: str):
         self.log({
             "role": "ai",
-            "content": completion.report
+            "content": completion
         })
         self.report(
             "The agent created a final report after having a conversation with the user "
             f"with the intent of answering a given set of questions.\n\nQuestions: {self.node.message}"
-            f"\n\nReport: {completion.report}"
+            f"\n\nReport: {completion}"
         )
         return TerminationOperation(
             node_id=self.node.id,

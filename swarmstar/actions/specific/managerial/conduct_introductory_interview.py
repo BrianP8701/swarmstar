@@ -1,22 +1,12 @@
-"""
-
-"""
 from typing import Any, Dict
-from pydantic import BaseModel, Field
 
 from swarmstar.models import (
-    ActionFolder,
     BlockingOperation,
     NodeEmbryo,
     SpawnOperation,
-    SwarmOperation,
-    ActionMetadata,
     SwarmNode
 )
 from swarmstar.actions.base_action import BaseAction
-
-
-
 
 UNDERSTAND_USER_BACKGROUND_PROMPT = (
     "The following is a general prompt for understanding the user's background. "

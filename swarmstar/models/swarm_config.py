@@ -13,7 +13,7 @@ ss_internal = SwarmstarInternal()
 
 class SwarmConfig(BaseModel):
     id: str
-    root_path: Optional[str] = None # Set this on spawn
+    root_path: str = None # Set this on spawn
     platform: Literal["mac", "azure"]
 
     @model_serializer

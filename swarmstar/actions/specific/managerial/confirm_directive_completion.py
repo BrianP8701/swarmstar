@@ -62,16 +62,6 @@ class ConfirmDirectiveModel(BaseModel):
         None, description="Ask questions to determine if the directive has been completed."
     )
 
-class ConsolidatedReport(BaseModel):
-    content: str = Field(
-        ..., description="Consolidate all the information into a conclusive report."
-    )
-
-class UpdateDirective(BaseModel):
-    new_directive: str = Field(
-        ..., description="The updated directive to be given to the next decompose directive node."
-    )
-
 confirm_directive_completion_INSTRUCTIONS = (
     "Your purpose is to review and determine if the directive has been completed. "
     "You'll be given the directive and reports detailing what has been done. You are "
@@ -450,23 +440,23 @@ class Action(BaseAction):
         
         return BlockingOperation(
             node_id=self.node.id,
-            blocking_type="instructor_completion",
+            blocking_type="openai_completion",
             args={"messages": messages},
-            context={"instructor_model_name": "ConsolidatedReport"},
+            context={},
             next_function_to_call="close_review"
         )
 
     @BaseAction.receive_completion_handler
-    def close_review(self, completion: ConsolidatedReport):
+    def close_review(self, completion: str):
         self.log({
             "role": "ai",
             "content": completion.content
         })
         decompose_directive_node = SwarmNode.get_swarm_node(self.node.parent_id)
         if decompose_directive_node.context:
-            decompose_directive_node.context["consolidated_reports"] = completion.content
+            decompose_directive_node.context["consolidated_reports"] = completion
         else:
-            decompose_directive_node.context = {"consolidated_reports": completion.content}
+            decompose_directive_node.context = {"consolidated_reports": completion}
         SwarmNode.update_swarm_node(decompose_directive_node)
         
         is_complete = self.node.execution_memory["is_overarching_directive_complete"]
@@ -494,7 +484,7 @@ class Action(BaseAction):
                 f"{UPDATE_DIRECTIVE_INSTRUCTIONS}"
                 f"\n\nOverarching directive:\n{decompose_directive_node.message}"
                 f"\n\nSubdirectives:\n{decompose_directive_node.report}"
-                f"\n\nConsolidated reports:\n{completion.content}"
+                f"\n\nConsolidated reports:\n{completion}"
             )
             messages = [{"role": "system", "content": system_message}]
             
@@ -505,17 +495,17 @@ class Action(BaseAction):
             
             return BlockingOperation(
                 node_id=self.node.id,
-                blocking_type="instructor_completion",
+                blocking_type="openai_completion",
                 args={"messages": messages},
-                context={"instructor_model_name": "UpdateDirective"},
+                context={},
                 next_function_to_call="spawn_new_decompose_directive_node"
             )
             
     @BaseAction.receive_completion_handler
-    def spawn_new_decompose_directive_node(self, completion: UpdateDirective):
+    def spawn_new_decompose_directive_node(self, completion: str):
         self.log({
             "role": "ai",
-            "content": completion.new_directive
+            "content": completion
         })
         
         self.log({
@@ -533,7 +523,7 @@ class Action(BaseAction):
             parent_node_id=self.node.id,
             node_embryo=NodeEmbryo(
                 action_id="swarmstar/actions/reasoning/decompose_directive",
-                message=completion.new_directive
+                message=completion
             )
         )
     

@@ -1,7 +1,13 @@
+import asyncio
+
 from swarmstar import Swarmstar
 from swarmstar.models import SwarmConfig
 
+from swarmstar.utils.ai.openai import OpenAI
 
-swarm_config = SwarmConfig.get_swarm_config("temp")
-print(swarm_config)
-Swarmstar.delete_swarmstar_space(swarm_config.id)
+openai = OpenAI()
+
+completion = asyncio.run(openai.completion([{"role": "system", "content": "say hi"}]))
+
+print(completion)
+print(type(completion))

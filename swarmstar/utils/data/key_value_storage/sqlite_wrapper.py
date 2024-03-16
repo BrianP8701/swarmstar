@@ -1,6 +1,6 @@
 import sqlite3
 
-from swarmstar.utils.data.kv_operations.kv_database import KV_Database
+from swarmstar.utils.data.key_value_storage.abstract import KV_Database
 
 class SQLiteWrapper(KV_Database):
     _instance = None

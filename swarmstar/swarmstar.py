@@ -17,6 +17,7 @@ from swarmstar.utils.swarm_operations import (
     execute_action
 )
 from swarmstar.utils.data import MongoDBWrapper
+from swarmstar.utils.context import root_path_var
 
 db = MongoDBWrapper()
 
@@ -24,7 +25,7 @@ class Swarmstar:
     def __init__(self, swarm_config: SwarmConfig):
         self.swarm_config = swarm_config
         self.swarm_id = swarm_config.id
-
+        self._set_context()
 
     def spawn_root(self, goal: str) -> SpawnOperation:
         """
@@ -48,6 +49,7 @@ class Swarmstar:
         This function is the main entry point for the swarmstar library. It takes in a swarm configuration and a swarm operation
         and returns a list of swarm operations that should be executed next.
         """
+        
         operation_mapping = {
             "spawn": spawn,
             "blocking": blocking,
@@ -107,3 +109,6 @@ class Swarmstar:
         admin = db.get("admin", "swarms")
         admin["data"].remove(swarm_id)
         db.set("admin", "swarms", admin)
+
+    def _set_context(self):
+        root_path_var.set(self.swarm_config.root_path)

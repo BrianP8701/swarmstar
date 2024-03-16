@@ -57,33 +57,10 @@ class QuestionAskerConversationState(BaseModel):
     )
 
 
-class AgentMessage(BaseModel):
-    content: str = Field(..., description="The message to send to the user.")
-
-
-class FinalReport(BaseModel):
-    report: str = Field(
-        ...,
-        description="Concise and comprehensive report of answers to our questions and supporting context.",
-    )
-
-
 class ConfirmDirectiveModel(BaseModel):
     is_complete: bool = Field(
         ..., description="Whether the directive is complete or not."
     )
     questions: Optional[str] = Field(
         None, description="Ask questions to determine if the directive has been completed."
-    )
-
-
-class ConsolidatedReport(BaseModel):
-    content: str = Field(
-        ..., description="Consolidate all the information into a conclusive report."
-    )
-
-
-class UpdateDirective(BaseModel):
-    new_directive: str = Field(
-        ..., description="The updated directive to be given to the next decompose directive node."
     )
