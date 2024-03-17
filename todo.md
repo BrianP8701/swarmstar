@@ -1,4 +1,4 @@
-# TODO List
+# To Do List
 
 
 
@@ -110,4 +110,3 @@ Serverless Framework Plugins: If you're using the Serverless Framework to deploy
 - [ ] Line 54 in agents.json enum shit
 - [ ] Create custom namespace for task handler
 ################################# Irrelevant old goals ###################################################################################################
-So a lot of the goals outlined above have actually been rendered irrelevant because ive changed the architecture and inner workings of the swarm so much. im just gonna renew the todo list below

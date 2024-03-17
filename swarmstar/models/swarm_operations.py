@@ -59,6 +59,10 @@ class SwarmOperation(BaseModel):
         db.insert("swarm_operations", operation.id, operation.model_dump())
 
     @staticmethod
+    def replace(operation: SwarmOperation) -> None:
+        db.replace("swarm_operations", operation.id, operation.model_dump())
+
+    @staticmethod
     def get(operation_id: str) -> SwarmOperation:
         operation = db.get("swarm_operations", operation_id)
         if operation is None:
@@ -93,6 +97,7 @@ class BlockingOperation(SwarmOperation):
     node_id: str
     blocking_type: Literal[
         "instructor_completion",
+        "openai_completion"
     ]
     args: Dict[str, Any] = {}
     context: Dict[str, Any] = {}

@@ -35,7 +35,7 @@ ROUTE_ACTION_INSTRUCTIONS = (
 
 class Action(BaseAction):
     def main(self) -> BlockingOperation:
-        root: ActionFolder = ActionMetadata.get("swarmstar/actions")
+        root: ActionFolder = ActionMetadata.get("general")
         root_children = self.get_children_action_metadata(root)
         children_action_ids = [child.id for child in root_children]
         root_children_descriptions = self.get_children_descriptions(root_children)
@@ -140,7 +140,7 @@ class Action(BaseAction):
             return SpawnOperation(
                 parent_node_id=self.node.id,
                 node_embryo=NodeEmbryo(
-                    action_id="swarmstar/actions/swarmstar/create_action",
+                    action_id="specific/swarmstar/create_action",
                     message=failure_message
                 )
             )
@@ -168,6 +168,5 @@ class Action(BaseAction):
         children_metadata = []
         for child_id in action_folder.children_ids:
             child_metadata = ActionMetadata.get(child_id)
-            if child_metadata.routable:
-                children_metadata.append(child_metadata)
+            children_metadata.append(child_metadata)
         return children_metadata

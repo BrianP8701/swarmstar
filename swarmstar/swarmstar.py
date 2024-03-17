@@ -34,11 +34,11 @@ class Swarmstar:
         :param goal: The goal of the new swarm
         :return: The root spawn operation for the new swarm
         """
-        self._create_swarmstar_space(self.swarm_config.id)
+        self._create_swarmstar_space(swarm_id_var.get())
 
         root_spawn_operation = SpawnOperation(
             node_embryo=NodeEmbryo(
-                action_id='swarmstar/actions/reasoning/decompose_directive',
+                action_id='specific/managerial/conduct_introductory_interview',
                 message=goal
             )
         )
@@ -89,22 +89,22 @@ class Swarmstar:
             SwarmOperation.save(operation)
 
         # Add executed operation to swarm history
-        SwarmHistory.append(self.swarm_config.id, swarm_operation.id)
+        SwarmHistory.append(swarm_id_var.get(), swarm_operation.id)
 
         return output
 
     def _create_swarmstar_space(self, swarm_id: str) -> None:
         memory_space = MemoryMetadata.clone(swarm_id)
-        # TODO - Add action space and util space
+        # TODO - Clone action and util metadata as well
         swarmstar_space = {
             "swarm_state": [],
             "swarm_history": [],
             "memory_space": memory_space,
             "action_space": [],
-            "util_space": [],
-            "config": self.swarm_config.model_dump()
+            "util_space": []
         }
         db.insert("admin", swarm_id, swarmstar_space)
+        db.append_to_list("admin", "swarm_ids", "data", swarm_id)
 
     @staticmethod
     def delete_swarmstar_space(swarm_id: str) -> None:
@@ -115,14 +115,15 @@ class Swarmstar:
         swarm_operation_ids = SwarmHistory.get(swarm_id)
         for swarm_operation_id in swarm_operation_ids:
             db.delete("swarm_operations", swarm_operation_id)
-        
-        db.delete("config", swarm_id)
-        db.delete("swarm_state", swarm_id)
-        db.delete("swarm_history", swarm_id)
-        
-        admin = db.get("admin", "swarms")
-        admin["data"].remove(swarm_id)
-        db.replace("admin", "swarms", {"data": admin["data"]})
+
+        admin = db.get_by_key("admin", "swarm_ids", "data")
+        admin.remove(swarm_id)
+        db.update("admin", "swarm_ids", {"data": admin})
+        db.delete("admin", swarm_id)
+
+        MemoryMetadata.delete_external_memory_metadata_tree(swarm_id)
+
+
 
     def _set_context(self, swarm_id: str) -> None:
         swarm_id_var.set(swarm_id)

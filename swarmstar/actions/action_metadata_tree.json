@@ -28,7 +28,7 @@
         "name": "Ask Questions",
         "description": "Choose this action to ask questions. Questions can be about anything.",
         "parent": "general",
-        "internal_folder_path": "swarmstar.actions.general.ask_questions"
+        "internal_action_path": "swarmstar.actions.general.ask_questions"
     },
     "general/decompose_directive": {
         "is_folder": false,
@@ -69,7 +69,7 @@
         "name": "Confirm Directive Completion",
         "description": "Confirm that a directive has been completed. This is only called upon when all sub-directives of a decompose directive node has been completed.",
         "parent": "specific/managerial",
-        "internal_folder_path": "swarmstar.actions.specific.managerial.confirm_directive_completion"
+        "internal_action_path": "swarmstar.actions.specific.managerial.confirm_directive_completion"
     },
     "specific/managerial/conduct_introductory_interview": {
         "is_folder": false,
@@ -77,7 +77,7 @@
         "name": "Conduct Introductory Interview",
         "description": "Conduct an introductory interview with user to understand their preferences and background. This will be used by the communication router to understand when to ask user questions.",
         "parent": "specific/managerial",
-        "internal_folder_path": "swarmstar.actions.specific.managerial.conduct_introductory_interview"
+        "internal_action_path": "swarmstar.actions.specific.managerial.conduct_introductory_interview"
     },
     "specific/managerial/route_action": {
         "is_folder": false,
@@ -85,7 +85,7 @@
         "name": "Route Action",
         "description": "Route a directive to the appropriate action by searching the general folder.",
         "parent": "specific/managerial",
-        "internal_folder_path": "swarmstar.actions.specific.managerial.route_action"
+        "internal_action_path": "swarmstar.actions.specific.managerial.route_action"
     },
     "communication": {
         "is_folder": true,
@@ -104,6 +104,6 @@
         "name": "Ask User Questions",
         "description": "Choose this action to ask questions to the user.",
         "parent": "communication",
-        "internal_folder_path": "swarmstar.actions.communication.ask_user_questions"
+        "internal_action_path": "swarmstar.actions.communication.ask_user_questions"
     }
 }

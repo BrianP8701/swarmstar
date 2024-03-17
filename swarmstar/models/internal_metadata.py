@@ -10,15 +10,15 @@ class SwarmstarInternal:
     """
     @staticmethod
     def get_action_metadata(action_id: str) -> dict:
-        return SwarmstarInternal.get_internal_sqlite("action_metadata", action_id)
+        return SwarmstarInternal.get_internal_sqlite("action_metadata_tree", action_id)
 
     @staticmethod
     def get_memory_metadata(memory_id: str) -> dict:
-        return SwarmstarInternal.get_internal_sqlite("memory_metadata", memory_id)
+        return SwarmstarInternal.get_internal_sqlite("memory_metadata_tree", memory_id)
 
     @staticmethod
     def get_util_metadata(util_id: str) -> dict:
-        return SwarmstarInternal.get_internal_sqlite("util_metadata", util_id)
+        return SwarmstarInternal.get_internal_sqlite("util_metadata_tree", util_id)
 
     @staticmethod
     def get_internal_sqlite(category: str, key: str) -> dict:

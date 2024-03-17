@@ -51,14 +51,16 @@ def error_handling_decorator(func):
                 f"Local Variables:\n{json.dumps(error_details['local_variables'], indent=2)}"
             )
             
-            return SpawnOperation(
-                parent_node_id=self.node.id,
-                node_embryo=NodeEmbryo(
-                    action_id="swarmstar/actions/swarmstar/handle_failure",
-                    message=error_message,
-                    context={'error_details': error_details}
-                )
-            )
+            raise ValueError(error_message)
+            # return SpawnOperation(
+            #     parent_node_id=self.node.id,
+            #     node_embryo=NodeEmbryo(
+            #         # TODO When u make failure action change this
+            #         action_id="swarmstar/actions/swarmstar/handle_failure",
+            #         message=error_message,
+            #         context={'error_details': error_details}
+            #     )
+            # )
     
     return wrapper
 
@@ -92,32 +94,32 @@ class BaseAction(metaclass=ErrorHandlingMeta):
         if node.report is not None:
             raise ValueError(f"Node {node.id} already has a report: {node.report}. Cannot update with {report}.")
         node.report = report
-        SwarmNode.update_swarm_node(node)
+        SwarmNode.replace(node)
     
     def update_termination_policy(self, termination_policy: str):
         node = self.get_node()
         node.termination_policy = termination_policy
-        SwarmNode.update_swarm_node(node)
+        SwarmNode.replace(node)
     
     def add_value_to_execution_memory(self, attribute: str, value: Any):
         node = self.get_node()
         node.execution_memory[attribute] = value
-        SwarmNode.update_swarm_node(node)
+        SwarmNode.replace(node)
     
     def remove_value_from_execution_memory(self, attribute: str):
         node = self.get_node()
         del node.execution_memory[attribute]
-        SwarmNode.update_swarm_node(node)
+        SwarmNode.replace(node)
 
     def update_execution_memory(self, execution_memory: Dict[str, Any]):
         node = self.get_node()
         node.execution_memory = execution_memory
-        SwarmNode.update_swarm_node(node)
+        SwarmNode.replace(node)
 
     def clear_execution_memory(self):
         node = self.get_node()
         node.execution_memory = {}
-        SwarmNode.update_swarm_node(node)
+        SwarmNode.replace(node)
     
     @staticmethod
     def termination_handler(func: Callable):
@@ -256,5 +258,5 @@ class BaseAction(metaclass=ErrorHandlingMeta):
                         nested_list = nested_list[index]
                     else:
                         raise ValueError("Invalid index_key. Cannot traverse non-list elements.")
-        SwarmNode.update_swarm_node(node)
+        SwarmNode.replace(node)
         return return_index_key

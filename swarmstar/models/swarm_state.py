@@ -11,19 +11,11 @@ class SwarmState:
         """
         Append a new node to the swarm state.
         """
-        db.append_to_list("swarm_state", swarm_id, "data", node_id)
+        db.append_to_list("admin", swarm_id, "swarm_state", node_id)
 
     @staticmethod
     def get(swarm_id: str) -> List[str]:
         """
         Get a list of all the node ids that are part of this swarm.
         """
-        return db.get("swarm_state", swarm_id)["data"]
-
-    @staticmethod
-    def save(swarm_id: str, swarm_state: List[str]) -> None:
-        """
-        Insert a new swarm state into the swarm state collection.
-        """
-        db.insert("swarm_state", swarm_id, {"data": swarm_state})
-        
+        return db.get_by_key("admin", swarm_id, "swarm_state")

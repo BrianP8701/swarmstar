@@ -76,11 +76,16 @@ class Action(BaseAction):
             "role": "swarmstar",
             "content": "Spawning node to understand the user's background."
         })
+        goal = self.node.message
+        message = (
+            f"{UNDERSTAND_USER_BACKGROUND_PROMPT}"
+            f"\n\nThe user has assigned a directive to the swarm. The directive is:\n{goal}"
+        )
         return SpawnOperation(
             node_id=self.node.id,
             node_embryo=NodeEmbryo(
-                message=UNDERSTAND_USER_BACKGROUND_PROMPT,
-                action_id="specific/managerial/ask_user_questions",
+                message=message,
+                action_id="communication/ask_user_questions",
             )
         )
 
@@ -150,6 +155,6 @@ class Action(BaseAction):
             node_id=self.node.id,
             node_embryo=NodeEmbryo(
                 message=UNDERSTAND_USER_BACKGROUND_PROMPT,
-                action_id="general/managerial/decompose_directive",
+                action_id="general/decompose_directive",
             )
         )

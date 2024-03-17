@@ -73,25 +73,32 @@ class MemoryMetadata(BaseModel):
     def clone(swarm_id: str) -> List[str]:
         """
         Copies the internal memory metadata tree with root id as swarm id
-        and UUIDs for all the children.
-        
+        and prepends the swarm id to all the memory ids.
+
         Returns a list of all the memory metadata ids.
         """
-        internal_memory_metadata_root = SwarmstarInternal.get_memory_metadata("root")
+        internal_memory_metadata_root = MemoryMetadata.get("root")
         internal_memory_metadata_root.id = swarm_id
-        MemoryMetadata.save(internal_memory_metadata_root)
-        memory_space = [internal_memory_metadata_root]
-        
+        memory_space = [swarm_id]
+
         def recursive_helper(memory_metadata: 'MemoryMetadata'):
             if memory_metadata.children_ids is not None:
                 for child_id in memory_metadata.children_ids:
-                    child_metadata = SwarmstarInternal.get_memory_metadata(child_id)
+                    child_metadata = MemoryMetadata.get(child_id)
                     child_metadata.id = f"{swarm_id}_{child_metadata.id}"
-                    memory_space.append(child_metadata)
-                    MemoryMetadata.save(child_metadata)
                     recursive_helper(child_metadata)
+                    memory_space.append(child_metadata.id)
+                    child_metadata.children_ids = [
+                        f"{swarm_id}_{child_id}" for child_id in child_metadata.children_ids
+                    ]
+                    MemoryMetadata.save(child_metadata)
 
         recursive_helper(internal_memory_metadata_root)
+        
+        internal_memory_metadata_root.children_ids = [
+            f"{swarm_id}_{child_id}" for child_id in internal_memory_metadata_root.children_ids
+        ]
+        MemoryMetadata.save(internal_memory_metadata_root)
         return memory_space
 
     @staticmethod

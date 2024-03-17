@@ -9,7 +9,7 @@ def terminate(termination_operation: TerminationOperation) -> Union[TerminationO
     node_id = termination_operation.node_id
     node = SwarmNode.get(node_id)
     node.alive = False
-    SwarmNode.update_swarm_node(node)
+    SwarmNode.replace(node)
 
     try:
         parent_node = SwarmNode.get(node.parent_id)

@@ -191,7 +191,7 @@ class Action(BaseAction):
             return SpawnOperation(
                 parent_node_id=self.node.id,
                 node_embryo=NodeEmbryo(
-                    action_id="swarmstar/actions/communication/route_questions",
+                    action_id="communication/ask_user_questions",
                     message=completion.questions,
                     context={
                         "branch_head_node_id": branch_head_node_id,
@@ -338,7 +338,7 @@ class Action(BaseAction):
             return SpawnOperation(
                 parent_node_id=self.node.id,
                 node_embryo=NodeEmbryo(
-                    action_id="swarmstar/actions/communication/route_questions",
+                    action_id="communication/ask_user_questions",
                     message=completion.questions
                 )
             )
@@ -457,7 +457,7 @@ class Action(BaseAction):
             decompose_directive_node.context["consolidated_reports"] = completion
         else:
             decompose_directive_node.context = {"consolidated_reports": completion}
-        SwarmNode.update_swarm_node(decompose_directive_node)
+        SwarmNode.replace(decompose_directive_node)
         
         is_complete = self.node.execution_memory["is_overarching_directive_complete"]
         if is_complete:
@@ -522,7 +522,7 @@ class Action(BaseAction):
         return SpawnOperation(
             parent_node_id=self.node.id,
             node_embryo=NodeEmbryo(
-                action_id="swarmstar/actions/reasoning/decompose_directive",
+                action_id="general/decompose_directive",
                 message=completion
             )
         )
@@ -543,7 +543,7 @@ class Action(BaseAction):
             """
             
             node = SwarmNode.get(node_id)
-            if node.action_id == "swarmstar/actions/reasoning/decompose_directive":
+            if node.action_id == "general/decompose_directive":
                 branch_reports[head_node_id].append(node.context["consolidated_reports"])
             elif not node.children_ids:
                 branch_reports[head_node_id].append(node.report)

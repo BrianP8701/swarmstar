@@ -89,7 +89,7 @@ class MongoDBWrapper(KV_Database):
                 elif attempt == retries - 1:
                     raise Exception("Failed to update document due to concurrent modification.")
         except Exception as e:
-            raise ValueError(f"Failed to update document: {str(e)}")
+            raise ValueError(f"Failed to update document at {category}/{key}: {str(e)}")
 
     def get(self, category, key):
         collection = self.db[category]
@@ -99,6 +99,15 @@ class MongoDBWrapper(KV_Database):
         result.pop("_id")
         result["id"] = key
         return result
+    
+    def get_by_key(self, category, key, inner_key):
+        collection = self.db[category]
+        result = collection.find_one({"_id": key}, {inner_key: 1, "_id": 0})
+        if result is None:
+            raise ValueError(f"_id {key} not found in the collection {category}.")
+        if inner_key not in result:
+            raise KeyError(f"Key '{inner_key}' not found in the document with _id {key}.")
+        return result[inner_key]
 
     def delete(self, category, key):
         collection = self.db[category]
@@ -131,7 +140,7 @@ class MongoDBWrapper(KV_Database):
                     return_document=ReturnDocument.AFTER
                 )
             else:
-                document = {"_id": key, inner_key: [value]}
+                document = {"_id": key, inner_key: [value], "version": 1}
                 collection.insert_one(document)
         except Exception as e:
             raise ValueError(f"Failed to append to list: {str(e)}")

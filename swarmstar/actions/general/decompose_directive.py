@@ -97,7 +97,7 @@ class Action(BaseAction):
             spawn_operation = SpawnOperation(
                 parent_node_id=self.node.id,
                 node_embryo=NodeEmbryo(
-                    action_id="swarmstar/actions/communication/ask_user_questions",
+                    action_id="communication/ask_user_questions",
                     message=message,
                 )
             )
@@ -115,7 +115,7 @@ class Action(BaseAction):
                 spawn_operation = SpawnOperation(
                     parent_node_id=self.node.id,
                     node_embryo=NodeEmbryo(
-                        action_id="swarmstar/actions/reasoning/route_action",
+                        action_id="specific/managerial/route_action",
                         message=subdirective,
                     )
                 )

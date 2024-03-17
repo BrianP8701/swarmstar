@@ -1,13 +1,13 @@
 # swarmstar
-what to do as the "intelligence" of models -> ?
+what happens to society as the "intelligence" of models increase?
 
-for all of history the most important thing has been to be a leader, because to have as much power as possible to achieve your goal you need to employ others to help you
+for all of history the most important thing has been to be a leader. because to have the best shot at achieving your goal you need to employ others to help you
 
-if models approach (and surpass?) humans in "intelligence" you dont want to waste your time aligning and working with humans to accomplish your mission. today's idea of a company goes out the window if ais surpass humans. Instead of running a company, you'd control and maintain ais, or, a "swarm". 
+if models surpass humans in "intelligence" theres a better option than trying to align humans with your goal. today's idea of a company goes out the window if ais surpass humans. Instead of running a company, you'd control and maintain an agi system. 
 
-Instead of having **companies** compete for money to **employ** more humans, **humans** compete for money to **grow** their swarms to achieve their personal goals
+Instead of having **companies** compete for money to **employ** more humans, **humans** compete for money to **grow** their agi systems to achieve their personal goals
 
-swarmstar is my swarm architecture. i tried to design swarmstar to be as resilient as possible, useful no matter how "smart" models get
+swarmstar is my agi system. its built using a foundational model, whatevers best at the time. thats gpt4 today. im trying to future proof, so in the future i can utilize the best models and technologies that arise
 
 maybe swarmstar will never become useful in which case it doesent matter. but if it does, I want to always keep it fully open
 

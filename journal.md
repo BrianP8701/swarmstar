@@ -690,7 +690,6 @@ okay so im reorganizing the structure of the repo massively. let me share where 
 ├── testing
 │   ├── temp_unit_testing.py
 │   └── test.py
-└── todo.md
 
 i removed some of the pycache files and the runs inside the past_runs folder. So let me explain the current state
 

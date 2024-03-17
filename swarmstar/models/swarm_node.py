@@ -38,3 +38,7 @@ class SwarmNode(BaseModel):
     @staticmethod
     def get(node_id: str) -> 'SwarmNode':
         return SwarmNode.model_validate(db.get("swarm_nodes", node_id))
+
+    @staticmethod
+    def replace(node: 'SwarmNode') -> None:
+        db.replace("swarm_nodes", node.id, node.model_dump())

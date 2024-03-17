@@ -7,7 +7,6 @@ from swarmstar.models.internal_metadata import SwarmstarInternal
 db = MongoDBWrapper()
 
 class Memory:
-    
     @staticmethod
     def get(memory_id: str) -> Union[bytes, str]:
         metadata = MemoryMetadata.get(memory_id)
@@ -52,16 +51,16 @@ class Memory:
             "project_file_bytes": Memory._simple_mongodb_delete,
             "string": Memory._simple_mongodb_delete
         }
-        db.delete("memories", memory_id)
+        db.delete("memory", memory_id)
 
     @staticmethod
     def _simple_mongodb_insert(memory_id: str, memory: Union[bytes, str]) -> None:
-        db.insert("memories", memory_id, {"data": memory})
+        db.insert("memory", memory_id, {"data": memory})
 
     @staticmethod
     def _simple_mongodb_retrieve(memory_id: str) -> Union[bytes, str]:
-        return db.get("memories", memory_id)["data"]
+        return db.get("memory", memory_id)["data"]
 
     @staticmethod
     def _internal_sqlite_retrieve(memory_id: str) -> Union[bytes, str]:
-        return SwarmstarInternal.get_internal_sqlite("memories", memory_id)
+        return SwarmstarInternal.get_internal_sqlite("memory", memory_id)

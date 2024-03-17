@@ -24,7 +24,7 @@ def terminate(termination_operation: TerminationOperation) -> Union[TerminationO
     node_id = termination_operation.node_id
     target_node = SwarmNode.get(node_id)
 
-    if target_node.action_id != "swarmstar/actions/reasoning/decompose_directive":
+    if target_node.action_id != "general/decompose_directive":
         raise ValueError("Review directive termination policy can only be applied to nodes of type 'decompose directive'") 
     
     mission_completion = False
@@ -33,20 +33,20 @@ def terminate(termination_operation: TerminationOperation) -> Union[TerminationO
         child = SwarmNode.get(child_id)
         if child.alive:
             return None
-        if child.action_id == "swarmstar/actions/reasoning/confirm_directive_completion":
+        if child.action_id == "specific/managerial/confirm_directive_completion":
             mission_completion = True
 
     if mission_completion == False:
         return SpawnOperation(
             parent_node_id=node_id,
             node_embryo=NodeEmbryo(
-                action_id="swarmstar/actions/reasoning/confirm_directive_completion",
+                action_id="specific/managerial/confirm_directive_completion",
                 message="",
             )
         )
     else:
         target_node.alive = False
-        SwarmNode.update_swarm_node(target_node)
+        SwarmNode.replace(target_node)
         if target_node.parent_id is None:
             return None
         else:

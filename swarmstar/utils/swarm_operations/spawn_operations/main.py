@@ -18,8 +18,7 @@ def spawn(spawn_operation: SpawnOperation) ->  List[ActionOperation]:
     """
     Swarmstar Spawn Operation handler
     """
-    swarm_id = swarm_id_var.get()
-    node = _spawn_node(swarm_id, spawn_operation)
+    node = _spawn_node(spawn_operation)
     _update_parent(spawn_operation, node)
     _update_spawn_operation(spawn_operation, node.id)
 
@@ -62,11 +61,11 @@ def _update_parent(spawn_operation: SpawnOperation, node: SwarmNode) -> None:
     if parent_id is not None:
         parent_node = SwarmNode.get(parent_id)
         parent_node.children_ids.append(node.id)
-        SwarmNode.update_swarm_node(parent_node)
+        SwarmNode.replace(parent_node)
 
 def _update_spawn_operation(spawn_operation: SpawnOperation, node_id: str) -> None:
     """
     Update node_id attr in spawn_operation
     """
     spawn_operation.node_id = node_id
-    SwarmOperation.update_swarm_operation(spawn_operation)
+    SwarmOperation.replace(spawn_operation)

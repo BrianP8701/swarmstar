@@ -1,5 +1,3 @@
-from .swarm_config import SwarmConfig
-
 from .action_metadata import (
     ActionMetadata,
     Action,
@@ -13,7 +11,7 @@ from .memory_metadata import (
     MemoryFolder,
     MemoryNode
 )
-from .memories import Memory
+from .memory import Memory
 
 from .swarm_node import (
     SwarmNode
