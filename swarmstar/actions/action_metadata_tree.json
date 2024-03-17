@@ -1,0 +1,109 @@
+{
+    "root": {
+        "is_folder": true,
+        "type": "internal_folder",
+        "name": "Root of Action Space",
+        "description": "This is the root of the action space",
+        "children_ids": [
+            "general",
+            "specific"
+        ],
+        "internal_folder_path": "swarmstar/actions"
+    },
+    "general": {
+        "is_folder": true,
+        "type": "internal_folder",
+        "name": "General Actions",
+        "description": "This folder contains general actions that can be searched for by the action router.",
+        "children_ids": [
+            "general/decompose_directive",
+            "general/ask_questions"
+        ],
+        "parent": "root",
+        "internal_folder_path": "swarmstar.actions.general"
+    },
+    "general/ask_questions": {
+        "is_folder": false,
+        "type": "internal_action",
+        "name": "Ask Questions",
+        "description": "Choose this action to ask questions. Questions can be about anything.",
+        "parent": "general",
+        "internal_folder_path": "swarmstar.actions.general.ask_questions"
+    },
+    "general/decompose_directive": {
+        "is_folder": false,
+        "type": "internal_action",
+        "name": "Decompose Directive",
+        "description": "Decompose directives into immediate parallel sub-directives.",
+        "parent": "general",
+        "internal_action_path": "swarmstar.actions.general.decompose_directive",
+        "termination_policy": "confirm_directive_completion"
+    },
+    "specific": {
+        "is_folder": true,
+        "type": "internal_folder",
+        "name": "Specific Actions",
+        "description": "This folder contains actions that need to be specifically called on. The action router won't search this folder.",
+        "children_ids": [
+            "specific/managerial"
+        ],
+        "parent": "root",
+        "internal_folder_path": "swarmstar.actions.specific"
+    },
+    "specific/managerial": {
+        "is_folder": true,
+        "type": "internal_folder",
+        "name": "Managerial Actions",
+        "description": "This folder contains actions that are managerial in nature.",
+        "children_ids": [
+            "specific/managerial/conduct_introductory_interview",
+            "specific/managerial/confirm_directive_completion",
+            "specific/managerial/route_action"
+        ],
+        "parent": "specific",
+        "internal_folder_path": "swarmstar.actions.specific.managerial"
+    },
+    "specific/managerial/confirm_directive_completion": {
+        "is_folder": false,
+        "type": "internal_action",
+        "name": "Confirm Directive Completion",
+        "description": "Confirm that a directive has been completed. This is only called upon when all sub-directives of a decompose directive node has been completed.",
+        "parent": "specific/managerial",
+        "internal_folder_path": "swarmstar.actions.specific.managerial.confirm_directive_completion"
+    },
+    "specific/managerial/conduct_introductory_interview": {
+        "is_folder": false,
+        "type": "internal_action",
+        "name": "Conduct Introductory Interview",
+        "description": "Conduct an introductory interview with user to understand their preferences and background. This will be used by the communication router to understand when to ask user questions.",
+        "parent": "specific/managerial",
+        "internal_folder_path": "swarmstar.actions.specific.managerial.conduct_introductory_interview"
+    },
+    "specific/managerial/route_action": {
+        "is_folder": false,
+        "type": "internal_action",
+        "name": "Route Action",
+        "description": "Route a directive to the appropriate action by searching the general folder.",
+        "parent": "specific/managerial",
+        "internal_folder_path": "swarmstar.actions.specific.managerial.route_action"
+    },
+    "communication": {
+        "is_folder": true,
+        "type": "internal_folder",
+        "name": "Communication",
+        "description": "This folder contains actions that are related to communication that can be searched for by the communication router.",
+        "children_ids": [
+            "communication/ask_user_questions"
+        ],
+        "parent": "root",
+        "internal_folder_path": "swarmstar.actions.communication"
+    },
+    "communication/ask_user_questions": {
+        "is_folder": false,
+        "type": "internal_action",
+        "name": "Ask User Questions",
+        "description": "Choose this action to ask questions to the user.",
+        "parent": "communication",
+        "internal_folder_path": "swarmstar.actions.communication.ask_user_questions"
+    }
+}

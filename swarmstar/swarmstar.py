@@ -2,7 +2,6 @@ from typing import List, Union
 import inspect
 
 from swarmstar.models import (
-    SwarmConfig,
     SwarmOperation,
     SpawnOperation,
     NodeEmbryo,
@@ -18,15 +17,13 @@ from swarmstar.utils.swarm_operations import (
     execute_action
 )
 from swarmstar.utils.data import MongoDBWrapper
-from swarmstar.utils.context import swarm_id_var
+from swarmstar.context import swarm_id_var
 
 db = MongoDBWrapper()
 
 class Swarmstar:
-    def __init__(self, swarm_config: SwarmConfig):
-        self.swarm_config = swarm_config
-        self.swarm_id = swarm_config.id
-        self._set_context()
+    def __init__(self, swarm_id: str):
+        self._set_context(swarm_id)
 
     def spawn(self, goal: str) -> SpawnOperation:
         """
@@ -37,7 +34,7 @@ class Swarmstar:
         :param goal: The goal of the new swarm
         :return: The root spawn operation for the new swarm
         """
-        self._create_swarmstar_space(self.swarm_id)
+        self._create_swarmstar_space(self.swarm_config.id)
 
         root_spawn_operation = SpawnOperation(
             node_embryo=NodeEmbryo(
@@ -127,6 +124,5 @@ class Swarmstar:
         admin["data"].remove(swarm_id)
         db.replace("admin", "swarms", {"data": admin["data"]})
 
-    def _set_context(self):
-        print(f"Setting context to {self.swarm_config.id}")
-        swarm_id_var.set(self.swarm_config.id)
+    def _set_context(self, swarm_id: str) -> None:
+        swarm_id_var.set(swarm_id)

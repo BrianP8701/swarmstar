@@ -1,7 +1,7 @@
 from importlib import import_module
 from typing import List, Union
 
-from swarmstar.models import SwarmConfig, SwarmOperation, ActionOperation, SwarmNode, ActionMetadata
+from swarmstar.models import SwarmOperation, ActionOperation, SwarmNode, ActionMetadata
 
 def execute_action(action_operation: ActionOperation) -> Union[SwarmOperation, List[SwarmOperation]]:
     """

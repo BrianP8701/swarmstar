@@ -9,6 +9,7 @@ from swarmstar.models import (
     MemoryMetadata
 )
 from swarmstar.actions.base_action import BaseAction
+from swarmstar.context import swarm_id_var
 
 UNDERSTAND_USER_BACKGROUND_PROMPT = (
     "The following is a general prompt for understanding the user's background. "
@@ -29,7 +30,12 @@ UNDERSTAND_USER_BACKGROUND_PROMPT = (
     "I'm just a software engineer (The person writing this prompt), but if the user is "
     "asking for a directive in some field outside software, ask them what level of "
     "involvement they want to have in decision making, things similar to what I wrote "
-    "above."
+    "above. It's important to note, we want to be as autonomous and bother the user as "
+    "little as possible. But given the weaknesses of AI, we need to know what the user "
+    "capabilities are so we know when it's more efficient to ask the user for help. "
+    "For example, if the user is a technical expert, we can ask them for help with "
+    "technical decisions. If the user is non-technical, we should avoid asking them "
+    "for help with technical decisions."
 )
 
 GENERATE_USER_PREFERENCES_PROMPT = (
@@ -53,13 +59,19 @@ GENERATE_USER_PREFERENCES_PROMPT = (
     "feedback on the design.\n\n"
     "Post-interview, distill the user's preferences into a succinct profile to guide their project "
     "involvement. This task may present unique scenarios beyond these examples; aim for clarity and "
-    "brevity."
+    "brevity. The profile should be a reference for the swarm to understand the user's preferences "
+    "and guide their involvement in the project. Its important to note we want to be as autonomous "
+    "and bother the user as little as possible. But given the weaknesses of AI, we need to know what "
+    "the user capabilities are so we know when it's more efficient to ask the user for help. For example, "
+    "if the user is a technical expert, we can ask them for help with technical decisions. If the user "
+    "is non-technical, we should avoid asking them for help with technical decisions. But we should "
+    "also include their preferences for involvement in the project."
 )
 
 class Action(BaseAction):
     def main(self) -> BlockingOperation:
         self.update_termination_policy("custom_action_termination")
-        self.add_value_to_execution_memory("__termination_handler__", "")
+        self.add_value_to_execution_memory("__termination_handler__", "generate_user_preferences")
         self.log({
             "role": "swarmstar",
             "content": "Spawning node to understand the user's background."
@@ -69,8 +81,7 @@ class Action(BaseAction):
             node_embryo=NodeEmbryo(
                 message=UNDERSTAND_USER_BACKGROUND_PROMPT,
                 action_id="specific/managerial/ask_user_questions",
-            ),
-            next_function_to_call="understand_user_background",
+            )
         )
 
     @BaseAction.termination_handler
@@ -106,13 +117,39 @@ class Action(BaseAction):
     @BaseAction.receive_completion_handler
     def save_user_preferences(self, completion: str):
         user_preferences = completion
+        
+        self.log({
+            "role": "ai",
+            "content": f"Received user preferences: {user_preferences}"
+        })
+
+        swarm_id = swarm_id_var.get()
         memory_metadata = MemoryMetadata(
+            id=f"{swarm_id}_memory/user/preferences",
             is_folder=False,
-            type="string",
+            type="internal_string",
             name="User Preferences",
             description="User preferences for project involvement",
             parent="user/"
         )
-        Memory.save(memory_metadata, user_preferences)
-    # TODO
+        MemoryMetadata.save(memory_metadata)
+        Memory.save(memory_metadata.id, user_preferences)
 
+        self.log({
+            "role": "swarmstar",
+            "content": "Saved user preferences to memory. Spawning decompose directive node."
+        })
+        self.report(
+            "Performed an introductory interview with the user and saved their "
+            "preferences for project involvement. This will be used to guide the "
+            "user's involvement in the project. Post interview, we generated the following "
+            f"user profile: {user_preferences}."
+        )
+
+        return SpawnOperation(
+            node_id=self.node.id,
+            node_embryo=NodeEmbryo(
+                message=UNDERSTAND_USER_BACKGROUND_PROMPT,
+                action_id="general/managerial/decompose_directive",
+            )
+        )

@@ -1,7 +1,6 @@
 import asyncio
 
 from swarmstar import Swarmstar
-from swarmstar.models import SwarmConfig
 
 
 
@@ -14,11 +13,10 @@ async def test_create_web_app():
             '3. A section where you can visualize the swarm\'s state'
             '4. A section where you can visualize the swarm\'s history'
         )
-        swarm_config = SwarmConfig.get("default_config")
-        print(swarm_config)
-        swarm_config.id = 'temp'
+
+        swarm_id = 'temp'
         
-        swarmstar = Swarmstar(swarm_config)
+        swarmstar = Swarmstar(swarm_id)
         root_spawn_operation = swarmstar.spawn_root(goal)
         
         operations_to_execute = await swarmstar.execute(root_spawn_operation)
@@ -36,9 +34,9 @@ async def test_create_web_app():
             if not operations_to_execute:
                 break
         
-        Swarmstar.delete_swarmstar_space(swarm_config.id)
+        Swarmstar.delete_swarmstar_space(swarm_id)
     except Exception as e:
-        Swarmstar.delete_swarmstar_space(swarm_config.id)
+        Swarmstar.delete_swarmstar_space(swarm_id)
         raise(e)
 
 

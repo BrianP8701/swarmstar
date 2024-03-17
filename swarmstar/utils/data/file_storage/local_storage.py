@@ -1,7 +1,7 @@
 import os
 import shutil
 
-from swarmstar.utils.context import root_path_var
+from swarmstar.context import root_path_var
 
 class LocalStorage:
     _instance = None

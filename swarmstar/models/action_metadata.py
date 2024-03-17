@@ -39,7 +39,6 @@ class ActionMetadata(BaseModel):
     description: str
     children_ids: Optional[List[str]] = None
     parent: Optional[str] = None
-    routable: bool = True
 
     @staticmethod
     def get(action_id: str) -> 'ActionMetadata':
@@ -49,17 +48,17 @@ class ActionMetadata(BaseModel):
                 raise ValueError(
                     f"This action id: `{action_id}` does not exist in external action space."
                 )
-        except Exception as e1:
+        except:
             try:
                 action_metadata = SwarmstarInternal.get_action_metadata(action_id)
                 if action_metadata is None:
                     raise ValueError(
                         f"This action id: `{action_id}` does not exist in internal action space."
-                    ) from e1
-            except Exception as e2:
+                    )
+            except:
                 raise ValueError(
                     f"This action id: `{action_id}` does not exist in both internal and external action spaces."
-                ) from e2
+                )
 
         type_mapping = {
             "internal_action": InternalAction,

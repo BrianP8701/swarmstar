@@ -4,7 +4,6 @@ import inspect
 
 from swarmstar.models import (
     BlockingOperation,
-    SwarmConfig,
     SwarmOperation,
 )
 

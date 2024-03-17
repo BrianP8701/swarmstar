@@ -11,7 +11,6 @@ from pydantic import BaseModel
 
 from swarmstar.models import BlockingOperation, ActionOperation
 from swarmstar.utils.ai import Instructor
-from swarmstar.models import SwarmConfig
 
 instructor = Instructor()
 

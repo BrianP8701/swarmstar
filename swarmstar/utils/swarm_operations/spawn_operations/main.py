@@ -11,7 +11,7 @@ from swarmstar.models import (
     SwarmState,
     SwarmOperation
 )
-from swarmstar.utils.context import swarm_id_var
+from swarmstar.context import swarm_id_var
 
 
 def spawn(spawn_operation: SpawnOperation) ->  List[ActionOperation]:

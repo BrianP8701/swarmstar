@@ -7,9 +7,9 @@ from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
-from swarmstar.models import BlockingOperation, NodeEmbryo, SpawnOperation
+from swarmstar.models import BlockingOperation, NodeEmbryo, SpawnOperation, Memory
 from swarmstar.actions.base_action import BaseAction
-
+from swarmstar.context import swarm_id_var
 
 class DecomposeDirectiveModel(BaseModel):
     scrap_paper: Optional[str] = Field(
@@ -42,10 +42,13 @@ class Action(BaseAction):
             "role": "swarmstar",
             "content": "Decomposing directive into actionable subdirectives.",
         })
+        swarm_id = swarm_id_var.get()
+        user_preferences = Memory.get(f"{swarm_id}_memory/user/preferences")
         
         system_message = (
             f"{DECOMPOSE_DIRECTIVE_INSTRUCTIONS}"
             f"\n\nDirective to decompose: \n`{self.node.message}`"
+            f"\n\nUser preferences: {user_preferences}"
         )
         messages = [
             {"role": "system", "content": system_message}

@@ -3,7 +3,7 @@ Simple termination terminates the given node and returns a TerminationOperation 
 """
 from typing import Union
 
-from swarmstar.models import SwarmConfig, TerminationOperation, SwarmNode
+from swarmstar.models import TerminationOperation, SwarmNode
 
 def terminate(termination_operation: TerminationOperation) -> Union[TerminationOperation, None]:
     node_id = termination_operation.node_id

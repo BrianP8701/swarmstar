@@ -27,9 +27,9 @@ class MemoryMetadata(BaseModel):
     id: Optional[str] = Field(default_factory=lambda: generate_uuid('memory'))
     is_folder: bool
     type: Literal[
-        "folder",
         "internal_folder",
         "internal_string",
+        "folder",
         "project_root_folder",
         "project_file_bytes",
         "string"
@@ -49,17 +49,17 @@ class MemoryMetadata(BaseModel):
                     f"This memory id: `{memory_id}` does not exist in external memory space."
                 )
     
-        except Exception as e1:
+        except:
             try:
                 memory_metadata = SwarmstarInternal.get_memory_metadata(memory_id)
                 if memory_metadata is None:
                     raise ValueError(
                         f"This memory id: `{memory_id}` does not exist in internal memory space."
-                    ) from e1
-            except Exception as e2:
+                    )
+            except:
                 raise ValueError(
                     f"This memory id: `{memory_id}` does not exist in both internal and external memory spaces."
-                ) from e2
+                )
 
         type_mapping = {
 
@@ -86,7 +86,7 @@ class MemoryMetadata(BaseModel):
             if memory_metadata.children_ids is not None:
                 for child_id in memory_metadata.children_ids:
                     child_metadata = SwarmstarInternal.get_memory_metadata(child_id)
-                    child_metadata.id = generate_uuid('memory')
+                    child_metadata.id = f"{swarm_id}_{child_metadata.id}"
                     memory_space.append(child_metadata)
                     MemoryMetadata.save(child_metadata)
                     recursive_helper(child_metadata)

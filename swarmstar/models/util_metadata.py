@@ -38,17 +38,17 @@ class UtilMetadata(BaseModel):
                 raise ValueError(
                     f"This util id: `{util_id}` does not exist in external util space."
                 )
-        except Exception as e1:
+        except:
             try:
                 util_metadata = SwarmstarInternal.get_util_metadata(util_id)
                 if util_metadata is None:
                     raise ValueError(
                         f"This util id: `{util_id}` does not exist in internal util space."
-                    ) from e1
-            except Exception as e2:
+                    )
+            except:
                 raise ValueError(
                     f"This util id: `{util_id}` does not exist in both internal and external util spaces."
-                ) from e2
+                )
 
         type_mapping = {
 

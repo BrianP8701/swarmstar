@@ -27,11 +27,11 @@ def move_json_to_sqlite3(json_path: str, sqlite3_db_path: str, table_name: str) 
         raise e
 
 
-json_path = 'swarmstar/actions/action_space.json'
+json_path = 'swarmstar/actions/action_metadata_tree.json'
 sqlite3_db_path = 'swarmstar/internal_metadata.sqlite3'
 
 if os.path.exists(sqlite3_db_path):
     os.remove(sqlite3_db_path)
 
-create_or_open_kv_db(sqlite3_db_path, "action_space")
-move_json_to_sqlite3(json_path, sqlite3_db_path, "action_space")
+create_or_open_kv_db(sqlite3_db_path, "action_metadata_tree")
+move_json_to_sqlite3(json_path, sqlite3_db_path, "action_metadata_tree")

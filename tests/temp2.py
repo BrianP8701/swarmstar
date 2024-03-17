@@ -1,7 +1,6 @@
 import asyncio
 
 from swarmstar import Swarmstar
-from swarmstar.models import SwarmConfig
 
 from swarmstar.utils.ai.openai import OpenAI
 from swarmstar.models import Memory, MemoryMetadata, MemoryFolder, MemoryNode
