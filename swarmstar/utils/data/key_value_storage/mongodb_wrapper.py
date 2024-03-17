@@ -2,6 +2,7 @@ from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 from dotenv import load_dotenv
 import os
+from bson.binary import Binary
 
 from swarmstar.utils.data.key_value_storage.abstract import KV_Database
 

@@ -35,7 +35,7 @@ class MemoryMetadata(BaseModel):
     name: str
     description: str
     parent: Optional[str] = None
-    children: Optional[List[str]] = None
+    children_ids: Optional[List[str]] = None
     context: Optional[Dict[str, Any]] = {}
 
     @staticmethod
@@ -67,10 +67,18 @@ class MemoryMetadata(BaseModel):
             return type_mapping[memory_type](**memory_metadata)
         return MemoryMetadata(**memory_metadata)
 
+    @staticmethod
+    def save(memory_metadata: 'MemoryMetadata') -> None:
+        db.insert("memory_space", memory_metadata.id, memory_metadata.model_dump())
+
+    @staticmethod
+    def delete(memory_id: str) -> None:
+        db.delete("memory_space", memory_id)
+    
 class MemoryFolder(MemoryMetadata):
     is_folder: Literal[True] = Field(default=True)
     type: Literal[
-        "folder"
+        "folder",
         "project_root_folder"
     ]
     name: str
@@ -94,9 +102,7 @@ Context for each type of memory
 
     folder: {}
 
-    project_root_folder: {
-        container_id: points to container in docker registry
-    }
+    project_root_folder: {}
         
     project_file_bytes: {
         file_path: Root to file from root of project

@@ -8,7 +8,11 @@ from .action_metadata import (
     InternalFolder,
 )
 
-from .memory_metadata import MemoryMetadata
+from .memory_metadata import (
+    MemoryMetadata,
+    MemoryFolder,
+    MemoryNode
+)
 from .memories import Memory
 
 from .swarm_node import (

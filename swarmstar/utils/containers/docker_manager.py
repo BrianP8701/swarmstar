@@ -28,13 +28,13 @@ class DockerContainerManager(ContainerManagement):
         # Transfer project into container
         try:            
             def recursive_helper(memory_id: str):
-                memory_metadata = MemoryMetadata.get_memory_metadata(project_root_id)
+                memory_metadata = MemoryMetadata.get_memory_metadata(memory_id)
                 if memory_metadata.is_folder:
-                    for child_id in memory_metadata.children:
+                    for child_id in memory_metadata.children_ids:
                         recursive_helper(child_id)
                 else:
                     memory_bytes = Memory.get_memory(memory_id)
-                    self.transfer_file_to_container(container.id, memory_metadata.name, memory_bytes)
+                    self.transfer_file_to_container(container.id, memory_metadata.context["file_path"], memory_bytes)
             
             recursive_helper(project_root_id)
 
@@ -88,7 +88,7 @@ class DockerContainerManager(ContainerManagement):
         
         # Transfer the tarball to the container
         try:
-            container.put_archive(path="/", tar_archive=file_like_object)
+            container.put_archive(path="/", data=file_like_object)
         except Exception as e:
             # Handle exceptions or log errors
             print(f"Error transferring file to container: {e}")

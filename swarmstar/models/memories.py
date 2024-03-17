@@ -12,10 +12,32 @@ class Memory:
         if metadata.is_folder:
             raise ValueError("Cannot get memory for a folder.")
         
-        memory_type = metadata.memory_type
+        memory_type = metadata.type
         handler_mapping = {
             "project_file_bytes": db.retrieve_bytes
         }
         
         handler = handler_mapping[memory_type]
-        return handler(memory_id)
+        return handler("memories", memory_id)
+
+    @staticmethod
+    def save(memory_id: str, memory: bytes) -> None:
+        metadata = MemoryMetadata.get_memory_metadata(memory_id)
+        memory_type = metadata.type
+        handler_mapping = {
+            "project_file_bytes": db.save_bytes
+        }
+        
+        handler = handler_mapping[memory_type]
+        handler("memories", memory_id, memory)
+
+    @staticmethod
+    def delete(memory_id: str) -> None:
+        metadata = MemoryMetadata.get_memory_metadata(memory_id)
+        memory_type = metadata.type
+        handler_mapping = {
+            "project_file_bytes": db.delete
+        }
+        
+        handler = handler_mapping[memory_type]
+        handler("memories", memory_id)

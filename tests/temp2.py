@@ -4,10 +4,22 @@ from swarmstar import Swarmstar
 from swarmstar.models import SwarmConfig
 
 from swarmstar.utils.ai.openai import OpenAI
+from swarmstar.models import Memory, MemoryMetadata, MemoryFolder, MemoryNode
 
-openai = OpenAI()
+project_root_memory = MemoryFolder(
+    id='project_root',
+    type='project_root_folder',
+    name='project_root',
+    children_ids=[
+        'child1',
+        'child2'
+    ],
+    description="This is the root folder of the project.",
+)
+MemoryMetadata.save(project_root_memory)
+print(project_root_memory.id)
+get = MemoryMetadata.get_memory_metadata('project_root')
 
-completion = asyncio.run(openai.completion([{"role": "system", "content": "say hi"}]))
+print(get)
 
-print(completion)
-print(type(completion))
+MemoryMetadata.delete('project_root')
