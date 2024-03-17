@@ -38,7 +38,7 @@ nav:
   - Concepts:
       - concepts/index.md
       - Swarm Nodes: concepts/swarm_nodes.md
-      - Spaces:
+      - Metadata Trees:
           - concepts/spaces/index.md
           - Action Space: concepts/spaces/action_space.md
           - Memory Space: concepts/spaces/memory_space.md
@@ -51,9 +51,6 @@ nav:
           - Failure Operations: concepts/swarm_operations/failure_operations.md
       - Swarm State: concepts/swarm_state.md
       - Swarm History: concepts/swarm_history.md
-  - Technical Overview:
-      - technical_overview/index.md
-      - Organization: technical_overview/organization.md
   - Usage:
       - usage/index.md
 

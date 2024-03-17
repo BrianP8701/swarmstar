@@ -29,8 +29,10 @@ class MemoryMetadata(BaseModel):
     type: Literal[
         "folder",
         "internal_folder",
+        "internal_string",
         "project_root_folder",
         "project_file_bytes",
+        "string"
     ]
     name: str
     description: str
@@ -41,7 +43,7 @@ class MemoryMetadata(BaseModel):
     @staticmethod
     def get(memory_id: str) -> 'MemoryMetadata':
         try:
-            memory_metadata = db.get("memory_space", memory_id)
+            memory_metadata = db.get("memory_metadata", memory_id)
             if memory_metadata is None:
                 raise ValueError(
                     f"This memory id: `{memory_id}` does not exist in external memory space."
@@ -68,12 +70,50 @@ class MemoryMetadata(BaseModel):
         return MemoryMetadata(**memory_metadata)
 
     @staticmethod
+    def clone(swarm_id: str) -> List[str]:
+        """
+        Copies the internal memory metadata tree with root id as swarm id
+        and UUIDs for all the children.
+        
+        Returns a list of all the memory metadata ids.
+        """
+        internal_memory_metadata_root = SwarmstarInternal.get_memory_metadata("root")
+        internal_memory_metadata_root.id = swarm_id
+        MemoryMetadata.save(internal_memory_metadata_root)
+        memory_space = [internal_memory_metadata_root]
+        
+        def recursive_helper(memory_metadata: 'MemoryMetadata'):
+            if memory_metadata.children_ids is not None:
+                for child_id in memory_metadata.children_ids:
+                    child_metadata = SwarmstarInternal.get_memory_metadata(child_id)
+                    child_metadata.id = generate_uuid('memory')
+                    memory_space.append(child_metadata)
+                    MemoryMetadata.save(child_metadata)
+                    recursive_helper(child_metadata)
+
+        recursive_helper(internal_memory_metadata_root)
+        return memory_space
+
+    @staticmethod
     def save(memory_metadata: 'MemoryMetadata') -> None:
-        db.insert("memory_space", memory_metadata.id, memory_metadata.model_dump())
+        db.insert("memory_metadata", memory_metadata.id, memory_metadata.model_dump())
 
     @staticmethod
     def delete(memory_id: str) -> None:
-        db.delete("memory_space", memory_id)
+        db.delete("memory_metadata", memory_id)
+
+    @staticmethod
+    def delete_external_memory_metadata_tree(swarm_id: str) -> None:
+        root_memory_metadata = MemoryMetadata.get(swarm_id)
+        
+        def recursive_helper(memory_metadata: 'MemoryMetadata'):
+            MemoryMetadata.delete(memory_metadata.id)
+            if memory_metadata.children_ids is not None:
+                for child_id in memory_metadata.children_ids:
+                    child_metadata = MemoryMetadata.get(child_id)
+                    recursive_helper(child_metadata)
+
+        recursive_helper(root_memory_metadata)
 
 class MemoryFolder(MemoryMetadata):
     is_folder: Literal[True] = Field(default=True)
@@ -97,15 +137,3 @@ class MemoryNode(MemoryMetadata):
     parent: str
     children_ids: Optional[List[str]] = Field(default=None)
     context: Optional[Dict[str, Any]] = {}
-
-"""
-Context for each type of memory
-
-    folder: {}
-
-    project_root_folder: {}
-        
-    project_file_bytes: {
-        file_path: Root to file from root of project
-    }
-"""

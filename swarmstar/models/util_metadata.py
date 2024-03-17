@@ -33,7 +33,7 @@ class UtilMetadata(BaseModel):
     @staticmethod
     def get(util_id: str) -> 'UtilMetadata':
         try:
-            util_metadata = db.get("util_space", util_id)
+            util_metadata = db.get("util_metadata", util_id)
             if util_metadata is None:
                 raise ValueError(
                     f"This util id: `{util_id}` does not exist in external util space."

@@ -99,25 +99,3 @@ class SQLiteWrapper(KV_Database):
         """, (category, key))
         count = cursor.fetchone()[0]
         return count > 0
-
-    def append(self, category, key, value):
-        try:
-            current_value = self.get(category, key)
-            if isinstance(current_value, list):
-                current_value.append(value)
-            else:
-                current_value = [current_value, value]
-            self.set(category, key, current_value)
-        except ValueError:
-            self.insert(category, key, [value])
-
-    def remove_from_list(self, category, key, value):
-        try:
-            current_value = self.get(category, key)
-            if isinstance(current_value, list):
-                current_value.remove(value)
-                self.set(category, key, current_value)
-            else:
-                raise ValueError(f"Value associated with key {key} in category {category} is not a list.")
-        except ValueError as e:
-            raise ValueError(f"Failed to remove value from list: {str(e)}")

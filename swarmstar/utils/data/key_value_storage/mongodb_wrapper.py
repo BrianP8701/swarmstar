@@ -1,5 +1,6 @@
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
+from pymongo import ReturnDocument
 from dotenv import load_dotenv
 import os
 from bson.binary import Binary
@@ -33,7 +34,7 @@ class MongoDBWrapper(KV_Database):
         except DuplicateKeyError:
             raise ValueError(f"A document with _id {key} already exists in collection {category}.")
 
-    def set(self, category, key, value):
+    def replace(self, category, key, value):
         try:
             collection = self.db[category]
             value.pop("id", None)  # Remove the _id field if it exists
@@ -109,53 +110,44 @@ class MongoDBWrapper(KV_Database):
         collection = self.db[category]
         return collection.count_documents({"_id": key}) > 0
 
-    def append(self, category, key, inner_key, value):
-        collection = self.db[category]
-        result = collection.find_one({"_id": key})
-        if result:
-            if inner_key not in result:
-                collection.update_one({"_id": key}, {"$set": {inner_key: []}})
-            collection.update_one({"_id": key}, {"$push": {inner_key: value}})
-        else:
-            self.insert(category, key, {inner_key: [value]})
-
-    def remove_from_list(self, category, key, value):
-        collection = self.db[category]
-        if collection.count_documents({"_id": key}) == 0:
-            raise ValueError(f"_id {key} not found in the collection {category}.")
-
-        result = collection.update_one({"_id": key}, {"$pull": {"data": value}})
-
-        if result.modified_count == 0:
-            raise ValueError(f"Value {value} not found in the list associated with _id {key}.")
-
-    def save_bytes(self, category, key, file_bytes):
+    def append_to_list(self, category, key, inner_key, value):
         """
-        Save binary data to a specified key.
+        Append a value to a list stored under a specified key. If the key does not exist, create a new list with the value.
 
         :param category: Collection name.
         :param key: Document key.
-        :param file_bytes: Binary data to save.
+        :param inner_key: Inner key of the list to append the value to.
+        :param value: Value to append to the list.
         """
         collection = self.db[category]
-        binary_data = Binary(file_bytes)
         try:
-            document = {"_id": key, "data": binary_data, "version": 1}
-            collection.insert_one(document)
-        except DuplicateKeyError:
-            raise ValueError(f"A document with _id {key} already exists in collection {category}.")
+            existing_document = collection.find_one({"_id": key})
+            if existing_document:
+                if type(existing_document[inner_key]) != list:
+                    raise ValueError(f"_id {key} exists in the collection {category} but is not a list.")
+                collection.find_one_and_update(
+                    {"_id": key},
+                    {"$push": {inner_key: value}},
+                    return_document=ReturnDocument.AFTER
+                )
+            else:
+                document = {"_id": key, inner_key: [value]}
+                collection.insert_one(document)
+        except Exception as e:
+            raise ValueError(f"Failed to append to list: {str(e)}")
 
-    def retrieve_bytes(self, category, key):
+    def remove_from_list(self, category, key, inner_key, value):
         """
-        Retrieve binary data stored under a specified key.
-
+        Remove a value from a list stored under a specified key.
+        
         :param category: Collection name.
         :param key: Document key.
-        :return: Binary data as bytes.
+        :param inner_key: Inner key of the list to remove the value from.
+        :param value: Value to remove from the list.
         """
         collection = self.db[category]
-        result = collection.find_one({"_id": key}, {"data": 1})
-        if result and "data" in result:
-            return result["data"]
-        else:
-            raise ValueError(f"_id {key} not found in the collection {category} or it does not have binary data.")
+        collection.find_one_and_update(
+            {"_id": key},
+            {"$pull": {inner_key: value}},
+            return_document=ReturnDocument.AFTER
+        )

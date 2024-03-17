@@ -44,7 +44,7 @@ class ActionMetadata(BaseModel):
     @staticmethod
     def get(action_id: str) -> 'ActionMetadata':
         try:
-            action_metadata = db.get("action_space", action_id)
+            action_metadata = db.get("action_metadata", action_id)
             if action_metadata is None:
                 raise ValueError(
                     f"This action id: `{action_id}` does not exist in external action space."

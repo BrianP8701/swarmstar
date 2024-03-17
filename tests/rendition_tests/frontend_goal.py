@@ -18,8 +18,8 @@ async def test_create_web_app():
         print(swarm_config)
         swarm_config.id = 'temp'
         
-        swarmstar = Swarmstar(swarm_config, goal)
-        root_spawn_operation = swarmstar.spawn_root()
+        swarmstar = Swarmstar(swarm_config)
+        root_spawn_operation = swarmstar.spawn_root(goal)
         
         operations_to_execute = await swarmstar.execute(root_spawn_operation)
 

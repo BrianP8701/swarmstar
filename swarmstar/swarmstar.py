@@ -7,7 +7,8 @@ from swarmstar.models import (
     SpawnOperation,
     NodeEmbryo,
     SwarmState,
-    SwarmHistory
+    SwarmHistory,
+    MemoryMetadata,
 )
 from swarmstar.utils.swarm_operations import (
     blocking,
@@ -17,7 +18,7 @@ from swarmstar.utils.swarm_operations import (
     execute_action
 )
 from swarmstar.utils.data import MongoDBWrapper
-from swarmstar.utils.context import root_path_var
+from swarmstar.utils.context import swarm_id_var
 
 db = MongoDBWrapper()
 
@@ -27,20 +28,24 @@ class Swarmstar:
         self.swarm_id = swarm_config.id
         self._set_context()
 
-    def spawn_root(self, goal: str) -> SpawnOperation:
+    def spawn(self, goal: str) -> SpawnOperation:
         """
-        Create the first spawn operation for the swarm.
+        Spawn a new swarm with the given goal.
+            - Creates initial swarmstar space
+            - Create and return the root spawn operation
+        
+        :param goal: The goal of the new swarm
+        :return: The root spawn operation for the new swarm
         """
-        db.insert("swarm_history", self.swarm_id, {"data": []})
-        db.insert("swarm_state", self.swarm_id, {"data": []})
-        SwarmConfig.save(self.swarm_config)
+        self._create_swarmstar_space(self.swarm_id)
+
         root_spawn_operation = SpawnOperation(
             node_embryo=NodeEmbryo(
                 action_id='swarmstar/actions/reasoning/decompose_directive',
                 message=goal
             )
         )
-        
+
         SwarmOperation.save(root_spawn_operation)
         return root_spawn_operation
 
@@ -60,14 +65,13 @@ class Swarmstar:
 
         if swarm_operation.operation_type in operation_mapping:
             try:
-                operation_func = operation_mapping[swarm_operation.operation_type]
+                operation_handler = operation_mapping[swarm_operation.operation_type]
                 
-                if swarm_operation.operation_type == "spawn":
-                    output = operation_func(self.swarm_id, swarm_operation)
-                elif inspect.iscoroutinefunction(operation_func):
-                    output = await operation_func(swarm_operation)
+                if inspect.iscoroutinefunction(operation_handler):
+                    output = await operation_handler(swarm_operation)
                 else:
-                    output = operation_func(swarm_operation)        
+                    output = operation_handler(swarm_operation)   
+     
             except Exception as e:
                 print(f"Error in execute_swarmstar_operation: {e}")
                 raise e
@@ -92,6 +96,19 @@ class Swarmstar:
 
         return output
 
+    def _create_swarmstar_space(self, swarm_id: str) -> None:
+        memory_space = MemoryMetadata.clone(swarm_id)
+        # TODO - Add action space and util space
+        swarmstar_space = {
+            "swarm_state": [],
+            "swarm_history": [],
+            "memory_space": memory_space,
+            "action_space": [],
+            "util_space": [],
+            "config": self.swarm_config.model_dump()
+        }
+        db.insert("admin", swarm_id, swarmstar_space)
+
     @staticmethod
     def delete_swarmstar_space(swarm_id: str) -> None:
         swarm_node_ids = SwarmState.get(swarm_id)
@@ -108,7 +125,8 @@ class Swarmstar:
         
         admin = db.get("admin", "swarms")
         admin["data"].remove(swarm_id)
-        db.set("admin", "swarms", admin)
+        db.replace("admin", "swarms", {"data": admin["data"]})
 
     def _set_context(self):
-        root_path_var.set(self.swarm_config.root_path)
+        print(f"Setting context to {self.swarm_config.id}")
+        swarm_id_var.set(self.swarm_config.id)

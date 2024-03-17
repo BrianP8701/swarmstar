@@ -25,7 +25,7 @@ def clear_swarm_space(db_name: str, mongodb_uri: str) -> None:
             db[collection_name].delete_many({"_id": {"$ne": "default_config"}})
     
     empty_admin = {"data": []}
-    mdb.set("admin", "swarms", empty_admin)
+    mdb.replace("admin", "swarms", empty_admin)
 
     print("Cleared all documents from all collections except 'config'.")
 

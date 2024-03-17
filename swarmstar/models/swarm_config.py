@@ -11,7 +11,6 @@ db = MongoDBWrapper()
 
 class SwarmConfig(BaseModel):
     id: str
-    root_path: str = None # Set this on spawn
     platform: Literal["mac", "azure"]
 
     @model_serializer
@@ -19,9 +18,9 @@ class SwarmConfig(BaseModel):
         return {k: v for k, v in dict(self).items() if v is not None}
 
     @staticmethod
-    def add(swarm_config: 'SwarmConfig') -> None:
+    def save(swarm_config: 'SwarmConfig') -> None:
         db.insert("config", swarm_config.id, swarm_config.model_dump())
-        db.append("admin", "swarms", "data", swarm_config.id)
+        db.append_to_list("admin", "swarms", "data", swarm_config.id)
 
     @staticmethod
     def get(swarm_config_id: str) -> 'SwarmConfig':
