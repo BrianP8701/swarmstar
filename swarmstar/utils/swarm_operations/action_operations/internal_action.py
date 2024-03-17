@@ -8,8 +8,8 @@ def execute_action(action_operation: ActionOperation) -> Union[SwarmOperation, L
     This handles actions that are internal to swarmstar.
     """
     node_id = action_operation.node_id
-    node = SwarmNode.get_swarm_node(node_id)
-    action_metadata = ActionMetadata.get_action_metadata(node.action_id)
+    node = SwarmNode.get(node_id)
+    action_metadata = ActionMetadata.get(node.action_id)
 
     internal_action_path = action_metadata.internal_action_path
     action_class = getattr(import_module(internal_action_path), "Action")

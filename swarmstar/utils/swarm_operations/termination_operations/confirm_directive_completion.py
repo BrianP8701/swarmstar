@@ -22,7 +22,7 @@ from swarmstar.models import (
 
 def terminate(termination_operation: TerminationOperation) -> Union[TerminationOperation, None]:
     node_id = termination_operation.node_id
-    target_node = SwarmNode.get_swarm_node(node_id)
+    target_node = SwarmNode.get(node_id)
 
     if target_node.action_id != "swarmstar/actions/reasoning/decompose_directive":
         raise ValueError("Review directive termination policy can only be applied to nodes of type 'decompose directive'") 
@@ -30,7 +30,7 @@ def terminate(termination_operation: TerminationOperation) -> Union[TerminationO
     mission_completion = False
 
     for child_id in target_node.children_ids:
-        child = SwarmNode.get_swarm_node(child_id)
+        child = SwarmNode.get(child_id)
         if child.alive:
             return None
         if child.action_id == "swarmstar/actions/reasoning/confirm_directive_completion":
@@ -50,7 +50,7 @@ def terminate(termination_operation: TerminationOperation) -> Union[TerminationO
         if target_node.parent_id is None:
             return None
         else:
-            parent_node = SwarmNode.get_swarm_node(target_node.parent_id)
+            parent_node = SwarmNode.get(target_node.parent_id)
             return TerminationOperation(
                 terminator_node_id=node_id,
                 node_id=parent_node.id,

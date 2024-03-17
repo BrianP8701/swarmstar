@@ -85,7 +85,7 @@ class BaseAction(metaclass=ErrorHandlingMeta):
         pass        
     
     def get_node(self) -> SwarmNode:
-        return SwarmNode.get_swarm_node(self.node.id)
+        return SwarmNode.get(self.node.id)
     
     def report(self, report: str):
         node = self.get_node()

@@ -14,7 +14,7 @@ def terminate(termination_operation: TerminationOperation) -> Union[TerminationO
     }
 
     node_id = termination_operation.node_id
-    node = SwarmNode.get_swarm_node(node_id)
+    node = SwarmNode.get(node_id)
     termination_policy = node.termination_policy
 
     if termination_policy not in termination_policy_map:

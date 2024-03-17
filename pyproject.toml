@@ -27,7 +27,6 @@ coverage = "^7.4.2"
 mkdocs-material = {extras = ["imaging"], version = "^9.5.9"}
 mkdocs = "^1.5.3"
 
-[tool.poetry.group.test-docs.dependencies]
 
 [build-system]
 requires = ["poetry-core"]

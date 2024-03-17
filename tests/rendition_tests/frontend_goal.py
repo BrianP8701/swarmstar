@@ -14,7 +14,7 @@ async def test_create_web_app():
             '3. A section where you can visualize the swarm\'s state'
             '4. A section where you can visualize the swarm\'s history'
         )
-        swarm_config = SwarmConfig.get_swarm_config("default_config")
+        swarm_config = SwarmConfig.get("default_config")
         print(swarm_config)
         swarm_config.id = 'temp'
         

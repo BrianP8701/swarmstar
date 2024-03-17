@@ -123,7 +123,7 @@ class Action(BaseAction):
                         "in parallel and determining if it's subdirective is complete.")
         })
 
-        decompose_directive_node = SwarmNode.get_swarm_node(self.node.parent_id)
+        decompose_directive_node = SwarmNode.get(self.node.parent_id)
         branch_head_node_ids = decompose_directive_node.children_ids
         branch_head_node_ids.remove(self.node.id)
         self.add_value_to_execution_memory("branch_head_node_ids_under_review", branch_head_node_ids)
@@ -134,7 +134,7 @@ class Action(BaseAction):
         confirm_completion_operations = []
         for node_id in branch_head_node_ids:
             this_branch_reports_str = "\n".join(branch_reports[node_id])
-            this_branch_directive = SwarmNode.get_swarm_node(node_id).message
+            this_branch_directive = SwarmNode.get(node_id).message
             
             system_message = (
                 f"{confirm_directive_completion_INSTRUCTIONS}"
@@ -239,10 +239,10 @@ class Action(BaseAction):
         """
         branch_head_node_id = context["branch_head_node_id"]
         log_index_key = context["log_index_key"]
-        branch_head_node = SwarmNode.get_swarm_node(branch_head_node_id)
+        branch_head_node = SwarmNode.get(branch_head_node_id)
         branch_directive = branch_head_node.message
         reports = self.node.execution_memory["branch_reports"][branch_head_node_id]
-        terminator_node = SwarmNode.get_swarm_node(terminator_node_id)
+        terminator_node = SwarmNode.get(terminator_node_id)
         question_answers = terminator_node.report
         
         self.log({
@@ -292,11 +292,11 @@ class Action(BaseAction):
         all_branch_reports = []
         for branch_head_node_id, reports in self.node.execution_memory["branch_reports"].items():
             reports_str = "\n".join(reports)
-            branch_directive = SwarmNode.get_swarm_node(branch_head_node_id).message
+            branch_directive = SwarmNode.get(branch_head_node_id).message
             all_branch_reports.append(f"Branch directive: {branch_directive}\n\nBranch reports:\n{reports_str}\n\n")
             
         reports_str = "\n\n".join(all_branch_reports)
-        overarching_directive = SwarmNode.get_swarm_node(self.node.parent_id).message
+        overarching_directive = SwarmNode.get(self.node.parent_id).message
         system_message = (
             f"{confirm_directive_completion_INSTRUCTIONS}"
             f"\n\nOverarching directive:\n{overarching_directive}"
@@ -366,7 +366,7 @@ class Action(BaseAction):
             asking more questions or making a final decision on the overarching directive's 
             completion.
         """
-        terminator_node = SwarmNode.get_swarm_node(terminator_node_id)
+        terminator_node = SwarmNode.get(terminator_node_id)
         question_answers = terminator_node.report
         execution_memory = self.get_node().execution_memory
         overarching_directive_question_answers = (
@@ -385,13 +385,13 @@ class Action(BaseAction):
         all_branch_reports = []
         for branch_head_node_id, reports in self.node.execution_memory["branch_reports"].items():
             reports_str = "\n".join(reports)
-            branch_directive = SwarmNode.get_swarm_node(branch_head_node_id).message
+            branch_directive = SwarmNode.get(branch_head_node_id).message
             all_branch_reports.append(f"Branch directive: {branch_directive}\n\nBranch reports:\n{reports_str}\n\n")
         reports_str = "\n\n".join(all_branch_reports)
         
         system_message = (
             f"{ConfirmDirectiveModel}"
-            f"\n\nOverarching directive:\n{SwarmNode.get_swarm_node(self.node.parent_id).message}"
+            f"\n\nOverarching directive:\n{SwarmNode.get(self.node.parent_id).message}"
             f"\n\nFollowing reports are from branches which pursued subdirectives derived from the overarching directive."
             f"\n\nBranch reports:\n{reports_str}"
             f"\n\nAnswers to questions:\n{overarching_directive_question_answers}"
@@ -417,12 +417,12 @@ class Action(BaseAction):
         all_branch_reports = []
         for branch_head_node_id, reports in self.node.execution_memory["branch_reports"].items():
             reports_str = "\n".join(reports)
-            branch_directive = SwarmNode.get_swarm_node(branch_head_node_id).message
+            branch_directive = SwarmNode.get(branch_head_node_id).message
             all_branch_reports.append(f"Branch directive: {branch_directive}\n\nBranch reports:\n{reports_str}\n\n")
         reports_str = "\n\n".join(all_branch_reports)
         reports_str += f"\n\n{overarching_directive_question_answers}"
         
-        decompose_directive_node = SwarmNode.get_swarm_node(self.node.parent_id)
+        decompose_directive_node = SwarmNode.get(self.node.parent_id)
         subdirectives = decompose_directive_node.report
         
         system_message = (
@@ -452,7 +452,7 @@ class Action(BaseAction):
             "role": "ai",
             "content": completion.content
         })
-        decompose_directive_node = SwarmNode.get_swarm_node(self.node.parent_id)
+        decompose_directive_node = SwarmNode.get(self.node.parent_id)
         if decompose_directive_node.context:
             decompose_directive_node.context["consolidated_reports"] = completion
         else:
@@ -542,7 +542,7 @@ class Action(BaseAction):
                 all leaf nodes. Also stops at decompose directive nodes.
             """
             
-            node = SwarmNode.get_swarm_node(node_id)
+            node = SwarmNode.get(node_id)
             if node.action_id == "swarmstar/actions/reasoning/decompose_directive":
                 branch_reports[head_node_id].append(node.context["consolidated_reports"])
             elif not node.children_ids:

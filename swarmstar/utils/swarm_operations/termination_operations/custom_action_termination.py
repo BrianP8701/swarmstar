@@ -17,7 +17,7 @@ def terminate(termination_operation: TerminationOperation) -> Union[TerminationO
     node_id = termination_operation.node_id
     context = termination_operation.context
 
-    target_node = SwarmNode.get_swarm_node(node_id)
+    target_node = SwarmNode.get(node_id)
     termination_handler = target_node.execution_memory.get("__termination_handler__")
     
     if termination_handler is not None:

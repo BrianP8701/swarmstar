@@ -32,13 +32,9 @@ class SwarmNode(BaseModel):
     context: Optional[Dict[str, Any]] = {}
 
     @staticmethod
-    def insert_swarm_node(node: 'SwarmNode') -> None:
+    def save(node: 'SwarmNode') -> None:
         db.insert("swarm_nodes", node.id, node.model_dump())
 
     @staticmethod
-    def update_swarm_node(node: 'SwarmNode') -> None:
-        db.update("swarm_nodes", node.id, node.model_dump())
-
-    @staticmethod
-    def get_swarm_node(node_id: str) -> 'SwarmNode':
+    def get(node_id: str) -> 'SwarmNode':
         return SwarmNode.model_validate(db.get("swarm_nodes", node_id))

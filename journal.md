@@ -2188,9 +2188,9 @@ the memory space contains 4 root level folders:
 - internet scraped stuff - stuff we gathered from searching internet, docs, code etc.
 
 
-Implement the memory storage system using MongoDB, including the metadata tree and retrieval methods.
+~~Implement the memory storage system using MongoDB, including the metadata tree and retrieval methods.~~
 Develop the container management system using Docker, incorporating the LLM's decision-making process for determining project language and container setup.
-Establish a mechanism for moving files between MongoDB and containers, following the folder structure defined in the metadata tree.
+~~Establish a mechanism for moving files between MongoDB and containers, following the folder structure defined in the metadata tree.~~
 Integrate package manager for dependency management within the containers depending on the project.
 Design the debugging process for the LLM to identify and resolve errors in the code.
 Implement the timer functionality to kill inactive containers and optimize resource usage.
@@ -2199,3 +2199,10 @@ Configure the Docker registry to store container images with environment-specifi
 Research and test hosting and deployment options for apps created by the AI, focusing on single-user, free solutions.
 Create the four root-level folders in the memory space and define their purposes and usage guidelines.
 
+
+# Overarching Directive Categories
+
+1. Non technical user asks for an app/plugin to be created for them. It is not meant to be scalable. The user only communicates what features they want and gives feedback. The swarm is responsible for choosing stack/architecture, building, deploying and iterating on user feedback.
+2. Technical user asks swarm to add a feature to his repository. The swarm tries to be as autonomous as possible, but will ask the user questions about his system, design choices, patterns to follow etc if needed. How to test something, if it can add something, approval for its choices.
+3. Technical user asks swarm to create a scalable product, or something more deeply technical and cutting edge. The user is involved in requestiong features, choosing direction and makes all high level choices. The swarm can make suggestions, but it must let the user make all choices. the swarm builds, and might ask the user for help on creating abstractions or system design choices. the user might not know where the project might go as a whole. it might be an iterative process, constantly ongoing and adding onto the directives. before concluding completion the swarm must always ask the user if he is happy. after a swarm has determined completion it should not be deleted. if the user wants to continue adding or changing things in the future it may come back, and the previous memory space will need to be reused.
+4. Having swarmstar work on swarmstar. it must refer to me for any decisions it makes for approval, and it will need to understand itself deeply. i think this is a good place to start. if i can get swarmstar to deeply understand itself and build on itself, we should be able to get swarmstar to apply the same principles to another repository, and have it upgrade or change itself as needed during when this happens.

@@ -20,7 +20,6 @@ from swarmstar.utils.data import MongoDBWrapper
 from swarmstar.models.internal_metadata import SwarmstarInternal
 
 db = MongoDBWrapper()
-ss = SwarmstarInternal()
 
 class UtilMetadata(BaseModel):
     id: Optional[str] = Field(default_factory=lambda: generate_uuid('util'))
@@ -32,7 +31,7 @@ class UtilMetadata(BaseModel):
     metadata: Dict[str, str]
 
     @staticmethod
-    def get_util_metadata(util_id: str) -> 'UtilMetadata':
+    def get(util_id: str) -> 'UtilMetadata':
         try:
             util_metadata = db.get("util_space", util_id)
             if util_metadata is None:
@@ -41,7 +40,7 @@ class UtilMetadata(BaseModel):
                 )
         except Exception as e1:
             try:
-                util_metadata = ss.get_internal_util_metadata(util_id)
+                util_metadata = SwarmstarInternal.get_util_metadata(util_id)
                 if util_metadata is None:
                     raise ValueError(
                         f"This util id: `{util_id}` does not exist in internal util space."

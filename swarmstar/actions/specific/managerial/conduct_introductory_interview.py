@@ -76,7 +76,7 @@ class Action(BaseAction):
 
     @BaseAction.termination_handler
     def analyze_user_background(self, terminator_node_id: str, context: Dict[str, Any]):
-        terminator_node = SwarmNode.get_swarm_node(terminator_node_id)
+        terminator_node = SwarmNode.get(terminator_node_id)
         post_interview_report = terminator_node.report
         self.add_value_to_execution_memory("post_interview_report", post_interview_report)
         

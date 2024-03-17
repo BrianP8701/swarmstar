@@ -55,11 +55,11 @@ class SwarmOperation(BaseModel):
         return super().model_validate(data, **kwargs)
 
     @staticmethod
-    def insert_swarm_operation(operation: SwarmOperation) -> None:
+    def save(operation: SwarmOperation) -> None:
         db.insert("swarm_operations", operation.id, operation.model_dump())
 
     @staticmethod
-    def get_swarm_operation(operation_id: str) -> SwarmOperation:
+    def get(operation_id: str) -> SwarmOperation:
         operation = db.get("swarm_operations", operation_id)
         if operation is None:
             raise ValueError(f"Operation with id {operation_id} not found")
@@ -85,10 +85,6 @@ class SwarmOperation(BaseModel):
                 raise e
         else:
             raise ValueError(f"Operation type {operation_type} not recognized")
-
-    @staticmethod
-    def update_swarm_operation(operation: SwarmOperation) -> None:
-        db.set("swarm_operations", operation.id, operation.model_dump())
 
 
 class BlockingOperation(SwarmOperation):

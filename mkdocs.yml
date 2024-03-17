@@ -38,15 +38,17 @@ nav:
   - Concepts:
       - concepts/index.md
       - Swarm Nodes: concepts/swarm_nodes.md
+      - Spaces:
+          - concepts/spaces/index.md
+          - Action Space: concepts/spaces/action_space.md
+          - Memory Space: concepts/spaces/memory_space.md
+          - Util Space: concepts/spaces/util_space.md
       - Swarm Operations:
           - concepts/swarm_operations/index.md
           - Spawn Operations: concepts/swarm_operations/spawn_operations.md
           - Termination Operations: concepts/swarm_operations/termination_operations.md
           - Blocking Operations: concepts/swarm_operations/blocking_operations.md
           - Failure Operations: concepts/swarm_operations/failure_operations.md
-      - Action Space: concepts/action_space.md
-      - Memory Space: concepts/memory_space.md
-      - Util Space: concepts/util_space.md
       - Swarm State: concepts/swarm_state.md
       - Swarm History: concepts/swarm_history.md
   - Technical Overview:
@@ -59,6 +61,7 @@ markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true
   - pymdownx.superfences
+  - tables
 
 plugins:
   - social

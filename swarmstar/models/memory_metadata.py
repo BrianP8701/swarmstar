@@ -22,13 +22,13 @@ from swarmstar.utils.data import MongoDBWrapper
 from swarmstar.models.internal_metadata import SwarmstarInternal
 
 db = MongoDBWrapper()
-ss_internal = SwarmstarInternal()
 
 class MemoryMetadata(BaseModel):
     id: Optional[str] = Field(default_factory=lambda: generate_uuid('memory'))
     is_folder: bool
     type: Literal[
         "folder",
+        "internal_folder",
         "project_root_folder",
         "project_file_bytes",
     ]
@@ -39,7 +39,7 @@ class MemoryMetadata(BaseModel):
     context: Optional[Dict[str, Any]] = {}
 
     @staticmethod
-    def get_memory_metadata(memory_id: str) -> 'MemoryMetadata':
+    def get(memory_id: str) -> 'MemoryMetadata':
         try:
             memory_metadata = db.get("memory_space", memory_id)
             if memory_metadata is None:
@@ -49,7 +49,7 @@ class MemoryMetadata(BaseModel):
     
         except Exception as e1:
             try:
-                memory_metadata = ss_internal.get_internal_memory_metadata(memory_id)
+                memory_metadata = SwarmstarInternal.get_memory_metadata(memory_id)
                 if memory_metadata is None:
                     raise ValueError(
                         f"This memory id: `{memory_id}` does not exist in internal memory space."
@@ -74,12 +74,13 @@ class MemoryMetadata(BaseModel):
     @staticmethod
     def delete(memory_id: str) -> None:
         db.delete("memory_space", memory_id)
-    
+
 class MemoryFolder(MemoryMetadata):
     is_folder: Literal[True] = Field(default=True)
     type: Literal[
         "folder",
-        "project_root_folder"
+        "internal_folder",
+        "project_root_folder",
     ]
     name: str
     description: str

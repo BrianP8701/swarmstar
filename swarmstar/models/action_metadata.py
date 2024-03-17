@@ -27,7 +27,6 @@ from swarmstar.utils.data import MongoDBWrapper
 from swarmstar.models.internal_metadata import SwarmstarInternal
 
 db = MongoDBWrapper()
-ss_internal = SwarmstarInternal()
 
 class ActionMetadata(BaseModel):
     id: Optional[str] = Field(default_factory=lambda: generate_uuid('action'))
@@ -43,7 +42,7 @@ class ActionMetadata(BaseModel):
     routable: bool = True
 
     @staticmethod
-    def get_action_metadata(action_id: str) -> 'ActionMetadata':
+    def get(action_id: str) -> 'ActionMetadata':
         try:
             action_metadata = db.get("action_space", action_id)
             if action_metadata is None:
@@ -52,7 +51,7 @@ class ActionMetadata(BaseModel):
                 )
         except Exception as e1:
             try:
-                action_metadata = ss_internal.get_internal_action_metadata(action_id)
+                action_metadata = SwarmstarInternal.get_action_metadata(action_id)
                 if action_metadata is None:
                     raise ValueError(
                         f"This action id: `{action_id}` does not exist in internal action space."

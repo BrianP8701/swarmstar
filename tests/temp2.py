@@ -18,7 +18,7 @@ project_root_memory = MemoryFolder(
 )
 MemoryMetadata.save(project_root_memory)
 print(project_root_memory.id)
-get = MemoryMetadata.get_memory_metadata('project_root')
+get = MemoryMetadata.get('project_root')
 
 print(get)
 

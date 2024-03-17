@@ -33,7 +33,7 @@ class Swarmstar:
         """
         db.insert("swarm_history", self.swarm_id, {"data": []})
         db.insert("swarm_state", self.swarm_id, {"data": []})
-        SwarmConfig.add_swarm_config(self.swarm_config)
+        SwarmConfig.save(self.swarm_config)
         root_spawn_operation = SpawnOperation(
             node_embryo=NodeEmbryo(
                 action_id='swarmstar/actions/reasoning/decompose_directive',
@@ -41,7 +41,7 @@ class Swarmstar:
             )
         )
         
-        SwarmOperation.insert_swarm_operation(root_spawn_operation)
+        SwarmOperation.save(root_spawn_operation)
         return root_spawn_operation
 
     async def execute(self, swarm_operation: SwarmOperation) -> Union[List[SwarmOperation], None]:
@@ -85,20 +85,20 @@ class Swarmstar:
 
         for operation in output:
             # Insert new operations into the swarm operations collection
-            SwarmOperation.insert_swarm_operation(operation)
+            SwarmOperation.save(operation)
 
         # Add executed operation to swarm history
-        SwarmHistory.add_swarm_operation_id_to_swarm_history(self.swarm_config.id, swarm_operation.id)
+        SwarmHistory.append(self.swarm_config.id, swarm_operation.id)
 
         return output
 
     @staticmethod
     def delete_swarmstar_space(swarm_id: str) -> None:
-        swarm_node_ids = SwarmState.get_swarm_state(swarm_id)
+        swarm_node_ids = SwarmState.get(swarm_id)
         for swarm_node_id in swarm_node_ids:
             db.delete("swarm_nodes", swarm_node_id)
         
-        swarm_operation_ids = SwarmHistory.get_swarm_history(swarm_id)
+        swarm_operation_ids = SwarmHistory.get(swarm_id)
         for swarm_operation_id in swarm_operation_ids:
             db.delete("swarm_operations", swarm_operation_id)
         

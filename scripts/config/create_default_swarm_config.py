@@ -17,7 +17,7 @@ def create_default_swarm_config():
         mongodb_db_name=mongodb_db_name,
     )
     
-    SwarmConfig.add_swarm_config(swarm_config)
+    SwarmConfig.save(swarm_config)
 
 create_default_swarm_config()
     

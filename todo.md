@@ -1,13 +1,12 @@
 # TODO List
 
-# Overarching Directive Categories
 
-1. Non technical user asks for an app/plugin to be created for them. It is not meant to be scalable. The user only communicates what features they want and gives feedback. The swarm is responsible for choosing stack/architecture, building, deploying and iterating.
-2. Technical user asks swarm to add a feature to his repository. The swarm tries to be autonomous as possible, but will ask the user questions about his system, design choices, patterns to follow etc if needed. How to test something, if it can add something, approval for its choices.
-3. Technical user asks swarm to create a scalable product, or something more deeply technical and cutting edge. The user is involved in requestiong features, choosing direction and makes all high level choices. The swarm can make suggestions, but it must let the user make all choices. the swarm builds, and might ask the user for help on creating abstractions or system design choices. the user might not know where the project might go as a whole. it might be an iterative process, constantly ongoing and adding onto the directives. before concluding completion the swarm must always ask the user if he is happy. after a swarm has determined completion it should not be deleted. if the user wants to continue adding or changing things in the future it may come back, and the previous memory space will need to be reused.
-4. Having swarmstar work on swarmstar. it must refer to me for any decisions it makes for approval, and it will need to understand itself deeply. i think this is a good place to start. if i can get swarmstar to deeply understand itself and build on itself, we should be able to get swarmstar to apply the same principles to another repository, and have it upgrade or change itself as needed during when this happens.
 
 # 3/14/24 - 
+- [x] create containers and utils for swarm to create environments and execute code, create terminal sessions
+- [ ] Implement the timer functionality to kill inactive containers and optimize resource usage.
+- [ ] Set up a system to propagate code changes from MongoDB to active terminal sessions.
+- [ ]
 - [ ] web host frontend, deploy backend to serverless
 - [ ] share constants
 - [ ] metafy repo/data
@@ -30,6 +29,12 @@ Actions to implement:
 - [ ] get text from web
 - [ ] get answers from web
 
+Utils to implement:
+- [ ] abstract syntax tree parsing functions (abstract interface then python implementation)
+- [ ] various external data apis (github, gmail, google docs etc)
+- [ ] search apis
+- [ ] web scrapers
+- [ ] 
 
 ## 1/18/24 - 
 - [x] test manager
@@ -40,7 +45,7 @@ Actions to implement:
 - [x] integration test with termination
 - [x] add action router
 - [x] define all pydantic schemas and integrate them in the swarm architecture
-- [ ] get new swarm architecture working locally across the entire lifecycle of a swarm
+- [x] get new swarm architecture working locally across the entire lifecycle of a swarm
 - [ ] automate the process of manually adding swarm actions
 - [ ] create action creator
 - [half did this?? i did it manually. impossible to have swarm do stuff without thes operations] use new swarm architecture to add all cloud storage and file storage operations
@@ -51,35 +56,35 @@ Actions to implement:
 - [x] add configuration for coder layer with data sources and custom router functions
 - [x] add pydantic models to action space
 - [x] replace all tools with instructor
-- [ ] make executor do validation
+- [x] make executor do validation
 - [x] decouple openai calls from actions
-- [ ] add ACI spin up for external python functions with different dependencies
-- [ ] build memory space
+- [irrelevant] add ACI spin up for external python functions with different dependencies
+- [x] build initial memory space
 - [ ] add config functions to add custom data to memory and action space
 - [ ] test with multiple enviroments
 - [x] create web app interface for swarm with user input to threads
 - [ ] add retrieval agent
 - [ ] have swarm add more specifc file operation actions
 - [ ] have swarm add github actions
-- [ ] add multi platform support for autonomous package installation between swarm frames
-- [ ] action space merging
+- [irrelevant] add multi platform support for autonomous package installation between swarm frames
+- [!!!] action space merging
 - [x] platform interoperable user interaction
-- [ ] autonomous action/memory space optimization
-- [ ] visualize the memory and action space
+- [!!!] autonomous action/memory space optimization
+- [!!!] visualize the memory and action space
 - [x] visualize the swarm state
 - [x] ensure consistency in operations that write to swarm space
 - [x] add feature to pause and resume the swarm
 - [ ] allow devs to implement their own env configuration
 - [ ] have swarm fill in util space metadata
 - [ ] have swarm fill in util space consumer metadata
-- [ ] correct all swarm updates and spawn operation
-- [ ] add choice for user to customize question router mode... add question route first
+- [x] correct all swarm updates and spawn operation
+- [x] add choice for user to customize question router mode... add question route first
 - [ ] add python coder
 - [ ] add python code tester (this gets a lot more complicated)
-- [ ] differentiate between actions meant to be routed to and actions that are not supposed to be callable by action router
+- [x] differentiate between actions meant to be routed to and actions that are not supposed to be callable by action router
 - [ ] add slider and stuff to see the swarm state's evolution through time
 - [ ] add options to choose mode to view swarm tree (directive box, or not, other options etc)
-- [ ] make node logging use append to list with versioning instead of update_node
+- [x] make node logging use append to list with versioning instead of update_node
 
 Cloud Optimizations:
 - [x] in cloud functions decouple blocking openai calls. decouple all blocking calls in cloud functions. or look into durable azure functions

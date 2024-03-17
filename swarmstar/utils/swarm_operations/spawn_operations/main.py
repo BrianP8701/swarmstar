@@ -32,7 +32,7 @@ def _spawn_node(swarm_id: str, spawn_operation: SpawnOperation) -> SwarmNode:
     parent_id = spawn_operation.parent_node_id
     node_embryo = spawn_operation.node_embryo
     action_id = node_embryo.action_id
-    action_metadata = ActionMetadata.get_action_metadata(action_id)
+    action_metadata = ActionMetadata.get(action_id)
     termination_policy = action_metadata.termination_policy
     
     node = SwarmNode(
@@ -45,8 +45,8 @@ def _spawn_node(swarm_id: str, spawn_operation: SpawnOperation) -> SwarmNode:
         context=node_embryo.context
     )
 
-    SwarmNode.insert_swarm_node(node)
-    SwarmState.add_node_id_to_swarm_state(swarm_id, node.id)
+    SwarmNode.save(node)
+    SwarmState.append(swarm_id, node.id)
     
     return node
 
@@ -56,7 +56,7 @@ def _update_parent(spawn_operation: SpawnOperation, node: SwarmNode) -> None:
     """
     parent_id = spawn_operation.parent_node_id
     if parent_id is not None:
-        parent_node = SwarmNode.get_swarm_node(parent_id)
+        parent_node = SwarmNode.get(parent_id)
         parent_node.children_ids.append(node.id)
         SwarmNode.update_swarm_node(parent_node)
 

@@ -7,12 +7,12 @@ from swarmstar.models import SwarmConfig, TerminationOperation, SwarmNode
 
 def terminate(termination_operation: TerminationOperation) -> Union[TerminationOperation, None]:
     node_id = termination_operation.node_id
-    node = SwarmNode.get_swarm_node(node_id)
+    node = SwarmNode.get(node_id)
     node.alive = False
     SwarmNode.update_swarm_node(node)
 
     try:
-        parent_node = SwarmNode.get_swarm_node(node.parent_id)
+        parent_node = SwarmNode.get(node.parent_id)
     except:
         return None
 
