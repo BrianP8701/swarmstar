@@ -19,7 +19,7 @@ def test_instructor_completion():
         args={
             "messages": [
                 {
-                    "role": "system",
+                    "role": "swarmstar",
                     "content": "Just output 2 short random directives. This is testing.",
                 }
             ],

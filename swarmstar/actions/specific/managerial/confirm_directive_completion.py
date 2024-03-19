@@ -117,11 +117,7 @@ class Action(BaseAction):
             directive nodes. Use an LLM to determine if each branch has completed it's assigned
             subdirective. It also may choose to ask questions to make a better decision.
         """
-        log_index_key = self.log({
-            "role": "swarmstar",
-            "content": ("Reviewing if parent's directive has been completed. Reviewing each branch "
-                        "in parallel and determining if it's subdirective is complete.")
-        })
+        log_index_key = [0]
 
         decompose_directive_node = SwarmNode.get(self.node.parent_id)
         branch_head_node_ids = decompose_directive_node.children_ids
@@ -141,10 +137,10 @@ class Action(BaseAction):
                 f"\n\nBranch directive:\n{this_branch_directive}"
                 f"\n\nBranch reports:\n{this_branch_reports_str}"
             )
-            messages = [{"role": "system", "content": system_message}]
+            messages = [{"role": "swarmstar", "content": system_message}]
 
             this_branch_log_index_key = self.log({
-                "role": "system",
+                "role": "swarmstar",
                 "content": system_message
             }, log_index_key)
             
@@ -181,11 +177,6 @@ class Action(BaseAction):
         }, log_index_key)
         
         if completion.questions:
-            self.log({
-                "role": "swarmstar",
-                "content": "Spawning a communication node to ask questions about the branch."
-            }, log_index_key)
-
             self.add_value_to_execution_memory("__termination_handler__", "review_branch_with_questions_answered")
             self.update_termination_policy("custom_action_termination")
             return SpawnOperation(
@@ -203,27 +194,13 @@ class Action(BaseAction):
             is_complete = completion.is_complete
             if is_complete is None:
                 raise ValueError("The ai returned None for both params, questions and is_complete in the ReviewDirectiveModel.")
-            elif is_complete:
-                self.log({
-                    "role": "swarmstar",
-                    "content": "This branch has completed it's directive."
-                }, log_index_key)
-            else:
-                self.log({
-                    "role": "swarmstar",
-                    "content": "This branch has not completed it's directive."
-                }, log_index_key)
 
             execution_memory = self.node.execution_memory
             execution_memory["branch_head_node_ids_under_review"].remove(branch_head_node_id)
             self.update_execution_memory(execution_memory)
             if not execution_memory["branch_head_node_ids_under_review"]:
                 log_index_key.pop()
-                self.log({
-                    "role": "swarmstar",
-                    "content": "All branches have been reviewed. Moving on to confirm completion of overarching directive."
-                }, log_index_key
-                )
+
                 self.remove_value_from_execution_memory("branch_head_node_ids_under_review")
                 self.update_termination_policy("simple")
                 return self.confirm_completion_of_overarching_directive()
@@ -244,11 +221,6 @@ class Action(BaseAction):
         reports = self.node.execution_memory["branch_reports"][branch_head_node_id]
         terminator_node = SwarmNode.get(terminator_node_id)
         question_answers = terminator_node.report
-        
-        self.log({
-            "role": "swarmstar",
-            "content": f"Received answers to questions:\n{question_answers}"
-        }, log_index_key)
 
         reports += f"\n\n{question_answers}"
         self.node.execution_memory["branch_reports"][branch_head_node_id] = reports
@@ -258,10 +230,10 @@ class Action(BaseAction):
             f"\n\nBranch directive:\n{branch_directive}"
             f"\n\nBranch reports:\n{reports}"
         )
-        messages = [{"role": "system", "content": system_message}]
+        messages = [{"role": "swarmstar", "content": system_message}]
 
         self.log({
-            "role": "system",
+            "role": "swarmstar",
             "content": system_message
         }, log_index_key)
         
@@ -303,10 +275,10 @@ class Action(BaseAction):
             f"\n\nFollowing reports are from branches which pursued subdirectives derived from the overarching directive."
             f"\n\nBranch reports:\n{reports_str}"
         )
-        messages = [{"role": "system", "content": system_message}]
+        messages = [{"role": "swarmstar", "content": system_message}]
 
         self.log({
-            "role": "system",
+            "role": "swarmstar",
             "content": system_message
         })
 
@@ -329,10 +301,6 @@ class Action(BaseAction):
         })
         
         if completion.questions:
-            self.log({
-                "role": "swarmstar",
-                "content": "Spawning a communication node to ask questions."
-            })
             self.add_value_to_execution_memory("__termination_handler__", "review_overarching_directive_with_questions_answered")
             self.update_termination_policy("custom_action_termination")
             return SpawnOperation(
@@ -350,11 +318,7 @@ class Action(BaseAction):
             
             self.add_value_to_execution_memory("is_overarching_directive_complete", is_complete)
             is_complete_message = "The overarching directive has been completed." if is_complete else "The overarching directive has not been completed."
-            self.log({
-                "role": "swarmstar",
-                "content": is_complete_message
-            })
-            
+
             return self.consolidate_reports()
 
     @BaseAction.termination_handler
@@ -376,11 +340,6 @@ class Action(BaseAction):
         execution_memory["overarching_directive_question_answers"] = overarching_directive_question_answers
         self.update_execution_memory(execution_memory)        
         self.update_termination_policy("simple")
-
-        self.log({
-            "role": "swarmstar",
-            "content": f"Received answers to questions:\n{question_answers}"
-        })
         
         all_branch_reports = []
         for branch_head_node_id, reports in self.node.execution_memory["branch_reports"].items():
@@ -396,10 +355,10 @@ class Action(BaseAction):
             f"\n\nBranch reports:\n{reports_str}"
             f"\n\nAnswers to questions:\n{overarching_directive_question_answers}"
         )
-        messages = [{"role": "system", "content": system_message}]
+        messages = [{"role": "swarmstar", "content": system_message}]
         
         self.log({
-            "role": "system",
+            "role": "swarmstar",
             "content": system_message
         })
         return BlockingOperation(
@@ -431,10 +390,10 @@ class Action(BaseAction):
             f"\n\nSubdirectives:\n{subdirectives}"
             f"\n\nBranch reports:\n{reports_str}"
         )
-        messages = [{"role": "system", "content": system_message}]
+        messages = [{"role": "swarmstar", "content": system_message}]
 
         self.log({
-            "role": "system",
+            "role": "swarmstar",
             "content": system_message
         })
         
@@ -461,10 +420,6 @@ class Action(BaseAction):
         
         is_complete = self.node.execution_memory["is_overarching_directive_complete"]
         if is_complete:
-            self.log({
-                "role": "swarmstar",
-                "content": "The overarching directive has been completed. Terminating self and signaling parent to terminate."
-            })
             self.report(
                 "Reviewed decompose directive node's directive and all it's subdirectives. "
                 "The overarching directive has been completed. Terminating self and signaling parent to terminate."
@@ -475,10 +430,6 @@ class Action(BaseAction):
                 terminator_node_id=self.node.id,
             )
         else:
-            self.log({
-                "role": "swarmstar",
-                "content": "The overarching directive has not been completed. Updating directive with information from this review."
-            })
 
             system_message = (
                 f"{UPDATE_DIRECTIVE_INSTRUCTIONS}"
@@ -486,10 +437,10 @@ class Action(BaseAction):
                 f"\n\nSubdirectives:\n{decompose_directive_node.report}"
                 f"\n\nConsolidated reports:\n{completion}"
             )
-            messages = [{"role": "system", "content": system_message}]
+            messages = [{"role": "swarmstar", "content": system_message}]
             
             self.log({
-                "role": "system",
+                "role": "swarmstar",
                 "content": system_message
             })
             
@@ -507,11 +458,7 @@ class Action(BaseAction):
             "role": "ai",
             "content": completion
         })
-        
-        self.log({
-            "role": "swarmstar",
-            "content": "Spawning a new decompose directive node to continue the process."
-        })
+
         self.report(
             "Reviewed decompose directive node's directive and all it's subdirectives. "
             "The overarching directive has not been completed. Spawning a new decompose "

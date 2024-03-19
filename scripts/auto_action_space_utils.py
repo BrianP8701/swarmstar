@@ -40,7 +40,7 @@ def save_script_action_to_internal_action_space(script_path: str):
     system_instructions = ('Generate a clear, comprehensive and concise description of what this action script does. It gets called from the main function always. What does it do? Specific details matter')
     messages = [
         {
-            "role": "system",
+            "role": "swarmstar",
             "content": system_instructions
         },
         {

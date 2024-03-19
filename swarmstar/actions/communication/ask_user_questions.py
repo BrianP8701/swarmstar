@@ -75,17 +75,13 @@ class Action(BaseAction):
         )
         messages = [
             {
-                "role": "system",
+                "role": "swarmstar",
                 "content": system_message
             }
         ]
         
         self.log({
             "role": "swarmstar",
-            "content": f"We want to get answers to these questions from the user: {self.node.message}\n\n"
-        })
-        self.log({
-            "role": "system",
             "content": system_message
         })
 
@@ -120,11 +116,11 @@ class Action(BaseAction):
             f"Start the conversation off with a message that is clear and concise."
         )
         messages = [
-            {"role": "system", "content": system_message}
+            {"role": "swarmstar", "content": system_message}
         ]
 
         self.log({
-            "role": "system",
+            "role": "swarmstar",
             "content": system_message
         })
         
@@ -193,11 +189,11 @@ class Action(BaseAction):
             f"Your most recent message: {recent_ai_message}"
         )
         messages = [
-            {"role": "system", "content": system_message}
+            {"role": "swarmstar", "content": system_message}
         ]
 
         self.log({
-            "role": "system",
+            "role": "swarmstar",
             "content": system_message
         })
         
@@ -259,7 +255,7 @@ class Action(BaseAction):
             f"Your (you, the ais) most recent message: {recent_ai_message}"
         )
         messages = [
-            {"role": "system", "content": system_message},
+            {"role": "swarmstar", "content": system_message},
             {
                 "role": "user",
                 "content": user_response
@@ -267,7 +263,7 @@ class Action(BaseAction):
         ]
 
         self.log({
-            "role": "system",
+            "role": "swarmstar",
             "content": system_message
         })
         
@@ -311,15 +307,11 @@ class Action(BaseAction):
         )
 
     def finalize_report(self, reports: List[str]):
-        self.log({
-            "role": "swarmstar",
-            "content": f"Finalizing the report."
-        })
         system_message = FINALIZE_REPORT_INSTRUCTIONS + f"\n\nReports: {reports}"
-        messages = [{"role": "system", "content": system_message}]
+        messages = [{"role": "swarmstar", "content": system_message}]
         
         self.log({
-            "role": "system",
+            "role": "swarmstar",
             "content": system_message
         })
 

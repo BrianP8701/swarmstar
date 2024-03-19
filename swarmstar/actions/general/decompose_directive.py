@@ -38,10 +38,6 @@ DECOMPOSE_DIRECTIVE_INSTRUCTIONS = (
 
 class Action(BaseAction):
     def main(self) -> BlockingOperation:
-        self.log({
-            "role": "swarmstar",
-            "content": "Decomposing directive into actionable subdirectives.",
-        })
         swarm_id = swarm_id_var.get()
         user_preferences = Memory.get(f"{swarm_id}_memory/user/preferences")
         
@@ -51,11 +47,11 @@ class Action(BaseAction):
             f"\n\nUser preferences: {user_preferences}"
         )
         messages = [
-            {"role": "system", "content": system_message}
+            {"role": "swarmstar", "content": system_message}
         ]
 
         self.log({
-            "role": "system",
+            "role": "swarmstar",
             "content": system_message
         })
 
@@ -88,11 +84,6 @@ class Action(BaseAction):
                 "\n\nBefore decomposing, the agent decided it needs the following questions answered first:\n"
                 )
             message += "\n".join(completion.questions)
-
-            self.log({
-                "role": "swarmstar",
-                "content": "Asking questions before decomposing directive."
-            })
             
             spawn_operation = SpawnOperation(
                 parent_node_id=self.node.id,
@@ -122,13 +113,6 @@ class Action(BaseAction):
                 
                 spawn_operations.append(spawn_operation)
 
-            self.log({
-                "role": "swarmstar",
-                "content": (
-                    "Decomposed directive into subdirectives. Spawning action router "
-                    "nodes to decide what action to take given the subdirectives."
-                    )
-            })
             self.report(
                 f"Decomposed directive into immediate actionable subdirective to be independently "
                 f"executed in parallel.\n\nDirective:\n{self.node.message}\n\nSubdirectives:\n{subdirectives}"

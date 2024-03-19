@@ -72,10 +72,7 @@ class Action(BaseAction):
     def main(self) -> BlockingOperation:
         self.update_termination_policy("custom_action_termination")
         self.add_value_to_execution_memory("__termination_handler__", "generate_user_preferences")
-        self.log({
-            "role": "swarmstar",
-            "content": "Spawning node to understand the user's background."
-        })
+
         goal = self.node.message
         message = (
             f"{UNDERSTAND_USER_BACKGROUND_PROMPT}"
@@ -95,11 +92,6 @@ class Action(BaseAction):
         post_interview_report = terminator_node.report
         self.add_value_to_execution_memory("post_interview_report", post_interview_report)
 
-        self.log({
-            "role": "swarmstar",
-            "content": f"Received report on user's background after initial interview:\n{post_interview_report}"
-        })
-
         system_message = (
             f"{GENERATE_USER_PREFERENCES_PROMPT}"
             "\n\nPost interview report with the user:\n"
@@ -107,14 +99,14 @@ class Action(BaseAction):
         )
 
         self.log({
-            "role": "system",
+            "role": "swarmstar",
             "content": system_message
         })
 
         return BlockingOperation(
             node_id=self.node.id,
             blocking_type="instructor_completion",
-            args={"messages": [{"role": "system", "content": system_message}]},
+            args={"messages": [{"role": "swarmstar", "content": system_message}]},
             context={"instructor_model_name": "UserDescriptionModel"},
             next_function_to_call="analyze_user_description",
         )
@@ -140,10 +132,6 @@ class Action(BaseAction):
         MemoryMetadata.save(memory_metadata)
         Memory.save(memory_metadata.id, user_preferences)
 
-        self.log({
-            "role": "swarmstar",
-            "content": "Saved user preferences to memory. Spawning decompose directive node."
-        })
         self.report(
             "Performed an introductory interview with the user and saved their "
             "preferences for project involvement. This will be used to guide the "

@@ -16,7 +16,6 @@ class ActionMetadata(MetadataNode):
         "internal_action",
     ]
 
-
     @classmethod
     def get(cls: Type[T], action_id: str) -> T:
         # First, call the superclass (MetadataNode) get method to retrieve the node

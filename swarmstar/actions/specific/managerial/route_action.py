@@ -44,11 +44,7 @@ class Action(BaseAction):
         )
 
         self.log({
-                "role": "swarmstar",
-                "content": "Deciding what action to take given a directive."  
-        })
-        self.log({
-            "role": "system",
+            "role": "swarmstar",
             "content": messages[0]["content"]
         })
 
@@ -80,12 +76,6 @@ class Action(BaseAction):
             current_action_id = children_action_ids[completion.index]
             current_action = ActionMetadata.get(current_action_id)
             if current_action.is_folder:
-                
-                self.log({
-                    "role": "swarmstar",
-                    "content": f"The router navigated to the {current_action.name} folder."
-                })
-                
                 children = self.get_children_action_metadata(current_action)
                 current_children_action_ids = [child.id for child in children]
                 children_descriptions = self.get_children_descriptions(children)
@@ -94,7 +84,7 @@ class Action(BaseAction):
                 )
                 
                 self.log({
-                    "role": "system",
+                    "role": "swarmstar",
                     "content": messages[0]["content"]
                 })
                 
@@ -109,10 +99,6 @@ class Action(BaseAction):
                     next_function_to_call="route_goal",
                 )
             else: # We've reached an action
-                self.log({
-                    "role": "swarmstar",
-                    "content": f"The router decided to take the {current_action.name} action for this directive."
-                })
                 self.report(
                     f"The router agent chose an action to take given a directive.\n\nDirective: {self.node.message}"
                     f"\n\nChosen action: {current_action.name}\n\nAction description: {current_action.description}"
@@ -127,11 +113,6 @@ class Action(BaseAction):
                 )
         else: # There's no good action path to take
             failure_message = completion.failure_message
-
-            self.log({
-                "role": "swarmstar",
-                "content": "The router failed to find a good action path to take."
-            })
             self.report(
                 f"Tried to find a good action path to take given a directive, but failed.\n\n"
                 f"Directive: {self.node.message}\n\nFailure message: {failure_message}"
@@ -154,7 +135,7 @@ class Action(BaseAction):
             goal_and_action_path_options += f"{i}. {description}\n"
 
         messages = [
-            {"role": "system", "content": f"{ROUTE_ACTION_INSTRUCTIONS}\n\n{goal_and_action_path_options}"},
+            {"role": "swarmstar", "content": f"{ROUTE_ACTION_INSTRUCTIONS}\n\n{goal_and_action_path_options}"},
         ]
         return messages
 
