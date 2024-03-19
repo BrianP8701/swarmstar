@@ -33,3 +33,8 @@ For example, nodes may spawn and designate actions to children nodes. This logic
 When spawning a child the node passes a directive making their requirements and intent clear.
 
 When nodes terminate they create a report concluding the success or failure of their operation.
+
+## Portal Nodes
+In a metadata tree, we store a default metadata tree in the internal sqlite database to be reused in every swarm instance. However, we want to allow every swarm to be able to add onto the memory and action space as needed. This means the internal nodes need to somehow allow a connection to external nodes, by storing in their children_ids an external node.
+
+We could simply copy the entire metadata tree for each node but this would be wasteful as the internal metadata tree is meant to be immutable. 

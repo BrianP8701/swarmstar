@@ -3,7 +3,7 @@ from pymongo.errors import DuplicateKeyError
 from pymongo import ReturnDocument
 from dotenv import load_dotenv
 import os
-from bson.binary import Binary
+from typing import Dict, Any
 
 from swarmstar.utils.data.key_value_storage.abstract import KV_Database
 
@@ -91,7 +91,7 @@ class MongoDBWrapper(KV_Database):
         except Exception as e:
             raise ValueError(f"Failed to update document at {category}/{key}: {str(e)}")
 
-    def get(self, category, key):
+    def get(self, category, key) -> Dict[str, Any]:
         collection = self.db[category]
         result = collection.find_one({"_id": key})
         if result is None:

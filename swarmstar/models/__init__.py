@@ -17,8 +17,6 @@ from .swarm_node import (
     SwarmNode
 )
 
-from .util_metadata import UtilMetadata
-
 from .swarm_operations import (
     SwarmOperation,
     SpawnOperation,
@@ -29,8 +27,6 @@ from .swarm_operations import (
     UserCommunicationOperation,
     ActionOperation
 )
-
-from ..actions.base_action import BaseAction
 
 from .swarm_history import SwarmHistory
 

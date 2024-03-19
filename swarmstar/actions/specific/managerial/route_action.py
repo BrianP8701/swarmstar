@@ -14,7 +14,7 @@ from swarmstar.models import (
     SwarmOperation,
     ActionMetadata
 )
-from swarmstar.actions.base_action import BaseAction
+from swarmstar.abstract.base_action import BaseAction
 
 class NextActionPath(BaseModel):
     index: Optional[int] = Field(

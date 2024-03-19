@@ -19,7 +19,7 @@ from typing_extensions import Literal
 from swarmstar.utils.misc.generate_uuid import generate_uuid
 from swarmstar.utils.misc.generate_uuid import generate_uuid
 from swarmstar.utils.data import MongoDBWrapper
-from swarmstar.models.internal_metadata import SwarmstarInternal
+from swarmstar.models.internal_metadata import get_internal_sqlite
 
 db = MongoDBWrapper()
 
@@ -51,7 +51,7 @@ class MemoryMetadata(BaseModel):
     
         except:
             try:
-                memory_metadata = SwarmstarInternal.get_memory_metadata(memory_id)
+                memory_metadata = get_internal_sqlite("memory_metadata", memory_id)
                 if memory_metadata is None:
                     raise ValueError(
                         f"This memory id: `{memory_id}` does not exist in internal memory space."

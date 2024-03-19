@@ -22,8 +22,13 @@ class KV_Database(ABC):
         pass
 
     @abstractmethod
-    def get(self, category: str, key: str) -> Any:
+    def get(self, category: str, key: str) -> Dict[str, Any]:
         """Retrieve the value associated with a key."""
+        pass
+
+    @abstractmethod
+    def get_by_key(self, category: str, key: str, inner_key: str) -> Any:
+        """Retrieve the value associated with a specified key inside the document."""
         pass
 
     @abstractmethod

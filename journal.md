@@ -2224,7 +2224,116 @@ Agents have access to data from:
     - static analysis tools
     "and more"
 
+IDE capabilities:
+    - linters
+    - compilers
+    - command line operations
+
+4 parts to autodev
+rules actions and objective config
+conversation manager
+parser
+output organizer
+agent scheduler
+
+CLI Commands i should use
 
 
-## Questions
-What are build processes?
+create a base pydantic model for instructor that includes things like ask (bool if on route question) and... other stuff idk. i can package into class that this will return to the place with something idk but yeah
+
+
+
+## Stuff i should use!
+
+CLI:
+    grep !!!!!! this one is fire.
+    find
+
+Simple easy way to check syntax bugs and lint after ai writes code.
+
+easy way to run tests build and execute
+
+My system shouldnt even have the agents use vim and shit to write code. if i give an ai code and they edit, just replace that code with the rewritten code.
+
+The Commands Interface encompasses a diverse set of
+functionalities, including File Editing, Retrieval, Build and
+Execution, Testing, and Git operations. . These suggested commands are then parsed by the Conversation Manager, which
+subsequently directs them to the Evaluation Environment
+for execution on the codebase.
+
+
+https://arxiv.org/pdf/2402.14261.pdf
+https://arxiv.org/pdf/2303.07263.pdf
+https://arxiv.org/pdf/2310.04406.pdf
+https://arxiv.org/pdf/2303.11366.pdf
+
+
+
+# More abstractions
+
+We will create layers of abstractions. theres lots of stuff that gets repeated here and we just want to make this code better
+
+The swarm, the metadata trees are all made of nodes. we define a basenode. all basenodes have what in common? We can save them retrieve them update them and delete them. We can copy them when we copy a swarm. whats the difference between metadata nodes and swarm nodes? metadata nodes have an internal part.
+
+copying the internal metadata nodes everytime is wasteful. 
+long uuids are wasteful. itd be better if every swarm had ids like this:
+swarm_id_op_x
+swarm_id_node_x
+swarm_id_am_x
+swarm_id_mm_x
+swarm_id_um_x
+
+in addition, ideally we'd be able to see the swarm state at any point in time, to be able to restore it to that point without having to actually save in memory every frame.
+
+these are some important foundational changes that will make the system as a whole more powerful
+
+every metadata tree has an internal part and an external part. these are distinguished by the type attribute. In addition the type attribute will specify how to handle these functions. since we expect some of these things to have multiple handlers we should also define an abstract for that as well. what will have multiple handlers? there will be many ways to retrieve a memory. thats one.
+
+however in addition to adding to the internal metadata space would a swarm ever want to change the internal metadata space in its copy? I dont think it should be allowed to. there should be special types of internal metadata nodes that are internal but can point to external children nodes. 
+
+lets take the internal metadata space. the projects folder is empty and is defined in the internal metadata space. when the swarm wants to create a new project what will we do? well if we're creating a new project we'll know that we want to be in the projects folder. we'll then pass it to an agent dedicated to storing the project in the project folder. the first project will obviously just get thrown in the root of the projects folder. Now the projects memory metadata node is stored in the internal sqlite database. how do i add the new project as a child id? Aha! i got it! Yes! Lets go! We dont want to clone the internal metadata spaces thats wasteful. but we still need to clone all the leaf nodes of the internal metadata space. we can label the leaf nodes of the internal metadata space (the folders that is) with "portal_node". what abt when a portal node has some children that are internal, but also are meant to be able to have external child nodes? well thats no problem, well have the internal space, that portal node that pops out, and then children of that external node can be internal again. importantly a portal node cant be changed expect for its children node ids which can be appended to. should a portal node be able to change its description? Idk.
+
+So when cloning, okay i got that. so now there are two different operations - every node has a copy operation which copies it with the swarm_id at front and its short identifier and number. actually the copying can just use regex taking the old ids and swapping swarm ids. so at an individual node level we have a copy operation. at a tree level we also have a copy operation. this traverses down and copies all nodes as such. so obv with the metadata tree we'd start from the internal root node and propagate not copying until we reached portal and external nodes. however the SwarmNode and metadata nodes will have to implement their own seperate get and copy node functions due tot he internal conflict, of which the swarm nodes dont have. in addition at a node and tree level we have a delete operation, which does exactly what it sounds like. the actual trees arent actually storing anything i think. yeah they arent. maybe they just store the root node id. the true root node of each tree should be the swarm id by itself, although we should be flexible to be able to create tree object over branches to allow subbranch routing. the swarmtree should contain a method that returns the visualization representation starting from the root node. the swarmtree should contain a method that deletes the swarm tree and one that copies it both given a swarm id. In the future we can add other operations to the swarm tree like searching over it, rather than searching over the raw swarm nodes although that doesent really matter. the main benefit of moving to an abstract class comes to the abstract class for the metadata trees. we might have multiple metadata trees. theyll each need to have a copy and delete method and clone internal with swarm id. each metadata tree will be used inside the router. so that means we need to define the metadata tree as such so the router can naviogate over it. well the metadata tree really doesent have to contain anything all it needs to contain is the root node id. and maybe provide common functions like get children descriptons and shit. okay yeah.
+
+Now what the fuck is the purpose of the util metadata space? I think that there is no fucking purpose of the util metadata space. When we want to see utils we look at the swarmstar folder in memory. when we want to use utils we... well when will we use utils, when will the swarm use utils? When it is creating an action. when creating an action we'll want to let it see the baseaction class, an example of an action creating an action is more so about creating a new logical flow. having the swarm write prompts for itself, define instructor models and chain them together correctly to be used. But it will need access to utils and to connect with other memories. itll need context to understand each of these so it can know what questions to ask. when it creates an action it should be able to iteratively write it, test it, and then add it to its external action space so it can be used. so lets think of an example where it would need to create an example. well we'll need to add really good evaluation criterias to decide which actions to take. lets say we are searching... ah fuck i cant think this far ahead. everytime the swarm writes code. there is actually just one agent that writes code. the complexity is in the process of gathering all the relevant context for the coder. gathering relevant context could require gathering information from github issues. static analyzers. terminal error outputs. searching a codebase using grep or other methods. using abstract syntax tree parsing. searching documentation. browsing the web. when first doing a coding project we discuss the architecture and languages we are using. we create a project in the memory space. alongside this project we need project metadata which explains concretely different aspects of this project. Setup, usage, docs. When creating a project itll need to iteratively build out the setup file. an agent tasked with writing terminal commands will receive the task and keep on asking questions. but before we give the terminal manager the task we should try our very best to get the most information and context possible. we should have automatic methods that do compression, summarization when context windows are exceeded. so we always communicate in a 2 fold process. we pass the directive and the context we start with to the terminal or coder question asker. theyll keep on asking questions to gather all relevant context. we'll add to the context and compress as needed. theyll keep asking questions. eventually we pass the question askers and the directive with all its changes and context gets passed to the coder or terminal runner. the code gets changed or written, the terminal command gets written and both will get handled appropriately. if code was written, now tests will have to be run. if deemed necessary. once again same process. writing code will take many steps, deciding what file to write code to, deciding to change or add code, deciding this that blah blah blah. lots of stuff. when a terminal message is sent the output or error gets retrieved. context of why it was ran, the initial directive and all its context is packed together with the output message and passed to the question asker. the question asker asks questions and we add to the context as needed. eventually it goes back to the terminal manager or is marked as complete. the important components here is the question asking, the answering of questions, making sure questions are relevant. lets say the question asker asks a question like i need to do static analysis, but we dont have static analysis. we need to create a static analysis action, and then pop back to the action router that called for it and resume. we need to be able to pass context. we need to make the action creator understand hey heres the context ur getting. so sometimes we pass context along if its just part of the state of whats going on now, even if we dont know if the receptor will use it. but in this way we need common and well defined context names. for example current_project. In addition what about when a project has multiple rhings in it and might need seperate parts? no in that case we need two seperate containers. but then theyd need to run at the same time and communicate. what if we have a backend and frontend container. these are two seperate projects. how will the agents from one communicate with the other? Right now we stand strong on the principle of independent tasks that can be done in parallel. perhaps we develop the frontend and backend seperately in parralel with mock tests and apis and shit. but then later we're like we need to do an integration test. whenever a swarm has a project in context that container is running. if there are two parallel branches each with each container. later they both finish their seperate tasks then propagate up. then a branch will need to manage both projects and containers at the same time. so a node needs to be able to activate two containers at the same time. 
+
+
+## The problem or directive:
+Clearly defining the problem or directive is crucial for guiding the entire process.
+Break down complex problems into smaller, more manageable sub-problems or steps.
+Establish a structured representation of the problem, including any constraints, requirements, or goals.
+## Gathering relevant context:
+Develop a systematic approach to ask questions and retrieve relevant context from various sources.
+Implement a memory system that can efficiently store and retrieve information based on the problem at hand.
+Integrate techniques like information retrieval, semantic search, and natural language processing to find relevant answers in the memory.
+Allow for user interaction and web browsing to gather additional context when needed.
+Continuously refine and update the context based on the answers and new information obtained.
+Apply summarization and compression techniques to manage the growing context effectively.
+## Taking action:
+Based on the gathered context, determine the appropriate action to take, whether it's writing code, executing a terminal command, or performing other tasks.
+Establish clear interfaces and protocols for interacting with different components, such as code editors, terminals, or containers.
+Develop a robust system for managing and orchestrating multiple containers or services running simultaneously, enabling seamless communication and coordination between them.
+Implement error handling and feedback mechanisms to detect and resolve issues that may arise during the execution of code or commands.
+Create a loop that allows for iterative refinement and improvement based on the results and outputs of the actions taken.
+
+we need strong places for constants between actions and nodes. use the context of nodes to pass these.
+we need to be able to create actions to answer questions. action creator.
+we need to be able to understand the current project we are working on. project id in context. when question answerer receives questions about context itll be search the memory. the memory will contained predefined places to answer common questions. in addition itll contain the actual codebase.
+
+what are key differences between the memory and action space? The action space genuinely seems much simpler. the memory space will be added to a lot. its primarily just string data. back the the util metadata space. what will its use be? Not really a use for it. when does the swarmstar do recursive self improvement? when it works on itself as a repo. the best use of swarmstar to test and push it will be to use it to build itself. we should directly be laser focused on getting that. hold on... the current problems i have... can i even MANUALLY retrieve context to get it to solve ONE of the things im doing right now? Goddamn... let me try. let me try this process rigidly myself where i mimic the directive assigner and the question asker and answerer.
+
+# Simulating swarmstar
+
+Okay i am brian. I will simulate swarmstar. 
+
+Human: Overarching Directive Input: 
+Create abstract base classes for SwarmNode, MemoryMetadata, ActionMetadata. Consider whether UtilMetadata and the whole Util Space is necessary. This overall system is not well documented. Really feel free to ask me questions as needed. In addition, as you ask questions help me build docs out
+
+<<__Github link to swarmstar__>>
+
+
+SS: Creates node to decide what to do with link given the directive -> We should clone the repository
+At the same time default behavior is to spawn a node to save the github link into memory
+There arent many folders. it stores this in user given links in constants.
+
+Creates subdirective to clone the github repository

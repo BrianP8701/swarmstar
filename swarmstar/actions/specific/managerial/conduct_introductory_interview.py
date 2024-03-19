@@ -8,7 +8,7 @@ from swarmstar.models import (
     Memory,
     MemoryMetadata
 )
-from swarmstar.actions.base_action import BaseAction
+from swarmstar.abstract.base_action import BaseAction
 from swarmstar.context import swarm_id_var
 
 UNDERSTAND_USER_BACKGROUND_PROMPT = (

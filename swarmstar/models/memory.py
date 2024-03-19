@@ -2,7 +2,7 @@ from typing import Union
 
 from swarmstar.models.memory_metadata import MemoryMetadata
 from swarmstar.utils.data import MongoDBWrapper
-from swarmstar.models.internal_metadata import SwarmstarInternal
+from swarmstar.models.internal_metadata import get_internal_sqlite
 
 db = MongoDBWrapper()
 
@@ -63,4 +63,4 @@ class Memory:
 
     @staticmethod
     def _internal_sqlite_retrieve(memory_id: str) -> Union[bytes, str]:
-        return SwarmstarInternal.get_internal_sqlite("memory", memory_id)
+        return get_internal_sqlite("memory", memory_id)

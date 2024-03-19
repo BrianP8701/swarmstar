@@ -5,19 +5,14 @@ and a preassigned action they must execute.
 
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Field
 from typing_extensions import Literal
 
-from swarmstar.utils.misc.generate_uuid import generate_uuid
 from swarmstar.utils.data import MongoDBWrapper
+from swarmstar.abstract.base_node import BaseNode
 
 db = MongoDBWrapper()
 
-class SwarmNode(BaseModel):
-    id: Optional[str] = Field(default_factory=lambda: generate_uuid("node"))
-    name: str
-    parent_id: Optional[str] = None
-    children_ids: List[str] = []
+class SwarmNode(BaseNode):
     action_id: str
     message: str
     alive: bool = True
@@ -32,13 +27,7 @@ class SwarmNode(BaseModel):
     context: Optional[Dict[str, Any]] = {}
 
     @staticmethod
-    def save(node: 'SwarmNode') -> None:
-        db.insert("swarm_nodes", node.id, node.model_dump())
-
-    @staticmethod
     def get(node_id: str) -> 'SwarmNode':
-        return SwarmNode.model_validate(db.get("swarm_nodes", node_id))
+        swarm_node_dict = super().get(node_id)
+        return SwarmNode(**swarm_node_dict)
 
-    @staticmethod
-    def replace(node: 'SwarmNode') -> None:
-        db.replace("swarm_nodes", node.id, node.model_dump())

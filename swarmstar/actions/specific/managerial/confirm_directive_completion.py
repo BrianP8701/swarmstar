@@ -51,7 +51,7 @@ from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 
 from swarmstar.models import BlockingOperation, TerminationOperation, SpawnOperation, NodeEmbryo, SwarmNode
-from swarmstar.actions.base_action import BaseAction
+from swarmstar.abstract.base_action import BaseAction
 
 
 class ConfirmDirectiveModel(BaseModel):
