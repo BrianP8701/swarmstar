@@ -85,13 +85,13 @@ class BaseAction(metaclass=ErrorHandlingMeta):
     @staticmethod
     def custom_termination_handler(func: Callable):
         """
-            This decorator is used to mark a function as a custom termination handler. It simply enforces the function parameters.
+            This decorator is used to mark a function as a custom termination handler.
 
             Functions marked with this decorator should accept two parameters:
                 - terminator_node_id: The id of the terminator node that this node spawned
                 - context: Context persisted from spawning the terminator node
 
-            This allows us to easily spawn new nodes, and then respond to te termination of those nodes.
+            This allows us to easily spawn new nodes, and then respond to the termination of those nodes.
         """
         def wrapper(self, **kwargs):
             terminator_node_id = kwargs.pop("terminator_node_id", None)
