@@ -13,8 +13,6 @@ importlib = "^1.0.4"
 pydantic = "^2.5.3"
 openai = "^1.9.0"
 instructor = "^0.4.8"
-azure-cosmos = "^4.5.1"
-azure-storage-blob = "^12.19.0"
 pymongo = "^4.6.1"
 docker = "^7.0.0"
 

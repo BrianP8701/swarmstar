@@ -1,14 +1,7 @@
 """
-This module contains the base class for all actions.
-This base class: 
+This module provides the BaseAction class, which all actions must inherit from.
 
-    - Provides some common methods that actions use.
-    - Provides a metaclass to apply an error handling decorator to all methods of the action.
-    
-When a new action is created, it should subclass BaseAction and implement the main method.
-
-All action functions will automatically be wrapped with the error handling decorator, which 
-will catch any exceptions and return a FailureOperation with a report of the error.
+The BaseAction class provides a number of methods and decorators to make it easier to write actions.
 """
 from importlib import import_module
 import traceback
@@ -20,49 +13,8 @@ import json
 import sys
 import inspect
 
-from swarmstar.models import SwarmOperation, SwarmNode, SpawnOperation, NodeEmbryo
+from swarmstar.models import SwarmOperation, SwarmNode, SpawnOperation, NodeEmbryo, BaseNode
 
-
-# def error_handling_decorator(func):
-#     @wraps(func)
-#     def wrapper(self, *args, **kwargs):
-#         try:
-#             return func(self, *args, **kwargs)
-#         except Exception as e:
-#             exc_type, exc_value, exc_traceback = sys.exc_info()
-#             traceback_str = ''.join(traceback.format_exception(exc_type, exc_value, exc_traceback))
-            
-#             # Capture local variables
-#             frame = inspect.trace()[-1][0]
-#             local_vars = frame.f_locals
-            
-#             error_details = {
-#                 'exc_type': exc_type.__name__,
-#                 'exc_value': str(exc_value),
-#                 'exc_traceback': traceback_str,
-#                 'local_variables': {key: repr(value) for key, value in local_vars.items()},
-#                 'error_line': frame.f_lineno,
-#                 'error_module': frame.f_code.co_filename
-#             }
-            
-#             error_message = (
-#                 f"Error in {func.__name__}:\n{str(e)}\n\n"
-#                 f"Traceback:\n{traceback_str}\n\n"
-#                 f"Local Variables:\n{json.dumps(error_details['local_variables'], indent=2)}"
-#             )
-            
-#             raise ValueError(error_message)
-#             # return SpawnOperation(
-#             #     parent_node_id=self.node.id,
-#             #     node_embryo=NodeEmbryo(
-#             #         # TODO When u make failure action change this
-#             #         action_id="swarmstar/actions/swarmstar/handle_failure",
-#             #         message=error_message,
-#             #         context={'error_details': error_details}
-#             #     )
-#             # )
-    
-#     return wrapper
 
 def error_handling_decorator(func):
     @wraps(func)
@@ -105,36 +57,30 @@ class BaseAction(metaclass=ErrorHandlingMeta):
         return SwarmNode.get(self.node.id)
     
     def report(self, report: str):
-        node = self.get_node()
-        if node.report is not None:
-            raise ValueError(f"Node {node.id} already has a report: {node.report}. Cannot update with {report}.")
-        node.report = report
-        SwarmNode.replace(node)
+        if self.node.report is not None:
+            raise ValueError(f"Node {self.node.id} already has a report: {self.node.report}. Cannot update with {report}.")
+        self.node.report = report
+        SwarmNode.replace(self.node.id, self.node)
     
     def update_termination_policy(self, termination_policy: str):
-        node = self.get_node()
-        node.termination_policy = termination_policy
-        SwarmNode.replace(node)
+        self.node.termination_policy = termination_policy
+        SwarmNode.replace(self.node.id, self.node)
     
     def add_value_to_execution_memory(self, attribute: str, value: Any):
-        node = self.get_node()
-        node.execution_memory[attribute] = value
-        SwarmNode.replace(node)
+        self.node.execution_memory[attribute] = value
+        SwarmNode.replace(self.node.id, self.node)
     
     def remove_value_from_execution_memory(self, attribute: str):
-        node = self.get_node()
-        del node.execution_memory[attribute]
-        SwarmNode.replace(node)
+        del self.node.execution_memory[attribute]
+        SwarmNode.replace(self.node.id, self.node)
 
     def update_execution_memory(self, execution_memory: Dict[str, Any]):
-        node = self.get_node()
-        node.execution_memory = execution_memory
-        SwarmNode.replace(node)
+        self.node.execution_memory = execution_memory
+        SwarmNode.replace(self.node.id, self.node)
 
     def clear_execution_memory(self):
-        node = self.get_node()
-        node.execution_memory = {}
-        SwarmNode.replace(node)
+        self.node.execution_memory = {}
+        SwarmNode.replace(self.node.id, self.node)
 
     @staticmethod
     def custom_termination_handler(func: Callable):
@@ -210,20 +156,27 @@ class BaseAction(metaclass=ErrorHandlingMeta):
         is the oracle's responsibility.
 
         Functionality:
+        This wrapper will be called multiple times, and at each step will be in one of the following stages.
+        This wrapper will know which stage it is in by checking the received parameters.
+
         1. Giving the LLM the option to ask questions:
+            Expected parameters: message: str, Optional[context: Dict[str, Any]]
         - Adds a `questions` attribute (List[str]) to the pydantic model.
         - Makes every attribute optional.
         - Appends a prompt emphasizing the importance of asking questions when necessary.
         - Sets the blocking operation's `next_function_to_call` to the wrapped function.
         - Stores the intended next function and message in the context.
+        - Returns the blocking operation to be executed.
 
         2. Accessing the oracle:
+            Expected parameters: (completion: Any, context: Dict[str, Any])
         - Checks if the `questions` field in the completion is None.
         - If None, calls the intended next function with the completion.
         - If not None, spawns an oracle node to answer the questions.
-        - Sets the oracle node's termination handler to the wrapped function.
+        - Set this node's termination handler to the wrapped function.
 
         3. Handling the oracle's completion:
+            Expected parameters: (terminator_node_id: str, context: Dict[str, Any])
         - Appends the questions and answers from the oracle node to the original message.
         - Retries the blocking operation with the updated context.
 
@@ -233,14 +186,87 @@ class BaseAction(metaclass=ErrorHandlingMeta):
         def wrapper(self, **kwargs):
             message = kwargs.pop("message", None)
             context = kwargs.pop("context", None)
-            if not message:
-                raise ValueError(f"message is a required parameter for oracle_access. Error in {self.node.id} at function {func.__name__}")
-            if context:
-                result = func(self, message, context)
+            completion = kwargs.get("completion", None)
+            if type(completion) is not dict: completion = completion.model_dump()
+            terminator_node_id = kwargs.get("terminator_node_id", None)
+            
+            if message: # Stage 1
+                if context: blocking_operation = func(self, message, context)
+                else: blocking_operation = func(self, message)
+                blocking_operation.context["__next_function_to_call__"] = blocking_operation.next_function_to_call
+                blocking_operation.next_function_to_call = func.__name__
+                blocking_operation.context["__message__"] = message
+                blocking_operation.context["__oracle_access__"] = True
+            elif completion and context: # Stage 2
+                if completion.questions is None:
+                    __next_function_to_call__ = context.pop("__next_function_to_call__", None)
+                    context.pop("__message__", None)
+                    if context: return getattr(self, __next_function_to_call__)(completion, context)
+                    else: return getattr(self, __next_function_to_call__)(completion)
+                else:
+                    self.update_termination_policy("custom_termination_handler")
+                    self.update_execution_memory({"__termination_handler__": func.__name__})
+                    context["__questions__"] = completion.questions
+                    return SpawnOperation(
+                        parent_node_id=self.node.id,
+                        node_embryo=NodeEmbryo(
+                            action_id="specific/oracle",
+                            message={
+                                "questions": completion.questions, 
+                                "context": completion.context
+                            },
+                            context=context
+                        )
+                    )
+            elif terminator_node_id: # Stage 3
+                terminator_node = BaseNode.get(terminator_node_id)
+                question_answers = terminator_node.context
+                questions = terminator_node.context["__questions__"]
+                message = terminator_node.context["__message__"]
+                message += f"\n\n{questions}\n\n{question_answers}"
+                return func(self, message, context)
             else:
-                result = func(self, message)
-
-            # Post-function logic
-            print("Post-function logic here")
-            return result
+                raise ValueError(f"oracle_access wrapper called with invalid parameters: {kwargs}")
         return wrapper
+
+
+# Look at this again later # TODO for some reason its repeating stuff and outputs a ton of shit
+# def error_handling_decorator(func):
+#     @wraps(func)
+#     def wrapper(self, *args, **kwargs):
+#         try:
+#             return func(self, *args, **kwargs)
+#         except Exception as e:
+#             exc_type, exc_value, exc_traceback = sys.exc_info()
+#             traceback_str = ''.join(traceback.format_exception(exc_type, exc_value, exc_traceback))
+            
+#             # Capture local variables
+#             frame = inspect.trace()[-1][0]
+#             local_vars = frame.f_locals
+            
+#             error_details = {
+#                 'exc_type': exc_type.__name__,
+#                 'exc_value': str(exc_value),
+#                 'exc_traceback': traceback_str,
+#                 'local_variables': {key: repr(value) for key, value in local_vars.items()},
+#                 'error_line': frame.f_lineno,
+#                 'error_module': frame.f_code.co_filename
+#             }
+            
+#             error_message = (
+#                 f"Error in {func.__name__}:\n{str(e)}\n\n"
+#                 f"Traceback:\n{traceback_str}\n\n"
+#                 f"Local Variables:\n{json.dumps(error_details['local_variables'], indent=2)}"
+#             )
+            
+#             raise ValueError(error_message)
+#             # return SpawnOperation(
+#             #     parent_node_id=self.node.id,
+#             #     node_embryo=NodeEmbryo(
+#             #         action_id="swarmstar/actions/swarmstar/handle_failure",
+#             #         message=error_message,
+#             #         context={'error_details': error_details}
+#             #     )
+#             # )
+    
+#     return wrapper

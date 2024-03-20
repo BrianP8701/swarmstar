@@ -22,7 +22,7 @@ from swarmstar.utils.misc.get_next_available_id import get_available_id
 db = MongoDBWrapper()
 T = TypeVar('T', bound='ActionMetadata')
 
-class ActionTypeEnum(Enum):
+class ActionTypeEnum(str, Enum):
     PORTAL = "portal"
     BASIC = "basic"
 
@@ -51,19 +51,31 @@ class ActionMetadata(MetadataNode):
     @staticmethod
     def get_action_class(action_id: str):
         """ Returns an uninstantiated action class. """
-        action_metadata_dict = ActionMetadata.get(action_id)
-        if action_metadata_dict.is_folder:
+        action_metadata = ActionMetadata.get(action_id)
+        if action_metadata.is_folder:
             raise ValueError(f"You tried to get the action class of a folder {action_id}.")
         
-        if action_metadata_dict.internal:
-            internal_file_path = action_metadata_dict.internal_file_path
+        if action_metadata.internal:
+            internal_file_path = action_metadata.internal_file_path
             action_class = getattr(import_module(internal_file_path), "Action")
             return action_class
         else:
             # TODO: Implement this when we have a better idea of how external actions will work.
             raise ValueError(f"External actions are not supported yet.")
 
-
+    @staticmethod
+    def get_action_module(action_id: str):
+        """ Returns the module of the action. """
+        action_metadata = ActionMetadata.get(action_id)
+        if action_metadata.is_folder:
+            raise ValueError(f"You tried to get the action module of a folder {action_id}.")
+        
+        if action_metadata.internal:
+            internal_file_path = action_metadata.internal_file_path
+            module = import_module(internal_file_path)
+            return module
+        else:
+            raise ValueError(f"External actions are not supported yet.")
 
 class InternalActionMetadata(ActionMetadata):
     is_folder: Literal[False] = Field(default=False)

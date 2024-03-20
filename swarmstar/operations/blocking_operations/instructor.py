@@ -6,19 +6,24 @@ and context.
 """
 from importlib import import_module
 
-from swarmstar.models import BlockingOperation, ActionOperation, BaseNode
+from swarmstar.models import BlockingOperation, ActionOperation, BaseNode, ActionMetadata
 from swarmstar.utils.ai import Instructor
+from swarmstar.utils.ai.instructor_models import QuestionWrapper
+from swarmstar.utils.ai.prompts import ORACLE_ACCESS_INSTRUCTIONS
 
 instructor = Instructor()
 
 async def blocking(blocking_operation: BlockingOperation) -> BlockingOperation:
+    node = BaseNode.get(blocking_operation.node_id)
+
     message = blocking_operation.args["message"]
     instructor_model_name = blocking_operation.args["instructor_model_name"]
+    module = ActionMetadata.get_action_module(node.type)
 
-    models_module = import_module(
-        "swarmstar.actions.pydantic_models"
-    )
-    instructor_model = getattr(models_module, instructor_model_name)
+    instructor_model = getattr(module, instructor_model_name)
+    if blocking_operation.context.get("__oracle_access__", False):
+        instructor_model = type(instructor_model_name, (QuestionWrapper, instructor_model), {})
+        message = f"{message}\n\n{ORACLE_ACCESS_INSTRUCTIONS}"
 
     response = await instructor.completion(
         messages={
@@ -28,7 +33,6 @@ async def blocking(blocking_operation: BlockingOperation) -> BlockingOperation:
         instructor_model=instructor_model
     )
     
-    node = BaseNode.get(blocking_operation.node_id)
     log_index_key = blocking_operation.context.get("log_index_key", None)
 
     node.log({
@@ -43,5 +47,8 @@ async def blocking(blocking_operation: BlockingOperation) -> BlockingOperation:
     return ActionOperation(
         node_id=blocking_operation.node_id,
         function_to_call=blocking_operation.next_function_to_call,
-        args={**{"completion": response}, **blocking_operation.context},
+        args={
+            "completion": response, 
+            "context": blocking_operation.context
+        },
     )

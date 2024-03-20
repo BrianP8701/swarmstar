@@ -24,7 +24,7 @@ def terminate(termination_operation: TerminationOperation) -> Union[TerminationO
     node_id = termination_operation.node_id
     target_node = SwarmNode.get(node_id)
 
-    if target_node.action_id != "general/decompose_directive":
+    if target_node.type != "general/decompose_directive":
         raise ValueError("Review directive termination policy can only be applied to nodes of type 'decompose directive'") 
     
     mission_completion = False

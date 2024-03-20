@@ -16,7 +16,7 @@ from swarmstar.utils.misc.get_next_available_id import get_available_id
 db = MongoDBWrapper()
 T = TypeVar('T', bound='MemoryMetadata')
 
-class MemoryTypeEnum(Enum):
+class MemoryTypeEnum(str, Enum):
     INTERNAL_FOLDER = "internal_folder"
     EXTERNAL_FOLDER = "external_folder"
     PORTAL = "portal"

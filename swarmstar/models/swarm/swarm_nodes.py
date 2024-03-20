@@ -16,7 +16,7 @@ db = MongoDBWrapper()
 class TerminationPolicies(Enum):
     SIMPLE = "simple"
     CONFIRM_DIRECTIVE_COMPLETION = "confirm_directive_completion"
-    CUSTOM_ACTION_TERMINATION = "custom_action_termination"
+    CUSTOM_TERMINATION_HANDLER = "custom_termination_handler"
 
 class SwarmNode(BaseNode):
     id: str = Field(default_factory=get_available_id("swarm_nodes"))

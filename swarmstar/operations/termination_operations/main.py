@@ -10,7 +10,7 @@ def terminate(termination_operation: TerminationOperation) -> Union[TerminationO
     termination_policy_map = {
         "simple": "swarmstar.utils.swarm_operations.termination_operations.simple",
         "confirm_directive_completion": "swarmstar.utils.swarm_operations.termination_operations.confirm_directive_completion",
-        "custom_action_termination": "swarmstar.utils.swarm_operations.termination_operations.custom_action_termination",
+        "custom_termination_handler": "swarmstar.utils.swarm_operations.termination_operations.custom_termination_handler",
     }
 
     node_id = termination_operation.node_id

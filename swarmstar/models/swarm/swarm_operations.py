@@ -9,7 +9,7 @@ Nodes can perform 1 of 5 "SwarmOperations":
     - UserCommunicationOperation
 """
 from __future__ import annotations
-from typing import Any, Dict, Literal, Optional, Union
+from typing import Any, Dict, Literal, Optional, Union, List
 from pydantic import BaseModel, Field
 from pydantic import ValidationError
 
@@ -21,7 +21,7 @@ db = MongoDBWrapper()
 
 class NodeEmbryo(BaseModel):
     action_id: str
-    message: str
+    message: Union[str, Dict[str, Any]]
     context: Optional[Dict[str, Any]] = {}
 
 class SwarmOperation(BaseModel):

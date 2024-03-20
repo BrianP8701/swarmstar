@@ -18,7 +18,7 @@ def execute_action(action_operation: ActionOperation) -> Union[SwarmOperation, L
     """
     node_id = action_operation.node_id
     node = SwarmNode.get(node_id)
-    action_metadata = ActionMetadata.get(node.action_id)
+    action_metadata = ActionMetadata.get(node.type)
 
     action_type = action_metadata.type
 
@@ -28,7 +28,7 @@ def execute_action(action_operation: ActionOperation) -> Union[SwarmOperation, L
 
     if action_type not in action_type_map:
         raise ValueError(
-            f"Action type: `{action_type}` from action id: `{node.action_id}` is not supported yet."
+            f"Action type: `{action_type}` from action id: `{node.type}` is not supported yet."
         )
 
     action_type_module = import_module(action_type_map[action_type])

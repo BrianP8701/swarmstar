@@ -25,8 +25,8 @@ class Action(BaseAction):
         return BlockingOperation(
             node_id=self.node.id,
             blocking_type="instructor_completion",
-            args={"message": message},
-            context={"instructor_model_name": "ActionPlan"},
+            args={"message": message, "instructor_model_name": "ActionPlan"},
+            context={},
             next_function_to_call="review_plan"
         )
 

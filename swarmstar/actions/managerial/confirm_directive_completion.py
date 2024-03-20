@@ -168,7 +168,7 @@ class Action(BaseAction):
 
         if completion.questions:
             self.add_value_to_execution_memory("__termination_handler__", "review_branch_with_questions_answered")
-            self.update_termination_policy("custom_action_termination")
+            self.update_termination_policy("custom_termination_handler")
             return SpawnOperation(
                 parent_node_id=self.node.id,
                 node_embryo=NodeEmbryo(
@@ -274,7 +274,7 @@ class Action(BaseAction):
     def analyze_overarching_directive_review(self, completion: ConfirmDirectiveModel, context: Dict[str, Any]):
         if completion.questions:
             self.add_value_to_execution_memory("__termination_handler__", "review_overarching_directive_with_questions_answered")
-            self.update_termination_policy("custom_action_termination")
+            self.update_termination_policy("custom_termination_handler")
             return SpawnOperation(
                 parent_node_id=self.node.id,
                 node_embryo=NodeEmbryo(
@@ -439,7 +439,7 @@ class Action(BaseAction):
             """
             
             node = SwarmNode.get(node_id)
-            if node.action_id == "general/decompose_directive":
+            if node.type == "general/decompose_directive":
                 branch_reports[head_node_id].append(node.context["consolidated_reports"])
             elif not node.children_ids:
                 branch_reports[head_node_id].append(node.report)

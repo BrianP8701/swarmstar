@@ -9,7 +9,7 @@ def execute_action(action_operation: ActionOperation) -> Union[SwarmOperation, L
     """
     node_id = action_operation.node_id
     node = SwarmNode.get(node_id)
-    action_metadata = ActionMetadata.get(node.action_id)
+    action_metadata = ActionMetadata.get(node.type)
 
     internal_action_path = action_metadata.internal_action_path
     action_class = getattr(import_module(internal_action_path), "Action")
