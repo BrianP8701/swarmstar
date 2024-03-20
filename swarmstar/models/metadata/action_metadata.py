@@ -1,12 +1,13 @@
 """
-This module defines the nodes that make up the action metadata tree.
+Action metadata labels actions with descriptions.
 
-This metadata tree allows the swarm to find and execute actions, by stepping 
-through the tree with a directive and deciding at each step which folder to 
-navigate to until it finds an action. 
+Actions are predefined chains of logic, sprinkled with spots of ai
+and human interaction to prouce intelligent behavior.
 
-When the swarm needs to perform an action that doesen't exist, it will create a 
-new action, and save the action to the database, and it's metadata to the tree.
+Every action can be found in swarmstar/actions
+
+There is also going to be an action: "create_action". This will
+allow for some form of self sufficiency.
 """
 from typing import List, Optional, Type, TypeVar
 from pydantic import Field
@@ -15,7 +16,7 @@ from typing_extensions import Literal
 from importlib import import_module
 
 from swarmstar.database import MongoDBWrapper
-from swarmstar.models.metadata_node import MetadataNode
+from swarmstar.models.metadata.metadata_node import MetadataNode
 from swarmstar.utils.misc.get_next_available_id import get_available_id
 
 db = MongoDBWrapper()

@@ -19,6 +19,7 @@ class BaseNode(BaseModel):
     """ Base class for nodes. """
     id: str 
     name: str
+    type: str
     parent_id: Optional[str] = None
     children_ids: Optional[List[str]] = None
     collection: str = Field(exclude=True)  # Collection name in the database
@@ -26,7 +27,7 @@ class BaseNode(BaseModel):
 
 
     @staticmethod
-    def get(node_id: str) -> T:
+    def get(node_id: str):
         """ Retrieve a node from the database and return an instance of the correct class. """
         node_class = BaseNode.get_node_class_from_id(node_id)
         module_path, class_name = node_class.rsplit(".", 1)
@@ -39,7 +40,7 @@ class BaseNode(BaseModel):
         """
         The base class returns a dict. Perform validation in the derived classes.
 
-        If the collection is "swarm_nodes", retrieve from the mongodb database.
+        If the collection is "swarm_nodes", retrieve from the external database.
 
         Otherwise, it is a metadata node, which means it can be internal or external.
         Try to retrieve from the internal sqlite database. If not found,

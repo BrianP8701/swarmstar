@@ -4,7 +4,7 @@ For simplicity, swarm nodes, operation, memory and action metadata have ids like
     {swarm_id}_{x}{y}
     
 Where x represents the type of node,
-    op: swarm operation
+    o: swarm operation
     n: swarm node
     m: memory metadata
     a: action metadata

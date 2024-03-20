@@ -8,7 +8,6 @@ from swarmstar.models import (
     SwarmNode,
     ActionOperation,
     ActionMetadata,
-    SwarmState,
     SwarmOperation
 )
 from swarmstar.context import swarm_id_var
@@ -48,9 +47,6 @@ def _spawn_node(spawn_operation: SpawnOperation) -> SwarmNode:
     )
 
     SwarmNode.save(node)
-    swarm_id = swarm_id_var.get()
-    SwarmState.append(swarm_id, node.id)
-    
     return node
 
 def _update_parent(spawn_operation: SpawnOperation, node: SwarmNode) -> None:

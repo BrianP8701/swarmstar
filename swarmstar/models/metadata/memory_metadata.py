@@ -1,11 +1,8 @@
 """
-This module contains the nodes that make up the memory metadata tree.
+Memory metadata labels data with descriptions.
 
-The memory metadata tree allows the swarm to find answers to questions. It steps 
-through the tree with a question and decides at each step which folder to navigate to
-until it finds the answer.
-
-
+It also marks each with a type. Different types of data have specialized
+tools in swarmstar/actions/memory_tools
 """
 from typing import  List, Optional, TypeVar, Type, Dict, Any
 from enum import Enum
@@ -13,13 +10,15 @@ from pydantic import Field
 from typing_extensions import Literal
 
 from swarmstar.database import MongoDBWrapper
-from swarmstar.models.metadata_node import MetadataNode
+from swarmstar.models.metadata.metadata_node import MetadataNode
 from swarmstar.utils.misc.get_next_available_id import get_available_id
 
 db = MongoDBWrapper()
 T = TypeVar('T', bound='MemoryMetadata')
 
 class MemoryTypeEnum(Enum):
+    INTERNAL_FOLDER = "internal_folder"
+    EXTERNAL_FOLDER = "external_folder"
     PORTAL = "portal"
     PYTHON_FILE = "python_file"
     PYTHON_PACKAGE = "python_package"

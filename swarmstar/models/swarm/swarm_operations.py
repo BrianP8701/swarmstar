@@ -87,6 +87,17 @@ class SwarmOperation(BaseModel):
         else:
             raise ValueError(f"Operation type {operation_type} not recognized")
 
+    @staticmethod
+    def delete(operation_id: str) -> None:
+        db.delete("swarm_operations", operation_id)
+
+    @staticmethod
+    def clone(operation_id: str, new_swarm_id: str) -> None:
+        operation = SwarmOperation.get(operation_id)
+        parts = operation.id.split("_", 1)
+        operation.id = f"{new_swarm_id}_{parts[1]}"
+        operation.save()
+
 
 class BlockingOperation(SwarmOperation):
     id: Optional[str] = Field(default_factory=lambda: generate_uuid('blocking_op'))

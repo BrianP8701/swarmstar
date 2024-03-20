@@ -21,7 +21,7 @@ class TerminationPolicies(Enum):
 class SwarmNode(BaseNode):
     id: str = Field(default_factory=get_available_id("swarm_nodes"))
     collection = "swarm_nodes"
-    action_id: str
+    type: str    # Swarm nodes are classified by their action id
     message: str
     alive: bool = True
     termination_policy: TerminationPolicies = TerminationPolicies.SIMPLE

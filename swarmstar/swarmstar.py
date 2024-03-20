@@ -5,13 +5,11 @@ from swarmstar.models import (
     SwarmOperation,
     SpawnOperation,
     NodeEmbryo,
-    SwarmState,
-    SwarmHistory,
     MemoryMetadata,
+    SwarmstarSpace
 )
 from swarmstar.swarm_operations import (
     blocking,
-    failure,
     spawn,
     terminate,
     execute_action
@@ -23,7 +21,7 @@ db = MongoDBWrapper()
 
 class Swarmstar:
     def __init__(self, swarm_id: str):
-        self._set_context(swarm_id)
+        swarm_id_var.set(swarm_id)
 
     def spawn(self, goal: str) -> SpawnOperation:
         """
@@ -34,7 +32,7 @@ class Swarmstar:
         :param goal: The goal of the new swarm
         :return: The root spawn operation for the new swarm
         """
-        self._create_swarmstar_space(swarm_id_var.get())
+        SwarmstarSpace.instantiate_swarmstar_space(swarm_id_var.get())
 
         root_spawn_operation = SpawnOperation(
             node_embryo=NodeEmbryo(
@@ -56,7 +54,6 @@ class Swarmstar:
             "spawn": spawn,
             "blocking": blocking,
             "terminate": terminate,
-            "node_failure": failure,
             "action": execute_action,
         }
 
@@ -85,48 +82,6 @@ class Swarmstar:
             raise ValueError(f"Unexpected return type from operation_func: {type(output)}")
 
         for operation in output:
-            # Insert new operations into the swarm operations collection
             SwarmOperation.save(operation)
 
-        # Add executed operation to swarm history
-        SwarmHistory.append(swarm_id_var.get(), swarm_operation.id)
-
-        return output
-
-    def _create_swarmstar_space(self, swarm_id: str) -> None:
-        memory_space = MemoryMetadata.clone(swarm_id)
-        # TODO - Clone action and util metadata as well
-        swarmstar_space = {
-            "swarm_state": [],
-            "swarm_history": [],
-            "memory_space": memory_space,
-            "action_space": [],
-            "operation_count": 0,
-            "node_count": 0,
-            "memory_count": 0,
-            "action_count": 0
-        }
-        db.insert("admin", swarm_id, swarmstar_space)
-        db.append_to_list("admin", "swarm_ids", "data", swarm_id)
-
-    @staticmethod
-    def delete_swarmstar_space(swarm_id: str) -> None:
-        swarm_node_ids = SwarmState.get(swarm_id)
-        for swarm_node_id in swarm_node_ids:
-            db.delete("swarm_nodes", swarm_node_id)
-        
-        swarm_operation_ids = SwarmHistory.get(swarm_id)
-        for swarm_operation_id in swarm_operation_ids:
-            db.delete("swarm_operations", swarm_operation_id)
-
-        admin = db.get_by_key("admin", "swarm_ids", "data")
-        admin.remove(swarm_id)
-        db.update("admin", "swarm_ids", {"data": admin})
-        db.delete("admin", swarm_id)
-
-        MemoryMetadata.delete_external_memory_metadata_tree(swarm_id)
-
-
-
-    def _set_context(self, swarm_id: str) -> None:
-        swarm_id_var.set(swarm_id)
+        return output        
