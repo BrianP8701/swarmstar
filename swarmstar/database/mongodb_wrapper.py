@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 import os
 from typing import Dict, Any
 
-from swarmstar.utils.data.key_value_storage.abstract import KV_Database
+from swarmstar.database.key_value_db_interface import KV_Database
 
 load_dotenv()
 MONGODB_URI = os.getenv("MONGODB_URI")
@@ -160,3 +160,15 @@ class MongoDBWrapper(KV_Database):
             {"$pull": {inner_key: value}},
             return_document=ReturnDocument.AFTER
         )
+
+    def increment(self, category: str, key: str, inner_key: str) -> int:
+        """Increment a value stored under a specified key, returning the original value."""
+        collection = self.db[category]
+        result = collection.find_one_and_update(
+            {"_id": key},
+            {"$inc": {inner_key: 1}},
+            return_document=ReturnDocument.BEFORE
+        )
+        if result is None:
+            raise ValueError(f"_id {key} not found in the collection {category}.")
+        return result.get(inner_key, 0)

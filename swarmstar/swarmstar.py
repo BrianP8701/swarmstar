@@ -9,14 +9,14 @@ from swarmstar.models import (
     SwarmHistory,
     MemoryMetadata,
 )
-from swarmstar.utils.swarm_operations import (
+from swarmstar.swarm_operations import (
     blocking,
     failure,
     spawn,
     terminate,
     execute_action
 )
-from swarmstar.utils.data import MongoDBWrapper
+from swarmstar.database import MongoDBWrapper
 from swarmstar.context import swarm_id_var
 
 db = MongoDBWrapper()
@@ -101,7 +101,10 @@ class Swarmstar:
             "swarm_history": [],
             "memory_space": memory_space,
             "action_space": [],
-            "util_space": []
+            "operation_count": 0,
+            "node_count": 0,
+            "memory_count": 0,
+            "action_count": 0
         }
         db.insert("admin", swarm_id, swarmstar_space)
         db.append_to_list("admin", "swarm_ids", "data", swarm_id)

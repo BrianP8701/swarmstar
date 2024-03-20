@@ -8,7 +8,7 @@ from typing import List, Optional
 from pydantic import BaseModel, Field
 
 from swarmstar.models import BlockingOperation, NodeEmbryo, SpawnOperation, Memory
-from swarmstar.abstract.base_action import BaseAction
+from swarmstar.actions.base_action import BaseAction
 from swarmstar.context import swarm_id_var
 
 class DecomposeDirectiveModel(BaseModel):
@@ -50,11 +50,6 @@ class Action(BaseAction):
             {"role": "swarmstar", "content": system_message}
         ]
 
-        self.log({
-            "role": "swarmstar",
-            "content": system_message
-        })
-
         return BlockingOperation(
             node_id=self.node.id,
             blocking_type="instructor_completion",
@@ -69,15 +64,6 @@ class Action(BaseAction):
         Depending on the completion, we will either ask questions
         or spawn child nodes for each subdirective.
         '''
-        self.log({
-            "role": "ai",
-            "content": (
-                f"Scrap paper: {completion.scrap_paper if completion.scrap_paper is not None else 'None'}\n\n"
-                f"Questions: {completion.questions if completion.questions is not None else 'None'}\n\n"
-                f"Subdirectives: {completion.subdirectives if completion.subdirectives is not None else 'None'}"
-            )
-        })
-        
         if completion.questions and len(completion.questions) > 0:
             message = (
                 f"An agent was tasked with decomposing the directive: \n`{self.node.message}`"

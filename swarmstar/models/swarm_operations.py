@@ -1,10 +1,10 @@
 """
 The NodeEmbryo is what a node outputs to spawn children.
 
-Nodes can perform 1 of 4 "SwarmOperations":
+Nodes can perform 1 of 5 "SwarmOperations":
     - SpawnOperation
+    - ActionOperation
     - TerminationOperation
-    - FailureOperation
     - BlockingOperation
     - UserCommunicationOperation
 """
@@ -14,7 +14,8 @@ from pydantic import BaseModel, Field
 from pydantic import ValidationError
 
 from swarmstar.utils.misc.generate_uuid import generate_uuid
-from swarmstar.utils.data import MongoDBWrapper
+from swarmstar.database import MongoDBWrapper
+from swarmstar.utils.misc.get_next_available_id import get_available_id
 
 db = MongoDBWrapper()
 
@@ -24,11 +25,10 @@ class NodeEmbryo(BaseModel):
     context: Optional[Dict[str, Any]] = {}
 
 class SwarmOperation(BaseModel):
-    id: str
+    id: str = Field(default_factory=get_available_id("swarm_operations"))
     operation_type: Literal[
         "spawn",
         "terminate",
-        "node_failure",
         "blocking",
         "user_communication",
         "action"
@@ -48,8 +48,6 @@ class SwarmOperation(BaseModel):
                 return ActionOperation(**data)
             elif operation_type == 'terminate':
                 return TerminationOperation(**data)
-            elif operation_type == 'node_failure':
-                return FailureOperation(**data)
             elif operation_type == 'user_communication':
                 return UserCommunicationOperation(**data)
         return super().model_validate(data, **kwargs)
@@ -74,8 +72,7 @@ class SwarmOperation(BaseModel):
             "user_communication": UserCommunicationOperation,
             "spawn": SpawnOperation,
             "terminate": TerminationOperation,
-            "action": ActionOperation,
-            "node_failure": FailureOperation,
+            "action": ActionOperation
         }
         
         if operation_type in operation_mapping:
@@ -123,18 +120,6 @@ class TerminationOperation(SwarmOperation):
     terminator_node_id: str
     node_id: str
     context: Optional[Dict[str, Any]] = None
-
-class FailureOperation(SwarmOperation):
-    id: Optional[str] = Field(default_factory=lambda: generate_uuid('failure_op'))
-    operation_type: Literal["node_failure"] = Field(default="node_failure")
-    failure_type: Literal[
-        "missing_action",
-        "instructor_failure",
-        "execution_error"
-    ]
-    node_id: Optional[str] = None
-    message: str
-    context: Optional[Dict[str, Any]] = {}
 
 class UserCommunicationOperation(SwarmOperation):
     id: Optional[str] = Field(default_factory=lambda: generate_uuid('user_comms_op'))

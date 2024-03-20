@@ -1,24 +1,20 @@
-from abc import ABC, abstractmethod
-from pydantic import BaseModel
-from typing import List, Optional, Dict, Any, TypeVar
-
-from swarmstar.abstract.base_tree import BaseTree
-from swarmstar.models.internal_metadata import get_internal_sqlite
-from swarmstar.utils.data import MongoDBWrapper
+from swarmstar.models.base_tree import BaseTree
+from swarmstar.database.internal import get_internal_sqlite
+from swarmstar.database import MongoDBWrapper
 
 db = MongoDBWrapper()
 
-class BaseMetadataTree(BaseTree):
+class MetadataTree(BaseTree):
     
     @classmethod
-    def portal_clone(cls, swarm_id: str) -> None:
+    def instantiate(cls, swarm_id: str) -> None:
         """
         Only call this once when a swarm instance is created.
         
-        This is not really a clone. Swarmstar comes with a default action 
-        and memory metadata tree. When a swarm instance is created, it'll 
-        need to be able to access the default action and memory metadata tree
-        but also be able to dynamically add actions and memories. 
+        Swarmstar comes with a default action and memory metadata tree. When 
+        a swarm instance is created, it'll need to be able to access the default 
+        action and memory metadata tree but also be able to dynamically add 
+        actions and memories. 
         
         It would be wasteful to copy the entire default action and memory 
         metadata tree each time, as they're immutable. Rather, a select 

@@ -51,7 +51,7 @@ from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 
 from swarmstar.models import BlockingOperation, TerminationOperation, SpawnOperation, NodeEmbryo, SwarmNode
-from swarmstar.abstract.base_action import BaseAction
+from swarmstar.actions.base_action import BaseAction
 
 
 class ConfirmDirectiveModel(BaseModel):
@@ -128,7 +128,7 @@ class Action(BaseAction):
         self.add_value_to_execution_memory("branch_reports", branch_reports)
 
         confirm_completion_operations = []
-        for node_id in branch_head_node_ids:
+        for i, node_id in enumerate(branch_head_node_ids):
             this_branch_reports_str = "\n".join(branch_reports[node_id])
             this_branch_directive = SwarmNode.get(node_id).message
             
@@ -139,11 +139,6 @@ class Action(BaseAction):
             )
             messages = [{"role": "swarmstar", "content": system_message}]
 
-            this_branch_log_index_key = self.log({
-                "role": "swarmstar",
-                "content": system_message
-            }, log_index_key)
-            
             confirm_completion_operations.append(
                 BlockingOperation(
                     node_id=self.node.id,
@@ -151,7 +146,7 @@ class Action(BaseAction):
                     args={"messages": messages},
                     context={
                         "branch_head_node_id": node_id,
-                        "log_index_key": this_branch_log_index_key,
+                        "log_index_key": log_index_key + [i],
                         "instructor_model_name": "ConfirmDirectiveModel"
                     },
                     next_function_to_call="analyze_branch_review"
@@ -168,14 +163,7 @@ class Action(BaseAction):
             
             Once all branches have been reviewed, we'll move to the next phase.
         """
-        self.log({
-            "role": "ai",
-            "content": (
-                f"Is the directive complete: {completion.is_complete if completion.is_complete is not None else 'None'}\n\n"
-                f"Questions: {completion.questions if completion.questions is not None else 'None'}"
-            )
-        }, log_index_key)
-        
+
         if completion.questions:
             self.add_value_to_execution_memory("__termination_handler__", "review_branch_with_questions_answered")
             self.update_termination_policy("custom_action_termination")
@@ -232,11 +220,6 @@ class Action(BaseAction):
         )
         messages = [{"role": "swarmstar", "content": system_message}]
 
-        self.log({
-            "role": "swarmstar",
-            "content": system_message
-        }, log_index_key)
-        
         return BlockingOperation(
             node_id=self.node.id,
             blocking_type="instructor_completion",
@@ -277,11 +260,6 @@ class Action(BaseAction):
         )
         messages = [{"role": "swarmstar", "content": system_message}]
 
-        self.log({
-            "role": "swarmstar",
-            "content": system_message
-        })
-
         return BlockingOperation(
             node_id=self.node.id,
             blocking_type="instructor_completion",
@@ -292,14 +270,6 @@ class Action(BaseAction):
 
     @BaseAction.receive_completion_handler
     def analyze_overarching_directive_review(self, completion: ConfirmDirectiveModel):
-        self.log({
-            "role": "ai",
-            "content": (
-                f"Is the directive complete: {completion.is_complete if completion.is_complete is not None else 'None'}\n\n"
-                f"Questions: {completion.questions if completion.questions is not None else 'None'}"
-            )
-        })
-        
         if completion.questions:
             self.add_value_to_execution_memory("__termination_handler__", "review_overarching_directive_with_questions_answered")
             self.update_termination_policy("custom_action_termination")
@@ -356,11 +326,7 @@ class Action(BaseAction):
             f"\n\nAnswers to questions:\n{overarching_directive_question_answers}"
         )
         messages = [{"role": "swarmstar", "content": system_message}]
-        
-        self.log({
-            "role": "swarmstar",
-            "content": system_message
-        })
+
         return BlockingOperation(
             node_id=self.node.id,
             blocking_type="instructor_completion",
@@ -380,10 +346,10 @@ class Action(BaseAction):
             all_branch_reports.append(f"Branch directive: {branch_directive}\n\nBranch reports:\n{reports_str}\n\n")
         reports_str = "\n\n".join(all_branch_reports)
         reports_str += f"\n\n{overarching_directive_question_answers}"
-        
+
         decompose_directive_node = SwarmNode.get(self.node.parent_id)
         subdirectives = decompose_directive_node.report
-        
+
         system_message = (
             f"{CONSOLIDATE_REPORTS_INSTRUCTIONS}"
             f"\n\nOverarching directive:\n{decompose_directive_node.message}"
@@ -392,11 +358,6 @@ class Action(BaseAction):
         )
         messages = [{"role": "swarmstar", "content": system_message}]
 
-        self.log({
-            "role": "swarmstar",
-            "content": system_message
-        })
-        
         return BlockingOperation(
             node_id=self.node.id,
             blocking_type="openai_completion",
@@ -407,10 +368,6 @@ class Action(BaseAction):
 
     @BaseAction.receive_completion_handler
     def close_review(self, completion: str):
-        self.log({
-            "role": "ai",
-            "content": completion.content
-        })
         decompose_directive_node = SwarmNode.get(self.node.parent_id)
         if decompose_directive_node.context:
             decompose_directive_node.context["consolidated_reports"] = completion
@@ -438,12 +395,7 @@ class Action(BaseAction):
                 f"\n\nConsolidated reports:\n{completion}"
             )
             messages = [{"role": "swarmstar", "content": system_message}]
-            
-            self.log({
-                "role": "swarmstar",
-                "content": system_message
-            })
-            
+
             return BlockingOperation(
                 node_id=self.node.id,
                 blocking_type="openai_completion",
@@ -451,14 +403,9 @@ class Action(BaseAction):
                 context={},
                 next_function_to_call="spawn_new_decompose_directive_node"
             )
-            
+
     @BaseAction.receive_completion_handler
     def spawn_new_decompose_directive_node(self, completion: str):
-        self.log({
-            "role": "ai",
-            "content": completion
-        })
-
         self.report(
             "Reviewed decompose directive node's directive and all it's subdirectives. "
             "The overarching directive has not been completed. Spawning a new decompose "
@@ -473,7 +420,7 @@ class Action(BaseAction):
                 message=completion
             )
         )
-    
+
     def _get_branch_reports(self, branch_head_node_ids: List[str]) -> Dict[str, List[str]]:
         """
             Returns a dictionary of branch head node ids to a list of their respective reports.

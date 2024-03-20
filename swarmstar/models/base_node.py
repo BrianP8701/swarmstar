@@ -3,11 +3,12 @@ Base class for nodes.
 
 Swarm nodes, action metadata nodes and memory metadata nodes are all derived from this class.
 """
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional, Dict, Any, TypeVar
+from importlib import import_module
 
-from swarmstar.utils.data import MongoDBWrapper
-from swarmstar.models.internal_metadata import get_internal_sqlite
+from swarmstar.database import MongoDBWrapper
+from swarmstar.database.internal import get_internal_sqlite
 from swarmstar.context import swarm_id_var
 
 db = MongoDBWrapper()
@@ -21,9 +22,20 @@ class BaseNode(BaseModel):
     parent_id: Optional[str] = None
     children_ids: Optional[List[str]] = None
     collection: str = Field(exclude=True)  # Collection name in the database
+    model_config = ConfigDict(use_enum_values=True)
+
+
+    @staticmethod
+    def get(node_id: str) -> T:
+        """ Retrieve a node from the database and return an instance of the correct class. """
+        node_class = BaseNode.get_node_class_from_id(node_id)
+        module_path, class_name = node_class.rsplit(".", 1)
+        module = import_module(module_path)
+        node_class = getattr(module, class_name)
+        return node_class.get(node_id)
 
     @classmethod
-    def get(cls, node_id: str) -> Dict[str, Any]:
+    def get_node_dict(cls, node_id: str) -> Dict[str, Any]:
         """
         The base class returns a dict. Perform validation in the derived classes.
 
@@ -76,3 +88,18 @@ class BaseNode(BaseModel):
         new_id = f"{swarm_id}_{parts[1]}"
         self.id = new_id
         self.insert()
+
+    def get_node_class_from_id(id: str) -> str:
+        """ 
+        Every node id follows the pattern {swarm_id}_{collection_short}{index}. 
+        This method returns the class name from the id.
+        """
+        prefix = id.split("_")[1][0]
+        if prefix == "n":
+            return "swarmstar.models.swarm_node.SwarmNode"
+        elif prefix == "m":
+            return "swarmstar.models.memory_metadata.MemoryMetadata"
+        elif prefix == "a":
+            return "swarmstar.models.action_metadata.ActionMetadata"
+        else:
+            raise ValueError(f"Prefix {prefix} in id {id} is not recognized.")

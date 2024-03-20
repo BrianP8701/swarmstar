@@ -1,3 +1,8 @@
+"""
+This file provides methods to retrieve data internal to the swarmstar package.
+
+Sources include the internal sqlite database and internal files.
+"""
 import sqlite3
 import json
 from importlib import resources
@@ -19,3 +24,22 @@ def get_internal_sqlite(category: str, key: str) -> dict:
                 raise ValueError(f'No value found for key: {key}')
     except Exception as e:
         raise ValueError(f'Failed to retrieve kv value: {str(e)} at {db_path}')
+
+
+def get_internal_file_as_string(file_name: str) -> str:
+    """
+    Retrieves the content of an internal file as a string.
+
+    Args:
+        file_name (str): The name of the file to retrieve.
+
+    Returns:
+        str: The content of the file.
+    """
+    try:
+        with resources.open_text('swarmstar', file_name) as file:
+            return file.read()
+    except FileNotFoundError:
+        raise ValueError(f'File {file_name} not found in package.')
+    except Exception as e:
+        raise ValueError(f'Failed to read file {file_name}: {str(e)}')

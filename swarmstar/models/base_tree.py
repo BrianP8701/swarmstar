@@ -1,8 +1,8 @@
 from pydantic import BaseModel
 from abc import ABC
 
-from swarmstar.utils.data import MongoDBWrapper
-from swarmstar.abstract.base_node import BaseNode
+from swarmstar.database import MongoDBWrapper
+from swarmstar.models.base_node import BaseNode
 
 db = MongoDBWrapper()
 

@@ -10,7 +10,7 @@ from typing import List
 from pydantic import BaseModel, Field
 
 from swarmstar.models import BlockingOperation, TerminationOperation, UserCommunicationOperation
-from swarmstar.abstract.base_action import BaseAction
+from swarmstar.actions.base_action import BaseAction
 
 class InitialQuestionAskerConversationState(BaseModel):
     questions: List[str] = Field(..., description="List of questions we need answered")
@@ -79,11 +79,6 @@ class Action(BaseAction):
                 "content": system_message
             }
         ]
-        
-        self.log({
-            "role": "swarmstar",
-            "content": system_message
-        })
 
         return BlockingOperation(
             node_id=self.node.id,
@@ -100,15 +95,6 @@ class Action(BaseAction):
         self,
         completion: InitialQuestionAskerConversationState,
     ):
-        self.log({
-            "role": "ai",
-            "content": (
-                f"Generated chat name: {completion.chat_name}\n\n"
-                f"Questions: {completion.questions}\n\n"
-                f"Persisted Context: {completion.persisted_context}\n\n"
-            )
-        })
-        
         system_message = (
             f"{GENERATE_MESSAGE_INSTRUCTIONS}"
             f"Questions: {completion.questions}\n\n"
@@ -118,11 +104,6 @@ class Action(BaseAction):
         messages = [
             {"role": "swarmstar", "content": system_message}
         ]
-
-        self.log({
-            "role": "swarmstar",
-            "content": system_message
-        })
         
         return BlockingOperation(
             node_id=self.node.id,
@@ -146,11 +127,6 @@ class Action(BaseAction):
         chat_name: str,
         completion: str,
     ):
-        self.log({
-            "role": "ai",
-            "content": completion
-        })
-        
         return UserCommunicationOperation(
             node_id=self.node.id,
             message=completion,
@@ -172,15 +148,6 @@ class Action(BaseAction):
         reports: List[str],
         completion: QuestionAskerConversationState,
     ):
-        self.log({
-            "role": "ai",
-            "content": (
-                f"Questions: {completion.questions}\n\n"
-                f"Persisted Context: {completion.persisted_context}\n\n"
-                f"New Report: {completion.report}\n\n"
-            )
-        })
-        
         system_message = (
             f"{GENERATE_MESSAGE_INSTRUCTIONS}"
             f"Questions: {completion.questions}\n\n"
@@ -192,11 +159,6 @@ class Action(BaseAction):
             {"role": "swarmstar", "content": system_message}
         ]
 
-        self.log({
-            "role": "swarmstar",
-            "content": system_message
-        })
-        
         return BlockingOperation(
             node_id=self.node.id,
             blocking_type="openai_completion",
@@ -217,11 +179,6 @@ class Action(BaseAction):
         reports: List[str],
         completion: str,
     ):
-        self.log({
-            "role": "ai",
-            "content": completion
-        })
-        
         return UserCommunicationOperation(
             node_id=self.node.id,
             message=completion,
@@ -242,11 +199,6 @@ class Action(BaseAction):
         recent_ai_message: str,
         user_response: str,
     ):
-        self.log({
-            "role": "user",
-            "content": user_response
-        })
-        
         system_message = (
             f"{UPDATE_CONVERSATION_STATE_INSTRUCTIONS}"
             f"Update Questions: {questions}\n\n"
@@ -262,11 +214,6 @@ class Action(BaseAction):
             }
         ]
 
-        self.log({
-            "role": "swarmstar",
-            "content": system_message
-        })
-        
         return BlockingOperation(
             node_id=self.node.id,
             blocking_type="instructor_completion",
@@ -292,14 +239,6 @@ class Action(BaseAction):
     ):
         reports.append(completion.report)
         if (not completion.questions) or (len(completion.questions) == 0):
-            self.log({
-                "role": "ai",
-                "content": (
-                    f"Questions: {completion.questions}\n\n"
-                    f"Persisted Context: {completion.persisted_context}\n\n"
-                    f"New Report: {completion.report}\n\n"
-                )
-            })
             return self.finalize_report(reports)
 
         return self.generate_message(
@@ -309,11 +248,6 @@ class Action(BaseAction):
     def finalize_report(self, reports: List[str]):
         system_message = FINALIZE_REPORT_INSTRUCTIONS + f"\n\nReports: {reports}"
         messages = [{"role": "swarmstar", "content": system_message}]
-        
-        self.log({
-            "role": "swarmstar",
-            "content": system_message
-        })
 
         return BlockingOperation(
             node_id=self.node.id,
@@ -325,10 +259,6 @@ class Action(BaseAction):
 
     @BaseAction.receive_completion_handler
     def terminate_conversation(self, completion: str):
-        self.log({
-            "role": "ai",
-            "content": completion
-        })
         self.report(
             "The agent created a final report after having a conversation with the user "
             f"with the intent of answering a given set of questions.\n\nQuestions: {self.node.message}"

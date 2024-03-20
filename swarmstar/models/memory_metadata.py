@@ -1,146 +1,79 @@
 """
-The memory metadata is a place for the swarm to store it's work,
-as well as a place for it to perform various forms of RAG. 
+This module contains the nodes that make up the memory metadata tree.
 
-First and foremost, the memory metadata organizes the memory so 
-routers can search over the space effectively.
+The memory metadata tree allows the swarm to find answers to questions. It steps 
+through the tree with a question and decides at each step which folder to navigate to
+until it finds the answer.
 
-Secondly, data can take on many forms. Internal package documentation,
-cloud blob storage, local file systems, vector databases and more.
-All of these require different types of interaction. The memory 
-metadata labels the memory so the swarm knows how to interact with it.
+
 """
-
-from typing import Dict, List, Optional, Any
-
-from pydantic import BaseModel, Field
+from typing import  List, Optional, TypeVar, Type, Dict, Any
+from enum import Enum
+from pydantic import Field
 from typing_extensions import Literal
 
-from swarmstar.utils.misc.generate_uuid import generate_uuid
-from swarmstar.utils.misc.generate_uuid import generate_uuid
-from swarmstar.utils.data import MongoDBWrapper
-from swarmstar.models.internal_metadata import get_internal_sqlite
+from swarmstar.database import MongoDBWrapper
+from swarmstar.models.metadata_node import MetadataNode
+from swarmstar.utils.misc.get_next_available_id import get_available_id
 
 db = MongoDBWrapper()
+T = TypeVar('T', bound='MemoryMetadata')
 
-class MemoryMetadata(BaseModel):
-    id: Optional[str] = Field(default_factory=lambda: generate_uuid('memory'))
-    is_folder: bool
-    type: Literal[
-        "internal_folder",
-        "internal_string",
-        "folder",
-        "project_root_folder",
-        "project_file_bytes",
-        "string"
-    ]
-    name: str
-    description: str
-    parent: Optional[str] = None
-    children_ids: Optional[List[str]] = None
-    context: Optional[Dict[str, Any]] = {}
+class MemoryTypeEnum(Enum):
+    PORTAL = "portal"
+    PYTHON_FILE = "python_file"
+    PYTHON_PACKAGE = "python_package"
+    PYTHON_CLASS = "python_class"
+    PYTHON_FUNCTION = "python_function"
+    GITHUB_LINK = "github_link"
+    JSON_FILE = "json_file"
+    CSV_FILE = "csv_file"
+    MARKDOWN_FILE = "markdown_file"
+    DOCUMENTATION_FOLDER = "documentation_folder"
+    OTHER = "other"
 
-    @staticmethod
-    def get(memory_id: str) -> 'MemoryMetadata':
-        try:
-            memory_metadata = db.get("memory_metadata", memory_id)
-            if memory_metadata is None:
-                raise ValueError(
-                    f"This memory id: `{memory_id}` does not exist in external memory space."
-                )
-    
-        except:
-            try:
-                memory_metadata = get_internal_sqlite("memory_metadata", memory_id)
-                if memory_metadata is None:
-                    raise ValueError(
-                        f"This memory id: `{memory_id}` does not exist in internal memory space."
-                    )
-            except:
-                raise ValueError(
-                    f"This memory id: `{memory_id}` does not exist in both internal and external memory spaces."
-                )
+class MemoryMetadata(MetadataNode):
+    collection = "memory_metadata"
+    id: str = Field(default_factory=get_available_id("memory_metadata"))
+    type: MemoryTypeEnum # These define the type of the underlying data. Each type has tools to better navigate the data
+    cache: Dict[str, Any] # If a node has been metafied, it will cache here
+    up_to_date: bool # If the underlying data has changed, and the metadata is out of date
 
-        type_mapping = {
-
-        }
-        memory_type = memory_metadata["type"]
-        if memory_type in type_mapping:
-            return type_mapping[memory_type](**memory_metadata)
-        return MemoryMetadata(**memory_metadata)
-
-    @staticmethod
-    def clone(swarm_id: str) -> List[str]:
-        """
-        Copies the internal memory metadata tree with root id as swarm id
-        and prepends the swarm id to all the memory ids.
-
-        Returns a list of all the memory metadata ids.
-        """
-        internal_memory_metadata_root = MemoryMetadata.get("root")
-        internal_memory_metadata_root.id = swarm_id
-        memory_space = [swarm_id]
-
-        def recursive_helper(memory_metadata: 'MemoryMetadata'):
-            if memory_metadata.children_ids is not None:
-                for child_id in memory_metadata.children_ids:
-                    child_metadata = MemoryMetadata.get(child_id)
-                    child_metadata.id = f"{swarm_id}_{child_metadata.id}"
-                    recursive_helper(child_metadata)
-                    memory_space.append(child_metadata.id)
-                    child_metadata.children_ids = [
-                        f"{swarm_id}_{child_id}" for child_id in child_metadata.children_ids
-                    ]
-                    MemoryMetadata.save(child_metadata)
-
-        recursive_helper(internal_memory_metadata_root)
+    @classmethod
+    def get(cls: Type[T], action_id: str) -> T:
+        """ Retrieve a memory metadata node from the database and return an instance of the correct class. """
+        # First, call the superclass (MetadataNode) get method to retrieve the node
+        memory_metadata_dict = super().get_node_dict(action_id)
         
-        internal_memory_metadata_root.children_ids = [
-            f"{swarm_id}_{child_id}" for child_id in internal_memory_metadata_root.children_ids
-        ]
-        MemoryMetadata.save(internal_memory_metadata_root)
-        return memory_space
+        if memory_metadata_dict["internal"]:
+            if memory_metadata_dict["is_folder"]:
+                return InternalMemoryFolderMetadata(**memory_metadata_dict)
+            else:
+                return InternalMemoryMetadata(**memory_metadata_dict)
+        else:
+            if memory_metadata_dict["is_folder"]:
+                return ExternalMemoryFolderMetadata(**memory_metadata_dict)
+            else:
+                return ExternalMemoryMetadata(**memory_metadata_dict)
 
-    @staticmethod
-    def save(memory_metadata: 'MemoryMetadata') -> None:
-        db.insert("memory_metadata", memory_metadata.id, memory_metadata.model_dump())
-
-    @staticmethod
-    def delete(memory_id: str) -> None:
-        db.delete("memory_metadata", memory_id)
-
-    @staticmethod
-    def delete_external_memory_metadata_tree(swarm_id: str) -> None:
-        root_memory_metadata = MemoryMetadata.get(swarm_id)
-        
-        def recursive_helper(memory_metadata: 'MemoryMetadata'):
-            MemoryMetadata.delete(memory_metadata.id)
-            if memory_metadata.children_ids is not None:
-                for child_id in memory_metadata.children_ids:
-                    child_metadata = MemoryMetadata.get(child_id)
-                    recursive_helper(child_metadata)
-
-        recursive_helper(root_memory_metadata)
-
-class MemoryFolder(MemoryMetadata):
-    is_folder: Literal[True] = Field(default=True)
-    type: Literal[
-        "folder",
-        "internal_folder",
-        "project_root_folder",
-    ]
-    name: str
-    description: str
-    children_ids: List[str]
-    parent: Optional[str] = None
-
-class MemoryNode(MemoryMetadata):
+class InternalMemoryMetadata(MemoryMetadata):
     is_folder: Literal[False] = Field(default=False)
-    type: Literal[
-        "project_file_bytes"
-    ]
-    name: str
-    description: str
-    parent: str
+    internal: Literal[True] = Field(default=True)
     children_ids: Optional[List[str]] = Field(default=None)
-    context: Optional[Dict[str, Any]] = {}
+    parent_id: str
+
+class InternalMemoryFolderMetadata(MemoryMetadata):
+    is_folder: Literal[True] = Field(default=True)
+    internal: Literal[True] = Field(default=True)
+    children_ids: List[str]
+
+class ExternalMemoryMetadata(MemoryMetadata):
+    is_folder: Literal[False] = Field(default=False)
+    internal: Literal[False] = Field(default=False)
+    children_ids: Optional[List[str]] = Field(default=None)
+    parent_id: str
+
+class ExternalMemoryFolderMetadata(MemoryMetadata):
+    is_folder: Literal[True] = Field(default=True)
+    internal: Literal[False] = Field(default=False)
+    children_ids: List[str]

@@ -2337,3 +2337,29 @@ At the same time default behavior is to spawn a node to save the github link int
 There arent many folders. it stores this in user given links in constants.
 
 Creates subdirective to clone the github repository
+
+
+# Memory metadata space
+starting with the default internal memory metadata space
+user: contains stuff from the user and any user related stuff
+projects: contains code that you are working on and can run
+code: contains code that you can reference, gathered from github most likely
+internet: contains data, text anything scraped from the internet
+
+Walking through an imaginary scenario
+
+User: provided github link and asks swarm to add feature to his codebase
+Swarm: 
+    Whenever a constant (github link) is provided a node gets spawned to handle it. The process with a new constant is always the same. Label it, as one of the predefined choices in the enum. If not in the enum, create a new label. for now the enum contains: github_link, openai_key. Immediately thereafter begin a save process starting from user/links folder. Saving involves stepping through folders to find a good place to save an item. in this case user/links contains no more folders since we just started so save it there. (When a node has too many children, a process will be initiated to group them into folders)
+
+    Now a question. upon saving a github link that the user provided us, do we ALWAYS want to just immediately clone the github repo and save it to the code folder? Im assuming yes. I think yeah ill just have the github repo be cloned. But then we dont want to do anything with that data. we just save it to a folder in the code folder. with what description? I suppose we can begin by looking at the files and folders in the first layer of the repo, and letting the LLM decide what folder it wants to check out. and then whenever it does find something, itll be given the stuff inside, asked to generate a description. Do i allow the LLM to go deeper and explore to what extent? We just want a base description of the repository and save it in the memory as one giant chunk, unmetafied.
+
+    Then the llm will proceed to look at the goal provided to it. it will inevitable have lots of questions to ask. these questions will all go to the memory space. An llm will search the repo. right now it has no metadata to search the repository. Oh wait, yes i remember
+
+
+This is the save_user_provided_link action
+
+swarm breaks down directive, asks questions about repo.
+checks folder:
+user
+code

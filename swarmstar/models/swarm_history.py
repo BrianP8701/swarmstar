@@ -1,7 +1,6 @@
 from typing import List
 
-from swarmstar.utils.data import MongoDBWrapper
-from swarmstar.models import SwarmOperation
+from swarmstar.database import MongoDBWrapper
 
 db = MongoDBWrapper()
 
@@ -20,10 +19,3 @@ class SwarmHistory:
         Get a list of swarm operation ids that have been executed on the swarm.
         """
         return db.get_by_key("admin", swarm_id, "swarm_history")
-
-    @staticmethod
-    def save(swarm_id: str, swarm_history: List[str]) -> None:
-        """
-        Save the swarm history to the database for a new swarm.
-        """
-        db.update("admin", swarm_id, {"swarm_history": swarm_history})

@@ -5,24 +5,14 @@ which will call the next_function_to_call of the node's action with the completi
 and context.
 """
 from importlib import import_module
-from typing import Dict, List
 
-from pydantic import BaseModel
-
-from swarmstar.models import BlockingOperation, ActionOperation
+from swarmstar.models import BlockingOperation, ActionOperation, BaseNode
 from swarmstar.utils.ai import Instructor
 
 instructor = Instructor()
 
-class expected_args(BaseModel):
-    messages: List[
-        Dict[str, str]
-    ]  # This should be a list of dictionaries with the keys 'role' and 'content'
-    instructor_model_name: str  # This should point to a pydnatic model in the swarmstar.utils.ai.openai_instructor.models module
-
-
 async def blocking(blocking_operation: BlockingOperation) -> BlockingOperation:
-    messages = blocking_operation.args["messages"]
+    message = blocking_operation.args["message"]
     instructor_model_name = blocking_operation.context["instructor_model_name"]
 
     models_module = import_module(
@@ -31,10 +21,25 @@ async def blocking(blocking_operation: BlockingOperation) -> BlockingOperation:
     instructor_model = getattr(models_module, instructor_model_name)
 
     response = await instructor.completion(
-        messages=messages,
+        messages={
+            "role": "system",
+            "content": message
+        },
         instructor_model=instructor_model
     )
     
+    node = BaseNode.get(blocking_operation.node_id)
+    log_index_key = blocking_operation.context.get("log_index_key", None)
+
+    node.log({
+        "role": "swarmstar",
+        "content": message
+    }, log_index_key)
+    node.log({
+        "role": "ai",
+        "content": response.model_dump_json(indent=2)
+    }, log_index_key)
+
     return ActionOperation(
         node_id=blocking_operation.node_id,
         function_to_call=blocking_operation.next_function_to_call,

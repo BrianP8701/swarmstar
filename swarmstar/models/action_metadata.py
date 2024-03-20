@@ -1,57 +1,88 @@
+"""
+This module defines the nodes that make up the action metadata tree.
+
+This metadata tree allows the swarm to find and execute actions, by stepping 
+through the tree with a directive and deciding at each step which folder to 
+navigate to until it finds an action. 
+
+When the swarm needs to perform an action that doesen't exist, it will create a 
+new action, and save the action to the database, and it's metadata to the tree.
+"""
 from typing import List, Optional, Type, TypeVar
 from pydantic import Field
+from enum import Enum
 from typing_extensions import Literal
+from importlib import import_module
 
-from swarmstar.utils.data import MongoDBWrapper
-from swarmstar.abstract.metadata_node import MetadataNode
+from swarmstar.database import MongoDBWrapper
+from swarmstar.models.metadata_node import MetadataNode
+from swarmstar.utils.misc.get_next_available_id import get_available_id
 
 db = MongoDBWrapper()
-
 T = TypeVar('T', bound='ActionMetadata')
 
+class ActionTypeEnum(Enum):
+    PORTAL = "portal"
+    BASIC = "basic"
 
 class ActionMetadata(MetadataNode):
-    type: Literal[
-        "internal_folder",
-        "internal_action",
-    ]
+    id: str = Field(default_factory=get_available_id("action_metadata"))
+    collection = "action_metadata"
+    type = ActionTypeEnum
 
     @classmethod
     def get(cls: Type[T], action_id: str) -> T:
+        """ Retrieve an action metadata node from the database and return an instance of the correct class. """
         # First, call the superclass (MetadataNode) get method to retrieve the node
-        action_metadata_dict = super().get(action_id)
+        action_metadata_dict = super().get_node_dict(action_id)
         
-        # Define a mapping from type to the corresponding class
-        type_mapping = {
-            "internal_action": InternalAction,
-            "internal_folder": InternalFolder,
-            # Add other types as necessary
-        }
-        
-        # Use the type attribute to determine the correct class to instantiate
-        action_type = action_metadata_dict["type"]
-        if action_type in type_mapping:
-            # Return an instance of the correct type, passing the action_metadata as initialization arguments
-            return type_mapping[action_type](**action_metadata_dict)
+        if action_metadata_dict["internal"]:
+            if action_metadata_dict["is_folder"]:
+                return InternalActionFolderMetadata(**action_metadata_dict)
+            else:
+                return InternalActionMetadata(**action_metadata_dict)
         else:
-            # If the type is not in the mapping, you might want to handle this case (e.g., raise an error)
-            raise ValueError(f"Unknown action type: {action_type}")
+            if action_metadata_dict["is_folder"]:
+                return ExternalActionFolderMetadata(**action_metadata_dict)
+            else:
+                return ExternalActionMetadata(**action_metadata_dict)
+
+    @staticmethod
+    def get_action_class(action_id: str):
+        """ Returns an uninstantiated action class. """
+        action_metadata_dict = ActionMetadata.get(action_id)
+        if action_metadata_dict.is_folder:
+            raise ValueError(f"You tried to get the action class of a folder {action_id}.")
+        
+        if action_metadata_dict.internal:
+            internal_file_path = action_metadata_dict.internal_file_path
+            action_class = getattr(import_module(internal_file_path), "Action")
+            return action_class
+        else:
+            # TODO: Implement this when we have a better idea of how external actions will work.
+            raise ValueError(f"External actions are not supported yet.")
 
 
-class InternalAction(ActionMetadata):
-    type: Literal["internal_action"] = Field(default="internal_action")
-    name: str
-    description: str
+
+class InternalActionMetadata(ActionMetadata):
+    is_folder: Literal[False] = Field(default=False)
+    internal: Literal[True] = Field(default=True)
     children_ids: Optional[List[str]] = Field(default=None)
-    parent: str
-    termination_policy: Literal["simple", "confirm_directive_completion", "clone_with_questions_answered"] = Field(default="simple")
-    internal_action_path: str
+    parent_id: str
+    default_termination_policy: Literal["simple", "confirm_directive_completion"] = Field(default="simple")
+    internal_file_path: str
 
+class InternalActionFolderMetadata(ActionMetadata):
+    is_folder: Literal[True] = Field(default=True)
+    internal: Literal[True] = Field(default=True)
 
-class InternalFolder(ActionMetadata):
-    type: Literal["internal_folder"] = Field(default="internal_folder")
-    name: str
-    description: str
-    children_ids: List[str]
-    parent: str = None
-    internal_folder_path: str
+class ExternalActionMetadata(ActionMetadata):
+    is_folder: Literal[False] = Field(default=False)
+    internal: Literal[False] = Field(default=False)
+    children_ids: Optional[List[str]] = Field(default=None)
+    parent_id: str
+    default_termination_policy: Literal["simple", "confirm_directive_completion"] = Field(default="simple")
+
+class ExternalActionFolderMetadata(ActionMetadata):
+    is_folder: Literal[True] = Field(default=True)
+    internal: Literal[False] = Field(default=False)

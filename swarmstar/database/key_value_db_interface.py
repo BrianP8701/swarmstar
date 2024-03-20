@@ -50,3 +50,8 @@ class KV_Database(ABC):
     def remove_from_list(self, category: str, key: str, inner_key: str, value: Any):
         """Remove a value from a list stored under a specified key."""
         pass
+
+    @abstractmethod
+    def increment(self, category: str, key: str, inner_key: str) -> int:
+        """Increment a value stored under a specified key, returning the original value."""
+        pass
