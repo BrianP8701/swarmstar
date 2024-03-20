@@ -15,7 +15,7 @@ from enum import Enum
 from typing_extensions import Literal
 from importlib import import_module
 
-from swarmstar.database import MongoDBWrapper
+from swarmstar.utils.database import MongoDBWrapper
 from swarmstar.models.metadata.metadata_node import MetadataNode
 from swarmstar.utils.misc.get_next_available_id import get_available_id
 

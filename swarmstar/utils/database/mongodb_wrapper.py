@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 import os
 from typing import Dict, Any
 
-from swarmstar.database.key_value_db_interface import KV_Database
+from swarmstar.utils.database.key_value_db_interface import KV_Database
 
 load_dotenv()
 MONGODB_URI = os.getenv("MONGODB_URI")

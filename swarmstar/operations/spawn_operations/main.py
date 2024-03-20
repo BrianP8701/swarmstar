@@ -10,8 +10,6 @@ from swarmstar.models import (
     ActionMetadata,
     SwarmOperation
 )
-from swarmstar.context import swarm_id_var
-
 
 def spawn(spawn_operation: SpawnOperation) ->  List[ActionOperation]:
     """

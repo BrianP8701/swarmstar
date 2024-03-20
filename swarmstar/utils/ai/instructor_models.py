@@ -23,13 +23,16 @@ from typing import List, Optional
 from pydantic import BaseModel, Field
 
 class QuestionWrapper(BaseModel):
-    questions: List[str] = Field(..., description="CRITICAL: You must only make decisions or plan when you feel you have all the necessary context. Otherwise, you must ask questions to gather the necessary context.")
+    questions: List[str] = Field(..., description="CRITICAL: You must only make decisions or plan when you have all the necessary context. Otherwise, you must ask questions. This is the list of questions you need answered before you can proceed.")
 
 class DecomposeDirectiveModel(QuestionWrapper):
     subdirectives: Optional[List[str]] = Field(
         None,
         description="List of subdirectives to be executed in parallel, if you have no questions.",
     )
+
+class ActionPlan(BaseModel):
+    plan: List[str] = Field(..., description="The plan to be executed. Each element in this list is an action to be pursued immediately, in parallel, without dependencies.")
 
 
 class NextPath(BaseModel):
@@ -65,3 +68,20 @@ class ConfirmDirectiveModel(QuestionWrapper):
     is_complete: bool = Field(
         ..., description="Whether the directive is complete or not."
     )
+
+
+
+
+# Example of in model validation
+from pydantic import BaseModel, BeforeValidator
+from typing_extensions import Annotated
+from instructor import llm_validator
+
+class QuestionAnswerNoEvil(BaseModel):
+    question: str
+    answer: Annotated[
+        str,
+        BeforeValidator(
+            llm_validator("don't say objectionable things", allow_override=True)
+        ),
+    ]

@@ -6,8 +6,8 @@ In swarmstar we have two metadata trees: action and memory.
 This allows us to find actions to take, and answers to questions.
 """
 from swarmstar.models.base_tree import BaseTree
-from swarmstar.database.internal import get_internal_sqlite
-from swarmstar.database import MongoDBWrapper
+from swarmstar.utils.database.internal import get_internal_sqlite
+from swarmstar.utils.database import MongoDBWrapper
 
 db = MongoDBWrapper()
 

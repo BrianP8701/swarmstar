@@ -13,7 +13,7 @@ instructor = Instructor()
 
 async def blocking(blocking_operation: BlockingOperation) -> BlockingOperation:
     message = blocking_operation.args["message"]
-    instructor_model_name = blocking_operation.context["instructor_model_name"]
+    instructor_model_name = blocking_operation.args["instructor_model_name"]
 
     models_module = import_module(
         "swarmstar.actions.pydantic_models"

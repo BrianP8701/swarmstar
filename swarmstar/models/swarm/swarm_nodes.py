@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional
 from enum import Enum
 from pydantic import Field
 
-from swarmstar.database import MongoDBWrapper
+from swarmstar.utils.database import MongoDBWrapper
 from swarmstar.models.base_node import BaseNode
 from swarmstar.utils.misc.get_next_available_id import get_available_id
 

@@ -7,8 +7,8 @@ from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional, Dict, Any, TypeVar
 from importlib import import_module
 
-from swarmstar.database import MongoDBWrapper
-from swarmstar.database.internal import get_internal_sqlite
+from swarmstar.utils.database import MongoDBWrapper
+from swarmstar.utils.database.internal import get_internal_sqlite
 from swarmstar.context import swarm_id_var
 
 db = MongoDBWrapper()

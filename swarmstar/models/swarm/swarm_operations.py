@@ -14,7 +14,7 @@ from pydantic import BaseModel, Field
 from pydantic import ValidationError
 
 from swarmstar.utils.misc.generate_uuid import generate_uuid
-from swarmstar.database import MongoDBWrapper
+from swarmstar.utils.database import MongoDBWrapper
 from swarmstar.utils.misc.get_next_available_id import get_available_id
 
 db = MongoDBWrapper()

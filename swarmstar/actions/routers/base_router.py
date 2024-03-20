@@ -1,11 +1,11 @@
 """
 Routers are used to navigate a metadata tree to find a node.
 
-Starting from a given root node, the router will step through the tree
-using an LLM to make decisions until it reaches a leaf node.
+This is a base class to easily create routers over any MetadataTree, 
+starting from any chosen root node.
 """
 from pydantic import BaseModel
-from typing import List
+from typing import List, Dict, Any
 from abc import ABC, abstractmethod
 
 from swarmstar.actions.base_action import BaseAction
@@ -13,7 +13,7 @@ from swarmstar.models import (
     BlockingOperation,
     BaseNode
 )
-from swarmstar.database import MongoDBWrapper
+from swarmstar.utils.database import MongoDBWrapper
 from swarmstar.utils.ai.instructor_models import NextPath
 
 db = MongoDBWrapper()
@@ -27,8 +27,9 @@ class BaseMetadataTreeRouter(BaseAction, BaseModel, ABC):
         return self._return_routing_blocking_operation(self.root_node_id)
 
     @BaseAction.receive_completion_handler
-    def route(self, completion: NextPath, children_ids: List[str]):
+    def route(self, completion: NextPath, context: Dict[str, Any]):
         """ This function repeatedly gets called until we reach a leaf node. """
+        children_ids = context["children_ids"]
         if completion.index is not None:
             next_node = BaseNode.get(children_ids[completion.index])
             return self._return_routing_blocking_operation(next_node.id)

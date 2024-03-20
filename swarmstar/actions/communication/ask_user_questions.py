@@ -5,8 +5,7 @@ Throughout the conversation we maintain a "Conversation State" which is a data s
     - A list of reports that is built up throughout the conversation. This report is what will be sent back when the conversation ends.
 """
 
-from typing import List
-
+from typing import List, Dict, Any
 from pydantic import BaseModel, Field
 
 from swarmstar.models import BlockingOperation, TerminationOperation, UserCommunicationOperation
@@ -83,17 +82,18 @@ class Action(BaseAction):
         return BlockingOperation(
             node_id=self.node.id,
             blocking_type="instructor_completion",
-            args={"messages": messages},
-            context={
+            args={
+                "messages": messages,
                 "instructor_model_name": "InitialQuestionAskerConversationState"
             },
+            context={},
             next_function_to_call="handle_initial_conversation_state",
         )
 
     @BaseAction.receive_completion_handler
     def handle_initial_conversation_state(
         self,
-        completion: InitialQuestionAskerConversationState,
+        completion: InitialQuestionAskerConversationState
     ):
         system_message = (
             f"{GENERATE_MESSAGE_INSTRUCTIONS}"
@@ -118,15 +118,12 @@ class Action(BaseAction):
             next_function_to_call="send_user_first_message",
         )
 
-    @BaseAction.receive_completion_handler
-    def send_user_first_message(
-        self,
-        questions: List[str],
-        persisted_context: str,
-        reports: List[str],
-        chat_name: str,
-        completion: str,
-    ):
+    def send_user_first_message(self, completion: str, context: Dict[str, Any]):
+        questions = context["questions"]
+        persisted_context = context["persisted_context"]
+        reports = context["reports"]
+        chat_name = context["chat_name"]
+
         return UserCommunicationOperation(
             node_id=self.node.id,
             message=completion,
@@ -143,11 +140,13 @@ class Action(BaseAction):
     @BaseAction.receive_completion_handler
     def generate_message(
         self,
-        user_message: str,
-        recent_ai_message: str,
-        reports: List[str],
         completion: QuestionAskerConversationState,
+        context: Dict[str, Any]
     ):
+        user_message = context["user_response"]
+        recent_ai_message = context["recent_ai_message"]
+        reports = context["reports"]
+
         system_message = (
             f"{GENERATE_MESSAGE_INSTRUCTIONS}"
             f"Questions: {completion.questions}\n\n"
@@ -171,7 +170,6 @@ class Action(BaseAction):
             next_function_to_call="send_user_message",
         )
 
-    @BaseAction.receive_completion_handler
     def send_user_message(
         self,
         questions: List[str],

@@ -1,6 +1,6 @@
 from pymongo import MongoClient
 
-from swarmstar.database import MongoDBWrapper
+from swarmstar.utils.database import MongoDBWrapper
 
 mdb = MongoDBWrapper()
 

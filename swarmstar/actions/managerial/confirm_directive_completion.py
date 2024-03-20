@@ -155,7 +155,7 @@ class Action(BaseAction):
         return confirm_completion_operations
 
     @BaseAction.receive_completion_handler
-    def analyze_branch_review(self, completion: ConfirmDirectiveModel, branch_head_node_id: str, log_index_key: List[int]):
+    def analyze_branch_review(self, completion: ConfirmDirectiveModel, context: Dict[str, Any]):
         """
             Analyzes the completion model returned by the AI. If the AI has questions, we'll 
             spawn a communication node to get answers. If the AI has determined the branch
@@ -163,6 +163,8 @@ class Action(BaseAction):
             
             Once all branches have been reviewed, we'll move to the next phase.
         """
+        branch_head_node_id = context["branch_head_node_id"]
+        log_index_key = context["log_index_key"]
 
         if completion.questions:
             self.add_value_to_execution_memory("__termination_handler__", "review_branch_with_questions_answered")
@@ -193,7 +195,7 @@ class Action(BaseAction):
                 self.update_termination_policy("simple")
                 return self.confirm_completion_of_overarching_directive()
 
-    @BaseAction.termination_handler 
+    @BaseAction.custom_termination_handler 
     def review_branch_with_questions_answered(self, terminator_node_id: str, context: Dict[str, Any]):
         """
             This function is called when the communication node spawned to answer 
@@ -269,7 +271,7 @@ class Action(BaseAction):
         )
 
     @BaseAction.receive_completion_handler
-    def analyze_overarching_directive_review(self, completion: ConfirmDirectiveModel):
+    def analyze_overarching_directive_review(self, completion: ConfirmDirectiveModel, context: Dict[str, Any]):
         if completion.questions:
             self.add_value_to_execution_memory("__termination_handler__", "review_overarching_directive_with_questions_answered")
             self.update_termination_policy("custom_action_termination")
@@ -291,7 +293,7 @@ class Action(BaseAction):
 
             return self.consolidate_reports()
 
-    @BaseAction.termination_handler
+    @BaseAction.custom_termination_handler
     def review_overarching_directive_with_questions_answered(self, terminator_node_id: str, context: Dict[str, Any]):
         """
             This function is called when the communication node spawned to answer 
@@ -367,7 +369,7 @@ class Action(BaseAction):
         )
 
     @BaseAction.receive_completion_handler
-    def close_review(self, completion: str):
+    def close_review(self, completion: str, context: Dict[str, Any]):
         decompose_directive_node = SwarmNode.get(self.node.parent_id)
         if decompose_directive_node.context:
             decompose_directive_node.context["consolidated_reports"] = completion
@@ -405,7 +407,7 @@ class Action(BaseAction):
             )
 
     @BaseAction.receive_completion_handler
-    def spawn_new_decompose_directive_node(self, completion: str):
+    def spawn_new_decompose_directive_node(self, completion: str, context: Dict[str, Any]):
         self.report(
             "Reviewed decompose directive node's directive and all it's subdirectives. "
             "The overarching directive has not been completed. Spawning a new decompose "

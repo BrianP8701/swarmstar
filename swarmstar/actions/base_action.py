@@ -66,9 +66,9 @@ from swarmstar.models import SwarmOperation, SwarmNode, SpawnOperation, NodeEmbr
 
 def error_handling_decorator(func):
     @wraps(func)
-    def wrapper(self, *args, **kwargs):
+    def wrapper(self, **kwargs):
         try:
-            return func(self, *args, **kwargs)
+            return func(self, **kwargs)
         except Exception as e:
             error_message = (
                 f"Error in {func.__name__}:\n"
@@ -91,7 +91,7 @@ class ErrorHandlingMeta(ABCMeta):
 
 class BaseAction(metaclass=ErrorHandlingMeta):
     """
-    All actions should subclass this class.
+    All actions should inherit this class.
     """
 
     def __init__(self, node: SwarmNode):
@@ -135,71 +135,112 @@ class BaseAction(metaclass=ErrorHandlingMeta):
         node = self.get_node()
         node.execution_memory = {}
         SwarmNode.replace(node)
-    
+
     @staticmethod
-    def termination_handler(func: Callable):
+    def custom_termination_handler(func: Callable):
         """
-            This decorator is used to mark a function as a termination handler.
-            
-            When termination policy is set to "custom_action_termination", it is expected 
-            that the action will set __termination_handler__ in the node's execution memory 
-            to the name of the function that will handle the termination. This function
-            should be wrapped with this decorator, to ensure it has the correct signature.
+            This decorator is used to mark a function as a custom termination handler. It simply enforces the function parameters.
+
+            Functions marked with this decorator should accept two parameters:
+                - terminator_node_id: The id of the terminator node that this node spawned
+                - context: Context persisted from spawning the terminator node
+
+            This allows us to easily spawn new nodes, and then respond to te termination of those nodes.
         """
         def wrapper(self, **kwargs):
-            terminator_node_id = kwargs["terminator_node_id"]
-            context = kwargs["context"]
+            terminator_node_id = kwargs.pop("terminator_node_id", None)
+            context = kwargs.pop("context", None)
             
-            sig = signature(func)
-            params = sig.parameters
-            if len(params) != 3 or list(params.keys()) != ['self', 'terminator_node_id', 'context']:
-                raise TypeError("Function must accept exactly two parameters: 'terminator_node_id' and 'context', along with 'self'")
-            
-            # Check return type using type hints
-            type_hints = get_type_hints(func)
-            if 'return' in type_hints:
-                return_type = type_hints['return']
-                if get_origin(return_type) is list:  # Check if the return type is a generic list
-                    if not issubclass(get_args(return_type)[0], SwarmOperation):
-                        raise TypeError("Return type must be SwarmOperation or List[SwarmOperation]")
-                elif not issubclass(return_type, SwarmOperation):  # Direct class check if not a generic list
-                    raise TypeError("Return type must be SwarmOperation or List[SwarmOperation]")
-            
-            # Call the actual function
+            if not terminator_node_id:
+                raise ValueError(f"terminator_node_id is a required parameter for custom_termination_handler. Error in {self.node.id} at function {func.__name__}")
+            if not context:
+                raise ValueError(f"context is a required parameter for custom_termination_handler. Error in {self.node.id} at function {func.__name__}")
+
             return func(self, terminator_node_id, context)
         return wrapper
 
     @staticmethod
-    def receive_completion_handler(func: Callable):
+    def receive_instructor_completion_handler(func: Callable):
         @wraps(func)
-        def wrapper(self, *args, **kwargs):
-            if len(args) > 1:
-                # If there are positional arguments, convert them to keyword arguments
-                arg_names = list(signature(func).parameters.keys())[1:]  # Exclude 'self'
-                for arg_name, arg_value in zip(arg_names, args[1:]):
-                    if arg_name not in kwargs:
-                        kwargs[arg_name] = arg_value
-                args = args[:1]  # Keep only 'self'
-
-            completion = kwargs.get("completion")
-            sig = signature(func)
-            params = sig.parameters
+        def wrapper(self, **kwargs):
+            """
+            This wrapper is used on any action function that is meant 
+            to handle the completion of an instructor_completion.
+            
+            The function should accept two parameters as keyword arguments:
+                - completion: The completion of the instructor_completion of type defined by the instructor_model_name
+                - context: Context persisted through the blocking operation. Optional.
+            
+            (Skip this if not interested)
+            In an action we'll output a blocking operation. When this operation is executed, it'll
+            return an action operation with the response. Instructor completions return a response
+            following the specified Pydantic model. However, if we pause the swarm, the action operation
+            will get serialized, converting the completion into a dictionary. This wrapper merely ensures
+            that the completion is converted back into the Pydantic model before being passed to the function
+            in case of this scenario.
+            """
+            completion = kwargs.get("completion", None)
+            context = kwargs.get("context", None)
             instructor_model_name = kwargs.pop("instructor_model_name", None)
 
+            if not instructor_model_name or not completion:
+                raise ValueError(f"instructor_model_name and completion are required parameters for receive_instructor_completion_handler. Error in {self.node.id} at function {func.__name__}")
+
             if type(completion) is dict and instructor_model_name:
-                models_module = import_module("swarmstar.actions.pydantic_models")
+                models_module = import_module("swarmstar.utils.ai.instructor_models")
                 instructor_model = getattr(models_module, instructor_model_name)
                 completion = instructor_model.model_validate(completion)
-                kwargs["completion"] = completion
 
-            # Extract the required arguments from kwargs based on the function signature
-            func_args = {}
-            for param in params.values():
-                if param.name != "self":
-                    if param.name in kwargs:
-                        func_args[param.name] = kwargs.pop(param.name)
-                    elif param.default != param.empty:
-                        func_args[param.name] = param.default
+            if context:
+                return func(self, completion, context)
+            else:
+                return func(self, completion)
+        return wrapper
 
-            return func(self, *args, **func_args)
+    @staticmethod
+    def oracle_access(func: Callable):
+        """
+        Decorator to mark a function as one that requires access to an oracle.
+
+        The oracle is responsible for answering questions and has access to the swarm's memory,
+        the internet, and can communicate with the user as a last resort. 
+    
+        This abstracts the RAG problem away from actions. To ensure any action is performed
+        with full context, we tell the LLM to ask questions. The answering of these questions
+        is the oracle's responsibility.
+
+        Functionality:
+        1. Giving the LLM the option to ask questions:
+        - Adds a `questions` attribute (List[str]) to the pydantic model.
+        - Makes every attribute optional.
+        - Appends a prompt emphasizing the importance of asking questions when necessary.
+        - Sets the blocking operation's `next_function_to_call` to the wrapped function.
+        - Stores the intended next function and message in the context.
+
+        2. Accessing the oracle:
+        - Checks if the `questions` field in the completion is None.
+        - If None, calls the intended next function with the completion.
+        - If not None, spawns an oracle node to answer the questions.
+        - Sets the oracle node's termination handler to the wrapped function.
+
+        3. Handling the oracle's completion:
+        - Appends the questions and answers from the oracle node to the original message.
+        - Retries the blocking operation with the updated context.
+
+        This process repeats until the LLM makes a decision without asking further questions.
+        """
+        @wraps(func)
+        def wrapper(self, **kwargs):
+            message = kwargs.pop("message", None)
+            context = kwargs.pop("context", None)
+            if not message:
+                raise ValueError(f"message is a required parameter for oracle_access. Error in {self.node.id} at function {func.__name__}")
+            if context:
+                result = func(self, message, context)
+            else:
+                result = func(self, message)
+
+            # Post-function logic
+            print("Post-function logic here")
+            return result
         return wrapper

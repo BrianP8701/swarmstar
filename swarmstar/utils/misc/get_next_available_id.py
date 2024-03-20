@@ -12,7 +12,7 @@ Where x represents the type of node,
 And y represents the number of the node of that type.
 """
 
-from swarmstar.database import MongoDBWrapper
+from swarmstar.utils.database import MongoDBWrapper
 from swarmstar.context import swarm_id_var
 
 db = MongoDBWrapper()

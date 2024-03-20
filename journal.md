@@ -2363,3 +2363,10 @@ swarm breaks down directive, asks questions about repo.
 checks folder:
 user
 code
+
+
+# Action Space
+action space is suprisingly easier in some ways in design, harder in reliability
+memory space is hard in design. i havent even used it yet so idfk how good its reliability will be smh
+                
+after every plan step, if multiple sub directives review to ensure all are independent are parallel. repeat until no changes are made

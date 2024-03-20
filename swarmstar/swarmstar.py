@@ -1,3 +1,13 @@
+"""
+If your using swarmstar, this is the only file you need to import and interact with.
+
+First of all, make sure to have your .env file set up. You can use the .env.example file as a template.
+Then, simply instantiate the Swarmstar class with an id and goal. This will create a new swarmstar space in MongoDB and the first operation.
+Following that, just keep feeding operations into the execute function and it will return the next operations to be executed.
+
+Keep in mind that you shouldn't pass UserCommunication operations into the execute function. 
+I've provided a template for how you may handle those in the user_communication_examples folder.
+"""
 from typing import List, Union
 import inspect
 
@@ -5,16 +15,15 @@ from swarmstar.models import (
     SwarmOperation,
     SpawnOperation,
     NodeEmbryo,
-    MemoryMetadata,
     SwarmstarSpace
 )
-from swarmstar.swarm_operations import (
+from swarmstar.operations import (
     blocking,
     spawn,
     terminate,
     execute_action
 )
-from swarmstar.database import MongoDBWrapper
+from swarmstar.utils.database import MongoDBWrapper
 from swarmstar.context import swarm_id_var
 
 db = MongoDBWrapper()
@@ -23,15 +32,8 @@ class Swarmstar:
     def __init__(self, swarm_id: str):
         swarm_id_var.set(swarm_id)
 
-    def spawn(self, goal: str) -> SpawnOperation:
-        """
-        Spawn a new swarm with the given goal.
-            - Creates initial swarmstar space
-            - Create and return the root spawn operation
-        
-        :param goal: The goal of the new swarm
-        :return: The root spawn operation for the new swarm
-        """
+    def instantiate(self, goal: str) -> SpawnOperation:
+        """ Only call this function once at the start of each swarm """
         SwarmstarSpace.instantiate_swarmstar_space(swarm_id_var.get())
 
         root_spawn_operation = SpawnOperation(
