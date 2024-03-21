@@ -13,8 +13,7 @@ import json
 import sys
 import inspect
 
-from swarmstar.models import SwarmOperation, SwarmNode, SpawnOperation, BaseNode, ActionMetadata
-
+from swarmstar.models import SwarmOperation, SwarmNode, SpawnOperation, BaseNode, ActionMetadata, BlockingOperation
 
 def error_handling_decorator(func):
     @wraps(func)
@@ -65,9 +64,15 @@ class BaseAction(metaclass=ErrorHandlingMeta):
         self.node.report = report
         SwarmNode.replace(self.node.id, self.node)
     
-    def update_termination_policy(self, termination_policy: str):
+    def update_termination_policy(self, termination_policy: str, termination_handler: str = None):
+        """
+        Updates the termination policy of the node. If the termination policy is set to custom_termination_handler, 
+        the termination handler will be set to the function name passed in the termination_handler parameter.
+        """
         self.node.termination_policy = termination_policy
         SwarmNode.replace(self.node.id, self.node)
+        if termination_policy == "custom_termination_handler":
+            self.update_execution_memory({"__termination_handler__": termination_handler})
     
     def add_value_to_execution_memory(self, attribute: str, value: Any):
         self.node.execution_memory[attribute] = value
@@ -147,9 +152,11 @@ class BaseAction(metaclass=ErrorHandlingMeta):
         return wrapper
 
     @staticmethod
-    def oracle_access(func: Callable):
-        """
-        Decorator to mark a function as one that requires access to an oracle.
+    def ask_questions_wrapper(func: Callable):
+        """        
+        This wrapper wraps function that take a string message and an optional context dictionary.
+        This wrapper will ensure that before the function is called, the LLM is given the option to ask
+        questions to the oracle.
 
         The oracle is responsible for answering questions and has access to the swarm's memory,
         the internet, and can communicate with the user as a last resort. 
@@ -164,26 +171,23 @@ class BaseAction(metaclass=ErrorHandlingMeta):
 
         1. Giving the LLM the option to ask questions:
             Expected parameters: message: str, Optional[context: Dict[str, Any]]
-        - Adds a `questions` attribute (List[str]) to the pydantic model.
-        - Makes every attribute optional.
-        - Appends a prompt emphasizing the importance of asking questions when necessary.
-        - Sets the blocking operation's `next_function_to_call` to the wrapped function.
-        - Stores the intended next function and message in the context.
-        - Returns the blocking operation to be executed.
+        - Saves original message in operational context
+        - Returns a Blocking Operation of type "ask_questions" with the message and context.
 
         2. Accessing the oracle:
             Expected parameters: (completion: Any, context: Dict[str, Any])
         - Checks if the `questions` field in the completion is None.
-        - If None, calls the intended next function with the completion.
-        - If not None, spawns an oracle node to answer the questions.
-        - Set this node's termination handler to the wrapped function.
+        - If the `questions` field in the completion is None, call the wrapped function.
+        - If not None, spawns an oracle node to answer the questions and set 
+        this node's termination handler to the wrapped function so that we can
+        handle the oracle's response.
 
         3. Handling the oracle's completion:
             Expected parameters: (terminator_id: str, context: Dict[str, Any])
-        - Appends the questions and answers from the oracle node to the original message.
-        - Retries the blocking operation with the updated context.
-
-        This process repeats until the LLM makes a decision without asking further questions.
+        - Appends the report from the oracle node to the message in context.
+        - Returns a Blocking Operation of type "ask_questions" with the message and context.
+ 
+        This process repeats until the LLM has no more questions.
         """
         @wraps(func)
         def wrapper(self, **kwargs):
@@ -194,28 +198,18 @@ class BaseAction(metaclass=ErrorHandlingMeta):
             terminator_id = kwargs.get("terminator_id", None)
             
             if message: # Stage 1
-                if context: blocking_operation = func(self, message, context)
-                else: blocking_operation = func(self, message)
-                blocking_operation.context["__next_function_to_call__"] = blocking_operation.next_function_to_call
-                blocking_operation.next_function_to_call = func.__name__
-                blocking_operation.context["__message__"] = message
-                blocking_operation.context["__oracle_access__"] = True
-                return blocking_operation
-            elif completion and context: # Stage 2
-                if completion.questions is None:
-                    __next_function_to_call__ = context.pop("__next_function_to_call__", None)
-                    context.pop("__message__", None)
-                    instructor_model_name = context.pop("__instructor_model_name__", None)
-                    if type(completion) is dict and instructor_model_name:
-                        models_module = ActionMetadata.get_action_module(self.node.type)
-                        instructor_model = getattr(models_module, instructor_model_name)
-                        completion = instructor_model.model_validate(completion)
-                    if context: return getattr(self, __next_function_to_call__)(completion, context)
-                    else: return getattr(self, __next_function_to_call__)(completion)
-                else:
-                    self.update_termination_policy("custom_termination_handler")
-                    self.update_execution_memory({"__termination_handler__": func.__name__})
-                    context["__questions__"] = completion.questions
+                if context is None: context = {}
+                context["__message__"] = message
+                return BlockingOperation(
+                    node_id=self.node.id,
+                    blocking_type="ask_questions",
+                    args={"message": message},
+                    context=context,
+                    next_function_to_call=func.__name__
+                )
+            elif completion: # Stage 2
+                if completion.questions:
+                    self.update_termination_policy("custom_termination_handler", func.__name__)
                     return SpawnOperation(
                         parent_id=self.node.id,
                         action_id="specific/oracle",
@@ -225,15 +219,23 @@ class BaseAction(metaclass=ErrorHandlingMeta):
                         },
                         context=context
                     )
+                else:
+                    message = context.pop("__message__")
+                    if context: return func(self, message, context)
+                    else: return func(self, message)
             elif terminator_id: # Stage 3
                 terminator_node = BaseNode.get(terminator_id)
-                question_answers = terminator_node.context
-                questions = terminator_node.context["__questions__"]
-                message = terminator_node.context["__message__"]
-                message += f"\n\n{questions}\n\n{question_answers}"
-                return func(self, message, context)
+                oracle_report = terminator_node.report
+                context["__message__"] += f"\n\n{oracle_report}"
+                return BlockingOperation(
+                    node_id=self.node.id,
+                    blocking_type="ask_questions",
+                    args={"message": message},
+                    context=context,
+                    next_function_to_call=func.__name__
+                )
             else:
-                raise ValueError(f"oracle_access wrapper called with invalid parameters: {kwargs}")
+                raise ValueError(f"ask_questions wrapper called with invalid parameters: {kwargs}")
         return wrapper
 
 

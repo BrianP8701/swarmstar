@@ -76,12 +76,11 @@ class SwarmNode(BaseNode):
 
         :return: The index_key of the log that was added.
         """
-        node = self.get_node()
         if index_key is None:
-            node.developer_logs.append(log_dict)
-            return_index_key = [len(node.developer_logs) - 1]
+            self.developer_logs.append(log_dict)
+            return_index_key = [len(self.developer_logs) - 1]
         else:
-            nested_list = node.developer_logs
+            nested_list = self.developer_logs
             for i, index in enumerate(index_key):
                 if index > len(nested_list):
                     raise IndexError(f"Index {index} is out of range for the current list. {nested_list}")
@@ -100,5 +99,5 @@ class SwarmNode(BaseNode):
                         nested_list = nested_list[index]
                     else:
                         raise ValueError("Invalid index_key. Cannot traverse non-list elements.")
-        SwarmNode.replace(node)
+        SwarmNode.replace(self.id, self)
         return return_index_key

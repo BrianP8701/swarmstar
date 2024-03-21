@@ -95,7 +95,8 @@ class BlockingOperation(SwarmOperation):
     node_id: str
     blocking_type: Literal[
         "instructor_completion",
-        "openai_completion"
+        "openai_completion",
+        "ask_questions",
     ]
     args: Dict[str, Any] = {}
     context: Dict[str, Any] = {}

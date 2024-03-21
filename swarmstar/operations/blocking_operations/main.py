@@ -11,7 +11,8 @@ from swarmstar.models import (
 async def blocking(blocking_operation: BlockingOperation) -> Union[SwarmOperation, List[SwarmOperation]]:
     blocking_operation_type_map = {
         "instructor_completion": "swarmstar.operations.blocking_operations.instructor",
-        "openai_completion": "swarmstar.operations.blocking_operations.openai"
+        "openai_completion": "swarmstar.operations.blocking_operations.openai",
+        "ask_questions": "swarmstar.operations.blocking_operations.ask_questions"
     }
 
     blocking_operation_type = blocking_operation.blocking_type

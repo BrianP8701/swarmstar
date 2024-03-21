@@ -43,7 +43,7 @@ class Action(BaseAction):
         )
         return self.generate_plan(message=message)
 
-    @BaseAction.oracle_access
+    @BaseAction.ask_questions_wrapper
     def generate_plan(self, message: str) -> BlockingOperation:
         return BlockingOperation(
             node_id=self.node.id,

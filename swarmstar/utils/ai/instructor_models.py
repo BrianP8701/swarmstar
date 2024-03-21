@@ -22,7 +22,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
-class QuestionWrapper(BaseModel):
+class AskQuestions(BaseModel):
     context: str = Field(..., description="Context shared with all questions")
     questions: List[str] = Field(..., description="CRITICAL: You must only make decisions or plan when you have all the necessary context. Otherwise, you must ask questions. This is the list of questions you need answered before you can proceed.")
 
