@@ -1,1 +1,0 @@
-In order to test we need a swarmconfig for most options. so umm we could just have a swarmspace and config for most unit operations, but some might require the setup of a new space. so lets create a constants file for this unit test swarmstat obj

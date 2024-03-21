@@ -11,8 +11,8 @@ def execute_action(action_operation: ActionOperation) -> Union[SwarmOperation, L
     node = SwarmNode.get(node_id)
     action_metadata = ActionMetadata.get(node.type)
 
-    internal_action_path = action_metadata.internal_action_path
-    action_class = getattr(import_module(internal_action_path), "Action")
+    internal_file_path = action_metadata.internal_file_path
+    action_class = getattr(import_module(internal_file_path), "Action")
     action_instance = action_class(node=node)
 
     function_to_call = action_operation.function_to_call

@@ -32,11 +32,11 @@ sqlite3_db_path = 'swarmstar/internal_metadata.sqlite3'
 if os.path.exists(sqlite3_db_path):
     os.remove(sqlite3_db_path)
 
-create_or_open_kv_db(sqlite3_db_path, "action_metadata_tree")
-create_or_open_kv_db(sqlite3_db_path, "memory_metadata_tree")
+create_or_open_kv_db(sqlite3_db_path, "action_metadata")
+create_or_open_kv_db(sqlite3_db_path, "memory_metadata")
 
 memory_json_path = 'swarmstar/memory/memory_metadata_tree.json'
 action_json_path = 'swarmstar/actions/action_metadata_tree.json'
 
-move_json_to_sqlite3(action_json_path, sqlite3_db_path, "action_metadata_tree")
-move_json_to_sqlite3(memory_json_path, sqlite3_db_path, "memory_metadata_tree")
+move_json_to_sqlite3(action_json_path, sqlite3_db_path, "action_metadata")
+move_json_to_sqlite3(memory_json_path, sqlite3_db_path, "memory_metadata")

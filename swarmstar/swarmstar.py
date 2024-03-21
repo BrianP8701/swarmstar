@@ -14,7 +14,6 @@ import inspect
 from swarmstar.models import (
     SwarmOperation,
     SpawnOperation,
-    NodeEmbryo,
     SwarmstarSpace
 )
 from swarmstar.operations import (
@@ -37,10 +36,8 @@ class Swarmstar:
         SwarmstarSpace.instantiate_swarmstar_space(swarm_id_var.get())
 
         root_spawn_operation = SpawnOperation(
-            node_embryo=NodeEmbryo(
-                action_id='specific/managerial/conduct_introductory_interview',
-                message=goal
-            )
+            action_id='general/plan',
+            message=goal
         )
 
         SwarmOperation.save(root_spawn_operation)
@@ -87,3 +84,7 @@ class Swarmstar:
             SwarmOperation.save(operation)
 
         return output        
+
+    def delete(self):
+        """ Only call this function once at the end of each swarm """
+        SwarmstarSpace.delete_swarmstar_space(swarm_id_var.get())

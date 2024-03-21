@@ -1,6 +1,4 @@
 """
-The NodeEmbryo is what a node outputs to spawn children.
-
 Nodes can perform 1 of 5 "SwarmOperations":
     - SpawnOperation
     - ActionOperation
@@ -19,13 +17,8 @@ from swarmstar.utils.misc.get_next_available_id import get_available_id
 
 db = MongoDBWrapper()
 
-class NodeEmbryo(BaseModel):
-    action_id: str
-    message: Union[str, Dict[str, Any]]
-    context: Optional[Dict[str, Any]] = {}
-
 class SwarmOperation(BaseModel):
-    id: str = Field(default_factory=get_available_id("swarm_operations"))
+    id: Optional[str] = Field(default_factory=lambda: get_available_id("swarm_operations"))
     operation_type: Literal[
         "spawn",
         "terminate",
@@ -40,16 +33,14 @@ class SwarmOperation(BaseModel):
             return data
         elif isinstance(data, dict):
             operation_type = data.get('operation_type')
-            if operation_type == 'blocking':
-                return BlockingOperation(**data)
-            elif operation_type == 'spawn':
-                return SpawnOperation(**data)
-            elif operation_type == 'action':
-                return ActionOperation(**data)
-            elif operation_type == 'terminate':
-                return TerminationOperation(**data)
-            elif operation_type == 'user_communication':
-                return UserCommunicationOperation(**data)
+            operation_mapping = {
+                "blocking": BlockingOperation,
+                "user_communication": UserCommunicationOperation,
+                "spawn": SpawnOperation,
+                "terminate": TerminationOperation,
+                "action": ActionOperation
+            }
+            return operation_mapping[operation_type].model_validate(**data)
         return super().model_validate(data, **kwargs)
 
     @staticmethod
@@ -100,7 +91,6 @@ class SwarmOperation(BaseModel):
 
 
 class BlockingOperation(SwarmOperation):
-    id: Optional[str] = Field(default_factory=lambda: generate_uuid('blocking_op'))
     operation_type: Literal["blocking"] = Field(default="blocking")
     node_id: str
     blocking_type: Literal[
@@ -112,28 +102,26 @@ class BlockingOperation(SwarmOperation):
     next_function_to_call: str
 
 class SpawnOperation(SwarmOperation):
-    id: Optional[str] = Field(default_factory=lambda: generate_uuid('spawn_op'))
     operation_type: Literal["spawn"] = Field(default="spawn")
-    node_embryo: NodeEmbryo
-    parent_node_id: Optional[str] = None
+    action_id: str
+    message: Union[str, Dict[str, Any]]
+    context: Optional[Dict[str, Any]] = {}
+    parent_id: Optional[str] = None
     node_id: Optional[str] = None
 
 class ActionOperation(SwarmOperation):
-    id: Optional[str] = Field(default_factory=lambda: generate_uuid('action_op'))
     operation_type: Literal["action"] = Field(default="action")
     function_to_call: str
     node_id: str
     args: Dict[str, Any] = {}
 
 class TerminationOperation(SwarmOperation):
-    id: Optional[str] = Field(default_factory=lambda: generate_uuid('termination_op'))
     operation_type: Literal["terminate"] = Field(default="terminate")
-    terminator_node_id: str
+    terminator_id: str
     node_id: str
     context: Optional[Dict[str, Any]] = None
 
 class UserCommunicationOperation(SwarmOperation):
-    id: Optional[str] = Field(default_factory=lambda: generate_uuid('user_comms_op'))
     operation_type: Literal["user_communication"] = Field(default="user_communication")
     node_id: str
     message: str

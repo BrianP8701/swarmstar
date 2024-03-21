@@ -13,7 +13,7 @@ from swarmstar.models import (
 )
 
 def terminate(termination_operation: TerminationOperation) -> Union[TerminationOperation, None]:
-    terminator_node_id = termination_operation.terminator_node_id
+    terminator_id = termination_operation.terminator_id
     node_id = termination_operation.node_id
     context = termination_operation.context
 
@@ -24,7 +24,7 @@ def terminate(termination_operation: TerminationOperation) -> Union[TerminationO
         return ActionOperation(
             node_id=node_id,
             function_to_call=termination_handler,
-            args={"terminator_node_id": terminator_node_id, "context": context},
+            args={"terminator_id": terminator_id, "context": context},
         )
 
     raise ValueError(

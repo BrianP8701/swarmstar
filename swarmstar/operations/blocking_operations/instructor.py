@@ -21,9 +21,26 @@ async def blocking(blocking_operation: BlockingOperation) -> BlockingOperation:
     module = ActionMetadata.get_action_module(node.type)
 
     instructor_model = getattr(module, instructor_model_name)
+    
+    print("\n\n\n\n\n")
+    print(instructor_model)
+    print(type(instructor_model))
+    print("\n\n\n\n\n")    
+    
+
     if blocking_operation.context.get("__oracle_access__", False):
         instructor_model = type(instructor_model_name, (QuestionWrapper, instructor_model), {})
         message = f"{message}\n\n{ORACLE_ACCESS_INSTRUCTIONS}"
+
+    print("\n\n\n\n\n")
+    print(message)
+    print(type(message))
+    print("\n\n")
+    print(instructor_model)
+    print(type(instructor_model))
+    print("\n\n\n\n\n")
+
+
 
     response = await instructor.completion(
         messages={

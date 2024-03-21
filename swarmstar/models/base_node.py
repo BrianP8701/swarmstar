@@ -54,7 +54,7 @@ class BaseNode(BaseModel):
         else:
             try:
                 node = get_internal_sqlite(cls.collection, node_id)
-                if node["type"] == "portal":
+                if "type" in node and node["type"] == "portal":
                     node_id = f"{swarm_id_var.get()}_{node_id}"
                     node = db.get(cls.collection, node_id)
                 return node
@@ -97,10 +97,10 @@ class BaseNode(BaseModel):
         """
         prefix = id.split("_")[1][0]
         if prefix == "n":
-            return "swarmstar.models.swarm_node.SwarmNode"
+            return "swarmstar.models.swarm.swarm_nodes.SwarmNode"
         elif prefix == "m":
-            return "swarmstar.models.memory_metadata.MemoryMetadata"
+            return "swarmstar.models.metadata.memory_metadata.MemoryMetadata"
         elif prefix == "a":
-            return "swarmstar.models.action_metadata.ActionMetadata"
+            return "swarmstar.models.metadata.action_metadata.ActionMetadata"
         else:
             raise ValueError(f"Prefix {prefix} in id {id} is not recognized.")

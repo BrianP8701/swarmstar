@@ -21,12 +21,11 @@ This id convention makes it easier to manage everything
 from pydantic import BaseModel
 from typing import List
 
-from swarmstar.models import (
-    MemoryMetadataTree,
-    ActionMetadataTree,
-    SwarmTree,
-    SwarmOperation
-)
+from swarmstar.models.metadata.memory_metadata_tree import MemoryMetadataTree
+from swarmstar.models.metadata.action_metadata_tree import ActionMetadataTree
+from swarmstar.models.swarm.swarm_tree import SwarmTree
+from swarmstar.models.swarm.swarm_operations import SwarmOperation
+
 from swarmstar.utils.database import MongoDBWrapper
 
 db = MongoDBWrapper()
@@ -39,8 +38,8 @@ class SwarmstarSpace(BaseModel):
     queued_operation_ids: List[str] = [] # Ids of operations that have not yet been executed
 
     @staticmethod
-    def get(swarm_id: str):
-        return db.get("admin", swarm_id)
+    def get(swarm_id: str) -> 'SwarmstarSpace':
+        return SwarmstarSpace(**db.get("admin", swarm_id))
 
     @staticmethod
     def instantiate_swarmstar_space(swarm_id: str):
@@ -66,11 +65,12 @@ class SwarmstarSpace(BaseModel):
         if db.exists("admin", new_swarm_id):
             raise ValueError(f"Swarmstar space with id {new_swarm_id} already exists")
 
-        SwarmTree.clone(old_swarm_id, new_swarm_id)
-        ActionMetadataTree.clone(old_swarm_id, new_swarm_id)
-        MemoryMetadataTree.clone(old_swarm_id, new_swarm_id)
-
         old_swarmstar_space = SwarmstarSpace.get(old_swarm_id)
+
+        if old_swarmstar_space.node_count > 0: SwarmTree.clone(old_swarm_id, new_swarm_id)
+        if old_swarmstar_space.action_count > 0: ActionMetadataTree.clone(old_swarm_id, new_swarm_id)
+        if old_swarmstar_space.memory_count > 0: MemoryMetadataTree.clone(old_swarm_id, new_swarm_id)
+
         for i in range(old_swarmstar_space.operation_count):
             SwarmOperation.clone(f"{old_swarm_id}_o{i}", new_swarm_id)
         old_swarmstar_space.queued_operation_ids = [f"{new_swarm_id}_o{operation_id.split('_o')[1]}" \
@@ -83,12 +83,12 @@ class SwarmstarSpace(BaseModel):
         if not db.exists("admin", swarm_id):
             raise ValueError(f"Swarmstar space with id {swarm_id} does not exist")
 
-        SwarmTree.delete(swarm_id)
-        ActionMetadataTree.delete(swarm_id)
-        MemoryMetadataTree.delete(swarm_id)
-        
-        old_swarmstar_space = SwarmstarSpace.get(swarm_id)
-        for i in range(old_swarmstar_space.operation_count):
-            SwarmOperation.delete(f"{swarm_id}_o{i}")
-
+        swarmstar_space = SwarmstarSpace.get(swarm_id)
         db.delete("admin", swarm_id)
+        
+        if swarmstar_space.node_count > 0: SwarmTree.delete(swarm_id)
+        if swarmstar_space.action_count > 0: ActionMetadataTree.delete(swarm_id)
+        if swarmstar_space.memory_count > 0: MemoryMetadataTree.delete(swarm_id)
+        
+        for i in range(swarmstar_space.operation_count):
+            SwarmOperation.delete(f"{swarm_id}_o{i}")

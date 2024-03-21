@@ -17,7 +17,7 @@ def terminate(termination_operation: TerminationOperation) -> Union[TerminationO
         return None
 
     return TerminationOperation(
-        terminator_node_id=node_id,
+        terminator_id=node_id,
         node_id=parent_node.id, 
         context=node.context
     )

@@ -28,30 +28,29 @@ def _spawn_node(spawn_operation: SpawnOperation) -> SwarmNode:
     """
     Spawns a new node in the swarm and saves it to database
     """
-    parent_id = spawn_operation.parent_node_id
-    node_embryo = spawn_operation.node_embryo
-    action_id = node_embryo.action_id
+    parent_id = spawn_operation.parent_id
+    action_id = spawn_operation.action_id
     action_metadata = ActionMetadata.get(action_id)
     termination_policy = action_metadata.termination_policy
     
     node = SwarmNode(
         name=action_metadata.name,
         parent_id=parent_id,
-        action_id=action_id,
-        message=node_embryo.message,
+        type=action_id,
+        message=spawn_operation.message,
         alive=True,
         termination_policy=termination_policy,
-        context=node_embryo.context
+        context=spawn_operation.context
     )
 
-    SwarmNode.save(node)
+    SwarmNode.insert(node)
     return node
 
 def _update_parent(spawn_operation: SpawnOperation, node: SwarmNode) -> None:
     """
     Update parent node's children_ids and termination_policy if necessary
     """
-    parent_id = spawn_operation.parent_node_id
+    parent_id = spawn_operation.parent_id
     if parent_id is not None:
         parent_node = SwarmNode.get(parent_id)
         parent_node.children_ids.append(node.id)

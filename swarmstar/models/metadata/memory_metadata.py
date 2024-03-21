@@ -4,7 +4,7 @@ Memory metadata labels data with descriptions.
 It also marks each with a type. Different types of data have specialized
 tools in swarmstar/actions/memory_tools
 """
-from typing import  List, Optional, TypeVar, Type, Dict, Any
+from typing import  List, Optional, TypeVar, Type, Dict, Any, ClassVar
 from enum import Enum
 from pydantic import Field
 from typing_extensions import Literal
@@ -32,8 +32,8 @@ class MemoryTypeEnum(str, Enum):
     OTHER = "other"
 
 class MemoryMetadata(MetadataNode):
-    collection = "memory_metadata"
-    id: str = Field(default_factory=get_available_id("memory_metadata"))
+    collection: ClassVar[str] = "memory_metadata"
+    id: Optional[str] = Field(default_factory=lambda: get_available_id("memory_metadata"))
     type: MemoryTypeEnum # These define the type of the underlying data. Each type has tools to better navigate the data
     cache: Dict[str, Any] # If a node has been metafied, it will cache here
     up_to_date: bool # If the underlying data has changed, and the metadata is out of date

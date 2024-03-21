@@ -2,7 +2,7 @@
 The swarm consists of nodes. Each node is given a message 
 and a preassigned action they must execute.
 """
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, ClassVar
 from enum import Enum
 from pydantic import Field
 
@@ -19,8 +19,8 @@ class TerminationPolicies(Enum):
     CUSTOM_TERMINATION_HANDLER = "custom_termination_handler"
 
 class SwarmNode(BaseNode):
-    id: str = Field(default_factory=get_available_id("swarm_nodes"))
-    collection = "swarm_nodes"
+    id: Optional[str] = Field(default_factory=lambda: get_available_id("swarm_nodes"))
+    collection: ClassVar[str] = "swarm_nodes"
     type: str    # Swarm nodes are classified by their action id
     message: str
     alive: bool = True
@@ -30,10 +30,10 @@ class SwarmNode(BaseNode):
     execution_memory: Optional[Dict[str, Any]] = {}     # This is where a node can store memory during the execution of an action.
     context: Optional[Dict[str, Any]] = {}          # This is where certain nodes can store extra context about themselves.
 
-    @staticmethod
-    def get(node_id: str) -> 'SwarmNode':
+    @classmethod
+    def get(cls, node_id: str) -> 'SwarmNode':
         swarm_node_dict = super().get_node_dict(node_id)
-        return SwarmNode(**swarm_node_dict)
+        return cls(**swarm_node_dict)
 
     def log(self, log_dict: Dict[str, Any], index_key: List[int] = None) -> List[int]:
         """

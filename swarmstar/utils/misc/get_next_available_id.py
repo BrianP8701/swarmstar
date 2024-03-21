@@ -35,3 +35,10 @@ def get_available_id(collection: str) -> str:
     y = db.get_by_key("admin", swarm_id_var.get(), inner_key)
     db.increment("admin", swarm_id_var.get(), inner_key)
     return f"{swarm_id_var.get()}_{x}{y}"
+
+def get_x_given_collection(collection: str) -> str:
+    if collection == "swarm_nodes": return "n"
+    elif collection == "swarm_operations": return "o"
+    elif collection == "memory_metadata": return "m"
+    elif collection == "action_metadata": return "a"
+    else: raise ValueError(f"Collection {collection} not recognized.")

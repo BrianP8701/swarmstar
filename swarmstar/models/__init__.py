@@ -9,7 +9,6 @@ from .swarm.swarm_operations import (
     SpawnOperation,
     TerminationOperation,
     BlockingOperation,
-    NodeEmbryo,
     UserCommunicationOperation,
     ActionOperation
 )

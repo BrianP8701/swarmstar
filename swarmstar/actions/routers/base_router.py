@@ -24,15 +24,18 @@ class BaseMetadataTreeRouter(BaseAction, BaseModel, ABC):
 
     @classmethod
     def main(self) -> BlockingOperation:
-        return self._return_routing_blocking_operation(self.root_node_id)
+        return self.route(self.root_node_id)
 
-    @BaseAction.receive_completion_handler
-    def route(self, completion: NextPath, context: Dict[str, Any]):
+    @BaseAction.receive_instructor_completion_handler
+    def handle_routing_decision(self, completion: NextPath, context: Dict[str, Any]):
         """ This function repeatedly gets called until we reach a leaf node. """
         children_ids = context["children_ids"]
         if completion.index is not None:
             next_node = BaseNode.get(children_ids[completion.index])
-            return self._return_routing_blocking_operation(next_node.id)
+            if next_node.is_folder:
+                return self.route(next_node.id)
+            else:
+                return self.handle_route_success(next_node.id)
         else:
             self.handle_route_failure(completion.failure_message, children_ids)
 
@@ -41,7 +44,12 @@ class BaseMetadataTreeRouter(BaseAction, BaseModel, ABC):
         """ Handle the case where there is no good path to take. """
         pass
 
-    def _return_routing_blocking_operation(self, node_id: str):
+    @abstractmethod
+    def handle_route_success(self, node_id: str):
+        """ Handle the case where we have reached a leaf node. """
+        pass
+
+    def route(self, node_id: str):
         node = BaseNode.get(node_id)
         children = self._get_children(node)
         children_ids = [child.id for child in children]
@@ -52,7 +60,7 @@ class BaseMetadataTreeRouter(BaseAction, BaseModel, ABC):
             blocking_type="instructor_completion",
             args={"message": message},
             context={"instructor_model_name": "NextPath", "children_ids": children_ids},
-            next_function_to_call="route"
+            next_function_to_call="handle_routing_decision"
         )
 
     def _get_children(self, node: BaseNode) -> List[BaseNode]:

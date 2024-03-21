@@ -13,7 +13,6 @@
 from typing import Union
 
 from swarmstar.models import (
-    NodeEmbryo,
     SpawnOperation,
     TerminationOperation,
     SwarmNode
@@ -33,16 +32,14 @@ def terminate(termination_operation: TerminationOperation) -> Union[TerminationO
         child = SwarmNode.get(child_id)
         if child.alive:
             return None
-        if child.action_id == "specific/managerial/confirm_directive_completion":
+        if child.type == "specific/managerial/confirm_directive_completion":
             mission_completion = True
 
     if mission_completion == False:
         return SpawnOperation(
-            parent_node_id=node_id,
-            node_embryo=NodeEmbryo(
-                action_id="specific/managerial/confirm_directive_completion",
-                message="",
-            )
+            parent_id=node_id,
+            action_id="specific/managerial/confirm_directive_completion",
+            message="",
         )
     else:
         target_node.alive = False
@@ -52,6 +49,6 @@ def terminate(termination_operation: TerminationOperation) -> Union[TerminationO
         else:
             parent_node = SwarmNode.get(target_node.parent_id)
             return TerminationOperation(
-                terminator_node_id=node_id,
+                terminator_id=node_id,
                 node_id=parent_node.id,
             )

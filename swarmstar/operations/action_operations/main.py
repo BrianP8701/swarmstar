@@ -1,7 +1,6 @@
 """
 The spawn operation will create a new node in the swarm, and begin executing the action assigned to the node.
 """
-from importlib import import_module
 from typing import List, Union
 
 from swarmstar.models import (
@@ -10,6 +9,7 @@ from swarmstar.models import (
     SwarmNode,
     ActionMetadata
 )
+from swarmstar.operations.action_operations.internal_action import execute_action as execute_internal_action
 
 def execute_action(action_operation: ActionOperation) -> Union[SwarmOperation, List[SwarmOperation]]:
     """
@@ -20,16 +20,9 @@ def execute_action(action_operation: ActionOperation) -> Union[SwarmOperation, L
     node = SwarmNode.get(node_id)
     action_metadata = ActionMetadata.get(node.type)
 
-    action_type = action_metadata.type
 
-    action_type_map = {
-        "internal_action": "swarmstar.utils.swarm_operations.action_operations.internal_action",
-    }
+    if action_metadata.internal:
+        return execute_internal_action(action_operation)
+    else:
+        raise NotImplementedError("External actions are not yet supported")
 
-    if action_type not in action_type_map:
-        raise ValueError(
-            f"Action type: `{action_type}` from action id: `{node.type}` is not supported yet."
-        )
-
-    action_type_module = import_module(action_type_map[action_type])
-    return action_type_module.execute_action(action_operation)

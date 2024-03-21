@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import List, Dict, Any
 
-from swarmstar.models import BlockingOperation, SpawnOperation, NodeEmbryo
+from swarmstar.models import BlockingOperation, SpawnOperation
 from swarmstar.actions.base_action import BaseAction
 
 class ActionPlan(BaseModel):
@@ -41,7 +41,7 @@ class Action(BaseAction):
             f"{PLAN_INSTRUCTIONS}"
             f"\n\nDirective: \n`{self.node.message}`"
         )
-        self.generate_plan(message)
+        return self.generate_plan(message=message)
 
     @BaseAction.oracle_access
     def generate_plan(self, message: str) -> BlockingOperation:
@@ -53,8 +53,8 @@ class Action(BaseAction):
             next_function_to_call="review_plan"
         )
 
-    @BaseAction.receive_completion_handler
-    def review_plan(self, completion: ActionPlan, context: Dict[str, Any]) -> None:
+    @BaseAction.receive_instructor_completion_handler
+    def review_plan(self, completion: ActionPlan) -> None:
         plan = completion.plan
         return BlockingOperation(
             node_id=self.node.id,
@@ -64,7 +64,7 @@ class Action(BaseAction):
             next_function_to_call="confirm_plan"
         )
 
-    @BaseAction.receive_completion_handler
+    @BaseAction.receive_instructor_completion_handler
     def confirm_plan(self, completion: ReviewPlan, context: Dict[str, Any]) -> None:
         confirmation = completion.confirmation
         if confirmation:
@@ -72,11 +72,9 @@ class Action(BaseAction):
             for action in context["plan"]:
                 spawn_operations.append(
                     SpawnOperation(
-                        parent_node_id=self.node.id,
-                        node_embryo=NodeEmbryo(
-                            action_id="routers/route_action",
-                            message=action,
-                        )
+                        parent_id=self.node.id,
+                        action_id="routers/route_action",
+                        message=action,
                     )
                 )
             return spawn_operations

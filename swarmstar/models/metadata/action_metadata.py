@@ -9,7 +9,7 @@ Every action can be found in swarmstar/actions
 There is also going to be an action: "create_action". This will
 allow for some form of self sufficiency.
 """
-from typing import List, Optional, Type, TypeVar
+from typing import List, Optional, Type, TypeVar, ClassVar
 from pydantic import Field
 from enum import Enum
 from typing_extensions import Literal
@@ -27,23 +27,24 @@ class ActionTypeEnum(str, Enum):
     BASIC = "basic"
 
 class ActionMetadata(MetadataNode):
-    id: str = Field(default_factory=get_available_id("action_metadata"))
-    collection = "action_metadata"
-    type = ActionTypeEnum
+    id: Optional[str] = Field(default_factory=lambda: get_available_id("action_metadata"))
+    collection: ClassVar[str] = "action_metadata"
+    type: ActionTypeEnum = Field(default=ActionTypeEnum.BASIC)
 
     @classmethod
     def get(cls: Type[T], action_id: str) -> T:
         """ Retrieve an action metadata node from the database and return an instance of the correct class. """
         # First, call the superclass (MetadataNode) get method to retrieve the node
         action_metadata_dict = super().get_node_dict(action_id)
-        
-        if action_metadata_dict["internal"]:
-            if action_metadata_dict["is_folder"]:
+        action_metadata = cls(**action_metadata_dict)
+
+        if action_metadata.internal:
+            if action_metadata.is_folder:
                 return InternalActionFolderMetadata(**action_metadata_dict)
             else:
                 return InternalActionMetadata(**action_metadata_dict)
         else:
-            if action_metadata_dict["is_folder"]:
+            if action_metadata.is_folder:
                 return ExternalActionFolderMetadata(**action_metadata_dict)
             else:
                 return ExternalActionMetadata(**action_metadata_dict)
@@ -82,7 +83,7 @@ class InternalActionMetadata(ActionMetadata):
     internal: Literal[True] = Field(default=True)
     children_ids: Optional[List[str]] = Field(default=None)
     parent_id: str
-    default_termination_policy: Literal["simple", "confirm_directive_completion"] = Field(default="simple")
+    termination_policy: Literal["simple", "confirm_directive_completion"] = Field(default="simple")
     internal_file_path: str
 
 class InternalActionFolderMetadata(ActionMetadata):
@@ -94,7 +95,7 @@ class ExternalActionMetadata(ActionMetadata):
     internal: Literal[False] = Field(default=False)
     children_ids: Optional[List[str]] = Field(default=None)
     parent_id: str
-    default_termination_policy: Literal["simple", "confirm_directive_completion"] = Field(default="simple")
+    termination_policy: Literal["simple", "confirm_directive_completion"] = Field(default="simple")
 
 class ExternalActionFolderMetadata(ActionMetadata):
     is_folder: Literal[True] = Field(default=True)

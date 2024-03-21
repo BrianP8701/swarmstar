@@ -37,11 +37,13 @@ class MetadataTree(BaseTree):
         And whenever we see a portal node, we'll know, just prepend the swarm_id and check
         the external database.
         """
+        print(f"Instantiating {cls.collection} tree for swarm {swarm_id}...")
+        
         internal_root_node_id = "root"
         node = get_internal_sqlite(cls.collection, internal_root_node_id)
-        
+    
         def recursive_helper(node):
-            if node["type"] == "portal":
+            if "type" in node and node["type"] == "portal":
                 node_id = f"{swarm_id}_{node['id']}"
                 db.insert(cls.collection, node_id, node)
             if node.get("children_ids", None):

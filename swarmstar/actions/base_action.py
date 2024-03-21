@@ -13,7 +13,7 @@ import json
 import sys
 import inspect
 
-from swarmstar.models import SwarmOperation, SwarmNode, SpawnOperation, NodeEmbryo, BaseNode
+from swarmstar.models import SwarmOperation, SwarmNode, SpawnOperation, BaseNode, ActionMetadata
 
 
 def error_handling_decorator(func):
@@ -22,14 +22,17 @@ def error_handling_decorator(func):
         try:
             return func(self, **kwargs)
         except Exception as e:
-            error_message = (
+            error_type = type(e).__name__
+            error_message = str(e)
+            traceback_info = traceback.format_exc()
+            
+            error_details = (
                 f"Error in {func.__name__}:\n"
-                f"Type: {type(e).__name__}\n"
-                f"Message: {str(e)}\n"
-                f"File: {e.__traceback__.tb_frame.f_code.co_filename}\n"
-                f"Line: {e.__traceback__.tb_lineno}\n"
+                f"Type: {error_type}\n"
+                f"Message: {error_message}\n"
+                f"Traceback:\n{traceback_info}"
             )
-            raise ValueError(error_message)
+            raise ValueError(error_details)
     return wrapper
 
 class ErrorHandlingMeta(ABCMeta):
@@ -88,21 +91,21 @@ class BaseAction(metaclass=ErrorHandlingMeta):
             This decorator is used to mark a function as a custom termination handler.
 
             Functions marked with this decorator should accept two parameters:
-                - terminator_node_id: The id of the terminator node that this node spawned
+                - terminator_id: The id of the terminator node that this node spawned
                 - context: Context persisted from spawning the terminator node
 
             This allows us to easily spawn new nodes, and then respond to the termination of those nodes.
         """
         def wrapper(self, **kwargs):
-            terminator_node_id = kwargs.pop("terminator_node_id", None)
+            terminator_id = kwargs.pop("terminator_id", None)
             context = kwargs.pop("context", None)
             
-            if not terminator_node_id:
-                raise ValueError(f"terminator_node_id is a required parameter for custom_termination_handler. Error in {self.node.id} at function {func.__name__}")
+            if not terminator_id:
+                raise ValueError(f"terminator_id is a required parameter for custom_termination_handler. Error in {self.node.id} at function {func.__name__}")
             if not context:
                 raise ValueError(f"context is a required parameter for custom_termination_handler. Error in {self.node.id} at function {func.__name__}")
 
-            return func(self, terminator_node_id, context)
+            return func(self, terminator_id, context)
         return wrapper
 
     @staticmethod
@@ -133,7 +136,7 @@ class BaseAction(metaclass=ErrorHandlingMeta):
                 raise ValueError(f"instructor_model_name and completion are required parameters for receive_instructor_completion_handler. Error in {self.node.id} at function {func.__name__}")
 
             if type(completion) is dict and instructor_model_name:
-                models_module = import_module("swarmstar.utils.ai.instructor_models")
+                models_module = ActionMetadata.get_action_module(self.node.type)
                 instructor_model = getattr(models_module, instructor_model_name)
                 completion = instructor_model.model_validate(completion)
 
@@ -176,7 +179,7 @@ class BaseAction(metaclass=ErrorHandlingMeta):
         - Set this node's termination handler to the wrapped function.
 
         3. Handling the oracle's completion:
-            Expected parameters: (terminator_node_id: str, context: Dict[str, Any])
+            Expected parameters: (terminator_id: str, context: Dict[str, Any])
         - Appends the questions and answers from the oracle node to the original message.
         - Retries the blocking operation with the updated context.
 
@@ -187,8 +190,8 @@ class BaseAction(metaclass=ErrorHandlingMeta):
             message = kwargs.pop("message", None)
             context = kwargs.pop("context", None)
             completion = kwargs.get("completion", None)
-            if type(completion) is not dict: completion = completion.model_dump()
-            terminator_node_id = kwargs.get("terminator_node_id", None)
+            if type(completion) is not dict and completion: completion = completion.model_dump()
+            terminator_id = kwargs.get("terminator_id", None)
             
             if message: # Stage 1
                 if context: blocking_operation = func(self, message, context)
@@ -197,10 +200,16 @@ class BaseAction(metaclass=ErrorHandlingMeta):
                 blocking_operation.next_function_to_call = func.__name__
                 blocking_operation.context["__message__"] = message
                 blocking_operation.context["__oracle_access__"] = True
+                return blocking_operation
             elif completion and context: # Stage 2
                 if completion.questions is None:
                     __next_function_to_call__ = context.pop("__next_function_to_call__", None)
                     context.pop("__message__", None)
+                    instructor_model_name = context.pop("__instructor_model_name__", None)
+                    if type(completion) is dict and instructor_model_name:
+                        models_module = ActionMetadata.get_action_module(self.node.type)
+                        instructor_model = getattr(models_module, instructor_model_name)
+                        completion = instructor_model.model_validate(completion)
                     if context: return getattr(self, __next_function_to_call__)(completion, context)
                     else: return getattr(self, __next_function_to_call__)(completion)
                 else:
@@ -208,18 +217,16 @@ class BaseAction(metaclass=ErrorHandlingMeta):
                     self.update_execution_memory({"__termination_handler__": func.__name__})
                     context["__questions__"] = completion.questions
                     return SpawnOperation(
-                        parent_node_id=self.node.id,
-                        node_embryo=NodeEmbryo(
-                            action_id="specific/oracle",
-                            message={
-                                "questions": completion.questions, 
-                                "context": completion.context
-                            },
-                            context=context
-                        )
+                        parent_id=self.node.id,
+                        action_id="specific/oracle",
+                        message={
+                            "questions": completion.questions, 
+                            "context": completion.context
+                        },
+                        context=context
                     )
-            elif terminator_node_id: # Stage 3
-                terminator_node = BaseNode.get(terminator_node_id)
+            elif terminator_id: # Stage 3
+                terminator_node = BaseNode.get(terminator_id)
                 question_answers = terminator_node.context
                 questions = terminator_node.context["__questions__"]
                 message = terminator_node.context["__message__"]
@@ -261,7 +268,7 @@ class BaseAction(metaclass=ErrorHandlingMeta):
             
 #             raise ValueError(error_message)
 #             # return SpawnOperation(
-#             #     parent_node_id=self.node.id,
+#             #     parent_id=self.node.id,
 #             #     node_embryo=NodeEmbryo(
 #             #         action_id="swarmstar/actions/swarmstar/handle_failure",
 #             #         message=error_message,

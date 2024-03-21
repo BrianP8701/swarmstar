@@ -30,7 +30,7 @@ def manually_add_internal_action_to_action_space(file_path: str, action_name: st
         description=description,
         parent=parent_path,
         termination_policy=termination_policy,
-        internal_action_path=import_path
+        internal_file_path=import_path
     )
     
     action_metadata = action_metadata.model_dump()

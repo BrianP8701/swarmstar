@@ -90,7 +90,7 @@ class Action(BaseAction):
             next_function_to_call="handle_initial_conversation_state",
         )
 
-    @BaseAction.receive_completion_handler
+    @BaseAction.receive_instructor_completion_handler
     def handle_initial_conversation_state(
         self,
         completion: InitialQuestionAskerConversationState
@@ -137,7 +137,7 @@ class Action(BaseAction):
             next_function_to_call="update_conversation_state",
         )
 
-    @BaseAction.receive_completion_handler
+    @BaseAction.receive_instructor_completion_handler
     def generate_message(
         self,
         completion: QuestionAskerConversationState,
@@ -227,7 +227,7 @@ class Action(BaseAction):
             next_function_to_call="decide_to_continue_or_end_conversation",
         )
 
-    @BaseAction.receive_completion_handler
+    @BaseAction.receive_instructor_completion_handler
     def decide_to_continue_or_end_conversation(
         self,
         reports: List[str],
@@ -255,7 +255,7 @@ class Action(BaseAction):
             next_function_to_call="terminate_conversation",
         )
 
-    @BaseAction.receive_completion_handler
+    @BaseAction.receive_instructor_completion_handler
     def terminate_conversation(self, completion: str):
         self.report(
             "The agent created a final report after having a conversation with the user "
@@ -264,5 +264,5 @@ class Action(BaseAction):
         )
         return TerminationOperation(
             node_id=self.node.id,
-            terminator_node_id=self.node.id,
+            terminator_id=self.node.id,
         )
