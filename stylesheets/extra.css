@@ -1,0 +1,9 @@
+.pathname {
+    font-family: monospace;
+    font-size: 0.85em;
+    color: #555;
+    padding: 2px 4px;
+    display: inline-block;
+    margin: 0 2px;
+    white-space: nowrap;
+}
