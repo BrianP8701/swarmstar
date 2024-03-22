@@ -27,7 +27,7 @@ class BaseNode(BaseModel):
 
 
     @staticmethod
-    def get(node_id: str):
+    def read(node_id: str):
         """ Retrieve a node from the database and return an instance of the correct class. """
         node_class = BaseNode.get_node_class_from_id(node_id)
         module_path, class_name = node_class.rsplit(".", 1)
@@ -50,17 +50,17 @@ class BaseNode(BaseModel):
         the swarm_id and retrieve from the mongodb database.
         """
         if cls.collection == "swarm_nodes":
-            return db.get(cls.collection, node_id)
+            return db.read(cls.collection, node_id)
         else:
             try:
                 node = get_internal_sqlite(cls.collection, node_id)
                 if "type" in node and node["type"] == "portal":
                     node_id = f"{swarm_id_var.get()}_{node_id}"
-                    node = db.get(cls.collection, node_id)
+                    node = db.read(cls.collection, node_id)
                 return node
             except:
                 try:
-                    return db.get(cls.collection, node_id)
+                    return db.read(cls.collection, node_id)
                 except:
                     raise ValueError(f"Node {node_id} not found in {cls.collection}")
 
@@ -79,16 +79,16 @@ class BaseNode(BaseModel):
         """ Replaces node in the database with new node."""
         db.replace(cls.collection, node_id, new_node.model_dump())
 
-    def insert(self) -> None:
+    def create(self) -> None:
         """ Inserts a node to the database. Raises an error if the node already exists. """
-        db.insert(self.collection, self.id, self.model_dump())
+        db.create(self.collection, self.id, self.model_dump())
 
     def clone(self, swarm_id: str) -> None:
         """ Clones this node under a new swarm id and saves it to the database. """
         parts = self.id.split("_")
         new_id = f"{swarm_id}_{parts[1]}"
         self.id = new_id
-        self.insert()
+        self.create()
 
     def get_node_class_from_id(id: str) -> str:
         """ 

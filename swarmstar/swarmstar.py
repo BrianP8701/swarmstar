@@ -22,10 +22,7 @@ from swarmstar.operations import (
     terminate,
     execute_action
 )
-from swarmstar.utils.database import MongoDBWrapper
 from swarmstar.context import swarm_id_var
-
-db = MongoDBWrapper()
 
 class Swarmstar:
     def __init__(self, swarm_id: str):
@@ -40,7 +37,7 @@ class Swarmstar:
             message=goal
         )
 
-        SwarmOperation.save(root_spawn_operation)
+        SwarmOperation.create(root_spawn_operation)
         return root_spawn_operation
 
     async def execute(self, swarm_operation: SwarmOperation) -> Union[List[SwarmOperation], None]:
@@ -81,7 +78,7 @@ class Swarmstar:
             raise ValueError(f"Unexpected return type from operation_func: {type(output)}")
 
         for operation in output:
-            SwarmOperation.save(operation)
+            SwarmOperation.create(operation)
 
         return output        
 

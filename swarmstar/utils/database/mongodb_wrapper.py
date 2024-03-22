@@ -157,6 +157,37 @@ class MongoDBWrapper(Database):
         if len(list(result)) == 0:
             raise ValueError(f"_id {key} not found in the collection {category}.")
 
+    def replace(self, category: str, key: str, replacement_document: Dict[str, Any]) -> None:
+        """
+        Replace a document in the database. If the document does not exist, raise a ValueError.
+        Uses optimistic concurrency control to prevent concurrent updates.
+        """
+        try:
+            collection = self.db[category]
+            replacement_document.pop("id", None)  # Remove the _id field if it exists
+
+            retries = 5
+            for attempt in range(retries):
+                current_document = collection.find_one({"_id": key})
+                if current_document is None:
+                    raise ValueError(f"_id {key} not found in the collection {category}.")
+
+                new_version = current_document.get("version", 0) + 1
+                replacement_document["version"] = new_version
+                replacement_document["_id"] = key
+
+                result = collection.replace_one(
+                    {"_id": key, "version": current_document["version"]},
+                    replacement_document
+                )
+
+                if result.matched_count:
+                    break
+                elif attempt == retries - 1:
+                    raise Exception("Failed to replace document due to concurrent modification.")
+        except Exception as e:
+            raise ValueError(f"Failed to replace document at {category}/{key}: {str(e)}")
+
     def get_field(self, category: str, key: str, field: str) -> Any:
         collection = self.db[category]
         result = collection.find_one({"_id": key}, {field: 1, "_id": 0})

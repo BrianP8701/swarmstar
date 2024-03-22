@@ -7,17 +7,17 @@ Nodes can perform 1 of 5 "SwarmOperations":
     - UserCommunicationOperation
 """
 from __future__ import annotations
-from typing import Any, Dict, Literal, Optional, Union, List
+from typing import Any, Dict, Literal, Optional, Union
 from pydantic import BaseModel, Field
 from pydantic import ValidationError
+from abc import ABC, abstractmethod
 
-from swarmstar.utils.misc.generate_uuid import generate_uuid
+from swarmstar.utils.misc.ids import generate_uuid, get_available_id, copy_under_new_swarm_id
 from swarmstar.utils.database import MongoDBWrapper
-from swarmstar.utils.misc.get_next_available_id import get_available_id
 
 db = MongoDBWrapper()
 
-class SwarmOperation(BaseModel):
+class SwarmOperation(BaseModel, ABC):
     id: Optional[str] = Field(default_factory=lambda: get_available_id("swarm_operations"))
     operation_type: Literal[
         "spawn",
@@ -44,16 +44,16 @@ class SwarmOperation(BaseModel):
         return super().model_validate(data, **kwargs)
 
     @staticmethod
-    def save(operation: SwarmOperation) -> None:
-        db.insert("swarm_operations", operation.id, operation.model_dump())
+    def create(operation: SwarmOperation) -> None:
+        db.create("swarm_operations", operation.id, operation.model_dump())
 
     @staticmethod
     def replace(operation: SwarmOperation) -> None:
         db.replace("swarm_operations", operation.id, operation.model_dump())
 
     @staticmethod
-    def get(operation_id: str) -> SwarmOperation:
-        operation = db.get("swarm_operations", operation_id)
+    def read(operation_id: str) -> SwarmOperation:
+        operation = db.read("swarm_operations", operation_id)
         if operation is None:
             raise ValueError(f"Operation with id {operation_id} not found")
         operation_type = operation["operation_type"]
@@ -84,10 +84,14 @@ class SwarmOperation(BaseModel):
 
     @staticmethod
     def clone(operation_id: str, new_swarm_id: str) -> None:
-        operation = SwarmOperation.get(operation_id)
+        operation = SwarmOperation.read(operation_id)
         parts = operation.id.split("_", 1)
         operation.id = f"{new_swarm_id}_{parts[1]}"
-        operation.save()
+        operation.create()
+
+    @abstractmethod
+    def get_field_updates_on_copy(self, new_swarm_id: str) -> Dict[str, Any]:
+        pass
 
 
 class BlockingOperation(SwarmOperation):
@@ -101,6 +105,9 @@ class BlockingOperation(SwarmOperation):
     args: Dict[str, Any] = {}
     context: Dict[str, Any] = {}
     next_function_to_call: str
+    
+    def get_field_updates_on_copy(self, new_swarm_id: str) -> Dict[str, Any]:
+        return {"node_id": copy_under_new_swarm_id(self.node_id, new_swarm_id)}
 
 class SpawnOperation(SwarmOperation):
     operation_type: Literal["spawn"] = Field(default="spawn")
@@ -110,11 +117,21 @@ class SpawnOperation(SwarmOperation):
     parent_id: Optional[str] = None
     node_id: Optional[str] = None
 
+    def get_field_updates_on_copy(self, new_swarm_id: str) -> Dict[str, Any]:
+        return {
+            "action_id": copy_under_new_swarm_id(self.action_id, new_swarm_id),
+            "parent_id": copy_under_new_swarm_id(self.parent_id, new_swarm_id),
+            "node_id": copy_under_new_swarm_id(self.node_id, new_swarm_id)
+        }
+
 class ActionOperation(SwarmOperation):
     operation_type: Literal["action"] = Field(default="action")
     function_to_call: str
     node_id: str
     args: Dict[str, Any] = {}
+
+    def get_field_updates_on_copy(self, new_swarm_id: str) -> Dict[str, Any]:
+        return {"node_id": copy_under_new_swarm_id(self.node_id, new_swarm_id)}
 
 class TerminationOperation(SwarmOperation):
     operation_type: Literal["terminate"] = Field(default="terminate")
@@ -122,9 +139,18 @@ class TerminationOperation(SwarmOperation):
     node_id: str
     context: Optional[Dict[str, Any]] = None
 
+    def get_field_updates_on_copy(self, new_swarm_id: str) -> Dict[str, Any]:
+        return {
+            "node_id": copy_under_new_swarm_id(self.node_id, new_swarm_id),
+            "terminator_id": copy_under_new_swarm_id(self.terminator_id, new_swarm_id)
+        }
+
 class UserCommunicationOperation(SwarmOperation):
     operation_type: Literal["user_communication"] = Field(default="user_communication")
     node_id: str
     message: str
     context: Optional[Dict[str, Any]] = {}
     next_function_to_call: str
+
+    def get_field_updates_on_copy(self, new_swarm_id: str) -> Dict[str, Any]:
+        return {"node_id": copy_under_new_swarm_id(self.node_id, new_swarm_id)}

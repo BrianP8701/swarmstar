@@ -19,7 +19,7 @@ async def blocking(blocking_operation: BlockingOperation) -> BlockingOperation:
         }
     )
     
-    node = BaseNode.get(blocking_operation.node_id)
+    node = BaseNode.read(blocking_operation.node_id)
     log_index_key = blocking_operation.context.get("log_index_key", None)
 
     node.log({

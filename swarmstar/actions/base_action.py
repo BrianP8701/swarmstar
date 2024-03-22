@@ -56,7 +56,7 @@ class BaseAction(metaclass=ErrorHandlingMeta):
         pass        
     
     def get_node(self) -> SwarmNode:
-        return SwarmNode.get(self.node.id)
+        return SwarmNode.read(self.node.id)
     
     def report(self, report: str):
         if self.node.report is not None:
@@ -228,7 +228,7 @@ class BaseAction(metaclass=ErrorHandlingMeta):
                     if context: return func(self, message, context)
                     else: return func(self, message)
             elif terminator_id: # Stage 3
-                terminator_node = BaseNode.get(terminator_id)
+                terminator_node = BaseNode.read(terminator_id)
                 oracle_report = terminator_node.report
                 context["__message__"] += f"\n\n{oracle_report}"
                 return BlockingOperation(

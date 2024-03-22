@@ -17,7 +17,7 @@ def execute_action(action_operation: ActionOperation) -> Union[SwarmOperation, L
     to perform.
     """
     node_id = action_operation.node_id
-    node = SwarmNode.get(node_id)
+    node = SwarmNode.read(node_id)
     action_metadata = ActionMetadata.get(node.type)
 
 

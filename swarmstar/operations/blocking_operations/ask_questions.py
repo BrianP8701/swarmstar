@@ -12,7 +12,7 @@ from swarmstar.utils.ai.prompts import ASK_QUESTIONS_INSTRUCTIONS
 instructor = Instructor()
 
 async def blocking(blocking_operation: BlockingOperation) -> BlockingOperation:
-    node = BaseNode.get(blocking_operation.node_id)
+    node = BaseNode.read(blocking_operation.node_id)
 
     message = blocking_operation.args["message"]
 

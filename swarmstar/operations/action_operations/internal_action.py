@@ -8,7 +8,7 @@ def execute_action(action_operation: ActionOperation) -> Union[SwarmOperation, L
     This handles actions that are internal to swarmstar.
     """
     node_id = action_operation.node_id
-    node = SwarmNode.get(node_id)
+    node = SwarmNode.read(node_id)
     action_metadata = ActionMetadata.get(node.type)
 
     internal_file_path = action_metadata.internal_file_path

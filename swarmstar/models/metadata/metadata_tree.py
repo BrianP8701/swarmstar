@@ -41,14 +41,18 @@ class MetadataTree(BaseTree):
         
         internal_root_node_id = "root"
         node = get_internal_sqlite(cls.collection, internal_root_node_id)
-    
+
+        batch_create_payload = {} # {new_node_id: new_node}
+
         def recursive_helper(node):
             if "type" in node and node["type"] == "portal":
                 node_id = f"{swarm_id}_{node['id']}"
-                db.insert(cls.collection, node_id, node)
+                batch_create_payload[node_id] = node
             if node.get("children_ids", None):
                 for child_id in node["children_ids"]:
                     child_node = get_internal_sqlite(cls.collection, child_id)
                     recursive_helper(child_node)
 
         recursive_helper(node)
+
+        db.batch_create(cls.collection, batch_create_payload)

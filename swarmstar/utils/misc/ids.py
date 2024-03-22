@@ -11,11 +11,21 @@ Where x represents the type of node,
 
 And y represents the number of the node of that type.
 """
+import uuid
 
 from swarmstar.utils.database import MongoDBWrapper
 from swarmstar.context import swarm_id_var
 
 db = MongoDBWrapper()
+
+def generate_uuid(identifier: str) -> str:
+    id = str(uuid.uuid4())
+    return f"{identifier}_{id}"
+
+def copy_under_new_swarm_id(old_id: str, new_swarm_id: str) -> str:
+    if old_id[0] == "_": return old_id # Internal ids should not be copied
+    retain_this_part = old_id.split("_", 1)[1]
+    return f"{new_swarm_id}_{retain_this_part}"
 
 def get_available_id(collection: str) -> str:
     if collection == "swarm_nodes": 
@@ -32,7 +42,7 @@ def get_available_id(collection: str) -> str:
         inner_key = "action_count"
     else: raise ValueError(f"Collection {collection} not recognized.")
 
-    y = db.get_by_key("admin", swarm_id_var.get(), inner_key)
+    y = db.get_field("admin", swarm_id_var.get(), inner_key)
     db.increment("admin", swarm_id_var.get(), inner_key)
     return f"{swarm_id_var.get()}_{x}{y}"
 

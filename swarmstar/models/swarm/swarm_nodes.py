@@ -6,11 +6,8 @@ from typing import Any, Dict, List, Optional, ClassVar
 from enum import Enum
 from pydantic import Field
 
-from swarmstar.utils.database import MongoDBWrapper
 from swarmstar.models.base_node import BaseNode
-from swarmstar.utils.misc.get_next_available_id import get_available_id
-
-db = MongoDBWrapper()
+from swarmstar.utils.misc.ids import get_available_id
 
 # Each termination policy has a unique handler in swarmstar/swarm_operations/termination_operations/main.py
 class TerminationPolicies(Enum):
@@ -31,7 +28,7 @@ class SwarmNode(BaseNode):
     context: Optional[Dict[str, Any]] = {}          # This is where certain nodes can store extra context about themselves.
 
     @classmethod
-    def get(cls, node_id: str) -> 'SwarmNode':
+    def read(cls, node_id: str) -> 'SwarmNode':
         swarm_node_dict = super().get_node_dict(node_id)
         return cls(**swarm_node_dict)
 

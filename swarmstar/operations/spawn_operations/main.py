@@ -43,7 +43,7 @@ def _spawn_node(spawn_operation: SpawnOperation) -> SwarmNode:
         context=spawn_operation.context
     )
 
-    SwarmNode.insert(node)
+    SwarmNode.create(node)
     return node
 
 def _update_parent(spawn_operation: SpawnOperation, node: SwarmNode) -> None:
@@ -52,7 +52,7 @@ def _update_parent(spawn_operation: SpawnOperation, node: SwarmNode) -> None:
     """
     parent_id = spawn_operation.parent_id
     if parent_id is not None:
-        parent_node = SwarmNode.get(parent_id)
+        parent_node = SwarmNode.read(parent_id)
         parent_node.children_ids.append(node.id)
         SwarmNode.replace(parent_node)
 

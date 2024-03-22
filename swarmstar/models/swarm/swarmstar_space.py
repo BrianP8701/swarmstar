@@ -38,8 +38,8 @@ class SwarmstarSpace(BaseModel):
     queued_operation_ids: List[str] = [] # Ids of operations that have not yet been executed
 
     @staticmethod
-    def get(swarm_id: str) -> 'SwarmstarSpace':
-        return SwarmstarSpace(**db.get("admin", swarm_id))
+    def read(swarm_id: str) -> 'SwarmstarSpace':
+        return SwarmstarSpace(**db.read("admin", swarm_id))
 
     @staticmethod
     def instantiate_swarmstar_space(swarm_id: str):
@@ -56,7 +56,7 @@ class SwarmstarSpace(BaseModel):
         MemoryMetadataTree.instantiate(swarm_id)
         ActionMetadataTree.instantiate(swarm_id)
 
-        db.insert("admin", swarm_id, swarmstar_space)
+        db.create("admin", swarm_id, swarmstar_space)
 
     @staticmethod
     def clone_swarmstar_space(old_swarm_id: str, new_swarm_id: str):
@@ -65,25 +65,34 @@ class SwarmstarSpace(BaseModel):
         if db.exists("admin", new_swarm_id):
             raise ValueError(f"Swarmstar space with id {new_swarm_id} already exists")
 
-        old_swarmstar_space = SwarmstarSpace.get(old_swarm_id)
+        old_swarmstar_space = SwarmstarSpace.read(old_swarm_id)
 
         if old_swarmstar_space.node_count > 0: SwarmTree.clone(old_swarm_id, new_swarm_id)
         if old_swarmstar_space.action_count > 0: ActionMetadataTree.clone(old_swarm_id, new_swarm_id)
         if old_swarmstar_space.memory_count > 0: MemoryMetadataTree.clone(old_swarm_id, new_swarm_id)
 
+        batch_copy_payload = [[], []] # [old_ids, new_ids]
+        batch_update_payload = {} #{old_operation_id: {updated_fields}}
         for i in range(old_swarmstar_space.operation_count):
-            SwarmOperation.clone(f"{old_swarm_id}_o{i}", new_swarm_id)
+            old_op_id = f"{old_swarm_id}_o{i}"
+            operation = SwarmOperation.read(old_op_id)
+            updated_fields = operation.get_field_updates_on_copy(new_swarm_id)
+            batch_copy_payload[0].append(old_op_id)
+            batch_copy_payload[1].append(f"{new_swarm_id}_o{i}")
+            batch_update_payload[f"{new_swarm_id}_o{i}"] = updated_fields
+        db.batch_copy("swarm_operations", batch_copy_payload[0], batch_copy_payload[1])
+        db.batch_update("swarm_operations", batch_update_payload)
+
         old_swarmstar_space.queued_operation_ids = [f"{new_swarm_id}_o{operation_id.split('_o')[1]}" \
             for operation_id in old_swarmstar_space.queued_operation_ids]
-        
-        db.insert("admin", new_swarm_id, old_swarmstar_space)
+        db.create("admin", new_swarm_id, old_swarmstar_space)
 
     @staticmethod
     def delete_swarmstar_space(swarm_id: str):
         if not db.exists("admin", swarm_id):
             raise ValueError(f"Swarmstar space with id {swarm_id} does not exist")
 
-        swarmstar_space = SwarmstarSpace.get(swarm_id)
+        swarmstar_space = SwarmstarSpace.read(swarm_id)
         db.delete("admin", swarm_id)
         
         if swarmstar_space.node_count > 0: SwarmTree.delete(swarm_id)

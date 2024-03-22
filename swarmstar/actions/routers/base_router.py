@@ -13,10 +13,8 @@ from swarmstar.models import (
     BlockingOperation,
     BaseNode
 )
-from swarmstar.utils.database import MongoDBWrapper
 from swarmstar.utils.ai.instructor_models import NextPath
 
-db = MongoDBWrapper()
 
 class BaseMetadataTreeRouter(BaseAction, BaseModel, ABC):
     ROUTE_INSTRUCTIONS: str
@@ -31,7 +29,7 @@ class BaseMetadataTreeRouter(BaseAction, BaseModel, ABC):
         """ This function repeatedly gets called until we reach a leaf node. """
         children_ids = context["children_ids"]
         if completion.index is not None:
-            next_node = BaseNode.get(children_ids[completion.index])
+            next_node = BaseNode.read(children_ids[completion.index])
             if next_node.is_folder:
                 return self.route(next_node.id)
             else:
@@ -50,7 +48,7 @@ class BaseMetadataTreeRouter(BaseAction, BaseModel, ABC):
         pass
 
     def route(self, node_id: str):
-        node = BaseNode.get(node_id)
+        node = BaseNode.read(node_id)
         children = self._get_children(node)
         children_ids = [child.id for child in children]
         children_descriptions = self._get_children_descriptions(children)
@@ -67,7 +65,7 @@ class BaseMetadataTreeRouter(BaseAction, BaseModel, ABC):
         """ Get the children of a node from the database. """
         children = []
         for child_id in node.children_ids:
-            children.append(BaseNode.get(child_id))
+            children.append(BaseNode.read(child_id))
         return children
 
     def _build_message(self, children: List[BaseNode]) -> str:

@@ -67,6 +67,11 @@ class Database(ABC):
         pass
 
     @abstractmethod
+    def replace(self, category: str, key: str, new_value: Dict[str, Any]) -> None:
+        """ Replace a key-value pair with a new value. Raise error if key does not exist. """
+        pass
+
+    @abstractmethod
     def get_field(self, category: str, key: str, field: str) -> Any:
         """ Grab the value associated with a specified field inside the document. """
         pass

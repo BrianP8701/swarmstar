@@ -9,11 +9,9 @@ from enum import Enum
 from pydantic import Field
 from typing_extensions import Literal
 
-from swarmstar.utils.database import MongoDBWrapper
 from swarmstar.models.metadata.metadata_node import MetadataNode
-from swarmstar.utils.misc.get_next_available_id import get_available_id
+from swarmstar.utils.misc.ids import get_available_id
 
-db = MongoDBWrapper()
 T = TypeVar('T', bound='MemoryMetadata')
 
 class MemoryTypeEnum(str, Enum):
