@@ -36,12 +36,12 @@ class Database(ABC):
         pass
 
     @abstractmethod
-    def commit_transaction(self) -> None:
+    def commit_transaction(self, session: Any) -> None:
         """Commit a transaction session."""
         pass
 
     @abstractmethod
-    def rollback_transaction(self) -> None:
+    def rollback_transaction(self, session: Any) -> None:
         """Rollback a transaction session."""
         pass
 
@@ -61,11 +61,6 @@ class Database(ABC):
 
 
     """                     Other common operations.                     """
-    @abstractmethod
-    def replace(self, category: str, key: str, value: Any) -> None:
-        """ Replace a value for a given key. Raise error if key does not exist. """
-        pass
-
     @abstractmethod
     def copy(self, category: str, key: str, new_key: str) -> None:
         """ Copy a key-value pair to a new key. Raise error if key does not exist. """
@@ -95,7 +90,7 @@ class Database(ABC):
 
     """                     List operations                     """
     @abstractmethod
-    def append(self, category: str, key: str, field: str, value: Any) -> None:
+    def append_to_array(self, category: str, key: str, field: str, value: Any) -> None:
         """ Append a value to a list stored under a specified field. """
         pass
 
