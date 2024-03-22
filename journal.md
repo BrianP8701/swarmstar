@@ -2370,3 +2370,72 @@ action space is suprisingly easier in some ways in design, harder in reliability
 memory space is hard in design. i havent even used it yet so idfk how good its reliability will be smh
                 
 after every plan step, if multiple sub directives review to ensure all are independent are parallel. repeat until no changes are made
+
+
+# Building the oracle
+
+This is HUGE. the oracle is the entrypoint, the gatekeeper, the god of the memory space in my agi system. 
+
+so the oracle receives questions and context around the questions. it needs to answer these questions.
+
+We should have the oracle have a STRONG bias torwards searching memory first. but also, sometimes it should be radically clear that talking to the user or browsing the internet is the obvious step to take.
+
+so like what we want is start from root of memory, you have option to go to: user, internet, memory
+
+but in addition should you be able to:
+    - explore multiple routes at the same time?
+    - when a route is unfruitful, do you backstep or start back from the root, and when to decide to give up and ask the user?
+    - each node has a variety of tools available to it. how to know when to use tools? 
+    - how to expand the memory space dynamically on the spot?
+
+and problems:
+    - what if a node is being metafied, and at the same time another node wants to come and metafy it?
+
+one of the key principles we want to follow is that data isnt chunked, indexed, metafied until it is needed, until we try to use it. every node has multiple tools to explore and metafy it and explore it. for example the primary example i have so far:
+
+user provides a github link. the github link is a type of data, labeled with github link. theres an obvious set of actions for github links, namely clone repository. we can clone this repository and get
+
+okay okay okay. hmm well lets think about it more so like this. we want to be able to easily ask questions and get answers. we need documentation that is good for an ai, and we want the ai to pregressively build these docs as needed. not neccesarilly all at once. theres multiple considerations:
+
+- each individual chunk (node) should within its description contain all the relevant cntext to understand that chunk in the docs. so for example in the future if we want to understand that chunk we just go ahead and grab that chunks description. 
+
+Describing a chunk of code may involve the following:
+    - reading that chunks code
+    - reading the overall documentation of the repo
+    - doing some structured code extraction to get the classes and functions this code depends on that we need to understand to understand this piece of code
+then we'd proceed to go to those other chunks of code and describe them. first we'd need to finish describing the code that this code depends on to understand it. we'd need to be sure to be aware of the path we'd visited to avoid circular imports. 
+
+in addition when underlying code changes, we need to update. so each chunk of code should have pointers to each node it depends or is related to.
+so we'll have status on memory nodes: 
+    - "out_of_date"     Has a description, but the code or its dependencies have changed
+    - "up_to_date"      Has a description and is up to date
+    - "none"            Has no description
+
+In addition each chunk or "node" will have these attributes:
+    - short_description
+    - long_description
+    - type
+    - dependencies (list of node ids it depends on)
+    - context (each "type" has a unique schema for whats in its context dict)
+
+
+Okay so im trying to plan and build the memory side of my agi system now. im trying to plan and think about how this should look and work by walking through an example.
+
+i guess ill give u some context to better understand how the system currently works.
+Whats currently implemented: 
+
+we want a generally systematic approach to doing this but flexible. so example: our agi system gets the github link and a request to update some classes. we just store the link at the root, with a short_description "the user gave us this github_link" (when the user inputs a constant we automatically initiate a process of classifying the constant, so in this case it'd be typed with github_link). the nodes in the actions space make decisions and take actions. the rule for each of them is at any point they must make decisions with full context. its their responsibility to ask questions when they need context. we start with the planning node which obviously is gonna ask questions about this repository and what this class is about.
+
+Like we need a general process that will work in all these scenarios. let assume we have the same questions, some questions about the repo, some specific class, and we'll imagine different states of the memory space:
+    1. when the github link is all we have, choose to look at the tools available to the github link and clone it.
+        we should clone the repository. then save it to memory. it starts from root. it sees one memory, the github link. it decides to either:
+            - save the repository node at the root next to the link
+            - create a folder for the repository node and the link since they are such distinct ideas
+        both should be fine no biggie. but we do want the process to know when to create new folders to categorize stuff, but now since there are only two items no big deal.
+    2. when we have the github link and the github repo node at root:
+        - we should decide to look at the github repo and use the tools available to us for this repo.
+        - we should decide to do a keyword search, or some sort of search to define the exact file path of the class we are questioning
+        - create a new node for this file, with status "None" and add the class name we searched by to the node's context
+    3. When we have the github link, repository, and file of interest at root
+        
+memory nodes of type "python_file" should have a spot for classes or functions_defined_in_this_file.

@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 import os
 from typing import Dict, Any
 
-from swarmstar.utils.database.key_value_db_interface import KV_Database
+from swarmstar.utils.database.abstract_database import KV_Database
 
 load_dotenv()
 MONGODB_URI = os.getenv("MONGODB_URI")
@@ -34,7 +34,7 @@ class MongoDBWrapper(KV_Database):
         except DuplicateKeyError:
             raise ValueError(f"A document with _id {key} already exists in collection {category}.")
 
-    def replace(self, category, key, value):
+    def replace(self, category, key, value, session=None):
         try:
             collection = self.db[category]
             value.pop("id", None)  # Remove the _id field if it exists
@@ -42,7 +42,7 @@ class MongoDBWrapper(KV_Database):
 
             retries = 5
             for attempt in range(retries):
-                current_document = collection.find_one({"_id": key})
+                current_document = collection.find_one({"_id": key}, session=session)
                 if current_document is None:
                     raise ValueError(f"_id {key} not found in the collection {category}.")
 
@@ -51,7 +51,9 @@ class MongoDBWrapper(KV_Database):
                 new_document["version"] = new_version
 
                 result = collection.replace_one(
-                    {"_id": key, "version": current_document["version"]}, new_document
+                    {"_id": key, "version": current_document["version"]},
+                    new_document,
+                    session=session
                 )
 
                 if result.matched_count:
@@ -172,3 +174,15 @@ class MongoDBWrapper(KV_Database):
         if result is None:
             raise ValueError(f"_id {key} not found in the collection {category}.")
         return result.get(inner_key, 0)
+
+    def start_transaction(self, session=None):
+        if session is None:
+            session = self.client.start_session()
+        session.start_transaction()
+        return session
+
+    def commit_transaction(self, session):
+        session.commit_transaction()
+
+    def abort_transaction(self, session):
+        session.abort_transaction()

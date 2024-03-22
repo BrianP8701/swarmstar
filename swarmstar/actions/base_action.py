@@ -72,7 +72,7 @@ class BaseAction(metaclass=ErrorHandlingMeta):
         self.node.termination_policy = termination_policy
         SwarmNode.replace(self.node.id, self.node)
         if termination_policy == "custom_termination_handler":
-            self.update_execution_memory({"__termination_handler__": termination_handler})
+            self.replace_execution_memory(execution_memory={"__termination_handler__": termination_handler})
     
     def add_value_to_execution_memory(self, attribute: str, value: Any):
         self.node.execution_memory[attribute] = value
@@ -82,7 +82,7 @@ class BaseAction(metaclass=ErrorHandlingMeta):
         del self.node.execution_memory[attribute]
         SwarmNode.replace(self.node.id, self.node)
 
-    def update_execution_memory(self, execution_memory: Dict[str, Any]):
+    def replace_execution_memory(self, execution_memory: Dict[str, Any]):
         self.node.execution_memory = execution_memory
         SwarmNode.replace(self.node.id, self.node)
 
@@ -154,9 +154,13 @@ class BaseAction(metaclass=ErrorHandlingMeta):
     @staticmethod
     def ask_questions_wrapper(func: Callable):
         """        
-        This wrapper wraps function that take a string message and an optional context dictionary.
-        This wrapper will ensure that before the function is called, the LLM is given the option to ask
-        questions to the oracle.
+        The wrapped function needs to accept:
+            - message: str
+            - context: Optional[Dict[str, Any]]
+        
+        The message should be a directive, decision or task. This wrapper will force an additional step,
+        to ask questions, before the wrapped function is called. This is to ensure that the LLM has
+        full context before performing any action. Questions are answered by the oracle.
 
         The oracle is responsible for answering questions and has access to the swarm's memory,
         the internet, and can communicate with the user as a last resort. 
@@ -208,14 +212,14 @@ class BaseAction(metaclass=ErrorHandlingMeta):
                     next_function_to_call=func.__name__
                 )
             elif completion: # Stage 2
-                if completion.questions:
-                    self.update_termination_policy("custom_termination_handler", func.__name__)
+                if completion["questions"]:
+                    self.update_termination_policy(termination_policy="custom_termination_handler", termination_handler=func.__name__)
                     return SpawnOperation(
                         parent_id=self.node.id,
                         action_id="specific/oracle",
                         message={
-                            "questions": completion.questions, 
-                            "context": completion.context
+                            "questions": completion["questions"], 
+                            "context": completion["context"]
                         },
                         context=context
                     )
