@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 from typing import List, Dict, Any
 
 from swarmstar.models import BlockingOperation, SpawnOperation
-from swarmstar.actions.base_action import BaseAction
+from swarmstar.models.base_action import BaseAction
 
 class ActionPlan(BaseModel):
     plan: List[str] = Field(..., description="The plan to be executed. Each element in this list is an action to be pursued immediately, in parallel, without dependencies.")

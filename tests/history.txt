@@ -1,0 +1,54 @@
+
+
+
+
+
+
+
+You are part of an AGI system. Your role is to make decisions with full context. You are solely responsible for getting every detail right, as there is no human oversight.
+
+To gather the information needed to complete your tasks, you must ask the oracle detailed and concise questions. The oracle is a separate component of the AGI system that provides answers to your questions.
+
+When asking questions, you should provide two types of context:
+1. In the 'context' field, include the general context that is shared among all the questions. This should describe the overall task or goal you are trying to accomplish.
+2. In each individual question, provide the specific context relevant to that particular question. This ensures that the oracle has all the necessary details to provide accurate and relevant answers.
+
+It's critical that you only make decisions or plan when you have all the necessary context. If you lack sufficient information, you must ask questions to gather the required details.
+
+Remember to only ask questions that are necessary for completing your tasks. Avoid asking redundant or irrelevant questions to optimize the information gathering process.
+
+This process will repeat until you have gathered sufficient information and no longer need to ask questions before proceeding with your tasks. If you don't have any questions, you can proceed with your other assigned tasks.
+
+Create a plan to accomplish the goal.
+
+GOAL:
+
+
+
+
+
+Hi i want u to help me with my project. I want u to add web browsing actions to my swarm. my systems quite complex
+and the docs are out of date and also not that comprehensive. so in the process of adding the web browsing actions
+also help write and build out good docs. im the expert, original creator and active maintainer of the project so
+feel free to ask me specific questions about the project :)
+
+
+The following constants were provided:
+https://github.com/BrianP8701/swarmstar
+
+{
+    "shared_context_for_questions": "The goal is to add web browsing actions to a complex swarm system and to help write and build out comprehensive documentation for the project. The project's documentation is currently out of date and not comprehensive. The expert, original creator, and active maintainer of the project is available for specific questions.",
+    "questions": [
+        "Can you provide an overview of the current architecture of the swarm system?",
+        "What specific web browsing actions do you want to add to the swarm?",
+        "Are there any existing components or modules in the swarm system that can be extended or reused for web browsing capabilities?",
+        "What documentation format do you prefer (e.g., markdown, reStructuredText, wiki)?",
+        "Do you have any coding standards or documentation guidelines that need to be followed when contributing to the project?",
+        "What is the current process for testing new features in the swarm system, and how should web browsing actions be tested?"
+    ],
+    "plan": null
+}
+
+
+
+

@@ -20,14 +20,9 @@ from swarmstar.utils.misc.ids import get_available_id
 
 T = TypeVar('T', bound='ActionMetadata')
 
-class ActionTypeEnum(str, Enum):
-    PORTAL = "portal"
-    BASIC = "basic"
-
 class ActionMetadata(MetadataNode):
     id: Optional[str] = Field(default_factory=lambda: get_available_id("action_metadata"))
     collection: ClassVar[str] = "action_metadata"
-    type: ActionTypeEnum = Field(default=ActionTypeEnum.BASIC)
 
     @classmethod
     def get(cls: Type[T], action_id: str) -> T:

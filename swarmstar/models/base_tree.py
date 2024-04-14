@@ -27,7 +27,7 @@ class BaseTree(ABC, BaseModel):
         Metadata nodes can be internal and portal nodes close the gap between internal and external.
         """
         if node.collection == "swarm_nodes": return True
-        return not node.read("internal", False) or node.read("type", None) == "portal"
+        return not node.read("internal", False) or node.get("portal", False)
 
     @classmethod
     def get_root_node_id(cls, swarm_id: str) -> str:
@@ -62,7 +62,7 @@ class BaseTree(ABC, BaseModel):
                 parts = node.id.split("_", 1)
                 node.id = f"{swarm_id}_{parts[1]}"
                 # If the node has a parent and is not a portal node, change the parent id
-                if node.parent_id and not node.type == "portal":
+                if node.parent_id and not node.get("portal", False):
                     parts = node.parent_id.split("_", 1)
                     node.parent_id = f"{swarm_id}_{parts[1]}"
                 batch_copy_payload[0].append(old_id)
@@ -71,8 +71,10 @@ class BaseTree(ABC, BaseModel):
 
         recursive_helper(root_node_id)
 
-        db.batch_copy(cls.collection, batch_copy_payload)
-        db.batch_update(cls.collection, batch_update_payload)
+        if batch_copy_payload:
+            db.batch_copy(cls.collection, batch_copy_payload)
+        if batch_update_payload:
+            db.batch_update(cls.collection, batch_update_payload)
 
     @classmethod
     def delete(cls, swarm_id: str) -> None:
@@ -91,4 +93,5 @@ class BaseTree(ABC, BaseModel):
 
         recursive_helper(root_node_id)
         
-        db.batch_delete(cls.collection, batch_delete_payload)
+        if batch_delete_payload:
+            db.batch_delete(cls.collection, batch_delete_payload)

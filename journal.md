@@ -2439,3 +2439,360 @@ Like we need a general process that will work in all these scenarios. let assume
     3. When we have the github link, repository, and file of interest at root
         
 memory nodes of type "python_file" should have a spot for classes or functions_defined_in_this_file.
+
+# Conversations
+we will be reusing the concept of conversation state. conversation state maintains:
+    - Original questions and context
+    - Questions that arise
+    - Persisted context
+    - Reports
+
+Throughout the conversation we keep the original questions and context static
+We update the questions that arise dynamically throughout the convo
+We update the persisted context after each message
+We append to reports throughout the convo.
+
+there is a question asker
+and there is a question answerer.
+
+we want to somehow abstract this away so we can reuse this framework easily. lets think about the situations where we want to use this
+
+1. User and swarmstar
+    swarmstar wants to ask user a list of questions. generates initial message
+    user responds
+    swarmstar updates conversation state and then responds
+    ...
+
+2. action space and oracle
+    action space has questions. generates initial message
+    initial message goes to oracle. oracle first checks if this is obviously an internet or user directed question with bias torwards memory
+    goes to memory. memory search. (does each route step get added to convo? No) goes to node. is given option of tool choice or 
+
+no this is different. this is a route process.
+a route process needs to mark nodes its already ~~visited~~. no not visited, nodes that it has intentionally marked as non viable options. lets say u call a tool on a node once? That doesent immediately make it not viable - there might be another tool we can call on it. However, we do want to save the fact that we had called that tool. and that that tool output is already at node x. yes this is the way. YES THIS IS THE WAY
+
+it starts from root, travels. at each step it looks at all the nodes and their available tools. it chooses a node. then it chooses a tool. navigation + current node tools are the decision. so the routing process has these options: All child nodes and a brief description of their tools + current nodes tools. you can choose to navigate to a child node, or choose one of the current nodes tools. when u choose a tool, say extract class, you create a new node. that specific tool will create metadata on that node following a predefined process. then the oracle analyzes that node and decides if the answer is there. if not what option does it have? Well the type of node we just created might have more tool available, or we begin search from root again. we want a repository node to be chosen only after all the more specific extracted nodes have been searched and marked. i suppose in a route process we want to mark nodes as not traversable, until we come back up to root with nothing then we ask user. how do we make extracted nodes more readily available then repository nodes? Folders have to have good short descriptions. 
+
+what do we maintain end to end during a route process is the primary question
+
+root node has user and internet tool
+
+its somehow happened again my mind found the optimal solution in this multidimensional problem. and its weird how i know that its optimal without even having to mentally visit and test it. i know its correct
+
+in general i think my process follows this flow:
+- define the problem
+- think of solution. it follows some weak visualization of shapes in my head and thoughts, walking through things step by step
+- find edge cases where this doesen work. keep on thinking of all edge cases and constraints. seperate problem abstract
+
+so the way every node works is the following. every node has a set of tools available to it. when we call a tool on that node, the new node (information extracted) becomes a child of that node in memory. in this manner we dont have the complication of both looking at the tools and child nodes simulteaneously since they are one and the same. u lok at all the tools, if the tool has already been called in the past then u go to the node for where it ahs been called. 
+
+however the same tool can be called with different input parameters. for example, u may have a python package and search for a class under some name and. that tool is not crossed out, in fact it never is. so when you come to that package node again how do we... hm,. i suppose. we call the tool. and then we determine (depending on the tool) what parameters we are to call the tool with. then we can check if the tool has already been called with that node.
+
+so in this manner it would mean that the github repository would be a child of the github link which is a bit strange. 
+
+in this sense there are no folders. every memory is data. unless we add folders which we should. 
+
+we also want to propagate the contents of branches up to parent nodes?
+theres also the problem of us wanting to move nodes that are used more often closer to the root, reorganizing nodes. so tool child nodes, in this manner cant be moved tho. and i actually guess thats a good thing because there actually is a structured relationship here. but like visiting and going through that github link everytime? come on thats just dumb right? i mean i guess a github link is a special one where there really is only one tool to call. although i suppose we want to keep it to merge changes and check if the github is out of date. yeah that makes sense. 
+
+theres still a series of problems that need to be thought of this isnt solved yet. its not that simple. we might want to begin creating some structured models of different types now thatll help me encapsulate and more concretely track my thoughts and changes
+
+i need to find the right solution. one that is general but one that can be controlled by the ais. 
+
+ao we can call an action on a repository node, get file.
+that makes a file child node. determine the type of that. bangout. 
+
+we do need a specail node at root for stuff that is currently being worked on. 
+
+we need to understand we are building two layers here. 3 layers here
+
+metadata layer - for the ais to navigate and make decisions
+tools and memory layer - the actual tools and data that the metadata represents
+data layer - the actual data
+
+so we start from a repository node.
+under that we have file nodes (which can be grouped into folders if so chosen by the memory tree optimizer)
+under file nodes we can have smaller units (function nodes, class nodes, analysis nodes)
+
+when a repository is outdated, we'll want to check and mark the specific ones that changed below as outdated. at each node do we store the raw data again? for file nodes we can point to the ones. but with function and smaller granularity nodes we can break them out and resave them. when something becomes outdated and changes. so the deepere we go down the finer the granularity. also at any point on our way down we can stop if we find an answer.
+
+like what do we actually store at the repository node? do we store anything or is it just a placeholder node as an entrypoint into deeper levels? 
+
+actual data should be at leaves. yes, when we have just the repository node the datas all there. but as we break it up we constantly move data to the leaf nodes. well technically none of the metadata nodes hold any fucking data at all
+
+this process requires me to get the idea and design correct. im not implementing anything until i think through every single edge case and problem and design a system that works for all of them. 
+
+## review of memory system so far from Claude Opus
+Here are some of the strongest principles, ideas, and designs you've brought up that should definitely be implemented:
+
+- Using a tree-like structure for memory organization, with nodes representing different levels of granularity (repository, file, function, etc.). This allows for efficient navigation and retrieval of information.
+- Implementing a metadata layer for AI agents to navigate and make decisions, separate from the actual tools and data layers. This separation of concerns can help in managing the complexity of the system.
+- Associating each node with a set of tools available to it. When a tool is called on a node, the extracted information becomes a child node. This establishes a structured relationship between nodes and their derived information.
+- Maintaining a special node at the root for stuff that is currently being worked on, which can help prioritize and organize active tasks.
+- Propagating the contents of branches up to parent nodes to facilitate information retrieval and understanding the context of lower-level nodes.
+- Storing raw data at different levels of granularity, with the option to break out and save smaller units like functions and classes separately. This allows for more targeted updates when changes occur.
+- Marking nodes as outdated when their underlying data changes, and propagating this information to the relevant child nodes. This helps maintain data consistency and triggers necessary updates.
+
+
+Some weakest points that need further consideration:
+
+- Handling circular dependencies and avoiding infinite loops when traversing the memory tree. You need to develop a mechanism to detect and handle such scenarios gracefully.
+- Balancing the trade-off between storing redundant data at different levels of granularity and the efficiency of updating and maintaining consistency across nodes.
+- Defining clear criteria and mechanisms for reorganizing and optimizing the memory tree structure, such as determining when to create new folders or move frequently accessed nodes closer to the root.
+- Ensuring thread safety and managing concurrent access to the memory tree, especially when multiple AI agents are simultaneously interacting with and modifying the tree.
+- Developing a flexible and extensible way to define and integrate new tools and actions that can be associated with different node types.
+
+
+Regarding a design to solve some of these challenges:
+
+- To handle circular dependencies, you can maintain a set of visited nodes during traversal and check if a node has already been visited before proceeding. If a circular dependency is detected, you can either skip that branch or return an appropriate message indicating the presence of a circular dependency.
+- To strike a balance between data redundancy and update efficiency, you can consider implementing a lazy updating mechanism. Instead of immediately updating all child nodes when a parent node changes, you can mark the child nodes as potentially outdated and only update them when they are accessed or when a certain threshold of outdated nodes is reached.
+- For memory tree optimization, you can keep track of access frequencies and last access times for each node. Periodically, you can run an optimization process that reorganizes the tree based on these metrics, moving frequently accessed nodes closer to the root and grouping related nodes into folders.
+- To ensure thread safety, you can implement locking mechanisms or use thread-safe data structures when modifying the memory tree. Additionally, you can explore using a read-write lock to allow multiple readers but only a single writer at a time, optimizing for concurrent access.
+- To make the system extensible, you can define a plugin architecture where new tools and actions can be easily added and registered with the appropriate node types. Each tool can have a specific interface and configuration options, allowing for flexibility in implementation while maintaining a consistent usage pattern.
+These are just some initial thoughts and suggestions based on the information you provided. Designing a comprehensive and robust memory system is a complex task, and it requires iterative refinement and testing to arrive at an optimal solution.
+
+
+
+in general we can say there are 3 operations we want to be able to do to the memory side
+
+answer question (memory search, find answer)
+save memory (add new data to the memory tree)
+optimize memory (reorganize folders to be more balanced and make folders make sense, and bring frequently accessed stuff closer to root)
+
+when do we save to memory?
+    - when the user provides his initial goal
+    - when during user conversations we deem, "the user told us something worthy of saving"
+    - when we browse the internet
+    - when we write code
+
+
+memory metadata
+chunks
+
+while we are navigating the metadata what information do we need? what do we need during the navigation process
+    - description of each node
+    - options
+we're never actually retrieving the descriptions in metadata right? yeah i do think we are not doing that
+
+using tools to explore a repository
+repository node
+
+some questions can be answered by just looking at the code. but sometimes the context isnt just the code - its why the code was written the way it was, the broader idea behind it and how it fits in with everything else.
+
+i think if an LLM ever wants to modify or change any code, it needs to understand every single line and every detail and thought going into it, as well as understanding all the pieces it is using. yes - this means therell be lots of redundancy. each piece of code will be described in detail as well as the system its a part of and everything it is connected to. 
+
+this will
+
+
+god god god for fucks sake how do you even build this thing it doesent seem possible. because look, this repo ive been coding, ive been changing and adapting it so much nothing has stayed constant. files and folders and the entire structure of my codebase has changed. what has stayed constant? Well the goal has become clearer and as i slowly grok torwards that small pieces slowly become solid. now i think i have a decent amount of solid pieces. but do you see the challenge? the challenge is that the ai system needs to be a partner to the human and get every idea in his head. but things change and grow and adapt so much. and everyone - different people are at different stages with their coding skills. theres so many different goals you can give an agi - to write docs for your code, fix a bug, add something, organize the code, etc. how can i have one general memory system for this no matter what? As i mentioned above, i think we do have some solid principles in place. it has to be a tree that gets built out as needed and we have to keep track of what goes out of date, dependencies etc.
+
+when we have a question about a repository. if the answer involves getting a piece of code about the repository, thats easy enough. we can do some structured search for a piece of code. then we get that piece of code. and we might have further questions about that piece of code relevant to the primary question we are trying to get answers to. so we might need to retrieve another piece of code. easy enough. when we begin to rack up and get a long prompt we'll want to condense. in fact we'd like to condense at every step no? See look this is so dynamic and difficult... like i can prompt chatgpt to get it to write the code i want at any moment by explaining the context of the situation and the parts of the codebase that are just relevant, and then providing snippets of only the most relevant code. uh fuck its difficult to imagine how to automate that sort of retrieval.
+
+i think the general idea is you answer the memory space with a question that u want answered. 
+
+# Set of rules for swarmstar
+
+stuff for repos consists of:
+short descriptions for tree navigation
+documentation
+code
+
+the truth of the matter is, there simply are too many edge cases. i have to think abt this differently. i have to create a space where the LLM can make any decisions it needs and has freedom. 
+
+but i have to set some clear rules for the LLM to guide it to operate properly.
+
+LLM rules:
+    - When passing directives, asking questions or whatever, the recipient has 0 context about what ur doing. You need to provide as much context as relevant to the task or question your passing along.
+    - When you receive some task or are making some decision you must ask questions to get the full context of the problem.
+
+a repository may or may not have documentation. how can an LLM check if a repository has documentation? I suppose generally it ought to look at the files and folders at the root. does this always work? i mean once again there are infinite edge cases. there might not be docs. maybe the docs are in a subfolder. maybe a repository contains multiple projects. maybe the documentation is inside docstrings in modules and functions. 
+
+we (i) believe that llms can, do, generate valuable synthetic data. i believe that llms can look at code and write insightful docs. and when an llm is tasked with summarizing it is compressing that information. the highest fidelity data is the raw code. but sometimes there is more information than just the code. that stuff might be in the users brain. if the user wrote it down it should be in a docstring or the documentation. if its not there the llm should definitely ask the user and write the docs or add the docstring. this sort of processing, flow, compression of information. at any task the llm is doing it might need general big picture ideas as well as other stuff. how can the llm find all this stuff? How do we connect things up so that closely related stuff is nearby? How, and should we correlate pieces of documentation to the relevant pieces of code and vice versa, having the relevant pieces of code point to the relevant pieces of documentation
+
+we cant rush this, this is a real problem. the design has to be flexible enough. the llm is a general intelligence. yes, it is weak far from humans in some respects. but it also has its strengths. we need to design something that really plays to its strengths and accounts for its weaknesses, as well as speculating and extrapolating what is improving in LLMs so we can utilize and have our system grow and become better as gpt5, claude4 and gemini2 and more come out and get better.
+
+the basic idea underpinning what im doing is the following. the best way to organize information is into a folder system, like a tree. to intelligently group things. there is 
+
+you can search the memory for something
+you can have data and look for the best place to save it in memory
+
+we dont break down and metafy data until we actually need to. to keep things simple, heres the memory metadata tree:
+    - each node contains a short description of what it is. each node has a set of tools you can perform on it. 
+
+now a question. we're at a node and deciding what to do next. do we look at this node's tools, or do we look at the children node's descriptions? heres the fact: each child node was derived, is the output of a tool call on that original node (a folder has tools to navigate to children, a python class has tools to get class x or function y) i mean, it ought to be clear to me already that there is an incredibly large swath of tools available to something like a repository node. i suppose what we ought to do is this. whenevee we call a tool on some node, we save that new chunk as a child of the parent node. its the swarms responsibility to appropriately organize this stuff in the right way. now we ought to know that the stuff that has already been called on by the tool is readily available. so next time we are at this parent node and deciding what to do heres the process, simple rule everytime: first we check the already available chunks. okay, if nothing seems correct than we look at the tools available to this node.
+
+that does in fact seem like the correct way to go abt this. now in terms of actually organizing newly generated chunk nodes and tools, that is a seperate process. so we are getting some rules down piece by piece thats progress.
+
+another key point, thing i was worried about, is that we generally feel like when working on a repository that we want some like message to give each LLM context about the overall system right? And previously i was worried like, where tf do u store something like that? so this huge problem in my head yesterday, and still now because im not sure if where im going with this is valid, is that like we'll want the LLM to generate synthetic data, docs, stuff like those messages in a repo and then to pass those around. but those messages will change as the system changes. i think what i gathered instead, is that the LLM navigates the memory space, and maintains like a routing state (similar to conversation state) and it builds this and passes it back as it navigates all the information. (optionally we want to be able to store pointers to specific actual chunks in their raw form). but in terms of not having to come back, or storing a persistent overall system message like this, what we will rather do is clearly instruct the LLM, that in passing around directives, tasks and questions it has to repeat that context, it needs to always share the context that is relevant to its peers. 
+
+## Notes from claude opus on what ive written above:
+- Flexibility: As the system changes and evolves, the LLM can dynamically generate and adapt the context based on the current state of the memory space. This eliminates the need to manually update or maintain separate system-level messages.
+- Contextual relevance: By building and passing context during navigation, the LLM can tailor the information to the specific task or question at hand. This ensures that the most relevant and up-to-date context is provided to the peers, enhancing their understanding and decision-making capabilities.
+- Reduced redundancy: Instead of storing and managing multiple versions of system-level messages, the LLM generates the context on-the-fly based on the current state of the memory space. This reduces redundancy and minimizes the risk of inconsistencies or outdated information.
+- Granular control: By allowing the LLM to navigate the memory space and build context, you have fine-grained control over what information is included and how it is presented. This enables you to customize the context based on the specific requirements of each task or question.
+
+- Develop a mechanism for the LLM to identify and extract relevant chunks during the navigation process. This can involve techniques like keyword matching, semantic similarity, or other relevance scoring methods.
+- Store the pointers to the identified chunks along with the generated context. These pointers can be in the form of unique identifiers or references to the specific locations within the memory space.
+- When passing directives, tasks, or questions to peers, include the relevant pointers along with the generated context. This allows the peers to access the raw information if needed, enhancing their understanding and decision-making capabilities.
+- Implement a retrieval mechanism that enables the LLM or its peers to efficiently access the raw chunks based on the provided pointers. This can involve indexing or other optimization techniques to ensure fast and accurate retrieval.
+
+now an important thing is like when answering a question, or retrieving some memory, we might need to look at multiple nodes to build up our answer. so this routing process and routing state is definitely something that needs to be implemented. 
+
+now here is a relevant problem. when we are at a node of type python file, it seems most obvious that a lot of the time the agent will simply decide to read the file. but now, the problem is that the system needs to understand, that sometimes, or actually we should always prefer to get only the relevant context - in terms of pointers to the raw chunk. okay so, its okay to read the whole file, updated persisted context and questions and add to reports. wee trust the llm to be smart there. but in terms of direct pointers to chunks? I think we'd want to point to a specific class or set of lines for the specific case, especially if the file is large. ive seen code files that were hundreds even once 2000 lines long. 
+
+when we are searching memory how does the system know when to like build out a report or to actually give specific pointers to chunks? 
+
+there is also the problem of how do we decompose questions or handle new questions that arise in our search for the original thing we were interested in because that can happen. 
+
+well during our search we maintain something i called for the user-agent interactoin a conversation state. a conversation state contains a list of questions, a persisted context string and a list of reports. u initialize with just the original questions, persisted context and empty reports. during the conversation u update the list of questions as u finish asking questions or new questions arise. (also add a feature to all user conversations, that whenever the user says something important to extract and save it) after each user message u update the persisted context as needed. and after every message u write something to report, which will append not replace the current reports. this same idea can be applied to searching for memory, searching for an answer. u can maintain the list of questions (should i maintain a list of original questions, and then also a seperate list for current state of questions (removing ones already answered and adding ones that arised during search?)) and during ur search build up your answer to send back in the reports. as questions arise u add them, and u maintain persisted context during your search. at the end you can send all the reports back. as new questions arise, you might need to go back up the tree and search again. should i do seperate search processes in parallel for each individual question, or one single search for all the questions? At different forks it may come to be that u want to visit multiple nodes or use multiple tools. honestly, this is so fucking complex, allow me to think of this purely synchronously first. i cant complicate it more. now for my earlier question, how do we know when to return an actual code chunk? Well i suppose we can have the nodes or tools marked as such. you can have a read mode and a simply grab and return, or link to the contents. maybe youd want to read it first to potentially ask questions? Oh hell yeah, u definitely always need to read the code before sending it back as an answer. i think the thing is i want one clear simple interface to the memory side - ask questions. if the system wants raw code, that should be clear from the question. and the memory navigator should just navigate the memory space and when it comes to the option of retrieving that piece of code - it just does so.
+
+
+# Summary on memory space
+
+Memory Space:
+Organized as a tree-like folder structure.
+Each node represents a specific piece of information or concept.
+Nodes contain a short description and a set of associated tools.
+Navigation and Routing:
+The system navigates the memory space based on the current set of questions or tasks.
+It maintains a routing state that includes the list of questions, persisted context, and reports.
+The routing process involves traversing the memory tree, considering both the available nodes and the tools associated with each node.
+The system navigates until a leaf node is reached, updating the routing state along the way.
+After reaching a leaf node, the system returns to the root and repeats the process until all questions are addressed.
+Question Handling:
+The entire set of questions given to the system is kept together during the navigation process.
+If there are questions that are clearly unrelated, they may be separated and handled independently.
+LLM-based Node Selection:
+At each step of the navigation, an LLM looks at the available options (nodes and tools) and selects the most relevant one based on the current questions and context.
+The LLM uses its general intelligence to make informed decisions about which node or tool to choose.
+Reporting and Answer Building:
+As the system navigates the memory space and finds relevant information, it gradually builds up the answer in the reports section of the routing state.
+Reports are appended with new information as it is discovered, providing a comprehensive response.
+The accumulated reports are returned as the final answer at the end of the search process.
+Interface and Interaction:
+The memory navigator provides a simple and intuitive interface for asking questions.
+If a raw code chunk is specifically requested, the system retrieves and returns it accordingly.
+The interface allows for saving important information provided by the user during conversations.
+Iterative Refinement and Optimization:
+The system is designed to be iteratively refined and optimized based on real-world usage and feedback.
+Continuous development, testing, and improvement are encouraged to enhance efficiency, accuracy, and scalability.
+With these updates, the summary better reflects your intended design for the memory retrieval system. The key points to highlight are:
+
+The system keeps the entire set of questions together during the navigation process, only separating them if they are clearly unrelated.
+The LLM uses its general intelligence to select the most relevant node or tool at each step of the navigation based on the current questions and context.
+The system navigates until a leaf node is reached, updating the routing state along the way, and then returns to the root to repeat the process until all questions are addressed.
+
+
+a few additonal notes:
+mark nodes as outdated appropriately
+folder grouping and optimization.
+
+so we currently have a pretty good idea of how we might navigate the memory metadata tree. but we are faced with a new issue. namely the planning and decomposition problem. its clear from cognition labs that a huge part of their implementation is having devin really have a focus on trying to plan, which is not a part of my implementation at all. so far my implementation only really considers decomposing a directive into immediate parallel subdirectives to be executed rn. why do we need planning? What is planning and what does it do? i think this slides into my system pretty nicely lol im really happy :). im so happy to think of the solution immediately without having to rack my brain a billion times :) yayyyy ive been struggling so much the past couple days with the memory space. luckily my action space is pretty nice and flexible already i can put this in. its simple:
+
+each branch starts at a plan node. (previously a decompose directive node). each branch holds its plan in context. ur given a directive and requestly plan, review and ask questions until u feel comfortable with the plan. then you decompose directives. whenever a subbranch comes back, you review and update the plan as needed and then spawn a new subbranch if possible given the new update. plan node handles subbranch reports synchronously. yayy that works
+
+the big problem of the memory space still remains and we need to map that out. if that works the system should work. the action space doesent have complicated 
+
+so back to mapping out memory. looking mapping out memory is a really hard problem. let me say that - your wokring on a really hard problem now. so lets move on and keep trying
+
+what do we have planned out so far? what things do we store in memory
+    - internal swarm stuff (reports, plans, what other nodes have done)
+    - code, constants, and all the potential chunks derived from tools used on nodes
+
+when searching the memory space the agent can read things and build up a report. it also sometimes want to actually get and like share the actual code as part of an answer, or quote it. so lots of stuff, python files, classes should have a quote tool. so quoting is a tool. 
+
+the actual routing process, search process. does it involve any planning? ideally i think we'd like something like the current action planning we have. the space of actions are much more constrained. theres a limited set of options. but what we know is this:
+
+    - the entry point to the memory space is likely going to be us receiving a list of questions. what we do want is during the search process of going through the code we would like the agent to remain focused but at the same time we want it to be smart. to note and see when like, hey look. theres this improvement. or like, we dont have docs for this but it should be documented. or, this method is missing a docstring which it should have given that its quite complex and domain specfic. hm. it does need to be an intelligent process all the way through. i think our method of progressively navigating to the chunk of the specific granularity we want is solved. yeah. but like. uh. sometimes we dont even really know what exactly we are looking for, so we cant call the tools with parameters like search for class, in which case we'd need to know the name of the class we are looking for. so we do need some sort of exploration techniques. i mean think abt this situation. a repo has no docs. we want to understand the repo but have no idea where to start. howd we go about this? we can get a big picture view by looking at the file structure and doing a search for all classes and look at their names.
+
+    ultimately i think theres no one size fits all solution. absolutely not. this comes back to planning. given the context of what we know and where we are at, what do we do to find an answer, or accomplish our goal?
+
+    So in this respect, does the search of the memory space necessitate a plan node as well? like we would answer one question at a time, does this repo have documentation?
+
+    also when we answer this question we'd like to save the answer to this question to be reused later. how can we do this? Maybe every repo should have a head agent that progressively builds up context and understanding of the repo, with the intention of understanding how to navigate this repo. then when somebody has questions, and navigates to this repo node, theyd ask questions and converse with this agent. maybe every node should have an agent that manages it and kind of builds up a context of whats going on inside its branch, at the appropriate granularity. This "agent" is really just a system prompt. so what about the previous conception we had of "short descriptions"? to navigate the tree? well maybe you look at short descriptions to decide what node to move to. when you traverse to a node your passing the questions and routing state to that node to let it make the next decision. 
+
+    btw, we do expect context lengths to reach millions of tokens, which is way more than enough, so dont stress context length at all - its a nonexistent problem. the only worry is having distractor content when solving a problem. everything in context should be relevant to whats at hand at the moment. thats the key. interesting idea. i mean i guess how do we update and build these memory node agents is the real question? so like first of all lets make it more clear how exactly these memory node agents are used and interacted with. the metadata tree still has short descriptions for navigation to choose a node. at each node the memory metadata node is making the decision. 
+
+    how do we build memory node agents. hmmm. well. we start with just baseline knowledge of some self awareness of what the type of data its managing is. 
+
+okay lets make this decision once and for all. do i have some predefined folders in the memory? 
+
+user folder yeah. swarmstar folder? oh yeahhh we do need the reports and stuff access. so yeah we do have that.
+
+Before thinking about how swarmstar might write docs, lets try to think about how exactly swarmstar may metafy and use a repo that has well written docs.
+docs can be in readme, a docs folder or at a link. initially swarmstar wont know where the docs are. it'll need to generate a plan to find the docs and answer its question. maybe when we spawn a repository we should initialize the github repo memory node with something like, "we just cloned this repository, and have yet to explore it. we dont' know anything about it"
+
+also when we have metafied and explored a repository and have a metadata tree over it, and then the repo undergoes changes, has pushes... how do we instead of throwing out the old metadata tree have the system autonomously, not delete old descriptions, but instead move to match the new organization and update descriptions accordingly? God im still confused... whats the purpose of the metadata tree for a repository really? the llm needs to be able to retrieve the raw code. when it has questions about system design, architecture or ideas it should look at docs. okay lets try to simplify. for fucks sake this is painfully difficult. for most well known codebases the LLM should navigate to the online documentation and navigate that website to find the answer to its question. it shouldn't need to "metafy" the documentation because the documentation should already be organized into sections. okay what if we have another repository that doesent have online docs?
+
+Keep in mind throughout this search process of "trying to find where the docs are" we'll maintain context throughout this process, by initially generating a plan to find the docs, and constantly updating this plan as we move forward. we can mark things as done, change the plan and add context, and also maintain a list of reports, of things we've found that we want to return to sender.
+
+anyway back to the problem. uh we want some general memory solution is the ultimate goal.
+
+lets reduce the problem down down down. the primary problem we are trying to solve: how can we have the LLM navigate memory? Which contains stuff from the user, github repositores and code projects, and documentation and potentially anything else?
+
+what do we want to store? What might we want to "retrieve" from memory? When will we access memory?
+we know with certainty that we often will be accessing memory with questions. when we have questions, memory nodes that understand where they are at will generate plans, and pass it along to other memory agents who will update the plan. for example, the root memory node will have context about what the overall memory system is, without specific details about what is inside the memory system. it'll first generate a plan. then make a decision as to which node (folder) to travel to. the node that best understands that node will then proceed to make a decision of which node to move to, as we get closer to leaves, nodes become more domains specific and focused on the specifics of what they contain. on the path of traversal we can travel to child nodes, or if none of the child nodes seem viable we can try to call a tool on the ndoe we are at to create a new child node. eventually we reach a leaf node which contains data. this data can be documentation or code. 
+
+following questions and concerns:
+does the memory tree have to follow the actual file structure of the repository its in? Or does it have to follow the specific relationship in which the tools were called? Or can they be reorganized dynamically as needed? I reckon we say we follow the tool call relationship. this will make managing dependencies easier in the future.
+
+so we have the idea that we manage structured relationships in the direct tool relationship the node was produced in (for example a github repositroy might have tools, get class, get file, and would spawn a child node holding that data)
+
+but umm. i suppose this works kind of for some scenarios where you know where you want to navigate. and specifically what u want. but what about when you have a different question. like, "Where should i go to add this code", or some sort of exploration where your trying to find something in the codebase by concept but dont exactly have the exact class or function name in mind to use the tools? some other structures might be useful. for example, we could have the file structure along with short descriptions of what each folder and file is for navigation by idea or concept rather than by specific search. this one would indeed match the file structure of the original repository. now lastly, the documentation. this one. hm. i dont know different people use different things for docs. what we do know is that we want the docs, each chunk to be broken up at a good granularity and nested by sections and parts for easy navigation. i can imagine this easily for mkdocs - we'd just have the file structure with short descriptions like the previous method mentioned. part of me now is thinking these 3 categories might be all we need. specific structured tool calling, file structure description for finding files and shit, and then docs. expect, in order for these to coexist, we'd want the root repository node to first break into these 3 sections. and additonally... sometimes the documentation is in the files and folders, so i guess we only need structured tools and then conceptual search. Am i correct in saying that these are the only 2 things we need in general for any repository for search, answering questiosn etc?
+
+In addition, for the scenario of having the agi system actually writing code. we've already created this very simple docker environment thing. we simply spawn a docker container for the ai to work in. it may clone the repository. then itll send terminal commands to navigate, setup and run the code. this is more so in the action space. so when its doing this work, it almost wont even really need to go back to the memory space, expect for questions.
+
+we want ideas to propagate up the tree. when we first add a github repo to memory, its empty. but as we call tools, and explore the codebase by search we should update parent folders. for example, we dont know anythng about the repo, and if we explore and find it has docs or no docs we can pass that information to the parent node. i suppose every node will have to understand where it is in the tree, and should make decisions with this contextual understanding about whether to talk to its parent, and the parent will take that and understanding its own context will assimilate information into itself. we are really counting on these ais to be generally intelligent, and to just keep getting smarter.
+
+how does exploring a repository work? an ai wont just randomly explore a repository with no goal in mind. itll be trying to understand something or answer some question. i suppose a potential approach could be this:
+
+well first of all we add an additional step for when u step into a github repo node. u step in. then youre asked if you know the class, function or file your looking for. based on this answer youll be wroted to 1 or 2 paths. for exploration you'll be routed to the exploratory path. previous explorations will be already stored here. if none of the exploarations seem right for what we are looking for (oh the exploratory path DOES follow the file structure of the repo precisely) or in our case where we're explkoring the repo for the first time, we'll do the followinig: be given all the root folders and files and asked to navigate to one based off just their names since we have no descriptions yet. exploration is a twofold process. first, we'll be navigating trying to find answers to our questions updating the routing state. at the same time, we'll be also building the metadata tree. whenever we visit a file, we'll update the routing state, but also generate the short description of it. we'll then go to the parent and tell it, hey you have this new file inside you. do you think you should update ur description? If it does it will proceed to update its description. then we'll go to that folder's parent. we'll tell it, hey one of your folders changed its description? Do u think u should change ur description? And so forth until a folder decides it doesent need to change, or we reach a stop node. all folders start with the description of something like "Empty folder" or "No description". in addition we need to consider another process. when exploring the codebase, we wont just navigate to a leaf node and be done. no, we might need to traverse multiple paths and check multiple files. i suppose the question is this - how should traversal continue after checking a leaf node and deeming it not the one we want? I suppose we can do this. at a leaf node if we detemine we still have questions, we can 
+
+i asked claude if exploration and structured search is all we need to offer for the memory space's github nodes. it said no, theres more:
+- Analysis and understanding: Beyond structured retrieval and exploration, we can analyze and gain a deeper understanding of the codebase. This includes activities like examining dependencies, identifying design patterns, assessing code quality, and uncovering potential issues or areas for improvement. Analysis helps in comprehending the intricacies of the codebase and making informed decisions.
+- Modification and enhancement: Repositories are not just for retrieval and exploration; they are also meant to be modified and enhanced. We can make changes to the codebase, fix bugs, refactor existing code, and add new features or functionality. These modifications require a combination of structured editing, exploration, and analysis.
+- Documentation and knowledge capture: Repositories often contain more than just code. They may include documentation, comments, and other forms of knowledge capture. Interacting with a repository involves not only accessing and exploring the code but also engaging with the accompanying documentation and extracting relevant information to aid in understanding and decision-making.
+- Collaboration and version control: Repositories are often used in collaborative environments where multiple developers work together. Collaboration involves activities like branching, merging, code reviews, and managing version control. These operations go beyond simple retrieval and exploration and are essential for effective teamwork and maintaining a consistent and reliable codebase.
+
+lets go through these one by one and consider how our current system - if our current system can perform/handle these cases
+
+analysis and understanding. oh he brought up a lot of important points here fuck, but also thank you jesus that was helpful from claude
+    1. Examining dependencies
+        uh i suppose this is handled by the planning phase? it does bring up one point - that during exploration we might want to use structured tools. so it isnt exactly, after exploring move up one root and update routing state. its more like. hey now do you want to go back to the folder you was in, search for a class funtion or variable, or go back and start searching from the root? Options, options is what we need. that handles this problem. in the exploration phase
+
+        when precisely will examining dependencies be necessary? When will these dependencies be used? How can we identify dependencies? This can be done through AST.
+
+        i just spent some time looking at how we might identify internal dependencies from an AST. there is no repo general method, it requires project specific methods. this means we need to depend on the model to identify these things. we nee to rely on the model to identify what to travel to next dynamically through its plan and options. we cant in a structured manner connect all internal dependencies to a piece of code. 
+
+        oh god. well essentially, when do we want to analyze dependencies? The answer? IDFK. RULE BASED SYSTEMS DONT WORK. UTILIZE THE AIS GENERAL REASONING CAPABILITIES AT EVERY SINGLE POINT
+
+    2. Identifying design patterns
+
+    3. Assessing code quality and uncovering potential issues or areas for improvement
+
+
+i feel like im noticing theres another commonly recurring theme - the llm processing state. containing a list of questions, or list of steps (plan), the current context, which at every step gets updated. this is called persisted context. and then finally a reports list, where we append new "things" throughout the process when we accomplish or finish something that we want to return to the thing that called this process.
+
+alongside each python file we should store it's abstract syntax tree representation.
+
+
+
+
+i cant have strict rules. the ais need complete and absolute freedom.
+
+what remains?
+
+metadata tree. parent. children. short descriptions
+router. starts from a node in metadata tree. navigates to find a chunk or action
+
+generating actions
+generating chunks
+
+optimizing organization of metadata trees.
+
+this simple structure if implemented is agi
+
+what have i been doing for the past couple days? just coming up with and identifying edge cases that broke my rigid system. i need an entirely different mentality. instead of defining a strict process and workflow for the ais to follow, i need much more junctures and nodes where the ais can make their own decisions, carve their own path.
+
+these action operations and tool calls need to be in the action space.

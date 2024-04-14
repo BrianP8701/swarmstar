@@ -1,17 +1,20 @@
 """
-This module provides the BaseAction class, which all actions must inherit from.
+An action is a piece of code. Every descison or task performed
+by swarmstar is one of these actions.
 
-The BaseAction class provides a number of methods and decorators to make it easier to write actions.
+Here we define the base class for actions, which:
+    - Ties each action to the node it is running on.
+    - Applies an error handling wrapper that is applied to all functions
+        inside the action. This wrapper induces an attempt to have the
+        swarm debug and handle the error on its own.
+    - Wrappers to abstract away common functionality like enforcing that
+        decisions are made with full context, receiving LLM completions,
+        termination handlers, etc.
 """
-from importlib import import_module
 import traceback
 from abc import ABCMeta, abstractmethod
 from functools import wraps
-from typing import Any, Dict, List, Callable, get_type_hints, get_origin, get_args
-from inspect import signature
-import json
-import sys
-import inspect
+from typing import Any, Dict, List, Callable
 
 from swarmstar.models import SwarmOperation, SwarmNode, SpawnOperation, BaseNode, ActionMetadata, BlockingOperation
 

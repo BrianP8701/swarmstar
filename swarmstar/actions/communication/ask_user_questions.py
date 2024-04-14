@@ -9,7 +9,7 @@ from typing import List, Dict, Any
 from pydantic import BaseModel, Field
 
 from swarmstar.models import BlockingOperation, TerminationOperation, UserCommunicationOperation
-from swarmstar.actions.base_action import BaseAction
+from swarmstar.models.base_action import BaseAction
 
 class InitialQuestionAskerConversationState(BaseModel):
     questions: List[str] = Field(..., description="List of questions we need answered")

@@ -45,7 +45,7 @@ class MetadataTree(BaseTree):
         batch_create_payload = {} # {new_node_id: new_node}
 
         def recursive_helper(node):
-            if "type" in node and node["type"] == "portal":
+            if "type" in node and node.get("portal", False):
                 node_id = f"{swarm_id}_{node['id']}"
                 batch_create_payload[node_id] = node
             if node.get("children_ids", None):
@@ -55,4 +55,4 @@ class MetadataTree(BaseTree):
 
         recursive_helper(node)
 
-        db.batch_create(cls.collection, batch_create_payload)
+        if batch_create_payload: db.batch_create(cls.collection, batch_create_payload)

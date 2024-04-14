@@ -33,7 +33,7 @@ class BaseNode(BaseModel):
         module_path, class_name = node_class.rsplit(".", 1)
         module = import_module(module_path)
         node_class = getattr(module, class_name)
-        return node_class.get(node_id)
+        return node_class.read(node_id)
 
     @classmethod
     def get_node_dict(cls, node_id: str) -> Dict[str, Any]:
@@ -54,7 +54,7 @@ class BaseNode(BaseModel):
         else:
             try:
                 node = get_internal_sqlite(cls.collection, node_id)
-                if "type" in node and node["type"] == "portal":
+                if node.get("portal", False):
                     node_id = f"{swarm_id_var.get()}_{node_id}"
                     node = db.read(cls.collection, node_id)
                 return node
